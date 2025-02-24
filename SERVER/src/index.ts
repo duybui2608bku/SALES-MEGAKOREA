@@ -1,0 +1,32 @@
+import express from 'express'
+import userRouters from '~/routes/users.routes'
+import databaseService from '../services/database.services'
+import { defaultErrorHandler } from './middlewares/errorsMiddlewares'
+import mediaRouters from './routes/medias.routes'
+import { initFolder } from './utils/file'
+import { config } from 'dotenv'
+import cors from 'cors'
+import branchRouters from './routes/branch.routes'
+config()
+
+const corsOptions = {
+  origin: '*',
+  methods: 'GET,POST,PUT,DELETE,PATCH',
+  allowedHeaders: 'Content-Type,Authorization'
+}
+
+databaseService.connect()
+const app = express()
+const port = process.env.PORT || 8081
+initFolder()
+app.use(cors(corsOptions))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use('/users', userRouters)
+app.use('/upload', mediaRouters)
+app.use('/branch', branchRouters)
+app.use(defaultErrorHandler)
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`)
+})
