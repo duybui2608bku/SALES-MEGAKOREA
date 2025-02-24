@@ -71,9 +71,7 @@ export const userMessages = {
   GET_ALL_USERS_SUCCESS: 'Get all users successfully'
 } as const
 
-export const accountMessages = {
-  ADD_ACCOUNT_SUCCESS: 'Add account successfully',
-  GET_ACCOUNT_OF_ME_SUCCESS: 'Get account of me successfully',
-  UPDATE_ACCOUNT_SUCCESS: 'Update account successfully',
-  CLONE_ACCOUNT_SUCCESS: 'Clone account successfully'
-} as const
+export const servicesMessages = {
+  CREATE_SERVICES_CATEGORY_SUCCESS: 'Create services category success !',
+  BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string !'
+}

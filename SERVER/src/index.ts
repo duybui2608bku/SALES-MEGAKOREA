@@ -7,6 +7,7 @@ import { initFolder } from './utils/file'
 import { config } from 'dotenv'
 import cors from 'cors'
 import branchRouters from './routes/branch.routes'
+import ServicesRouters from './routes/services.routes'
 config()
 
 const corsOptions = {
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/users', userRouters)
 app.use('/upload', mediaRouters)
 app.use('/branch', branchRouters)
+app.use('/services', ServicesRouters)
 app.use(defaultErrorHandler)
 
 app.listen(port, () => {
