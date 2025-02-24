@@ -73,5 +73,9 @@ export const userMessages = {
 
 export const servicesMessages = {
   CREATE_SERVICES_CATEGORY_SUCCESS: 'Create services category success !',
-  BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string !'
+  BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string !',
+  SERVICES_CATEGORY_NOT_FOUND: 'Services category not found !',
+  INVALID_ID: 'Invalid id !',
+  DELETE_SERVICES_CATEGORY_SUCCESS: 'Delete services category success !',
+  UPDATE_SERVICES_CATEGORY_SUCCESS: 'Update services category success !'
 }

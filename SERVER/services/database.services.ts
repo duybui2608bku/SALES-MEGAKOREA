@@ -37,6 +37,10 @@ class DatabaseService {
   get services_category(): Collection<ServicesCategory> {
     return this.db.collection(process.env.SERVICES_CATEGORY_COLLECTION as string)
   }
+
+  get services(): Collection<ServicesCategory> {
+    return this.db.collection(process.env.SERVICES_COLLECTION as string)
+  }
 }
 
 const databaseService = new DatabaseService()
