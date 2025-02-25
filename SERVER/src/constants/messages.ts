@@ -85,5 +85,18 @@ export const servicesMessages = {
 }
 
 export const productMessages = {
-  CREATE_CONSUMABLES_SUCCESS: 'Create consumables success !'
+  CREATE_CONSUMABLES_SUCCESS: 'Create consumables success !',
+  CONSUMABLES_NOT_FOUND: 'Consumables not found !',
+  NAME_MUST_BE_STRING: 'Name must be a string !',
+  BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string !',
+  CODE_MUST_BE_STRING: 'Code must be a string !',
+  PRICE_MUST_BE_NUMBER: 'Price must be a number !',
+  LABEL_MUST_BE_STRING: 'Label must be a string !',
+  CATEGORY_MUST_BE_STRING: 'Category must be a string !',
+  TYPE_MUST_BE_STRING: 'Type must be a string !',
+  UNIT_MUST_BE_STRING: 'Unit must be a string !',
+  IN_STOCK_MUST_BE_NUMBER: 'In stock must be a number !',
+  DELETE_CONSUMABLES_SUCCESS: 'Delete consumables success !',
+  INVALID_ID: 'Invalid id !',
+  UPDATE_CONSUMABLES_SUCCESS: 'Update consumables success !'
 }

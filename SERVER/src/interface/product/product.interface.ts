@@ -7,3 +7,16 @@ export interface ProductCategoryType {
   created_at?: Date
   updated_at?: Date
 }
+
+export interface UpdateConsumablesData {
+  id: string
+  branch?: string[]
+  code: string
+  price?: number
+  label?: string
+  category?: string
+  type?: string
+  name: string
+  unit?: string
+  inStock?: number
+}

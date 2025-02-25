@@ -5,7 +5,24 @@ export interface CreateConsumablesRequestBody {
   label?: string
   category?: string
   type?: string
-  name?: string
+  name: string
+  unit?: string
+  inStock?: number
+}
+
+export interface DeleteConsumablesRequestParams {
+  id: string
+}
+
+export interface UpdateConsumablesRequestBody {
+  id: string
+  branch?: string[]
+  code: string
+  price?: number
+  label?: string
+  category?: string
+  type?: string
+  name: string
   unit?: string
   inStock?: number
 }

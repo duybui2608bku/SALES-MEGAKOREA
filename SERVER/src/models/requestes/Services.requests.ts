@@ -30,6 +30,7 @@ export interface CreateServicesRequestBody {
 
 export interface UpdateServicesRequestBody {
   id: string
+  is_active?: boolean
   name?: string
   branch?: string[]
   descriptions?: string

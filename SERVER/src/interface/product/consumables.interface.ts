@@ -8,7 +8,7 @@ export interface ConsumablesType {
   label?: string
   category?: string
   type?: string
-  name?: string
+  name: string
   unit?: string
   inStock?: number
 }
@@ -20,7 +20,20 @@ export interface CreateConsumablesData {
   label?: string
   category?: string
   type?: string
-  name?: string
+  name: string
+  unit?: string
+  inStock?: number
+}
+
+export interface UpdateConsumablesData {
+  id: string
+  branch?: string[]
+  code?: string
+  price?: number
+  label?: string
+  category?: string
+  type?: string
+  name: string
   unit?: string
   inStock?: number
 }

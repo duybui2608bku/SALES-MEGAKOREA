@@ -1,8 +1,12 @@
 import { ObjectId } from 'mongodb'
 import databaseService from '../services/database.services'
-import { CreateServicesCategoryData, CreateServicesData } from '../src/interface/services/services.interface'
+import {
+  CreateServicesCategoryData,
+  CreateServicesData,
+  UpdateServicesData
+} from '../src/interface/services/services.interface'
 import { Services, ServicesCategory } from '../src/models/schemas/services/services.schema'
-import { UpdateServicesCategoryRequestBody, UpdateServicesRequestBody } from '~/models/requestes/Services.requests'
+import { UpdateServicesCategoryRequestBody } from '~/models/requestes/Services.requests'
 import { toObjectId } from '~/utils/utils'
 
 class ServicesRepository {
@@ -48,7 +52,7 @@ class ServicesRepository {
     })
   }
 
-  async updateServices(data: UpdateServicesRequestBody) {
+  async updateServices(data: UpdateServicesData) {
     const { id, ...body } = data
     await databaseService.services.updateOne(
       { _id: new ObjectId(id) },
