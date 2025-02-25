@@ -25,6 +25,11 @@ export enum MediaType {
   Video
 }
 
+export enum PriceType {
+  PRECENT = 1,
+  FIXED = 2
+}
+
 export enum HttpStatusCode {
   Continue = 100,
   SwitchingProtocols = 101,

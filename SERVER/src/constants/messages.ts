@@ -77,5 +77,13 @@ export const servicesMessages = {
   SERVICES_CATEGORY_NOT_FOUND: 'Services category not found !',
   INVALID_ID: 'Invalid id !',
   DELETE_SERVICES_CATEGORY_SUCCESS: 'Delete services category success !',
-  UPDATE_SERVICES_CATEGORY_SUCCESS: 'Update services category success !'
+  UPDATE_SERVICES_CATEGORY_SUCCESS: 'Update services category success !',
+  CREATE_SERVICES_SUCCESS: 'Create services success !',
+  DESCRIPTIONS_MUST_BE_STRING: 'Descriptions must be a string !',
+  SERVICES_NOT_FOUND: 'Services not found !',
+  DELETE_SERVICES_SUCCESS: 'Delete services success !'
+}
+
+export const productMessages = {
+  CREATE_CONSUMABLES_SUCCESS: 'Create consumables success !'
 }
