@@ -26,7 +26,7 @@ export class Services {
   id_employee: ObjectId | string
   tour_price: number
   type_tour_price: number
-  id_consumables: ObjectId | string
+  id_Product: ObjectId | string
   constructor(servicesCategory: ServicesType) {
     this._id = servicesCategory._id || new ObjectId()
     this.is_active = servicesCategory.is_active || true
@@ -38,6 +38,6 @@ export class Services {
     this.id_employee = servicesCategory.id_employee || ''
     this.tour_price = servicesCategory.tour_price || 0
     this.type_tour_price = servicesCategory.type_tour_price || PriceType.FIXED
-    this.id_consumables = servicesCategory.id_consumables || ''
+    this.id_Product = servicesCategory.id_Product || ''
   }
 }

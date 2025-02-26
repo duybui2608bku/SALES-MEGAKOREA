@@ -108,7 +108,7 @@ price?: number,
 id_employee?: string,
 tour_price?: number,
 type_tour_price?: number,
-id_consumables?: string}
+id_Product?: string}
 }
 */
 

@@ -8,12 +8,26 @@ export interface ProductCategoryType {
   updated_at?: Date
 }
 
-export interface UpdateConsumablesData {
+export interface ProductType {
+  branch?: string[]
+  code: string
+  price?: number
+  label?: string
+  is_consumable?: boolean
+  category?: string
+  type?: string
+  name: string
+  unit?: string
+  inStock?: number
+}
+
+export interface UpdateProductData {
   id: string
   branch?: string[]
   code: string
   price?: number
   label?: string
+  is_consumable?: boolean
   category?: string
   type?: string
   name: string

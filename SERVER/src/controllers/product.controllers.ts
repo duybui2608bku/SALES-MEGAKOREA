@@ -2,45 +2,40 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { productMessages } from '~/constants/messages'
 import {
-  CreateConsumablesRequestBody,
-  DeleteConsumablesRequestParams,
-  UpdateConsumablesRequestBody
+  CreateProductRequestBody,
+  CreateProductGeneralRequestBody,
+  DeleteProductRequestParams,
+  UpdateProductRequestBody
 } from '~/models/requestes/Product.requests'
 import { ResponseSuccess } from '~/utils/handlers'
 import productServices from '../../services/product.services'
 
-export const createConsumables = async (
-  req: Request<ParamsDictionary, any, CreateConsumablesRequestBody>,
-  res: Response
-) => {
+export const createProduct = async (req: Request<ParamsDictionary, any, CreateProductRequestBody>, res: Response) => {
   const data = req.body
-  await productServices.CreateConsumables(data)
+  await productServices.CreateProduct(data)
   ResponseSuccess({
-    message: productMessages.CREATE_CONSUMABLES_SUCCESS,
+    message: productMessages.CREATE_PRODUCT_SUCCESS,
     res
   })
 }
 
-export const deleteConsumables = async (
-  req: Request<ParamsDictionary, DeleteConsumablesRequestParams, any, CreateConsumablesRequestBody>,
+export const deleteProduct = async (
+  req: Request<ParamsDictionary, DeleteProductRequestParams, any, CreateProductRequestBody>,
   res: Response
 ) => {
   const { id } = req.params
-  await productServices.DeleteConsumables(id)
+  await productServices.DeleteProduct(id)
   ResponseSuccess({
-    message: productMessages.DELETE_CONSUMABLES_SUCCESS,
+    message: productMessages.DELETE_PRODUCT_SUCCESS,
     res
   })
 }
 
-export const updateConsumables = async (
-  req: Request<ParamsDictionary, any, UpdateConsumablesRequestBody>,
-  res: Response
-) => {
+export const updateProduct = async (req: Request<ParamsDictionary, any, UpdateProductRequestBody>, res: Response) => {
   const data = req.body
-  await productServices.UpdateConsumables(data)
+  await productServices.UpdateProduct(data)
   ResponseSuccess({
-    message: productMessages.UPDATE_CONSUMABLES_SUCCESS,
+    message: productMessages.UPDATE_PRODUCT_SUCCESS,
     res
   })
 }

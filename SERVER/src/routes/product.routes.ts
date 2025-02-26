@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { createConsumables, deleteConsumables, updateConsumables } from '~/controllers/product.controllers'
+import { createProduct, deleteProduct, updateProduct } from '~/controllers/product.controllers'
 import {
-  CreateConsumablesValidator,
-  DeleteConsumablesValidator,
-  UpdateConsumablesValidator
+  CreateProductValidator,
+  DeleteProductValidator,
+  UpdateProductValidator
 } from '~/middlewares/product.middlewares'
 import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -11,47 +11,47 @@ import { wrapRequestHandler } from '~/utils/handlers'
 const productRouters = Router()
 
 /*
-Description: Create Consumables
-path: /consumables
+Description: Create Product 
+path: /
 method: POST
 Body:{ branch?: string[] ,code: string,price?: number ,label?: string ,category?: string ,type?: string ,name: string ,unit?: string ,inStock?: number}
 */
 
 productRouters.post(
-  '/consumables',
+  '/',
   accessTokenValidator,
   isAdminValidator,
-  CreateConsumablesValidator,
-  wrapRequestHandler(createConsumables)
+  CreateProductValidator,
+  wrapRequestHandler(createProduct)
 )
 
 /*
-Description: Delete Consumables
-path: /consumables/:id
+Description: Delete Product 
+path: /:id
 method: DELETE
 */
 
 productRouters.delete(
-  '/consumables/:id',
+  '/:id',
   accessTokenValidator,
   isAdminValidator,
-  DeleteConsumablesValidator,
-  wrapRequestHandler(deleteConsumables)
+  DeleteProductValidator,
+  wrapRequestHandler(deleteProduct)
 )
 
 /*
-Description: Update Consumables
-path: /consumables
+Description: Update Product 
+path: /
 method: PATCH
 Body:{ branch?: string[] ,code?: string,price?: number ,label?: string ,category?: string ,type?: string ,name: string ,unit?: string ,inStock?: number}
 */
 
 productRouters.patch(
-  '/consumables',
+  '/',
   accessTokenValidator,
   isAdminValidator,
-  UpdateConsumablesValidator,
-  wrapRequestHandler(updateConsumables)
+  UpdateProductValidator,
+  wrapRequestHandler(updateProduct)
 )
 
 export default productRouters

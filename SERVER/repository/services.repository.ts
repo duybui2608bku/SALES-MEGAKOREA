@@ -35,12 +35,12 @@ class ServicesRepository {
   //Services
 
   async createServices(servicesData: CreateServicesData) {
-    const { service_group_id, id_employee, id_consumables, ...data } = servicesData
+    const { service_group_id, id_employee, id_Product, ...data } = servicesData
     const servicesDataWithObjectId = {
       ...data,
       service_group_id: toObjectId(service_group_id) || '',
       id_employee: toObjectId(id_employee) || '',
-      id_consumables: toObjectId(id_consumables) || ''
+      id_Product: toObjectId(id_Product) || ''
     }
 
     await databaseService.services.insertOne(new Services(servicesDataWithObjectId))

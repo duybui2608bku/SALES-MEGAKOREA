@@ -2,7 +2,7 @@ import { checkSchema } from 'express-validator'
 import { productMessages } from '~/constants/messages'
 import { validate } from '~/utils/validation'
 
-export const CreateConsumablesValidator = validate(
+export const CreateProductValidator = validate(
   checkSchema(
     {
       name: {
@@ -22,7 +22,11 @@ export const CreateConsumablesValidator = validate(
         errorMessage: productMessages.CODE_MUST_BE_STRING
       },
       price: {
-        isNumeric: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: productMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
+        toInt: true,
         optional: true,
         errorMessage: productMessages.PRICE_MUST_BE_NUMBER
       },
@@ -47,16 +51,24 @@ export const CreateConsumablesValidator = validate(
         errorMessage: productMessages.UNIT_MUST_BE_STRING
       },
       inStock: {
-        isNumeric: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: productMessages.IN_STOCK_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
         optional: true,
         errorMessage: productMessages.IN_STOCK_MUST_BE_NUMBER
+      },
+      is_consumable: {
+        isBoolean: true,
+        optional: true,
+        errorMessage: productMessages.IS_CONSUMABLE_MUST_BE_BOOLEAN
       }
     },
     ['body']
   )
 )
 
-export const DeleteConsumablesValidator = validate(
+export const DeleteProductValidator = validate(
   checkSchema(
     {
       id: {
@@ -69,7 +81,7 @@ export const DeleteConsumablesValidator = validate(
   )
 )
 
-export const UpdateConsumablesValidator = validate(
+export const UpdateProductValidator = validate(
   checkSchema(
     {
       name: {
@@ -90,7 +102,10 @@ export const UpdateConsumablesValidator = validate(
         errorMessage: productMessages.CODE_MUST_BE_STRING
       },
       price: {
-        isNumeric: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: productMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
         optional: true,
         errorMessage: productMessages.PRICE_MUST_BE_NUMBER
       },
@@ -115,9 +130,13 @@ export const UpdateConsumablesValidator = validate(
         errorMessage: productMessages.UNIT_MUST_BE_STRING
       },
       inStock: {
-        isNumeric: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: productMessages.IN_STOCK_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
         optional: true,
-        errorMessage: productMessages.IN_STOCK_MUST_BE_NUMBER
+        errorMessage: productMessages.IN_STOCK_MUST_BE_NUMBER,
+        toInt: true
       }
     },
     ['body']

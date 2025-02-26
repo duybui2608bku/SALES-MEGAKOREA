@@ -81,12 +81,14 @@ export const servicesMessages = {
   CREATE_SERVICES_SUCCESS: 'Create services success !',
   DESCRIPTIONS_MUST_BE_STRING: 'Descriptions must be a string !',
   SERVICES_NOT_FOUND: 'Services not found !',
-  DELETE_SERVICES_SUCCESS: 'Delete services success !'
+  DELETE_SERVICES_SUCCESS: 'Delete services success !',
+  PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price must be a number greater than zero !',
+  TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Tour price must be a number greater than zero !'
 }
 
 export const productMessages = {
-  CREATE_CONSUMABLES_SUCCESS: 'Create consumables success !',
-  CONSUMABLES_NOT_FOUND: 'Consumables not found !',
+  CREATE_PRODUCT_SUCCESS: 'Create PRODUCT success !',
+  PRODUCT_NOT_FOUND: 'PRODUCT not found !',
   NAME_MUST_BE_STRING: 'Name must be a string !',
   BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string !',
   CODE_MUST_BE_STRING: 'Code must be a string !',
@@ -96,7 +98,11 @@ export const productMessages = {
   TYPE_MUST_BE_STRING: 'Type must be a string !',
   UNIT_MUST_BE_STRING: 'Unit must be a string !',
   IN_STOCK_MUST_BE_NUMBER: 'In stock must be a number !',
-  DELETE_CONSUMABLES_SUCCESS: 'Delete consumables success !',
+  DELETE_PRODUCT_SUCCESS: 'Delete PRODUCT success !',
   INVALID_ID: 'Invalid id !',
-  UPDATE_CONSUMABLES_SUCCESS: 'Update consumables success !'
+  UPDATE_PRODUCT_SUCCESS: 'Update PRODUCT success !',
+  IN_STOCK_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'In stock must be a number greater than zero !',
+  PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price must be a number greater than zero !',
+  CREATE_PRODUCT_GENERAL_SUCCESS: 'Create PRODUCT general success !',
+  IS_CONSUMABLE_MUST_BE_BOOLEAN: 'Is consumable must be a boolean !'
 }

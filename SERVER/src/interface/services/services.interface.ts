@@ -31,7 +31,7 @@ export interface ServicesType {
   id_employee: ObjectId | string
   tour_price: number
   type_tour_price: number
-  id_consumables: ObjectId | string
+  id_Product: ObjectId | string
 }
 
 export interface CreateServicesData {
@@ -44,7 +44,7 @@ export interface CreateServicesData {
   id_employee: string
   tour_price: number
   type_tour_price: number
-  id_consumables: string
+  id_Product: string
 }
 
 export interface UpdateServicesData {
@@ -58,5 +58,5 @@ export interface UpdateServicesData {
   id_employee?: string
   tour_price?: number
   type_tour_price?: number
-  id_consumables?: string
+  id_Product?: string
 }

@@ -86,7 +86,11 @@ export const CreateServicesValidator = validate(
       },
       price: {
         isNumeric: true,
-        optional: true
+        optional: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        }
       },
       id_employee: {
         isString: true,
@@ -95,13 +99,17 @@ export const CreateServicesValidator = validate(
       },
       tour_price: {
         isNumeric: true,
-        optional: true
+        optional: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        }
       },
       type_tour_price: {
         isNumeric: true,
         optional: true
       },
-      id_consumables: {
+      id_Product: {
         isString: true,
         isMongoId: true,
         errorMessage: servicesMessages.INVALID_ID,
@@ -154,7 +162,11 @@ export const updateServicesValidator = validate(
       },
       price: {
         isNumeric: true,
-        optional: true
+        optional: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        }
       },
       id_employee: {
         isString: true,
@@ -164,13 +176,17 @@ export const updateServicesValidator = validate(
       },
       tour_price: {
         isNumeric: true,
-        optional: true
+        optional: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        }
       },
       type_tour_price: {
         isNumeric: true,
         optional: true
       },
-      id_consumables: {
+      id_Product: {
         isString: true,
         isMongoId: true,
         errorMessage: servicesMessages.INVALID_ID,

@@ -1,8 +1,9 @@
-export interface CreateConsumablesRequestBody {
+export interface CreateProductRequestBody {
   branch?: string[]
   code: string
   price?: number
   label?: string
+  is_consumable?: boolean
   category?: string
   type?: string
   name: string
@@ -10,12 +11,25 @@ export interface CreateConsumablesRequestBody {
   inStock?: number
 }
 
-export interface DeleteConsumablesRequestParams {
+export interface DeleteProductRequestParams {
   id: string
 }
 
-export interface UpdateConsumablesRequestBody {
+export interface UpdateProductRequestBody {
   id: string
+  branch?: string[]
+  code: string
+  price?: number
+  label?: string
+  is_consumable?: boolean
+  category?: string
+  type?: string
+  name: string
+  unit?: string
+  inStock?: number
+}
+
+export interface CreateProductGeneralRequestBody {
   branch?: string[]
   code: string
   price?: number
