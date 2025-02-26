@@ -13,4 +13,16 @@ const pathMe = {
   profile: '/profile'
 }
 
-export { pathAuth, pathUtil, pathMe }
+const pathApi = {
+  login: '/users/login'
+}
+
+const pathRoutersProduct = {
+  productGeneral: '/product-general'
+}
+
+const pathApiProduct = {
+  createProduct: '/products'
+}
+
+export { pathAuth, pathUtil, pathMe, pathApi, pathRoutersProduct, pathApiProduct }

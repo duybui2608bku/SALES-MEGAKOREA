@@ -1,70 +1,76 @@
 import { Menu, MenuProps, Layout, Button } from 'antd'
 import { useState } from 'react'
-import { SiGoogleanalytics } from 'react-icons/si'
 import { MdMailLock, MdSettings } from 'react-icons/md'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
+import { FcEngineering } from 'react-icons/fc'
+import HeaderMain from '../Header/Header'
+import './MainLayout.scss'
+import { useNavigate } from 'react-router'
+import { pathRoutersProduct } from 'src/Constants/path'
+
 interface Props {
   children?: React.ReactNode
 }
 
-type MenuItem = Required<MenuProps>['items'][number]
-
-const items: MenuItem[] = [
-  {
-    key: 'sub1',
-    label: 'Navigation One',
-    icon: <SiGoogleanalytics />,
-    children: [
-      {
-        key: 'g1',
-        label: 'Item 1',
-        type: 'group',
-        children: [
-          { key: '1', label: 'Option 1' },
-          { key: '2', label: 'Option 2' }
-        ]
-      },
-      {
-        key: 'g2',
-        label: 'Item 2',
-        type: 'group',
-        children: [
-          { key: '3', label: 'Option 3' },
-          { key: '4', label: 'Option 4' }
-        ]
-      }
-    ]
-  },
-  {
-    key: 'sub2',
-    label: 'Navigation Two',
-    icon: <MdMailLock />,
-    children: [
-      { key: '5', label: 'Option 5' },
-      { key: '6', label: 'Option 6' }
-    ]
-  },
-  {
-    type: 'divider'
-  },
-  {
-    key: 'sub4',
-    label: 'Navigation Three',
-    icon: <MdSettings />,
-    children: [
-      { key: '9', label: 'Option 9' },
-      { key: '10', label: 'Option 10' },
-      { key: '11', label: 'Option 11' },
-      { key: '12', label: 'Option 12' }
-    ]
-  }
-]
-
 const MainLayout = ({ children }: Props) => {
   const [collapsed, setCollapsed] = useState(false)
+  const navigate = useNavigate()
+
+  type MenuItem = Required<MenuProps>['items'][number]
+
+  const items: MenuItem[] = [
+    {
+      key: 'setting',
+      label: 'Cài đặt',
+      icon: <FcEngineering />,
+      children: [
+        {
+          key: 'product',
+          label: 'Sản phẩm',
+          type: 'group',
+          children: [
+            { key: '1', label: 'Vật tư chung', onClick: () => navigate(pathRoutersProduct.productGeneral) },
+            { key: '2', label: 'Vật tư tiêu hao' }
+          ]
+        },
+        {
+          key: 'g2',
+          label: 'Item 2',
+          type: 'group',
+          children: [
+            { key: '3', label: 'Option 3' },
+            { key: '4', label: 'Option 4' }
+          ]
+        }
+      ]
+    },
+    {
+      key: 'sub2',
+      label: 'Navigation Two',
+      icon: <MdMailLock />,
+      children: [
+        { key: '5', label: 'Option 5' },
+        { key: '6', label: 'Option 6' }
+      ]
+    },
+    {
+      type: 'divider'
+    },
+    {
+      key: 'sub4',
+      label: 'Navigation Three',
+      icon: <MdSettings />,
+      children: [
+        { key: '9', label: 'Option 9' },
+        { key: '10', label: 'Option 10' },
+        { key: '11', label: 'Option 11' },
+        { key: '12', label: 'Option 12' }
+      ]
+    }
+  ]
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -92,19 +98,19 @@ const MainLayout = ({ children }: Props) => {
         <Menu style={{ height: '100vh' }} theme='light' mode='inline' defaultSelectedKeys={['1']} items={items} />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: 'none', borderBottom: '1px solid red' }}>
+        <Header className='main-layout-container__header'>
           <Button
             type='text'
             icon={collapsed ? <BiSolidCaretRightSquare size={25} /> : <BiSolidCaretLeftSquare size={25} />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
-              fontSize: '16px',
               width: 64,
               height: 64
             }}
           />
+          <HeaderMain />
         </Header>
-        <Content>{children}</Content>
+        <Content className='main-layout-container__content'>{children}</Content>
       </Layout>
     </Layout>
   )

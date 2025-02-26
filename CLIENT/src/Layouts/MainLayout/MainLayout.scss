@@ -1,0 +1,25 @@
+.main-layout-container {
+  font-family: 'JetBrains Mono', monospace !important;
+  &__sider {
+    &__logo {
+      height: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+      background: white;
+    }
+  }
+  &__header {
+    padding: 0;
+    background: white;
+    border-bottom: 1px solid royalblue;
+    display: flex;
+    justify-content: space-between;
+  }
+  &__content {
+    background: white;
+    height: 100vh;
+    width: 100%;
+  }
+}

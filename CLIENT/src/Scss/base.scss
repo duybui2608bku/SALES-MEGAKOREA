@@ -12,23 +12,36 @@ html {
     font-size: 80%;
   }
 }
+.ant-tag,
+.ant-form,
+.ant-typography,
+.ant-btn,
+.ant-tabs,
+.ant-input,
+.ant-menu,
+.ant-select,
+.ant-table,
+.ant-card,
+.ant-modal,
+.ant-tooltip,
+.ant-popover,
+.ant-notification-notice,
+.ant-drawer {
+  font-family: 'JetBrains Mono', monospace !important;
+}
 
 * {
   margin: 0;
   box-sizing: border-box;
   padding: 0;
-  // -webkit-tap-highlight-color: transparent;
-  // ::-webkit-scrollbar {
-  //   display: none;
-  // }
 }
+
 body {
   font-family: 'JetBrains Mono', monospace !important;
   font-weight: 400;
   font-size: clamp(18px, 3vw, 24px);
   color: $color-text;
-  max-width: 1920px;
-  overflow: hidden;
+  // max-width: 1920px;
 }
 a {
   text-decoration: none;
@@ -52,4 +65,26 @@ button {
 }
 iframe {
   border: 0;
+}
+
+.ant-table-tbody > tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.ant-table-tbody > tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.center-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.leaflet-container {
+  position: static !important;
+}
+
+#map {
+  height: 300px;
 }

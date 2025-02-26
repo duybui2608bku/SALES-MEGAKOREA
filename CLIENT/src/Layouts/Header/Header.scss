@@ -1,48 +1,21 @@
-@use '../../App.scss' as *;
-
 .header-container {
+  font-family: 'JetBrains Mono', monospace !important;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 100px;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: 99;
-  .logo {
-    width: 150px;
-    height: 80px;
-  }
-  .function {
-    color: $color-text;
+  cursor: pointer;
+  &__user {
     display: flex;
-    gap: 50px;
-    a {
-      position: relative;
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        transition: width 0.5s ease;
-        height: 2px;
-        background-color: $color-main;
-      }
-      &.active::after,
-      &:hover::after {
-        width: 100%;
-      }
+    align-items: center;
+    margin-right: 20px;
+    gap: 20px;
+    &__name {
+      font-weight: 600;
     }
   }
-}
-
-@media screen and (max-width: 575px) {
-  .header-container {
-    .logo {
-      display: none;
-    }
+  &__icon {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
   }
 }
