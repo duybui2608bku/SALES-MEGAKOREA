@@ -33,6 +33,11 @@ class ProdudctServices {
     await this.checkProductExist(new ObjectId(Product.id as string))
     await productRepository.updateProduct(Product)
   }
+
+  async GetAllProduct(page: number, limit: number, branch: string) {
+    const Products = await productRepository.getAllProduct(page, limit, branch)
+    return Products
+  }
 }
 
 const productServices = new ProdudctServices()

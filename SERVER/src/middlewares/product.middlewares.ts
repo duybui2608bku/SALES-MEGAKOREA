@@ -15,6 +15,11 @@ export const CreateProductValidator = validate(
         optional: true,
         errorMessage: productMessages.BRANCH_MUST_BE_ARRAY_STRING
       },
+      user_id: {
+        isString: true,
+        isMongoId: true,
+        errorMessage: productMessages.INVALID_ID
+      },
       code: {
         isString: true,
         notEmpty: true,
@@ -89,6 +94,11 @@ export const UpdateProductValidator = validate(
         notEmpty: true,
         errorMessage: productMessages.NAME_MUST_BE_STRING,
         optional: true
+      },
+      id: {
+        isString: true,
+        isMongoId: true,
+        errorMessage: productMessages.INVALID_ID
       },
       branch: {
         isArray: true,

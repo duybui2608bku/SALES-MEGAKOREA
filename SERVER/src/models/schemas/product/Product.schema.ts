@@ -7,6 +7,7 @@ export default class Product {
   code?: string
   price?: number
   label?: string
+  user_id: string
   is_consumable?: boolean
   category?: string
   type?: string
@@ -19,6 +20,7 @@ export default class Product {
     this.code = Product.code || ''
     this.price = Product.price || 0
     this.label = Product.label || ''
+    this.user_id = Product.user_id
     this.is_consumable = Product.is_consumable || false
     this.category = Product.category || ''
     this.type = Product.type || ''

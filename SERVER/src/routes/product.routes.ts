@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createProduct, deleteProduct, updateProduct } from '~/controllers/product.controllers'
+import { createProduct, deleteProduct, getAllProduct, updateProduct } from '~/controllers/product.controllers'
 import {
   CreateProductValidator,
   DeleteProductValidator,
@@ -53,5 +53,13 @@ productRouters.patch(
   UpdateProductValidator,
   wrapRequestHandler(updateProduct)
 )
+
+/*
+Description: Get All Product 
+path: /
+method: GET
+*/
+
+productRouters.post('/', accessTokenValidator, isAdminValidator, wrapRequestHandler(getAllProduct))
 
 export default productRouters

@@ -718,7 +718,7 @@ export const isAdminValidator = validate(
         custom: {
           options: async (_: string, { req }) => {
             const { role } = req.decode_authorization as TokenPayload
-            if (role !== UserRole.Admin) {
+            if (role.every((r) => r !== UserRole.ADMIN)) {
               throw new Error('You are not allowed to do this action')
             }
             return true

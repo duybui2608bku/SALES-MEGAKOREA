@@ -32,6 +32,6 @@ export default class User {
     this.updated_at = user.updated_at || new Date()
     this.forgot_password_token = user.forgot_password_token || ''
     this.avatar = user.avatar || ''
-    this.role = user.role || UserRole.User
+    this.role = user.role || UserRole.USER
   }
 }

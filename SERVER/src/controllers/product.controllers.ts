@@ -3,8 +3,8 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { productMessages } from '~/constants/messages'
 import {
   CreateProductRequestBody,
-  CreateProductGeneralRequestBody,
   DeleteProductRequestParams,
+  GetAllProductRequestQuery,
   UpdateProductRequestBody
 } from '~/models/requestes/Product.requests'
 import { ResponseSuccess } from '~/utils/handlers'
@@ -38,4 +38,13 @@ export const updateProduct = async (req: Request<ParamsDictionary, any, UpdatePr
     message: productMessages.UPDATE_PRODUCT_SUCCESS,
     res
   })
+}
+
+export const getAllProduct = async (
+  req: Request<ParamsDictionary, any, any, GetAllProductRequestQuery>,
+  res: Response
+) => {
+  const limit = Number(req.query.limit)
+  const page = Number(req.query.page)
+  const branch = req.query.branch
 }

@@ -1,6 +1,9 @@
 export enum UserRole {
-  Admin,
-  User
+  ADMIN = 0,
+  ACCOUNTANT = 1,
+  MANAGER = 2,
+  SALE = 3,
+  USER = 4
 }
 
 export enum TokenType {
