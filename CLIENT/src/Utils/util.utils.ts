@@ -5,3 +5,7 @@ export const generateProductCode = () => {
   const codeArray = _.times(6, () => _.sample(characters))
   return codeArray.join('')
 }
+
+export const encodeURI = (uri: string) => {
+  return encodeURIComponent(uri)
+}

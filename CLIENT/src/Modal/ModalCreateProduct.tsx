@@ -4,6 +4,7 @@ import { useContext } from 'react'
 import { optionsBranch, optionsCategoryProductGeneral, optionsUnitProduct } from 'src/Constants/option'
 import { AppContext } from 'src/Context/AppContext'
 import { CreateProductRequestBody } from 'src/Interfaces/product/product.interface'
+import { queryClient } from 'src/main'
 import productApi from 'src/Service/product/product.api'
 import { generateProductCode } from 'src/Utils/util.utils'
 
@@ -34,6 +35,7 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
     mutationFn: productApi.craeteProduct,
     onSuccess: () => {
       message.success('Tạo sản phẩm thành công!')
+      queryClient.invalidateQueries({ queryKey: ['getProductsGeneral'] })
       form.resetFields()
       close(false)
     },
@@ -44,16 +46,13 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
 
   const onFinish = (values: FieldsType) => {
     const user_id = profile?._id || ''
+    const is_consumable = false
     const branch: string[] = []
-    if (values.branch?.includes(optionsBranch[9].value)) {
-      optionsBranch.forEach((option) => {
-        if (option.value !== optionsBranch[9].value) {
-          branch.push(option.value)
-        }
+    if (values.branch?.length === 0) {
+      optionsBranch.forEach((item) => {
+        branch.push(item.value)
       })
     }
-
-    const is_consumable = false
     const product: CreateProductRequestBody = { ...values, user_id, is_consumable, branch }
     mutation.mutate(product)
   }
@@ -121,13 +120,20 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
                       formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       placeholder='Nhập giá sản phẩm'
+                      onKeyPress={(e) => {
+                        const charCode = e.key.charCodeAt(0)
+
+                        if ((charCode < 48 || charCode > 57) && charCode !== 8 && charCode !== 13) {
+                          e.preventDefault()
+                        }
+                      }}
                     />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={8}>
-                  <Form.Item<FieldsType> initialValue={optionsBranch[9].value} name='branch' label='Chi nhánh'>
+                  <Form.Item<FieldsType> name='branch' label='Chi nhánh'>
                     <Select placeholder='Chọn chi nhánh' showSearch mode='multiple' options={optionsBranch} />
                   </Form.Item>
                 </Col>

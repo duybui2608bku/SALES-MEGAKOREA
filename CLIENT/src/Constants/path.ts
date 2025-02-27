@@ -22,7 +22,9 @@ const pathRoutersProduct = {
 }
 
 const pathApiProduct = {
-  createProduct: '/products'
+  createProduct: '/products',
+  getAllProduct: '/products',
+  deleteProduct: '/products'
 }
 
 export { pathAuth, pathUtil, pathMe, pathApi, pathRoutersProduct, pathApiProduct }

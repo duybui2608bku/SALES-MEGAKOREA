@@ -13,6 +13,7 @@ export interface CreateProductRequestBody {
 }
 
 export interface ProductGeneralInterface {
+  _id: string
   branch: string[]
   code: string
   price: number
@@ -21,4 +22,10 @@ export interface ProductGeneralInterface {
   name: string
   unit: string
   inStock: number
+}
+
+export interface GetAllProductRequestQuery {
+  page: number
+  limit: number
+  branch?: string
 }

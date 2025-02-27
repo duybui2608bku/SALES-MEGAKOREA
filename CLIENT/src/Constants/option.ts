@@ -39,11 +39,6 @@ export const optionsBranch = [
     value: 'Đà Nẵng',
     label: 'Đà Nẵng',
     key: '9'
-  },
-  {
-    value: 'Toàn bộ',
-    label: 'Toàn bộ',
-    key: '10'
   }
 ]
 

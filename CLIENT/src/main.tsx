@@ -6,7 +6,7 @@ import { AppProvider } from './Context/AppContext.tsx'
 import viVN from 'antd/lib/locale/vi_VN'
 import { ConfigProvider } from 'antd'
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
