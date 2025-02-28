@@ -10,4 +10,6 @@ export type GetProductResponse = SuccessResponse<{
   total: number
 }>
 
+export type SearchProductResponse = SuccessResponse<ProductGeneralInterface[]>
+
 export type DeleteProductResponse = SuccessResponse<void>
