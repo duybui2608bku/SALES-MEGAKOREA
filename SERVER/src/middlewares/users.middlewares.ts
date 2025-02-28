@@ -205,48 +205,48 @@ export const accessTokenValidator = validate(
   )
 )
 
-export const refreshTokenValidator = validate(
-  checkSchema(
-    {
-      refresh_token: {
-        trim: true,
-        custom: {
-          options: async (value: string, { req }) => {
-            if (!value) {
-              throw new ErrorWithStatusCode({
-                message: userMessages.REFRESH_TOKEN_REQUIRED,
-                statusCode: HttpStatusCode.Unauthorized
-              })
-            }
-            try {
-              const [decoded_refresh_token, refresh_token] = await Promise.all([
-                verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESHTOKEN as string }),
-                databaseService.refreshTokens.findOne({ token: value })
-              ])
-              if (refresh_token === null) {
-                throw new ErrorWithStatusCode({
-                  message: userMessages.USED_REFRESH_TOKEN_OR_NOT_EXISTS,
-                  statusCode: HttpStatusCode.Unauthorized
-                })
-              }
-              req.decoded_refresh_token = decoded_refresh_token
-            } catch (error) {
-              if (error instanceof JsonWebTokenError) {
-                throw new ErrorWithStatusCode({
-                  message: capitalize((error as JsonWebTokenError).message),
-                  statusCode: HttpStatusCode.Unauthorized
-                })
-              }
-              throw error
-            }
-            return true
-          }
-        }
-      }
-    },
-    ['body']
-  )
-)
+// export const refreshTokenValidator = validate(
+//   checkSchema(
+//     {
+//       refresh_token: {
+//         trim: true,
+//         custom: {
+//           options: async (value: string, { req }) => {
+//             if (!value) {
+//               throw new ErrorWithStatusCode({
+//                 message: userMessages.REFRESH_TOKEN_REQUIRED,
+//                 statusCode: HttpStatusCode.Unauthorized
+//               })
+//             }
+//             try {
+//               const [decoded_refresh_token, refresh_token] = await Promise.all([
+//                 verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESHTOKEN as string }),
+//                 databaseService.refreshTokens.findOne({ token: value })
+//               ])
+//               if (refresh_token === null) {
+//                 throw new ErrorWithStatusCode({
+//                   message: userMessages.USED_REFRESH_TOKEN_OR_NOT_EXISTS,
+//                   statusCode: HttpStatusCode.Unauthorized
+//                 })
+//               }
+//               req.decoded_refresh_token = decoded_refresh_token
+//             } catch (error) {
+//               if (error instanceof JsonWebTokenError) {
+//                 throw new ErrorWithStatusCode({
+//                   message: capitalize((error as JsonWebTokenError).message),
+//                   statusCode: HttpStatusCode.Unauthorized
+//                 })
+//               }
+//               throw error
+//             }
+//             return true
+//           }
+//         }
+//       }
+//     },
+//     ['body']
+//   )
+// )
 
 export const emailVerifyValidator = validate(
   checkSchema(
@@ -718,8 +718,11 @@ export const isAdminValidator = validate(
         custom: {
           options: async (_: string, { req }) => {
             const { role } = req.decode_authorization as TokenPayload
-            if (role.every((r) => r !== UserRole.ADMIN)) {
-              throw new Error('You are not allowed to do this action')
+            if (role !== UserRole.ADMIN) {
+              throw new ErrorWithStatusCode({
+                message: userMessages.NOT_ADMIN,
+                statusCode: HttpStatusCode.Unauthorized
+              })
             }
             return true
           }

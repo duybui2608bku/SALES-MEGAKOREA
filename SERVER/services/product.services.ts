@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb'
 class ProdudctServices {
   //Private
   private async checkProductExist(id: ObjectId) {
-    const Product = await databaseService.Product.findOne({ _id: id })
+    const Product = await databaseService.product.findOne({ _id: id })
     if (!Product) {
       throw new ErrorWithStatusCode({
         message: productMessages.PRODUCT_NOT_FOUND,
@@ -30,12 +30,24 @@ class ProdudctServices {
   }
 
   async UpdateProduct(Product: UpdateProductRequestBody) {
-    await this.checkProductExist(new ObjectId(Product.id as string))
+    await this.checkProductExist(new ObjectId(Product._id as string))
     await productRepository.updateProduct(Product)
   }
 
-  async GetAllProduct(page: number, limit: number, branch: string) {
-    const Products = await productRepository.getAllProduct(page, limit, branch)
+  async GetAllProduct({ page, limit, branch }: { page: number; limit: number; branch?: string[] }) {
+    const Products = await productRepository.getAllProduct({
+      page,
+      limit,
+      branch
+    })
+    return Products
+  }
+
+  async searchProduct({ q, branch }: { q: string; branch?: string[] }) {
+    const Products = await productRepository.searchProduct({
+      branch,
+      q
+    })
     return Products
   }
 }

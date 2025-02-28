@@ -95,7 +95,7 @@ export const UpdateProductValidator = validate(
         errorMessage: productMessages.NAME_MUST_BE_STRING,
         optional: true
       },
-      id: {
+      _id: {
         isString: true,
         isMongoId: true,
         errorMessage: productMessages.INVALID_ID

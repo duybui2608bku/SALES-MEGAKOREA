@@ -17,7 +17,7 @@ export interface DeleteProductRequestParams {
 }
 
 export interface UpdateProductRequestBody {
-  id: string
+  _id: string
   branch?: string[]
   code: string
   price?: number
@@ -45,5 +45,10 @@ export interface CreateProductGeneralRequestBody {
 export interface GetAllProductRequestQuery {
   page: string
   limit: string
+  branch?: string
+}
+
+export interface SearchProductRequestQuery {
+  q: string
   branch?: string
 }

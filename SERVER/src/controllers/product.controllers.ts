@@ -5,10 +5,12 @@ import {
   CreateProductRequestBody,
   DeleteProductRequestParams,
   GetAllProductRequestQuery,
+  SearchProductRequestQuery,
   UpdateProductRequestBody
 } from '~/models/requestes/Product.requests'
 import { ResponseSuccess } from '~/utils/handlers'
 import productServices from '../../services/product.services'
+import { isUndefined } from 'lodash'
 
 export const createProduct = async (req: Request<ParamsDictionary, any, CreateProductRequestBody>, res: Response) => {
   const data = req.body
@@ -46,5 +48,34 @@ export const getAllProduct = async (
 ) => {
   const limit = Number(req.query.limit)
   const page = Number(req.query.page)
-  const branch = req.query.branch
+  const branchQuery = req.query.branch
+  const branch = branchQuery ? decodeURIComponent(branchQuery as string).split(',') : []
+  const result = await productServices.GetAllProduct({ page, limit, branch })
+  result.products.length > 0
+    ? ResponseSuccess({
+        message: productMessages.GET_ALL_PRODUCT_SUCCESS,
+        result: result,
+        res
+      })
+    : ResponseSuccess({ message: productMessages.PRODUCT_NOT_FOUND, res })
+}
+
+export const SearchProduct = async (
+  req: Request<ParamsDictionary, any, any, SearchProductRequestQuery>,
+  res: Response
+) => {
+  const q = req.query.q.replace('+', ' ')
+  const branchQuery = req.query.branch
+  const branch = branchQuery ? decodeURIComponent(branchQuery as string).split(',') : []
+  const result = await productServices.searchProduct({
+    q,
+    branch
+  })
+  result.length > 0
+    ? ResponseSuccess({
+        message: productMessages.GET_ALL_PRODUCT_SUCCESS,
+        result: result,
+        res
+      })
+    : ResponseSuccess({ message: productMessages.PRODUCT_NOT_FOUND, res })
 }

@@ -4,6 +4,7 @@ export interface ProductType {
   price?: number
   label?: string
   user_id: string
+  is_active?: boolean
   is_consumable?: boolean
   category?: string
   type?: string
@@ -13,7 +14,7 @@ export interface ProductType {
 }
 
 export interface UpdateProductData {
-  id: string
+  _id: string
   branch?: string[]
   code: string
   price?: number

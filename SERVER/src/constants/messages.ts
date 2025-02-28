@@ -1,4 +1,5 @@
 export const userMessages = {
+  NOT_ADMIN: 'User is not admin',
   VALIDATION_ERROR: 'Validation Error',
   EMAIL_EXISTS: 'Email already exists',
   PASSWORDS_NOT_MATCH: 'Passwords do not match',
@@ -104,5 +105,15 @@ export const productMessages = {
   IN_STOCK_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'In stock must be a number greater than zero !',
   PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price must be a number greater than zero !',
   CREATE_PRODUCT_GENERAL_SUCCESS: 'Create PRODUCT general success !',
-  IS_CONSUMABLE_MUST_BE_BOOLEAN: 'Is consumable must be a boolean !'
+  IS_CONSUMABLE_MUST_BE_BOOLEAN: 'Is consumable must be a boolean !',
+  GET_ALL_PRODUCT_SUCCESS: 'Get all PRODUCT success !'
+}
+
+export const utilsMessages = {
+  PAGINATION_MUST_BE_NUMBER: 'Pagination must be a number !',
+  PAGINATION_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Pagination must be a number greater than zero !',
+  LIMIT_MUST_BE_NUMBER: 'Limit must be a number !',
+  LIMIT_MUST_BE_BIGGER_THAN_0: 'Limit must be bigger than 0 !',
+  LIMIT_MUST_BE_SMALLER_THAN_100: 'Limit must be smaller than 100 !',
+  PAGE_MUST_BE_BIGGER_THAN_0: 'Page must be bigger than 0 !'
 }

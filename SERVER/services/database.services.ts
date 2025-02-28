@@ -1,12 +1,13 @@
 import { Collection, Db, MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
-import User from '~/models/schemas/User.schema'
-import { RefreshToken } from '~/models/schemas/RefreshToekn.chema'
-import Bracnh from '~/models/schemas/Branch.schema'
-import { Services, ServicesCategory } from '~/models/schemas/services/services.schema'
 import Product from '~/models/schemas/product/Product.schema'
+import { Services, ServicesCategory } from '~/models/schemas/services/services.schema'
+import Bracnh from '~/models/schemas/Branch.schema'
+import User from '~/models/schemas/User.schema'
+import Customer from '~/models/schemas/Customer.shema'
 dotenv.config()
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.h7iah.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@megakorae-call.rrq1b.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=MEGAKORAE-CALL&tls=true`
+
 class DatabaseService {
   private client: MongoClient
   private db: Db
@@ -23,12 +24,19 @@ class DatabaseService {
       throw error
     }
   }
+
+  async indexCustomer() {
+    const exsit = await this.customers.indexExists('phone_text')
+    if (!exsit) {
+      await this.customers.createIndex({ phone_text: 'text' }, { default_language: 'none' })
+    }
+  }
+
   get users(): Collection<User> {
     return this.db.collection(process.env.USERS_COLLECTION as string)
   }
-
-  get refreshTokens(): Collection<RefreshToken> {
-    return this.db.collection(process.env.REFRESH_TOKENS_COLLECTION as string)
+  get customers(): Collection<Customer> {
+    return this.db.collection(process.env.CUSTOMERS_COLLECTION as string)
   }
 
   get branch(): Collection<Bracnh> {
@@ -43,7 +51,7 @@ class DatabaseService {
     return this.db.collection(process.env.SERVICES_COLLECTION as string)
   }
 
-  get Product(): Collection<Product> {
+  get product(): Collection<Product> {
     return this.db.collection(process.env.PRODUCT_COLLECTION as string)
   }
 }

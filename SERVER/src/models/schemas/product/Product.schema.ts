@@ -8,6 +8,7 @@ export default class Product {
   price?: number
   label?: string
   user_id: string
+  is_active?: boolean
   is_consumable?: boolean
   category?: string
   type?: string
@@ -23,6 +24,7 @@ export default class Product {
     this.user_id = Product.user_id
     this.is_consumable = Product.is_consumable || false
     this.category = Product.category || ''
+    this.is_active = Product.is_active || true
     this.type = Product.type || ''
     this.name = Product.name || ''
     this.unit = Product.unit || ''

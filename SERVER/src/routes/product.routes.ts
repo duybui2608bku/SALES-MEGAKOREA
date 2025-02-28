@@ -1,11 +1,18 @@
 import { Router } from 'express'
-import { createProduct, deleteProduct, getAllProduct, updateProduct } from '~/controllers/product.controllers'
+import {
+  createProduct,
+  deleteProduct,
+  getAllProduct,
+  SearchProduct,
+  updateProduct
+} from '~/controllers/product.controllers'
 import {
   CreateProductValidator,
   DeleteProductValidator,
   UpdateProductValidator
 } from '~/middlewares/product.middlewares'
 import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
+import { paginatonValidator } from '~/middlewares/utils.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const productRouters = Router()
@@ -58,8 +65,18 @@ productRouters.patch(
 Description: Get All Product 
 path: /
 method: GET
+Query: { page: string, limit: string, branch?: string }
 */
 
-productRouters.post('/', accessTokenValidator, isAdminValidator, wrapRequestHandler(getAllProduct))
+productRouters.get('/', accessTokenValidator, isAdminValidator, paginatonValidator, wrapRequestHandler(getAllProduct))
+
+/*
+Description: Search Product 
+path: /search
+method: GET
+Query: { branch?: string,q: string }
+*/
+
+productRouters.get('/search', accessTokenValidator, isAdminValidator, wrapRequestHandler(SearchProduct))
 
 export default productRouters

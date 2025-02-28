@@ -11,7 +11,7 @@ export interface RegisterRequestBody {
 
 export interface TokenPayload extends JwtPayload {
   user_id: string
-  role: number[]
+  role: number
   token_type: TokenType
 }
 
