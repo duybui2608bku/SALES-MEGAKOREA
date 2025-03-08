@@ -11,8 +11,18 @@ import { toObjectId } from '~/utils/utils'
 
 class ServicesRepository {
   //Category Services
+  private convertBranchToObjectId(branch?: string[]) {
+    return branch?.map((b) => new ObjectId(b)) || []
+  }
+
   async createServicesCategory(servicesCategoryData: CreateServicesCategoryData) {
-    await databaseService.services_category.insertOne(new ServicesCategory(servicesCategoryData))
+    const branch_id = this.convertBranchToObjectId(servicesCategoryData.branch)
+    await databaseService.services_category.insertOne(
+      new ServicesCategory({
+        ...servicesCategoryData,
+        branch: branch_id
+      })
+    )
   }
   async deleteServicesCategory(id: ObjectId) {
     await databaseService.services_category.deleteOne({
@@ -20,12 +30,14 @@ class ServicesRepository {
     })
   }
   async updateServicesCategory(data: UpdateServicesCategoryRequestBody) {
-    const { id, ...body } = data
+    const { id, branch, ...body } = data
+    const branchObjectId = this.convertBranchToObjectId(branch)
     await databaseService.services_category.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
-          ...body
+          ...body,
+          branch: branchObjectId
         }
       }
     )

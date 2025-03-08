@@ -1,5 +1,6 @@
 export interface ProductType {
   branch?: string[]
+  distribution?: string[]
   code: string
   price?: number
   label?: string

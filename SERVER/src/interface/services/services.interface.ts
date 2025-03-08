@@ -4,7 +4,7 @@ export interface ServicesCategoryType {
   _id?: ObjectId
   name: string
   descriptions?: string
-  branch?: string[]
+  branch?: ObjectId[]
 }
 
 export interface CreateServicesCategoryData {

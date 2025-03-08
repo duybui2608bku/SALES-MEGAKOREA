@@ -3,7 +3,8 @@ import { ProductType } from '~/interface/product/product.interface'
 
 export default class Product {
   _id?: ObjectId
-  branch?: string[]
+  branch?: ObjectId[]
+  distribution?: string[]
   code?: string
   price?: number
   label?: string
@@ -17,7 +18,8 @@ export default class Product {
   inStock?: number
   constructor(Product: ProductType) {
     this._id = new ObjectId()
-    this.branch = Product.branch || []
+    this.branch = (Product.branch || []).map((b) => new ObjectId(b))
+    this.distribution = Product.distribution || []
     this.code = Product.code || ''
     this.price = Product.price || 0
     this.label = Product.label || ''

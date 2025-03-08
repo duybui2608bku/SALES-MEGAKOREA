@@ -3,6 +3,7 @@ import {
   createProduct,
   deleteProduct,
   getAllProduct,
+  importProducts,
   SearchProduct,
   updateProduct
 } from '~/controllers/product.controllers'
@@ -65,7 +66,7 @@ productRouters.patch(
 Description: Get All Product 
 path: /
 method: GET
-Query: { page: string, limit: string, branch?: string }
+Query: { page: string, limit: string, branch?: string ,is_consumable: boolean }
 */
 
 productRouters.get('/', accessTokenValidator, isAdminValidator, paginatonValidator, wrapRequestHandler(getAllProduct))
@@ -74,9 +75,18 @@ productRouters.get('/', accessTokenValidator, isAdminValidator, paginatonValidat
 Description: Search Product 
 path: /search
 method: GET
-Query: { branch?: string,q: string }
+Query: { branch?: string,q: string,is_consumable: boolean }
 */
 
 productRouters.get('/search', accessTokenValidator, isAdminValidator, wrapRequestHandler(SearchProduct))
+
+/*
+Description: Import multiple products
+path: /import
+method: POST
+Body: { file: any }
+*/
+
+productRouters.post('/import', accessTokenValidator, isAdminValidator, wrapRequestHandler(importProducts))
 
 export default productRouters

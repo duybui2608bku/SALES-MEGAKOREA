@@ -8,6 +8,7 @@ import { config } from 'dotenv'
 import cors from 'cors'
 import branchRouters from './routes/branch.routes'
 import ServicesRouters from './routes/services.routes'
+import databaseServiceSale from '../services/database.services.sale'
 import productRouters from './routes/product.routes'
 config()
 
@@ -18,6 +19,7 @@ const corsOptions = {
 }
 
 databaseService.connect()
+databaseServiceSale.connect()
 const app = express()
 const port = process.env.PORT || 8081
 initFolder()

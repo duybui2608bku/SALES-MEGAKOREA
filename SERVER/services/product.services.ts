@@ -34,21 +34,51 @@ class ProdudctServices {
     await productRepository.updateProduct(Product)
   }
 
-  async GetAllProduct({ page, limit, branch }: { page: number; limit: number; branch?: string[] }) {
+  async GetAllProduct({
+    page,
+    limit,
+    branch,
+    is_consumable,
+    isAdmin
+  }: {
+    page: number
+    limit: number
+    branch: string[]
+    is_consumable: boolean
+    isAdmin: boolean
+  }) {
     const Products = await productRepository.getAllProduct({
       page,
       limit,
-      branch
+      branch,
+      is_consumable,
+      isAdmin
     })
     return Products
   }
 
-  async searchProduct({ q, branch }: { q: string; branch?: string[] }) {
+  async searchProduct({
+    q,
+    branch,
+    is_consumable,
+    isAdmin
+  }: {
+    q: string
+    branch: string[]
+    is_consumable: boolean
+    isAdmin: boolean
+  }) {
     const Products = await productRepository.searchProduct({
       branch,
-      q
+      q,
+      is_consumable,
+      isAdmin
     })
     return Products
+  }
+
+  async ImportProducts(Products: CreateProductRequestBody[]) {
+    await productRepository.importProducts(Products)
   }
 }
 

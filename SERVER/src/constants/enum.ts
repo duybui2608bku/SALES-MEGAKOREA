@@ -6,6 +6,12 @@ export enum UserRole {
   USER = 4
 }
 
+export enum UserStatus {
+  ACTIVE = 0,
+  INACTIVE = 1,
+  BANNED = 2
+}
+
 export enum TokenType {
   AccessToken,
   RefreshToken,

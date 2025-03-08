@@ -106,7 +106,9 @@ export const productMessages = {
   PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price must be a number greater than zero !',
   CREATE_PRODUCT_GENERAL_SUCCESS: 'Create PRODUCT general success !',
   IS_CONSUMABLE_MUST_BE_BOOLEAN: 'Is consumable must be a boolean !',
-  GET_ALL_PRODUCT_SUCCESS: 'Get all PRODUCT success !'
+  GET_ALL_PRODUCT_SUCCESS: 'Get all PRODUCT success !',
+  IMPORT_PRODUCT_SUCCESS: 'Import PRODUCT success !',
+  PRODUCT_NOT_VALID: 'PRODUCT not valid !'
 }
 
 export const utilsMessages = {

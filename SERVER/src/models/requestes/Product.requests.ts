@@ -45,10 +45,12 @@ export interface CreateProductGeneralRequestBody {
 export interface GetAllProductRequestQuery {
   page: string
   limit: string
-  branch?: string
+  branch: string
+  is_consumable: boolean
 }
 
 export interface SearchProductRequestQuery {
   q: string
   branch?: string
+  is_consumable: boolean
 }
