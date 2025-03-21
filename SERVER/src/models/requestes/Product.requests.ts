@@ -54,3 +54,10 @@ export interface SearchProductRequestQuery {
   branch?: string
   is_consumable: boolean
 }
+
+export interface UpdateProductStockRequestBody {
+  _id: string
+  isIncrease: boolean
+  inStockOldValue: number
+  inStockNewValue: number
+}

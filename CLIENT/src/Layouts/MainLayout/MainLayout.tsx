@@ -9,7 +9,7 @@ import { FcEngineering } from 'react-icons/fc'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
-import { pathRoutersProduct } from 'src/Constants/path'
+import { pathRoutersProduct, pathRoutersService } from 'src/Constants/path'
 
 interface Props {
   children?: React.ReactNode
@@ -37,11 +37,11 @@ const MainLayout = ({ children }: Props) => {
           ]
         },
         {
-          key: 'g2',
-          label: 'Item 2',
+          key: 'services',
+          label: 'Dịch vụ',
           type: 'group',
           children: [
-            { key: '3', label: 'Option 3' },
+            { key: '3', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) },
             { key: '4', label: 'Option 4' }
           ]
         }
@@ -73,7 +73,7 @@ const MainLayout = ({ children }: Props) => {
   ]
   return (
     <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider width={250} trigger={null} collapsible collapsed={collapsed}>
         <div
           style={{
             height: 'auto',

@@ -5,3 +5,8 @@ export enum RoleUser {
   SALE = 3,
   USER = 4
 }
+
+export enum ProductType {
+  CONSUMABLE = 0,
+  NON_CONSUMABLE = 1
+}

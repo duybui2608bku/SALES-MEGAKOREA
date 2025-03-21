@@ -1,20 +1,21 @@
 import {
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
+  GetAllServicesCategoryRequestQuery,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from '../src/models/requestes/Services.requests'
-import serverRepository from '../repository/services.repository'
-import databaseService from './database.services'
+import serverRepository from '../repository/services/services.repository'
 import { ObjectId } from 'mongodb'
 import { servicesMessages } from '~/constants/messages'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { HttpStatusCode } from '~/constants/enum'
+import databaseServiceSale from './database.services.sale'
 
 class ServicesServices {
   //Private
   private async checkServicesCategoryExist(id: ObjectId) {
-    const servicesCategory = await databaseService.services_category.findOne({ _id: id })
+    const servicesCategory = await databaseServiceSale.services_category.findOne({ _id: id })
     if (!servicesCategory) {
       throw new ErrorWithStatusCode({
         message: servicesMessages.SERVICES_CATEGORY_NOT_FOUND,
@@ -24,7 +25,7 @@ class ServicesServices {
   }
 
   private async checkServicesExist(id: ObjectId) {
-    const services = await databaseService.services.findOne({ _id: id })
+    const services = await databaseServiceSale.services.findOne({ _id: id })
     if (!services) {
       throw new ErrorWithStatusCode({
         message: servicesMessages.SERVICES_NOT_FOUND,
@@ -38,12 +39,17 @@ class ServicesServices {
   async CreateServicesCategory(servicesCategory: CreateServicesCategoryRequestBody) {
     await serverRepository.createServicesCategory(servicesCategory)
   }
+
+  async GetAllServicesCategory(query: GetAllServicesCategoryRequestQuery) {
+    return await serverRepository.getAllServicesCategory(query)
+  }
+
   async DeleteServicesCategory(id: ObjectId) {
     await this.checkServicesCategoryExist(id)
     await serverRepository.deleteServicesCategory(id)
   }
   async UpdateServicesCategory(data: UpdateServicesCategoryRequestBody) {
-    await this.checkServicesCategoryExist(new ObjectId(data.id as string))
+    await this.checkServicesCategoryExist(new ObjectId(data._id as string))
     await serverRepository.updateServicesCategory(data)
   }
 

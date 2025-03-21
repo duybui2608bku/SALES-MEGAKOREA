@@ -84,7 +84,8 @@ export const servicesMessages = {
   SERVICES_NOT_FOUND: 'Services not found !',
   DELETE_SERVICES_SUCCESS: 'Delete services success !',
   PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price must be a number greater than zero !',
-  TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Tour price must be a number greater than zero !'
+  TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Tour price must be a number greater than zero !',
+  GET_ALL_SERVICES_CATEGORY_SUCCESS: 'Get all services category success !'
 }
 
 export const productMessages = {
@@ -108,7 +109,8 @@ export const productMessages = {
   IS_CONSUMABLE_MUST_BE_BOOLEAN: 'Is consumable must be a boolean !',
   GET_ALL_PRODUCT_SUCCESS: 'Get all PRODUCT success !',
   IMPORT_PRODUCT_SUCCESS: 'Import PRODUCT success !',
-  PRODUCT_NOT_VALID: 'PRODUCT not valid !'
+  PRODUCT_NOT_VALID: 'PRODUCT not valid !',
+  UPDATE_STOCK_PRODUCT_SUCCESS: 'Update stock PRODUCT success !'
 }
 
 export const utilsMessages = {
@@ -118,4 +120,15 @@ export const utilsMessages = {
   LIMIT_MUST_BE_BIGGER_THAN_0: 'Limit must be bigger than 0 !',
   LIMIT_MUST_BE_SMALLER_THAN_100: 'Limit must be smaller than 100 !',
   PAGE_MUST_BE_BIGGER_THAN_0: 'Page must be bigger than 0 !'
+}
+
+export const branchMessages = {
+  CREATE_BRANCH_SUCCESS: 'Create branch success !',
+  BRANCH_NOT_FOUND: 'Branch not found !',
+  NAME_MUST_BE_STRING: 'Name must be a string !',
+  ACRONYM_MUST_BE_STRING: 'Acronym must be a string !',
+  DELETE_BRANCH_SUCCESS: 'Delete branch success !',
+  INVALID_ID: 'Invalid id !',
+  UPDATE_BRANCH_SUCCESS: 'Update branch success !',
+  GET_ALL_BRANCH_SUCCESS: 'Get all branch success !'
 }

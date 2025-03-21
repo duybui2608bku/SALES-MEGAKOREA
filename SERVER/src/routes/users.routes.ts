@@ -17,9 +17,9 @@ import {
   resetPasswordValidator,
   updateMeValidator,
   changePasswordValidator,
-  isAdminValidator,
-  addUserToBranchValidator,
-  deleteUserFormBranchValidator
+  isAdminValidator
+  // addUserToBranchValidator,
+  // deleteUserFormBranchValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -92,7 +92,7 @@ Body:{branch_id: string,user_id: string[]}
 userRouters.post(
   '/add-to-branch',
   accessTokenValidator,
-  addUserToBranchValidator,
+  // addUserToBranchValidator,
   wrapRequestHandler(addUserToBranchController)
 )
 
@@ -107,7 +107,7 @@ Body:{branch_id: string,user_id: string[]}
 userRouters.post(
   '/delete-from-branch',
   accessTokenValidator,
-  deleteUserFormBranchValidator,
+  // deleteUserFormBranchValidator,
   wrapRequestHandler(deleteUserFromBranchController)
 )
 

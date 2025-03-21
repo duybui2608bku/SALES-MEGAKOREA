@@ -9,7 +9,7 @@ export interface DeleteServicesCategoryRequestParams {
 }
 
 export interface UpdateServicesCategoryRequestBody {
-  id: string
+  _id: string
   name?: string
   descriptions?: string
   branch?: string[]
@@ -40,4 +40,9 @@ export interface UpdateServicesRequestBody {
   tour_price?: number
   type_tour_price?: number
   id_Product?: string
+}
+
+export interface GetAllServicesCategoryRequestQuery {
+  page: number
+  limit: number
 }

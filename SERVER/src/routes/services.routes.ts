@@ -4,6 +4,7 @@ import {
   createServicesCategory,
   deleteServices,
   deleteServicesCategory,
+  getAllServicesCategory,
   updateServices,
   updateServicesCategory
 } from '~/controllers/services.controllers'
@@ -15,7 +16,8 @@ import {
   upDateCategoryValidator,
   updateServicesValidator
 } from '~/middlewares/services.middlewares'
-import { accessTokenValidator, deleteUserFormBranchValidator, isAdminValidator } from '~/middlewares/users.middlewares'
+import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
+import { paginatonValidator } from '~/middlewares/utils.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const ServicesRouters = Router()
@@ -34,6 +36,15 @@ ServicesRouters.post(
   CreateServicesCategoryValidator,
   wrapRequestHandler(createServicesCategory)
 )
+
+/*
+Description:Get All Service Category
+path: /category-all
+method: GET
+Query: { page: string, limit: string,  }
+*/
+
+ServicesRouters.get('/category-all', accessTokenValidator, isAdminValidator, wrapRequestHandler(getAllServicesCategory))
 
 /*
 Description: Delete Service Category

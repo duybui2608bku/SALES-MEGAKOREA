@@ -4,7 +4,7 @@ import {
   RegisterRequestBody,
   updateMeRequestBody
 } from '~/models/requestes/User.requests'
-import databaseService from '../services/database.services'
+import databaseServiceSale from '../services/database.services.sale'
 import User from '../src/models/schemas/User.schema'
 import { hashPassword } from '~/utils/crypro'
 import { signToken } from '~/utils/jwt'
@@ -33,23 +33,24 @@ class UsersService {
   }
 
   async register(payload: RegisterRequestBody) {
-    const result = await databaseService.users.insertOne(
+    const result = await databaseServiceSale.users.insertOne(
       new User({
         ...payload,
         password: hashPassword(payload.password)
       })
     )
     const user_id = result.insertedId.toHexString()
+    const role = payload?.role
     const [access_token, refresh_token] = await Promise.all([
-      this.signAccessToken(user_id),
-      this.signRefreshToken(user_id)
+      this.signAccessToken(user_id, role),
+      this.signRefreshToken(user_id, role)
     ])
 
     return { access_token, refresh_token }
   }
 
   async checkEmail(email: string) {
-    const user = await databaseService.users.findOne({ email })
+    const user = await databaseServiceSale.users.findOne({ email })
     return Boolean(user)
   }
 
@@ -57,7 +58,7 @@ class UsersService {
     const [access_token, refresh_token, user] = await Promise.all([
       this.signAccessToken(user_id, role),
       this.signRefreshToken(user_id, role),
-      databaseService.users.findOne(
+      databaseServiceSale.users.findOne(
         { _id: new ObjectId(user_id) },
         {
           projection: {
@@ -72,7 +73,7 @@ class UsersService {
   }
 
   async resetPassword(user_id: string, password: string) {
-    await databaseService.users.updateOne(
+    await databaseServiceSale.users.updateOne(
       {
         _id: new ObjectId(user_id)
       },
@@ -87,7 +88,7 @@ class UsersService {
   }
 
   async changePassword(user_id: string, password: string) {
-    await databaseService.users.updateOne(
+    await databaseServiceSale.users.updateOne(
       {
         _id: new ObjectId(user_id)
       },
@@ -101,7 +102,7 @@ class UsersService {
   }
 
   async getProfile(user_id: string) {
-    const user = await databaseService.users
+    const user = await databaseServiceSale.users
       .aggregate([
         {
           $match: {
@@ -144,7 +145,7 @@ class UsersService {
 
   async updateProfile(user_id: string, payload: updateMeRequestBody) {
     const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
-    const user = await databaseService.users.findOneAndUpdate(
+    const user = await databaseServiceSale.users.findOneAndUpdate(
       {
         _id: new ObjectId(user_id)
       },
@@ -167,7 +168,7 @@ class UsersService {
   }
 
   async addUserToBranch({ user_id, branch_id }: AddUsertoBranchRequestBody) {
-    await databaseService.branch.updateMany(
+    await databaseServiceSale.branch.updateMany(
       {
         _id: new ObjectId(branch_id)
       },
@@ -179,7 +180,7 @@ class UsersService {
 
   async deleteUserFromBranch({ user_id, branch_id }: DeleteUserFromBranchRequestBody) {
     const user_ids: ObjectId[] = user_id.map((id) => new ObjectId(id))
-    await databaseService.branch.updateMany(
+    await databaseServiceSale.branch.updateMany(
       {
         _id: new ObjectId(branch_id)
       },
@@ -190,7 +191,7 @@ class UsersService {
   }
 
   async getAllUsers() {
-    const result = await databaseService.users
+    const result = await databaseServiceSale.users
       .aggregate([
         {
           $lookup: {

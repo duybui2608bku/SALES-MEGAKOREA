@@ -15,7 +15,7 @@ import { HttpStatusCode, UserRole } from '~/constants/enum'
 import { userMessages } from '~/constants/messages'
 import { ObjectId } from 'mongodb'
 
-import { omit, result } from 'lodash'
+import { omit } from 'lodash'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const { user } = req

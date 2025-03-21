@@ -7,6 +7,7 @@ export interface RegisterRequestBody {
   email: string
   password: string
   confirm_password: string
+  role?: number
 }
 
 export interface TokenPayload extends JwtPayload {

@@ -8,10 +8,6 @@ export const CreateServicesCategoryValidator = validate(
       name: {
         isString: true,
         notEmpty: true
-      },
-      branch: {
-        isArray: true,
-        errorMessage: servicesMessages.BRANCH_MUST_BE_ARRAY_STRING
       }
     },
     ['body']
@@ -34,7 +30,7 @@ export const DeleteServicesCategoryValidator = validate(
 export const upDateCategoryValidator = validate(
   checkSchema(
     {
-      id: {
+      _id: {
         isString: true,
         isMongoId: true,
         errorMessage: servicesMessages.INVALID_ID

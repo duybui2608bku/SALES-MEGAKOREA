@@ -16,6 +16,8 @@ export default class Product {
   name?: string
   unit?: string
   inStock?: number
+  created_at?: Date
+  updated_at?: Date
   constructor(Product: ProductType) {
     this._id = new ObjectId()
     this.branch = (Product.branch || []).map((b) => new ObjectId(b))
@@ -31,5 +33,7 @@ export default class Product {
     this.name = Product.name || ''
     this.unit = Product.unit || ''
     this.inStock = Product.inStock || 0
+    this.created_at = new Date()
+    this.updated_at = new Date()
   }
 }

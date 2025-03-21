@@ -1,6 +1,10 @@
-import databaseService from './database.services'
-import productRepository from '../repository/product.repository'
-import { CreateProductRequestBody, UpdateProductRequestBody } from '~/models/requestes/Product.requests'
+import databaseServiceSale from './database.services.sale'
+import productRepository from '../repository/product/product.repository'
+import {
+  CreateProductRequestBody,
+  UpdateProductRequestBody,
+  UpdateProductStockRequestBody
+} from '~/models/requestes/Product.requests'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { productMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
@@ -9,7 +13,7 @@ import { ObjectId } from 'mongodb'
 class ProdudctServices {
   //Private
   private async checkProductExist(id: ObjectId) {
-    const Product = await databaseService.product.findOne({ _id: id })
+    const Product = await databaseServiceSale.product.findOne({ _id: id })
     if (!Product) {
       throw new ErrorWithStatusCode({
         message: productMessages.PRODUCT_NOT_FOUND,
@@ -32,6 +36,13 @@ class ProdudctServices {
   async UpdateProduct(Product: UpdateProductRequestBody) {
     await this.checkProductExist(new ObjectId(Product._id as string))
     await productRepository.updateProduct(Product)
+  }
+
+  async UpdateStockProduct(Product: UpdateProductStockRequestBody) {
+    await this.checkProductExist(new ObjectId(Product._id as string))
+    const { _id, inStockNewValue, inStockOldValue, isIncrease } = Product
+    const newStock = isIncrease ? inStockOldValue + inStockNewValue : inStockOldValue - inStockNewValue
+    await productRepository.updateStockProduct({ _id, newStock })
   }
 
   async GetAllProduct({

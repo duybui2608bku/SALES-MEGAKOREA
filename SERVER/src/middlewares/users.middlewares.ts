@@ -3,7 +3,8 @@ import { JsonWebTokenError } from 'jsonwebtoken'
 import _ from 'lodash'
 import { capitalize } from 'lodash'
 import { ObjectId } from 'mongodb'
-import databaseService from 'services/database.services'
+import databaseServiceSale from 'services/database.services.sale'
+import databaseServiceSaleSale from 'services/database.services.sale'
 import usersService from 'services/users.services'
 import { HttpStatusCode, UserRole } from '~/constants/enum'
 import { userMessages } from '~/constants/messages'
@@ -24,7 +25,7 @@ export const loginValidator = validate(
         trim: true,
         custom: {
           options: async (value, { req }) => {
-            const user = await databaseService.users.findOne({
+            const user = await databaseServiceSale.users.findOne({
               email: value,
               password: hashPassword(req.body.password)
             })
@@ -221,7 +222,7 @@ export const accessTokenValidator = validate(
 //             try {
 //               const [decoded_refresh_token, refresh_token] = await Promise.all([
 //                 verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESHTOKEN as string }),
-//                 databaseService.refreshTokens.findOne({ token: value })
+//                 databaseServiceSale.refreshTokens.findOne({ token: value })
 //               ])
 //               if (refresh_token === null) {
 //                 throw new ErrorWithStatusCode({
@@ -293,7 +294,7 @@ export const forgotPasswordValidator = validate(
         trim: true,
         custom: {
           options: async (value, { req }) => {
-            const user = await databaseService.users.findOne({
+            const user = await databaseServiceSale.users.findOne({
               email: value
             })
             if (user === null) {
@@ -329,7 +330,7 @@ export const verifyForgotPasswordValidator = validate(
                 secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
               })
               const { user_id } = decoded_forgot_password_token
-              const user = await databaseService.users.findOne({
+              const user = await databaseServiceSale.users.findOne({
                 _id: new ObjectId(user_id)
               })
               if (user === null) {
@@ -439,7 +440,7 @@ export const resetPasswordValidator = validate(
               secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
             })
             const { user_id } = decoded_forgot_password_token
-            const user = await databaseService.users.findOne({
+            const user = await databaseServiceSale.users.findOne({
               _id: new ObjectId(user_id)
             })
             if (user === null) {
@@ -498,7 +499,7 @@ export const changePasswordValidator = validate(
       custom: {
         options: async (value, { req }) => {
           const { user_id } = req.decode_authorization as TokenPayload
-          const user = await databaseService.users.findOne({
+          const user = await databaseServiceSale.users.findOne({
             _id: new ObjectId(user_id)
           })
           if (user === null) {
@@ -606,7 +607,7 @@ export const updateMeValidator = validate(
             if (!REGEX_USER_NAME.test(value)) {
               throw new Error(userMessages.USER_NAME_INVALID)
             }
-            const user = await databaseService.users.findOne({
+            const user = await databaseServiceSaleSale.users.findOne({
               username: value
             })
             if (user && user.name !== value) {
@@ -733,54 +734,54 @@ export const isAdminValidator = validate(
   )
 )
 
-export const addUserToBranchValidator = validate(
-  checkSchema({
-    user_id: {
-      custom: {
-        options: async (value, { req }) => {
-          const users_of_branch = await databaseService.branch.findOne({
-            _id: new ObjectId(req.body.branch_id as string)
-          })
-          const user_ids = users_of_branch?.user_id?.map((id: ObjectId) => id.toString())
-          const isContain = _.intersection(user_ids, value)
-          if (isContain.length > 0) {
-            throw new ErrorWithStatusCode({
-              message: userMessages.USER_EXISTS_IN_BRANCH,
-              statusCode: HttpStatusCode.BadRequest
-            })
-          }
-        }
-      }
-    },
-    branch_id: {
-      isMongoId: true,
-      notEmpty: true
-    }
-  })
-)
+// export const addUserToBranchValidator = validate(
+//   checkSchema({
+//     user_id: {
+//       custom: {
+//         options: async (value, { req }) => {
+//           const users_of_branch = await databaseServiceSaleSale.branch.findOne({
+//             _id: new ObjectId(req.body.branch_id as string)
+//           })
+//           const user_ids = users_of_branch?.user_id?.map((id: ObjectId) => id.toString())
+//           const isContain = _.intersection(user_ids, value)
+//           if (isContain.length > 0) {
+//             throw new ErrorWithStatusCode({
+//               message: userMessages.USER_EXISTS_IN_BRANCH,
+//               statusCode: HttpStatusCode.BadRequest
+//             })
+//           }
+//         }
+//       }
+//     },
+//     branch_id: {
+//       isMongoId: true,
+//       notEmpty: true
+//     }
+//   })
+// )
 
-export const deleteUserFormBranchValidator = validate(
-  checkSchema({
-    user_id: {
-      custom: {
-        options: async (value, { req }) => {
-          const users_of_branch = await databaseService.branch.findOne({
-            _id: new ObjectId(req.body.branch_id as string)
-          })
-          const user_ids = users_of_branch?.user_id?.map((id: ObjectId) => id.toString())
-          const isContain = _.intersection(user_ids, value)
-          if (isContain.length === 0) {
-            throw new ErrorWithStatusCode({
-              message: userMessages.USER_NOT_EXISTS_IN_BRANCH,
-              statusCode: HttpStatusCode.BadRequest
-            })
-          }
-        }
-      }
-    },
-    branch_id: {
-      isMongoId: true,
-      notEmpty: true
-    }
-  })
-)
+// export const deleteUserFormBranchValidator = validate(
+//   checkSchema({
+//     user_id: {
+//       custom: {
+//         options: async (value, { req }) => {
+//           const users_of_branch = await databaseServiceSale.branch.findOne({
+//             _id: new ObjectId(req.body.branch_id as string)
+//           })
+//           const user_ids = users_of_branch?.user_id?.map((id: ObjectId) => id.toString())
+//           const isContain = _.intersection(user_ids, value)
+//           if (isContain.length === 0) {
+//             throw new ErrorWithStatusCode({
+//               message: userMessages.USER_NOT_EXISTS_IN_BRANCH,
+//               statusCode: HttpStatusCode.BadRequest
+//             })
+//           }
+//         }
+//       }
+//     },
+//     branch_id: {
+//       isMongoId: true,
+//       notEmpty: true
+//     }
+//   })
+// )

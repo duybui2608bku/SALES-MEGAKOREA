@@ -1,14 +1,12 @@
-import Bracnh from '~/models/schemas/Branch.schema'
 import { AddBranchRequestBody } from '../src/models/requestes/Branch.requests'
-import databaseService from './database.services'
+import branchRepository from '../repository/branch/branch.repository'
 
 class BranchServices {
-  async addBranch({ name }: AddBranchRequestBody) {
-    await databaseService.branch.insertOne(new Bracnh({ name }))
-    return { message: 'Branch added successfully' }
+  async addBranch(branch: AddBranchRequestBody) {
+    await branchRepository.addBranch(branch)
   }
   async getAllBranch() {
-    return await databaseService.branch.find({}).toArray()
+    return await branchRepository.getAllBranch()
   }
 }
 

@@ -3,7 +3,8 @@ import {
   CreateProductRequestBody,
   GetAllProductRequestQuery,
   SearchProductRequestQuery,
-  UpdateProductBody
+  UpdateProductBody,
+  UpdateProductStockRequestBody
 } from 'src/Interfaces/product/product.interface'
 import {
   CreateProductResponse,
@@ -28,6 +29,12 @@ const productApi = {
   },
   searchProduct(query: SearchProductRequestQuery) {
     return axiosInstanceMain.get<SearchProductResponse>(pathApiProduct.searchProduct, { params: query })
+  },
+  importProducts(product: CreateProductRequestBody[]) {
+    return axiosInstanceMain.post<CreateProductResponse>(pathApiProduct.importProduct, product)
+  },
+  updateProductStock(product: UpdateProductStockRequestBody) {
+    return axiosInstanceMain.patch<CreateProductResponse>(pathApiProduct.updateProductStock, product)
   }
 }
 

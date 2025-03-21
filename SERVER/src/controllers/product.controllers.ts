@@ -6,7 +6,8 @@ import {
   DeleteProductRequestParams,
   GetAllProductRequestQuery,
   SearchProductRequestQuery,
-  UpdateProductRequestBody
+  UpdateProductRequestBody,
+  UpdateProductStockRequestBody
 } from '~/models/requestes/Product.requests'
 import { ResponseSuccess } from '~/utils/handlers'
 import productServices from '../../services/product.services'
@@ -102,4 +103,16 @@ export const importProducts = async (
         res
       })
     : ResponseSuccess({ message: productMessages.PRODUCT_NOT_VALID, res })
+}
+
+export const updateStockProduct = async (
+  req: Request<ParamsDictionary, any, UpdateProductStockRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  await productServices.UpdateStockProduct(data)
+  ResponseSuccess({
+    message: productMessages.UPDATE_STOCK_PRODUCT_SUCCESS,
+    res
+  })
 }

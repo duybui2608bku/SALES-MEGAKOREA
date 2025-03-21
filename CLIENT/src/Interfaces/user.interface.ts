@@ -3,7 +3,8 @@ export interface User {
   name: string
   email: string
   avatar: string
-  role: number[]
+  role: number
+  status: number
   branch: string[]
   created_at: Date
   updated_at: Date

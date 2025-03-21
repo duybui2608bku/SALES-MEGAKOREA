@@ -6,12 +6,10 @@ export class ServicesCategory {
   _id?: ObjectId
   name: string
   descriptions: string
-  branch?: ObjectId[]
   constructor(servicesCategory: ServicesCategoryType) {
     this._id = servicesCategory._id || new ObjectId()
     this.name = servicesCategory.name || ''
     this.descriptions = servicesCategory.descriptions || ''
-    this.branch = (servicesCategory.branch || []).map((branch) => new ObjectId(branch))
   }
 }
 
@@ -31,7 +29,7 @@ export class Services {
     this._id = servicesCategory._id || new ObjectId()
     this.is_active = servicesCategory.is_active || true
     this.name = servicesCategory.name
-    this.branch = servicesCategory.branch || []
+    this.branch = (servicesCategory.branch || []).map((branch) => new ObjectId(branch))
     this.descriptions = servicesCategory.descriptions || ''
     this.service_group_id = servicesCategory.service_group_id || ''
     this.price = servicesCategory.price || 0

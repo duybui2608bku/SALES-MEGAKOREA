@@ -1,15 +1,15 @@
 export enum UserRole {
-  ADMIN = 0,
-  ACCOUNTANT = 1,
-  MANAGER = 2,
-  SALE = 3,
-  USER = 4
+  ADMIN = 1,
+  ACCOUNTANT = 2,
+  MANAGER = 3,
+  SALE = 4,
+  USER = 5
 }
 
 export enum UserStatus {
-  ACTIVE = 0,
-  INACTIVE = 1,
-  BANNED = 2
+  ACTIVE = 1,
+  INACTIVE = 2,
+  BANNED = 3
 }
 
 export enum TokenType {

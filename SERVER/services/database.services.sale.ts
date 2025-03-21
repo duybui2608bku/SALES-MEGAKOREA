@@ -13,7 +13,7 @@ class DatabaseServiceSale {
   private db: Db
   constructor() {
     this.client = new MongoClient(uri)
-    this.db = this.client.db(process.env.DB_NAME)
+    this.db = this.client.db(process.env.DB_NAME_SALE_MEGA)
   }
   async connect() {
     // eslint-disable-next-line no-useless-catch

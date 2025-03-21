@@ -5,7 +5,8 @@ import {
   getAllProduct,
   importProducts,
   SearchProduct,
-  updateProduct
+  updateProduct,
+  updateStockProduct
 } from '~/controllers/product.controllers'
 import {
   CreateProductValidator,
@@ -88,5 +89,7 @@ Body: { file: any }
 */
 
 productRouters.post('/import', accessTokenValidator, isAdminValidator, wrapRequestHandler(importProducts))
+
+productRouters.patch('/update/stock', accessTokenValidator, isAdminValidator, wrapRequestHandler(updateStockProduct))
 
 export default productRouters
