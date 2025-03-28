@@ -2,6 +2,7 @@ import {
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
   GetAllServicesCategoryRequestQuery,
+  GetAllServicesRequestData,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from '../src/models/requestes/Services.requests'
@@ -9,8 +10,54 @@ import serverRepository from '../repository/services/services.repository'
 import { ObjectId } from 'mongodb'
 import { servicesMessages } from '~/constants/messages'
 import { ErrorWithStatusCode } from '~/models/Errors'
-import { HttpStatusCode } from '~/constants/enum'
+import { HttpStatusCode, PriceType } from '~/constants/enum'
 import databaseServiceSale from './database.services.sale'
+import { toObjectId } from '~/utils/utils'
+
+const convertServicesDataToObjectId = (servicesData: CreateServicesRequestBody) => {
+  //ghi chú
+  // servicesData là dữ liệu đầu vào từ client
+  // servicesDataWithObjectId là dữ liệu đã chuyển đổi sang ObjectId
+  // sử dụng toObjectId để chuyển đổi các trường có kiểu dữ liệu là ObjectId
+  // nếu trường không tồn tại thì gán giá trị rỗng
+  // nếu trường tồn tại thì chuyển đổi những trường có kiểu dữ liệu là ObjectId từ string sang ObjectId
+  // nếu trường là mảng thì sử dụng map để chuyển đổi từng phần tử trong mảng
+  // nếu trường là mảng thì gán giá trị rỗng
+  const { service_group_id, step_services, products, ...data } = servicesData
+  const servicesDataWithObjectId = {
+    ...data,
+    service_group_id: service_group_id !== undefined ? toObjectId(service_group_id) : '',
+    step_services:
+      step_services !== undefined
+        ? step_services.map((step) => ({
+            ...step,
+            id_employee: step.id_employee !== undefined ? toObjectId(step.id_employee) : '',
+            products:
+              step?.products !== undefined
+                ? step?.products?.map((product) => ({
+                    ...product,
+                    product_id: toObjectId(product.product_id)
+                  }))
+                : []
+          })) || []
+        : [],
+    products:
+      products?.map((product) => ({
+        ...product,
+        product_id: toObjectId(product.product_id)
+      })) || [],
+    user_id: (data.user_id !== undefined && toObjectId(data.user_id)) || '',
+    branch: data.branch?.map((branchId) => toObjectId(branchId)) || [],
+    employee:
+      (data?.employee !== undefined &&
+        data?.employee?.map((employee) => ({
+          ...employee,
+          id_employee: toObjectId(employee.id_employee)
+        }))) ||
+      []
+  }
+  return servicesDataWithObjectId
+}
 
 class ServicesServices {
   //Private
@@ -56,17 +103,35 @@ class ServicesServices {
   //End Services Category
 
   //Services
-  async CreateServies(data: CreateServicesRequestBody) {
-    await serverRepository.createServices(data)
+  async CreateServies(servicesData: CreateServicesRequestBody) {
+    const servicesDataWithObjectId = convertServicesDataToObjectId(servicesData)
+    await serverRepository.createServices(servicesDataWithObjectId)
   }
+
   async DeleteServices(id: ObjectId) {
     await this.checkServicesExist(id)
     await serverRepository.deleteServices(id)
   }
 
   async UpdateServices(data: UpdateServicesRequestBody) {
-    await this.checkServicesExist(new ObjectId(data.id as string))
-    await serverRepository.updateServices(data)
+    await this.checkServicesExist(new ObjectId(data._id as string))
+    const servicesDataWithObjectId = convertServicesDataToObjectId(data)
+
+    const { _id, ...body } = servicesDataWithObjectId
+    await serverRepository.updateServices({
+      _id: new ObjectId(_id as string),
+      ...body
+    })
+  }
+
+  async GetAllServices(query: GetAllServicesRequestData) {
+    const { branch, ...pagination } = query
+    const branchObjectId = branch?.map((branchId) => toObjectId(branchId)) || []
+    const queryData = {
+      ...pagination,
+      branch: branchObjectId
+    }
+    return await serverRepository.getAllServices(queryData)
   }
 }
 

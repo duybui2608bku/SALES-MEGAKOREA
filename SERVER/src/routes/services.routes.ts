@@ -4,6 +4,7 @@ import {
   createServicesCategory,
   deleteServices,
   deleteServicesCategory,
+  getAllServices,
   getAllServicesCategory,
   updateServices,
   updateServicesCategory
@@ -17,7 +18,6 @@ import {
   updateServicesValidator
 } from '~/middlewares/services.middlewares'
 import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
-import { paginatonValidator } from '~/middlewares/utils.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const ServicesRouters = Router()
@@ -130,5 +130,14 @@ ServicesRouters.patch(
   updateServicesValidator,
   wrapRequestHandler(updateServices)
 )
+
+/*
+Description:Get All Service 
+path: /all
+method: GET
+Query: { page: string, limit: string,branch?:string[]  }
+*/
+
+ServicesRouters.get('/all', accessTokenValidator, isAdminValidator, wrapRequestHandler(getAllServices))
 
 export default ServicesRouters

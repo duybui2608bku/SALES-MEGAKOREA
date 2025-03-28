@@ -10,6 +10,7 @@ import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
 import { pathRoutersProduct, pathRoutersService } from 'src/Constants/path'
+import { CiCreditCard2 } from 'react-icons/ci'
 
 interface Props {
   children?: React.ReactNode
@@ -23,9 +24,15 @@ const MainLayout = ({ children }: Props) => {
 
   const items: MenuItem[] = [
     {
+      key: 'card-service',
+      label: 'Thẻ dịch vụ',
+      icon: <CiCreditCard2 size={20} />,
+      onClick: () => navigate(pathRoutersService.cardService)
+    },
+    {
       key: 'setting',
       label: 'Cài đặt',
-      icon: <FcEngineering />,
+      icon: <FcEngineering size={20} />,
       children: [
         {
           key: 'product',
@@ -41,8 +48,8 @@ const MainLayout = ({ children }: Props) => {
           label: 'Dịch vụ',
           type: 'group',
           children: [
-            { key: '3', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) },
-            { key: '4', label: 'Option 4' }
+            { key: '3', label: 'Dịch Vụ', onClick: () => navigate(pathRoutersService.service) },
+            { key: '4', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) }
           ]
         }
       ]

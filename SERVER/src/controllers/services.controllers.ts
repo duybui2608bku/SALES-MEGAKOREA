@@ -5,6 +5,7 @@ import {
   CreateServicesRequestBody,
   DeleteServicesCategoryRequestParams,
   GetAllServicesCategoryRequestQuery,
+  GetAllServicesRequestQuery,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from '~/models/requestes/Services.requests'
@@ -97,7 +98,24 @@ export const updateServices = async (req: Request<ParamsDictionary, any, UpdateS
   const data = req.body
   await servicesServices.UpdateServices(data)
   ResponseSuccess({
-    message: servicesMessages.UPDATE_SERVICES_CATEGORY_SUCCESS,
+    message: servicesMessages.UPDATE_SERVICES_SUCCESS,
     res
+  })
+}
+
+export const getAllServices = async (
+  req: Request<ParamsDictionary, any, any, GetAllServicesRequestQuery>,
+  res: Response
+) => {
+  const limit = Number(req.query.limit)
+  const page = Number(req.query.page)
+  const branchQuery = req.query.branch
+  const branch = branchQuery ? decodeURIComponent(branchQuery as string).split(',') : []
+  const query = { limit, page, branch }
+  const result = await servicesServices.GetAllServices(query)
+  ResponseSuccess({
+    message: servicesMessages.GET_ALL_SERVICES_SUCCESS,
+    res,
+    result
   })
 }

@@ -8,18 +8,36 @@ import {
 import { HttpStatusCode } from 'axios'
 import { servicesApi } from 'src/Service/services/services.api'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
+import { useEffect } from 'react' // Thêm useEffect
 
 interface ModalCreateServicesCategoryProps {
   visible: boolean
   onClose: () => void
-  category?: ServicesCategoryType
+  category?: ServicesCategoryType | null
+  setCategoryServices: (value: ServicesCategoryType | null) => void
 }
 
-const ModalCreateServicesCategory = ({ visible, onClose, category }: ModalCreateServicesCategoryProps) => {
+const ModalCreateServicesCategory = ({
+  visible,
+  onClose,
+  category,
+  setCategoryServices
+}: ModalCreateServicesCategoryProps) => {
   const [form] = Form.useForm()
   const queryClient = useQueryClient()
-  const isEditMode = !!category // Xác định là tạo mới hay chỉnh sửa
-  console.log('category', category)
+  const isEditMode = !!category
+
+  // Đồng bộ form với category mỗi khi category thay đổi
+  useEffect(() => {
+    if (visible) {
+      if (isEditMode) {
+        form.setFieldsValue({ name: category?.name, descriptions: category?.descriptions })
+      } else {
+        form.resetFields() // Reset form khi tạo mới
+      }
+    }
+  }, [category, visible, form, isEditMode])
+
   // Mutation để tạo mới danh mục
   const createMutation = useMutation({
     mutationFn: (body: CreateServicesCategoryRequestBody) => servicesApi.createServicesCategory(body),
@@ -45,14 +63,10 @@ const ModalCreateServicesCategory = ({ visible, onClose, category }: ModalCreate
     mutationFn: (body: UpdateServicesCategoryRequestBody) =>
       servicesApi.updateServicesCategory({
         ...body,
-        _id: category?._id // Thêm _id từ category
+        _id: category?._id
       } as UpdateServicesCategoryRequestBody & { _id: string }),
-    onMutate: async (data) => {
-      return createOptimisticUpdateHandler<UpdateServicesCategoryRequestBody>(
-        queryClient,
-        ['getAllServicesCategory'],
-        data
-      )()
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['getAllServicesCategory'])()
     },
     onSuccess: () => {
       message.success('Cập nhật danh mục dịch vụ thành công!')
@@ -80,23 +94,21 @@ const ModalCreateServicesCategory = ({ visible, onClose, category }: ModalCreate
     }
   }
 
-  // Đặt giá trị ban đầu cho form nếu là chỉnh sửa
-  const initialValues = isEditMode
-    ? { name: category?.name, descriptions: category?.descriptions }
-    : { name: '', descriptions: '' }
+  const handleCloseModal = () => {
+    setCategoryServices?.(null)
+    form.resetFields() // Reset form khi đóng modal
+    onClose()
+  }
 
   return (
     <Modal
       title={isEditMode ? 'Chỉnh sửa danh mục dịch vụ' : 'Tạo mới danh mục dịch vụ'}
       open={visible}
-      onCancel={() => {
-        form.resetFields()
-        onClose()
-      }}
+      onCancel={handleCloseModal}
       footer={null}
-      destroyOnClose
+      destroyOnClose // Hủy toàn bộ trạng thái khi modal đóng
     >
-      <Form form={form} layout='vertical' onFinish={handleFinish} initialValues={initialValues}>
+      <Form form={form} layout='vertical' onFinish={handleFinish}>
         <Form.Item
           name='name'
           label='Tên danh mục'
@@ -115,14 +127,7 @@ const ModalCreateServicesCategory = ({ visible, onClose, category }: ModalCreate
 
         <Form.Item>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <Button
-              onClick={() => {
-                form.resetFields()
-                onClose()
-              }}
-            >
-              Hủy
-            </Button>
+            <Button onClick={handleCloseModal}>Hủy</Button>
             <Button type='primary' htmlType='submit' loading={createMutation.isPending || updateMutation.isPending}>
               {isEditMode ? 'Cập nhật' : 'Tạo mới'}
             </Button>

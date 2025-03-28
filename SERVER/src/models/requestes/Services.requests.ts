@@ -1,3 +1,6 @@
+import { ObjectId } from 'mongodb'
+import { EmployeeOfServices, ProductOfServices, StepServicesType } from '~/interface/services/services.interface'
+
 export interface CreateServicesCategoryRequestBody {
   name: string
   descriptions: string
@@ -16,33 +19,48 @@ export interface UpdateServicesCategoryRequestBody {
 }
 
 export interface CreateServicesRequestBody {
-  is_active: boolean
+  _id?: string | ObjectId
+  code?: string
+  is_active?: boolean
   name: string
   branch: string[]
-  descriptions: string
-  service_group_id: string
-  price: number
-  id_employee: string
-  tour_price: number
-  type_tour_price: number
-  id_Product: string
+  descriptions?: string
+  user_id: ObjectId
+  employee?: EmployeeOfServices[]
+  service_group_id?: string | ObjectId
+  price?: number
+  step_services?: StepServicesType[]
+  products?: ProductOfServices[]
 }
 
 export interface UpdateServicesRequestBody {
-  id: string
-  is_active?: boolean
-  name?: string
-  branch?: string[]
+  _id: string
+  code?: string
+  is_active: boolean
+  name: string
+  branch: string[]
   descriptions?: string
-  service_group_id?: string
+  user_id: ObjectId
+  employee?: EmployeeOfServices[]
+  service_group_id?: string | ObjectId
   price?: number
-  id_employee?: string
-  tour_price?: number
-  type_tour_price?: number
-  id_Product?: string
+  step_services?: StepServicesType[]
+  products?: ProductOfServices[]
 }
 
 export interface GetAllServicesCategoryRequestQuery {
   page: number
   limit: number
+}
+
+export interface GetAllServicesRequestQuery {
+  page: number
+  limit: number
+  branch?: string
+}
+
+export interface GetAllServicesRequestData {
+  page: number
+  limit: number
+  branch?: string[] | ObjectId[]
 }

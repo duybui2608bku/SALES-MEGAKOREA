@@ -3,7 +3,9 @@ export enum UserRole {
   ACCOUNTANT = 2,
   MANAGER = 3,
   SALE = 4,
-  USER = 5
+  TECHNICIAN = 5,
+  TECHNICAN_MASTER = 6,
+  USER = 7
 }
 
 export enum UserStatus {

@@ -1,4 +1,4 @@
-import { ServicesCategoryType } from 'src/Interfaces/services/services.interfaces'
+import { ServicesCategoryType, ServicesOfCardType, ServicesType } from 'src/Interfaces/services/services.interfaces'
 import { SuccessResponse } from '../util.type'
 
 export type GetCategoryServicesResponse = SuccessResponse<{
@@ -13,3 +13,25 @@ export type CreateCategoryServicesResponse = SuccessResponse<void>
 export type UpdateCategoryServicesResponse = SuccessResponse<void>
 
 export type DeleteCategoryServicesResponse = SuccessResponse<void>
+
+export type GetServicesResponse = SuccessResponse<{
+  services: ServicesType[]
+  limit: number
+  page: number
+  total: number
+}>
+
+export type CreateServicesResponse = SuccessResponse<void>
+export type DeleteServicesResponse = SuccessResponse<void>
+export type UpdateServicesResponse = SuccessResponse<void>
+
+export type CreateServicesCardResponse = SuccessResponse<void>
+export type UpdateServicesCardResponse = SuccessResponse<void>
+export type DeleteServicesCardResponse = SuccessResponse<void>
+
+export type GetServicesCardResponse = SuccessResponse<{
+  servicesCard: ServicesOfCardType[]
+  limit: number
+  page: number
+  total: number
+}>

@@ -9,9 +9,8 @@ import {
   UpdateProductRequestBody,
   UpdateProductStockRequestBody
 } from '~/models/requestes/Product.requests'
-import { ResponseSuccess } from '~/utils/handlers'
+import { ResponseError, ResponseSuccess } from '~/utils/handlers'
 import productServices from '../../services/product.services'
-import { ObjectId } from 'mongodb'
 import { UserRole } from '~/constants/enum'
 import { TokenPayload } from '~/models/requestes/User.requests'
 
@@ -63,7 +62,7 @@ export const getAllProduct = async (
         result: result,
         res
       })
-    : ResponseSuccess({ message: productMessages.PRODUCT_NOT_FOUND, res })
+    : ResponseError({ message: productMessages.PRODUCT_NOT_FOUND, res })
 }
 
 export const SearchProduct = async (

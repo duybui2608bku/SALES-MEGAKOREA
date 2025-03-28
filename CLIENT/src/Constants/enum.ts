@@ -1,12 +1,19 @@
 export enum RoleUser {
-  ADMIN = 0,
-  ACCOUNTANT = 1,
-  MANAGER = 2,
-  SALE = 3,
-  USER = 4
+  ADMIN = 1,
+  ACCOUNTANT = 2,
+  MANAGER = 3,
+  SALE = 4,
+  TECHNICIAN = 5,
+  TECHNICAN_MASTER = 6,
+  USER = 7
 }
 
 export enum ProductType {
   CONSUMABLE = 0,
   NON_CONSUMABLE = 1
+}
+
+export enum PriceType {
+  PRECENT = 1,
+  FIXED = 2
 }

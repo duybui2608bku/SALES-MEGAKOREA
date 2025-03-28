@@ -61,3 +61,7 @@ export interface DeleteUserFromBranchRequestBody {
   user_id: string[] | ObjectId[]
   branch_id: string
 }
+
+export interface GetAllUserWithRoleRequestParams {
+  role: string
+}

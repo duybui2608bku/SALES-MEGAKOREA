@@ -136,8 +136,12 @@ const CategoryService = () => {
       </Row>
       <ModalCreateServicesCategory
         visible={openModal}
-        onClose={() => setOpenModal(false)}
-        category={categoryServicesToEdit || undefined}
+        onClose={() => {
+          setCategoryServicesToEdit(null)
+          setOpenModal(false)
+        }}
+        category={categoryServicesToEdit || null}
+        setCategoryServices={setCategoryServicesToEdit}
       />
     </Fragment>
   )

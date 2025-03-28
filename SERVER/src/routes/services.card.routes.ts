@@ -1,0 +1,20 @@
+import { Router } from 'express'
+import { createServicesCard, getCommissionOfDate, getServicesCard } from '~/controllers/services.card.controllers'
+import { CreateServicesCardValidator } from '~/middlewares/services.card.middlewares'
+import { accessTokenValidator } from '~/middlewares/users.middlewares'
+import { wrapRequestHandler } from '~/utils/handlers'
+
+const servicesOfCardRouters = Router()
+
+servicesOfCardRouters.post(
+  '/create',
+  accessTokenValidator,
+  CreateServicesCardValidator,
+  wrapRequestHandler(createServicesCard)
+)
+
+servicesOfCardRouters.post('/all', accessTokenValidator, wrapRequestHandler(getServicesCard))
+
+servicesOfCardRouters.post('/commission', accessTokenValidator, wrapRequestHandler(getCommissionOfDate))
+
+export default servicesOfCardRouters

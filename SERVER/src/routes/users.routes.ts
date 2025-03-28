@@ -5,6 +5,7 @@ import {
   deleteUserFromBranchController,
   getAllUsersController,
   getMeController,
+  getUserWithRole,
   loginController,
   registerController,
   resetPasswordController,
@@ -128,5 +129,13 @@ Header:{Authorization: Bearer <access_token>}
 */
 
 userRouters.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
+
+/*
+Description: Get user with role
+path: /user-with-role
+method: GET
+Header:{Authorization: Bearer <access_token>}
+*/
+userRouters.get('/with-role', accessTokenValidator, wrapRequestHandler(getUserWithRole))
 
 export default userRouters

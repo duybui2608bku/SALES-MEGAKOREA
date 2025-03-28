@@ -38,6 +38,7 @@ const OptionsBranch = (props: BranchOptionsType) => {
       value={selectedValue}
       style={{ width: '100%' }}
       mode={mode}
+      allowClear
       placeholder={placeholder || 'Chọn chi nhánh'}
       loading={isLoading}
       options={branchOptionsWithAll}

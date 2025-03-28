@@ -9,6 +9,8 @@ import Login from './Pages/Auth/Login/Login'
 import { RoleUser } from './Constants/enum'
 import ProductGeneral from './Pages/Product/ProductGeneral'
 import CategoryService from './Pages/Services/Category.service'
+import Service from './Pages/Services/Services.service'
+import ServicesCard from './Pages/Services/Services.card.service'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -72,6 +74,22 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <CategoryService />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.service,
+          element: (
+            <MainLayout>
+              <Service />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.cardService,
+          element: (
+            <MainLayout>
+              <ServicesCard />
             </MainLayout>
           )
         }

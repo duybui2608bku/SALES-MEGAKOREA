@@ -67,8 +67,8 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
 
   const { mutate: createProduct, isPending: isCreating } = useMutation({
     mutationFn: productApi.createProduct,
-    onMutate: async (data) => {
-      return createOptimisticUpdateHandler<CreateProductRequestBody>(queryClient, ['getProductsGeneral'], data)()
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['getProductsGeneral'])()
     },
     onSuccess: () => {
       message.success('Tạo sản phẩm thành công!')
@@ -94,7 +94,7 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
     mutationFn: (data: UpdateProductBody) => productApi.updateProduct(data),
     onMutate: async (data) => {
-      return createOptimisticUpdateHandler<UpdateProductBody>(queryClient, ['getProductsGeneral'], data)()
+      return createOptimisticUpdateHandler(queryClient, ['getProductsGeneral'])()
     },
     onSuccess: () => {
       message.success('Cập nhật sản phẩm thành công !')
@@ -119,7 +119,7 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
 
   const handleCreateProduct = (values: FieldsType) => {
     if (!profile?._id) {
-      message.error('Không thể tạo sản phẩm: User ID không hợp lệ!')
+      message.error('Không thể tạo sản phẩm: User ID không hợp lệ !')
       return
     }
     const user_id = profile._id

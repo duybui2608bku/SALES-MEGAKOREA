@@ -4,6 +4,7 @@ import usersService from '../../services/users.services'
 import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
+  GetAllUserWithRoleRequestParams,
   getProfileRequestBody,
   LoginRequestBody,
   RegisterRequestBody,
@@ -16,6 +17,7 @@ import { userMessages } from '~/constants/messages'
 import { ObjectId } from 'mongodb'
 
 import { omit } from 'lodash'
+import { ResponseSuccess } from '~/utils/handlers'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const { user } = req
@@ -82,6 +84,24 @@ export const getMeController = async (req: Request<ParamsDictionary, any, getPro
     message: result.message,
     result: result.user
   })
+}
+
+export const getUserWithRole = async (
+  req: Request<ParamsDictionary, any, any, GetAllUserWithRoleRequestParams>,
+  res: Response
+) => {
+  const { role } = req.query
+  const result = await usersService.getUserWithRole(role)
+  ResponseSuccess({
+    message: userMessages.GET_ALL_USERS_SUCCESS,
+    res,
+    result
+  })
+  // return res.status(HttpStatusCode.Ok).json({
+  //   success: true,
+  //   message: result.message,
+  //   result: result.user
+  // })
 }
 
 export const updateMeController = async (req: Request<ParamsDictionary, any, updateMeRequestBody>, res: Response) => {

@@ -10,6 +10,7 @@ export interface UserType {
   created_at?: Date
   updated_at?: Date
   role?: UserRole
+  coefficient?: number
   status?: UserStatus
   forgot_password_token?: string
   avatar?: string

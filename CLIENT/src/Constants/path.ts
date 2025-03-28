@@ -22,7 +22,9 @@ const pathRoutersProduct = {
 }
 
 const pathRoutersService = {
-  categoryService: '/category-service'
+  categoryService: '/category-service',
+  service: '/service',
+  cardService: '/card-service'
 }
 
 const pathApiProduct = {
@@ -43,10 +45,21 @@ const pathApiBranch = {
 }
 
 const pathServices = {
+  getAllServices: '/services/all',
+  createServices: '/services/detail-create',
+  deleteServices: '/services/detail-delete',
+  updateServices: '/services/detail-update',
+  getAllServicesCard: '/services-card/all',
+  updateServicesCard: '/services-card/-update',
+  createServicesCard: '/services-card/create',
   getAllCategoryService: '/services/category-all',
   createCategoryService: 'services/category-create',
   updateCategoryService: 'services/category-update',
   deleteCategoryService: 'services/category-delete'
+}
+
+const pathApiUsers = {
+  getAllUsersWithRole: '/users/with-role'
 }
 
 export {
@@ -58,5 +71,6 @@ export {
   pathApiProduct,
   pathApiBranch,
   pathRoutersService,
-  pathServices
+  pathServices,
+  pathApiUsers
 }

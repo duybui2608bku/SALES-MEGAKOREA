@@ -74,7 +74,7 @@ export const userMessages = {
 
 export const servicesMessages = {
   CREATE_SERVICES_CATEGORY_SUCCESS: 'Create services category success !',
-  BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string !',
+  BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string of object Id !',
   SERVICES_CATEGORY_NOT_FOUND: 'Services category not found !',
   INVALID_ID: 'Invalid id !',
   DELETE_SERVICES_CATEGORY_SUCCESS: 'Delete services category success !',
@@ -85,7 +85,29 @@ export const servicesMessages = {
   DELETE_SERVICES_SUCCESS: 'Delete services success !',
   PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price must be a number greater than zero !',
   TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Tour price must be a number greater than zero !',
-  GET_ALL_SERVICES_CATEGORY_SUCCESS: 'Get all services category success !'
+  GET_ALL_SERVICES_CATEGORY_SUCCESS: 'Get all services category success !',
+  SERVICE_GROUP_ID_MUST_BE_STRING: 'Service group id must be a string !',
+  STEP_PRICE_MUST_BE_ARRAY: 'Step price must be a array !',
+  STEP_PRICE_MUST_NUMBER: 'Step price must be a number !',
+  GET_ALL_SERVICES_SUCCESS: 'Get all services success !',
+  IS_ACTIVE_MUST_BE_BOOLEAN: 'Is active must be a boolean !',
+  CODE_MUST_BE_STRING: 'Code must be a string !',
+  NAME_MUST_BE_STRING: 'Name must be a string !',
+  EMPLOYEE_MUST_BE_ARRAY_STRING: 'Employee must be a array string !',
+  EMPLOYEE_MUST_BE_ARRAY: 'Employee must be a array !',
+  EMPLOYEE_PRICE_MUST_BE_NUMBER: 'Employee price must be a number !',
+  UPDATE_SERVICES_SUCCESS: 'Update services success !',
+  SERVICES_CARD_NOT_FOUND: 'Services card not found !',
+  CREATE_SERVICES_CARD_SUCCESS: 'Create services card success !',
+  EMPOYEE_ID_MUST_BE_STRING: 'Empoyee id must be a string !',
+  QUANTITY_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Quantity must be a number greater than zero !',
+  EMPOYEE_ID_MUST_BE_STRING_AND_OBJECT_ID: 'Empoyee id must be a string and object id !',
+  TYPE_PRICE_MUST_BE_FIXED_OR_PERCENT: 'Type price must be fixed or percentage !',
+  SERVICES_OF_CARD_MUST_BE_ARRAY: 'Services of card must be a array !',
+  GET_SERVICES_CARD_SUCCESS: 'Get services card success !',
+  GET_COMMISSION_SUCCESS: 'Get commission success !',
+  NAME_MUST_NOT_BE_EMPTY: 'Name must not be empty !',
+  SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Session time must be a number greater than zero !'
 }
 
 export const productMessages = {
@@ -110,7 +132,9 @@ export const productMessages = {
   GET_ALL_PRODUCT_SUCCESS: 'Get all PRODUCT success !',
   IMPORT_PRODUCT_SUCCESS: 'Import PRODUCT success !',
   PRODUCT_NOT_VALID: 'PRODUCT not valid !',
-  UPDATE_STOCK_PRODUCT_SUCCESS: 'Update stock PRODUCT success !'
+  UPDATE_STOCK_PRODUCT_SUCCESS: 'Update stock PRODUCT success !',
+  PRODUCT_ID_MUST_BE_VALID: 'Product id must be a valid MongoDB ID',
+  STEP_PRICE_MUST_BE_ARRAY: 'Step price must be a array !'
 }
 
 export const utilsMessages = {

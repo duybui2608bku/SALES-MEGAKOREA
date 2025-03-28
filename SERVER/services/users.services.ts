@@ -12,6 +12,7 @@ import { TokenType, UserRole } from '~/constants/enum'
 import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
 import { userMessages } from '~/constants/messages'
+import _ from 'lodash'
 
 config()
 
@@ -221,6 +222,25 @@ class UsersService {
             localField: '_id',
             foreignField: 'user_id',
             as: 'account'
+          }
+        }
+      ])
+      .toArray()
+    return result
+  }
+  async getUserWithRole(role: string) {
+    const result = await databaseServiceSale.users
+      .aggregate([
+        {
+          $match: {
+            role: Number(role)
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            role: 1
           }
         }
       ])
