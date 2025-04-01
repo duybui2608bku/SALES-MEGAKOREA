@@ -3,7 +3,8 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateServicesCardRequestBody,
   GetCommisionOfDateRequestBody,
-  GetServicesCardRequestBody
+  GetServicesCardRequestBody,
+  UpdateCardRequestBody
 } from '~/models/requestes/Services.card.requests'
 import servicesCardServices from '../../services/services.card.services'
 import { ResponseError, ResponseSuccess } from '~/utils/handlers'
@@ -19,6 +20,15 @@ export const createServicesCard = async (
   await servicesCardServices.CreateServicesCard(data)
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SUCCESS,
+    res
+  })
+}
+
+export const UpdateServicesCard = async (req: Request<ParamsDictionary, any, UpdateCardRequestBody>, res: Response) => {
+  const data = req.body
+  await servicesCardServices.UpdateServicesCard(data)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_SERVICES_CARD_SUCCESS,
     res
   })
 }

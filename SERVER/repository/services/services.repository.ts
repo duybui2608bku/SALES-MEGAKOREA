@@ -4,7 +4,7 @@ import {
   CreateServicesData,
   UpdateServicesData
 } from '../../src/interface/services/services.interface'
-import { Services, ServicesCategory } from '../../src/models/schemas/services/services.schema'
+import { Services, ServicesCategory } from '../../src/models/schemas/services/Services.schema'
 import {
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestData,
@@ -125,12 +125,12 @@ class ServicesRepository {
           from: 'users',
           localField: 'step_services.id_employee',
           foreignField: '_id',
-          as: 'step_services.employee'
+          as: 'step_services.employee_details'
         }
       },
       {
         $set: {
-          'step_services.employee': { $arrayElemAt: ['$step_services.employee', 0] }
+          'step_services.employee_details': { $arrayElemAt: ['$step_services.employee_details', 0] }
         }
       },
       // Group lại, kiểm tra mảng gốc để trả về [] nếu rỗng
@@ -234,10 +234,10 @@ class ServicesRepository {
       {
         $project: {
           'step_services.id_employee': 0,
-          'step_services.employee.password': 0,
-          'step_services.employee.role': 0,
-          'step_services.employee.status': 0,
-          'step_services.employee.forgot_password_token': 0,
+          'step_services.employee_details.password': 0,
+          'step_services.employee_details.role': 0,
+          'step_services.employee_details.status': 0,
+          'step_services.employee_details.forgot_password_token': 0,
           'products.product_id': 0
         }
       }

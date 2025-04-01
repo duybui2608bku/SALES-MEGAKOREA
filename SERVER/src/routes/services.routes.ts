@@ -14,7 +14,7 @@ import {
   CreateServicesValidator,
   DeleteServicesCategoryValidator,
   DeleteServicesValidator,
-  upDateCategoryValidator,
+  UpDateCategoryValidator,
   updateServicesValidator
 } from '~/middlewares/services.middlewares'
 import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
@@ -72,7 +72,7 @@ ServicesRouters.patch(
   '/category-update',
   accessTokenValidator,
   isAdminValidator,
-  upDateCategoryValidator,
+  UpDateCategoryValidator,
   wrapRequestHandler(updateServicesCategory)
 )
 

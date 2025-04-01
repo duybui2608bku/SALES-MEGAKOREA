@@ -6,11 +6,12 @@ import { servicesMessages } from '../src/constants/messages'
 import {
   CreateServicesCardRequestBody,
   GetCommisionOfDateRequestBody,
-  GetServicesCardRequestBody
+  GetServicesCardRequestBody,
+  UpdateCardRequestBody
 } from '~/models/requestes/Services.card.requests'
 import { toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
-import { CreateServicesCardData } from '~/interface/services/services.interface'
+import { CreateServicesCardData, UpdateServicesCardData } from '~/interface/services/services.interface'
 
 const getServicePriceFromDB = async (services_id: string): Promise<number> => {
   const service = await databaseServiceSale.services.findOne({ _id: new ObjectId(services_id) })
@@ -39,12 +40,13 @@ const convertServicesDataToObjectId = async (servicesCardData: CreateServicesCar
     employee:
       employee?.map((employee) => ({
         ...employee,
-        id_employee: toObjectId(employee.id_employee),
-        price: employee.rate === undefined ? employee.price : null
+        commision: employee.commision || 0,
+        id_employee: toObjectId(employee.id_employee)
       })) || [],
     services_of_card:
       services_of_card?.map((service) => ({
         ...service,
+        price: service.price || 0,
         services_id: toObjectId(service.services_id || '')
       })) || []
   }
@@ -101,6 +103,16 @@ class ServicesCardServices {
       user_id: userIdObjectId
     }
     return await servicesCardRepository.getCommissionOfDate(dataUpdate)
+  }
+
+  async UpdateServicesCard(data: UpdateCardRequestBody) {
+    const servicesCardData = (await convertServicesDataToObjectId(data)) as UpdateServicesCardData
+    const _id = new ObjectId(servicesCardData._id)
+    console.log('servicesCardData', servicesCardData)
+    await servicesCardRepository.updateServicesCard({
+      ...servicesCardData,
+      _id
+    })
   }
 }
 

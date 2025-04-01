@@ -31,7 +31,7 @@ export const DeleteServicesCategoryValidator = validate(
   )
 )
 
-export const upDateCategoryValidator = validate(
+export const UpDateCategoryValidator = validate(
   checkSchema(
     {
       _id: {
@@ -131,7 +131,7 @@ export const CreateServicesValidator = validate(
           options: (value: StepServicesType[]) => {
             if (!value) return true
             value.forEach((step) => {
-              if (step.price !== undefined && typeof step.price !== 'number') {
+              if (step.commision !== undefined && typeof step.commision !== 'number') {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.STEP_PRICE_MUST_NUMBER,
                   statusCode: HttpStatusCode.BadRequest
@@ -163,7 +163,7 @@ export const CreateServicesValidator = validate(
                   statusCode: HttpStatusCode.BadRequest
                 })
               }
-              if (employee.price && typeof employee.price !== 'number') {
+              if (employee.commision && typeof employee.commision !== 'number') {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.EMPLOYEE_PRICE_MUST_BE_NUMBER,
                   statusCode: HttpStatusCode.BadRequest
@@ -298,7 +298,7 @@ export const updateServicesValidator = validate(
           options: (value: StepServicesType[]) => {
             if (!value) return true
             value.forEach((step) => {
-              if (step.price !== undefined && typeof step.price !== 'number') {
+              if (step.commision !== undefined && typeof step.commision !== 'number') {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.STEP_PRICE_MUST_NUMBER,
                   statusCode: HttpStatusCode.BadRequest
@@ -330,7 +330,7 @@ export const updateServicesValidator = validate(
                   statusCode: HttpStatusCode.BadRequest
                 })
               }
-              if (employee.price && typeof employee.price !== 'number') {
+              if (employee.commision && typeof employee.commision !== 'number') {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.EMPLOYEE_PRICE_MUST_BE_NUMBER,
                   statusCode: HttpStatusCode.BadRequest

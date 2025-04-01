@@ -19,6 +19,7 @@ export class CardServices {
   price?: number
   price_paid?: number
   history_paid?: HistoryPaid[]
+  date_different_paid?: Date[]
   user_id?: ObjectId | string
   service_group_id?: ObjectId | string
   services_of_card?: ServicesOfCard[]
@@ -34,6 +35,7 @@ export class CardServices {
     this.user_id = cardServices.user_id || new ObjectId()
     this.price = cardServices.price || 0
     this.price_paid = cardServices.price_paid || 0
+    this.date_different_paid = cardServices.date_different_paid || []
     this.history_paid = cardServices.history_paid || []
     this.session_time = cardServices.session_time || 0
     this.employee = cardServices.employee || []

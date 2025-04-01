@@ -1,8 +1,10 @@
 import databaseServiceSale from 'services/database.services.sale'
+import { PriceType } from '~/constants/enum'
 import {
   CreateServicesCardData,
   GetCommisionOfDateData,
-  GetServicesCardData
+  GetServicesCardData,
+  UpdateServicesCardData
 } from '~/interface/services/services.interface'
 import { CardServices } from '~/models/schemas/services/cardServices.schema'
 
@@ -319,43 +321,61 @@ class ServicesCardRepository {
   async getCommissionOfDate(data: GetCommisionOfDateData) {
     const { start_date, end_date, branch, user_id } = data
     const pipeline = [
-      // Lọc thẻ dịch vụ theo khoảng thời gian và điều kiện chi nhánh/nhân viên
+      // Lọc thẻ dịch vụ theo khoảng thời gian created_at hoặc date_different_paid
       {
         $match: {
-          created_at: {
-            $gte: start_date,
-            $lte: end_date
-          },
-          customer_id: {
-            $eq: null
-          },
+          $or: [
+            {
+              created_at: {
+                $gte: start_date, // Ví dụ: 2025-03-01
+                $lte: end_date // Ví dụ: 2025-03-29
+              }
+            },
+            {
+              date_different_paid: {
+                $elemMatch: {
+                  $gte: start_date,
+                  $lte: end_date
+                }
+              }
+            }
+          ],
+          customer_id: { $eq: null },
           ...(branch.length > 0 && {
-            branch: { $in: branch } // Lọc theo mảng ID chi nhánh của thẻ dịch vụ
+            branch: { $in: branch }
           }),
           ...(user_id?.toHexString() && {
             $or: [
-              { 'employee.id_employee': user_id }, // Nhân viên trong employee
-              { services_of_card: { $elemMatch: { services_id: { $exists: true } } } } // Có services_of_card để kiểm tra step_services
+              { 'employee.id_employee': user_id },
+              { services_of_card: { $elemMatch: { services_id: { $exists: true } } } }
             ]
           })
         }
       },
 
-      // Lưu trữ thông tin gốc
+      // Lưu trữ thông tin gốc và tính tổng tiền đã trả
       {
         $set: {
           original_services_of_card: '$services_of_card',
-          original_employee: '$employee'
+          original_employee: '$employee',
+          total_price: '$price', // Giá trị tổng của thẻ
+          total_price_paid: {
+            $sum: [
+              { $ifNull: ['$price_paid', 0] } // Thanh toán trong tháng tạo
+            ]
+          },
+          payment_month: '$created_at', // Mặc định lấy tháng tạo
+          date_different_paid: { $ifNull: ['$date_different_paid', []] } // Đảm bảo mảng không bị null
         }
       },
 
       // Tách dữ liệu thành hai luồng bằng $facet
       {
         $facet: {
-          // Luồng 1: Xử lý employee
+          // Luồng 1: Xử lý employee (nhân viên sale)
           employeeData: [
             { $unwind: { path: '$employee', preserveNullAndEmptyArrays: true } },
-            ...(user_id?.toHexString() ? [{ $match: { 'employee.id_employee': user_id } }] : []), // Nếu có userId, chỉ giữ employee khớp
+            ...(user_id?.toHexString() ? [{ $match: { 'employee.id_employee': user_id } }] : []),
             {
               $lookup: {
                 from: 'users',
@@ -369,40 +389,73 @@ class ServicesCardRepository {
                 'employee.employee_details': { $arrayElemAt: ['$employee.employee_details', 0] }
               }
             },
+            { $match: { 'employee.id_employee': { $exists: true } } },
+            // Tính hoa hồng cơ bản và hoa hồng từ commission_other_month
             {
-              $match: { 'employee.id_employee': { $exists: true } } // Loại bỏ các bản ghi rỗng nếu không có employee
+              $set: {
+                commissionBeforeCoefficient: {
+                  $cond: [
+                    { $eq: ['$employee.type_price', PriceType.FIXED] }, // Fixed
+                    { $min: ['$employee.commission', '$total_price_paid'] }, // Giới hạn bởi total_price_paid
+                    {
+                      $multiply: [{ $divide: ['$total_price_paid', '$total_price'] }, '$employee.commission']
+                    } // Percent: Tỷ lệ dựa trên total_price_paid
+                  ]
+                },
+                commissionOtherMonth: {
+                  $filter: {
+                    input: { $ifNull: ['$employee.commission_other_month', []] },
+                    cond: {
+                      $and: [{ $gte: ['$$this.date', start_date] }, { $lte: ['$$this.date', end_date] }]
+                    }
+                  }
+                }
+              }
+            },
+            // Cộng thêm hoa hồng từ commission_other_month
+            {
+              $set: {
+                commissionBeforeCoefficient: {
+                  $sum: ['$commissionBeforeCoefficient', { $sum: '$commissionOtherMonth.commission' }]
+                }
+              }
+            },
+            {
+              $set: {
+                commissionAfterCoefficient: {
+                  $cond: [
+                    { $eq: ['$employee.type_price', PriceType.FIXED] }, // Fixed
+                    '$commissionBeforeCoefficient',
+                    {
+                      $multiply: ['$commissionBeforeCoefficient', '$employee.employee_details.coefficient']
+                    } // Percent
+                  ]
+                }
+              }
             },
             {
               $project: {
                 id_employee: '$employee.id_employee',
                 name: '$employee.employee_details.name',
                 coefficient: '$employee.employee_details.coefficient',
-                commissionBeforeCoefficient: {
-                  $cond: [
-                    { $eq: ['$employee.type_price', 2] }, // Fixed
-                    '$employee.price',
-                    '$employee.price' // Percent (giả sử là giá trị cố định nếu không có thêm thông tin)
-                  ]
-                },
-                commissionAfterCoefficient: {
-                  $cond: [
-                    { $eq: ['$employee.type_price', 2] }, // Fixed
-                    '$employee.price',
-                    { $multiply: ['$employee.price', '$employee.employee_details.coefficient'] } // Percent
-                  ]
-                },
+                commissionBeforeCoefficient: 1,
+                commissionAfterCoefficient: 1,
                 serviceCard: {
                   _id: '$_id',
                   code: '$code',
                   name: '$name',
                   created_at: '$created_at',
-                  branch: '$branch'
+                  branch: '$branch',
+                  total_price: '$total_price',
+                  total_price_paid: '$total_price_paid',
+                  date_different_paid: '$date_different_paid',
+                  commission_other_month: '$employee.commission_other_month'
                 }
               }
             }
           ],
 
-          // Luồng 2: Xử lý step_services
+          // Luồng 2: Xử lý step_services (nhân viên thực hiện bước dịch vụ)
           stepServicesData: [
             { $unwind: { path: '$services_of_card', preserveNullAndEmptyArrays: true } },
             {
@@ -417,7 +470,7 @@ class ServicesCardRepository {
             { $unwind: { path: '$services_of_card.service_details.step_services', preserveNullAndEmptyArrays: true } },
             ...(user_id?.toHexString()
               ? [{ $match: { 'services_of_card.service_details.step_services.id_employee': user_id } }]
-              : []), // Nếu có userId, chỉ giữ step_services khớp
+              : []),
             {
               $lookup: {
                 from: 'users',
@@ -433,46 +486,84 @@ class ServicesCardRepository {
                 }
               }
             },
+            { $match: { 'services_of_card.service_details.step_services.id_employee': { $exists: true } } },
+            // Tính hoa hồng cơ bản và hoa hồng từ commission_other_month
             {
-              $match: { 'services_of_card.service_details.step_services.id_employee': { $exists: true } } // Loại bỏ các bản ghi rỗng nếu không có step_services
+              $set: {
+                commissionBeforeCoefficient: {
+                  $cond: [
+                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', PriceType.FIXED] }, // Fixed
+                    {
+                      $min: [
+                        {
+                          $multiply: [
+                            '$services_of_card.service_details.step_services.commission',
+                            { $ifNull: ['$services_of_card.quantity', 1] }
+                          ]
+                        },
+                        '$total_price_paid'
+                      ]
+                    },
+                    {
+                      $multiply: [
+                        { $divide: ['$total_price_paid', '$total_price'] },
+                        '$services_of_card.service_details.step_services.commission',
+                        { $ifNull: ['$services_of_card.quantity', 1] }
+                      ]
+                    } // Percent
+                  ]
+                },
+                commissionOtherMonth: {
+                  $filter: {
+                    input: { $ifNull: ['$services_of_card.service_details.step_services.commission_other_month', []] },
+                    cond: {
+                      $and: [{ $gte: ['$$this.date', start_date] }, { $lte: ['$$this.date', end_date] }]
+                    }
+                  }
+                }
+              }
+            },
+            // Cộng thêm hoa hồng từ commission_other_month
+            {
+              $set: {
+                commissionBeforeCoefficient: {
+                  $sum: ['$commissionBeforeCoefficient', { $sum: '$commissionOtherMonth.commission' }]
+                }
+              }
+            },
+            {
+              $set: {
+                commissionAfterCoefficient: {
+                  $cond: [
+                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', PriceType.FIXED] }, // Fixed
+                    '$commissionBeforeCoefficient',
+                    {
+                      $multiply: [
+                        '$commissionBeforeCoefficient',
+                        '$services_of_card.service_details.step_services.employee_details.coefficient'
+                      ]
+                    } // Percent
+                  ]
+                }
+              }
             },
             {
               $project: {
                 id_employee: '$services_of_card.service_details.step_services.id_employee',
                 name: '$services_of_card.service_details.step_services.employee_details.name',
                 coefficient: '$services_of_card.service_details.step_services.employee_details.coefficient',
-                commissionBeforeCoefficient: {
-                  $cond: [
-                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', 2] }, // Fixed
-                    {
-                      $multiply: ['$services_of_card.service_details.step_services.price', '$services_of_card.quantity']
-                    },
-                    {
-                      $multiply: ['$services_of_card.service_details.step_services.price', '$services_of_card.quantity']
-                    } // Percent
-                  ]
-                },
-                commissionAfterCoefficient: {
-                  $cond: [
-                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', 2] }, // Fixed
-                    {
-                      $multiply: ['$services_of_card.service_details.step_services.price', '$services_of_card.quantity']
-                    },
-                    {
-                      $multiply: [
-                        '$services_of_card.service_details.step_services.price',
-                        '$services_of_card.quantity',
-                        '$services_of_card.service_details.step_services.employee_details.coefficient'
-                      ]
-                    } // Percent
-                  ]
-                },
+                commissionBeforeCoefficient: 1,
+                commissionAfterCoefficient: 1,
                 serviceCard: {
                   _id: '$_id',
                   code: '$code',
                   name: '$name',
                   created_at: '$created_at',
-                  branch: '$branch'
+                  branch: '$branch',
+                  total_price: '$total_price',
+                  total_price_paid: '$total_price_paid',
+                  date_different_paid: '$date_different_paid',
+                  commission_other_month: '$services_of_card.service_details.step_services.commission_other_month'
                 }
               }
             }
@@ -486,23 +577,10 @@ class ServicesCardRepository {
           allEmployees: { $concatArrays: ['$employeeData', '$stepServicesData'] }
         }
       },
+      { $unwind: { path: '$allEmployees', preserveNullAndEmptyArrays: true } },
+      { $match: { 'allEmployees.id_employee': { $exists: true } } },
 
-      // Unwind allEmployees
-      {
-        $unwind: {
-          path: '$allEmployees',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-
-      // Loại bỏ các bản ghi không có id_employee (đảm bảo không có dữ liệu rác)
-      {
-        $match: {
-          'allEmployees.id_employee': { $exists: true }
-        }
-      },
-
-      // Lookup chi tiết branch cho serviceCard.branch
+      // Lookup chi tiết branch
       {
         $lookup: {
           from: 'branch',
@@ -511,27 +589,21 @@ class ServicesCardRepository {
           as: 'allEmployees.serviceCard.branch_details'
         }
       },
-
-      // Thay thế branch bằng branch_details
       {
         $set: {
           'allEmployees.serviceCard.branch': '$allEmployees.serviceCard.branch_details'
         }
       },
+      { $unset: 'allEmployees.serviceCard.branch_details' },
 
-      // Xóa trường tạm branch_details
-      {
-        $unset: 'allEmployees.serviceCard.branch_details'
-      },
-
-      // Nhóm theo nhân viên để tính tổng hoa hồng và gom danh sách thẻ dịch vụ
+      // Nhóm theo nhân viên và tính tổng hoa hồng
       {
         $group: {
           _id: '$allEmployees.id_employee',
           name: { $first: '$allEmployees.name' },
           totalCommissionBeforeCoefficient: { $sum: '$allEmployees.commissionBeforeCoefficient' },
           totalCommissionAfterCoefficient: { $sum: '$allEmployees.commissionAfterCoefficient' },
-          serviceCards: { $addToSet: '$allEmployees.serviceCard' } // $addToSet để tránh trùng lặp thẻ dịch vụ
+          serviceCards: { $addToSet: '$allEmployees.serviceCard' }
         }
       },
 
@@ -549,6 +621,11 @@ class ServicesCardRepository {
     ]
     const commission = await databaseServiceSale.services_card.aggregate(pipeline).toArray()
     return commission
+  }
+
+  async updateServicesCard(data: UpdateServicesCardData) {
+    const { _id, ...updateData } = data
+    await databaseServiceSale.services_card.updateOne({ _id }, { $set: { ...updateData } })
   }
 }
 

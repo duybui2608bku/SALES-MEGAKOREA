@@ -1,5 +1,10 @@
 import { Router } from 'express'
-import { createServicesCard, getCommissionOfDate, getServicesCard } from '~/controllers/services.card.controllers'
+import {
+  createServicesCard,
+  getCommissionOfDate,
+  getServicesCard,
+  UpdateServicesCard
+} from '~/controllers/services.card.controllers'
 import { CreateServicesCardValidator } from '~/middlewares/services.card.middlewares'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -11,6 +16,13 @@ servicesOfCardRouters.post(
   accessTokenValidator,
   CreateServicesCardValidator,
   wrapRequestHandler(createServicesCard)
+)
+
+servicesOfCardRouters.patch(
+  '/update',
+  accessTokenValidator,
+  CreateServicesCardValidator,
+  wrapRequestHandler(UpdateServicesCard)
 )
 
 servicesOfCardRouters.post('/all', accessTokenValidator, wrapRequestHandler(getServicesCard))

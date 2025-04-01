@@ -107,7 +107,9 @@ export const servicesMessages = {
   GET_SERVICES_CARD_SUCCESS: 'Get services card success !',
   GET_COMMISSION_SUCCESS: 'Get commission success !',
   NAME_MUST_NOT_BE_EMPTY: 'Name must not be empty !',
-  SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Session time must be a number greater than zero !'
+  SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Session time must be a number greater than zero !',
+  CUSTOMER_ID_MUST_BE_STRING: 'Customer id must be a string !',
+  UPDATE_SERVICES_CARD_SUCCESS: 'Update services card success !'
 }
 
 export const productMessages = {

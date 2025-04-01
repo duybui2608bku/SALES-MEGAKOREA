@@ -1,7 +1,7 @@
 import { Collection, Db, MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
 import Product from '~/models/schemas/product/Product.schema'
-import { Services, ServicesCategory } from '~/models/schemas/services/services.schema'
+import { Services, ServicesCategory } from '~/models/schemas/services/Services.schema'
 import Bracnh from '~/models/schemas/branch/branch.schema'
 import User from '~/models/schemas/User.schema'
 import Customer from '~/models/schemas/Customer.shema'

@@ -1,13 +1,37 @@
-import { EmployeeOfServices, ServicesOfCard } from '~/interface/services/services.interface'
+import { EmployeeOfServices, HistoryPaid, ServicesOfCard } from '~/interface/services/services.interface'
 
 export interface CreateServicesCardRequestBody {
   code?: string
   is_active?: boolean
+  customer_id?: string
   name: string
   branch?: string[]
   descriptions?: string
   session_time?: number
   price?: number
+  price_paid?: number
+  user_id?: string
+  service_group_id?: string
+  services_of_card?: ServicesOfCard[]
+  employee?: EmployeeOfServices[]
+}
+
+export interface UpdateCardRequestBody {
+  _id: string
+  code?: string
+  is_active?: boolean
+  customer_id?: string
+  name: string
+  branch?: string[]
+  descriptions?: string
+  session_time?: number
+  price?: number
+  price_paid?: number
+  history_paid?: HistoryPaid[]
+  price_paid_other_month?: {
+    date: Date
+    price: number
+  }
   user_id?: string
   service_group_id?: string
   services_of_card?: ServicesOfCard[]

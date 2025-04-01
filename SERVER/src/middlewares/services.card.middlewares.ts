@@ -16,6 +16,15 @@ export const CreateServicesCardValidator = validate(
         optional: true,
         trim: true
       },
+      customer_id: {
+        isString: {
+          errorMessage: servicesMessages.CUSTOMER_ID_MUST_BE_STRING
+        },
+        isMongoId: {
+          errorMessage: servicesMessages.INVALID_ID
+        },
+        optional: true
+      },
       is_active: {
         isBoolean: {
           errorMessage: servicesMessages.IS_ACTIVE_MUST_BE_BOOLEAN
@@ -29,7 +38,8 @@ export const CreateServicesCardValidator = validate(
         notEmpty: {
           errorMessage: servicesMessages.NAME_MUST_NOT_BE_EMPTY
         },
-        trim: true
+        trim: true,
+        optional: true
       },
       branch: {
         isArray: {
@@ -63,6 +73,16 @@ export const CreateServicesCardValidator = validate(
         optional: true
       },
       price: {
+        isNumeric: {
+          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
+        optional: true
+      },
+      price_paid: {
         isNumeric: {
           errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
         },
@@ -143,7 +163,10 @@ export const CreateServicesCardValidator = validate(
                   statusCode: HttpStatusCode.BadRequest
                 })
               }
-              if ((employee.price !== undefined && typeof employee.price !== 'number') || employee.price < 0) {
+              if (
+                (employee.commision !== undefined && typeof employee.commision !== 'number') ||
+                employee.commision < 0
+              ) {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO,
                   statusCode: HttpStatusCode.BadRequest

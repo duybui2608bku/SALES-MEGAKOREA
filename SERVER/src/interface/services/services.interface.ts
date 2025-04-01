@@ -27,7 +27,11 @@ export interface ProductOfServices {
 }
 
 export interface StepServicesType {
-  price: number
+  commision: number
+  commision_other_month?: {
+    date: Date
+    commision: number
+  }[]
   id_employee: string | ObjectId
   type_step_price: PriceType
   descriptions?: string
@@ -37,7 +41,6 @@ export interface StepServicesType {
 
 export interface ServicesType {
   _id?: ObjectId
-  parent_id?: ObjectId | null
   price_paid?: number
   history_price?: any[]
   code?: string
@@ -90,11 +93,14 @@ export interface UpdateServicesData {
 }
 
 export interface EmployeeOfServices {
-  price: number | null
+  commision: number
+  commision_other_month?: {
+    date: Date
+    commision: number
+  }[]
   id_employee: string | ObjectId
   type_price: PriceType
   descriptions?: string
-  rate?: number | null
 }
 
 export interface ServicesOfCard {
@@ -119,13 +125,60 @@ export interface CreateServicesCardData {
   employee?: EmployeeOfServices[]
 }
 
+export interface UpdateCardRequestBody {
+  _id: string
+  code?: string
+  is_active?: boolean
+  name?: string
+  branch?: ObjectId[]
+  descriptions?: string
+  session_time?: number
+  price?: number
+  price_paid?: number
+  date_different_paid?: Date[]
+  history_paid?: HistoryPaid[]
+  user_id?: string
+  service_group_id?: string
+  services_of_card?: ServicesOfCard[]
+  employee?: EmployeeOfServices[]
+}
+
+export interface UpdateServicesCardData {
+  _id: ObjectId
+  code?: string
+  is_active?: boolean
+  customer_id?: string
+  name?: string
+  branch?: ObjectId[]
+  descriptions?: string
+  session_time?: number
+  price?: number
+  price_paid?: number
+  date_different_paid?: Date[]
+  history_paid?: HistoryPaid[]
+  user_id?: string
+  service_group_id?: string
+  services_of_card?: ServicesOfCard[]
+  employee?: EmployeeOfServices[]
+}
+
+export interface EmployeeOfHistoryPaid {
+  id_employee: string | ObjectId
+  commision: number
+  type_price: PriceType
+  descriptions?: string
+}
+
 export interface HistoryPaid {
+  services_card_id: ObjectId | string
   code: string
   date: Date
-  name_user: string
+  user_id: ObjectId | string
   paid: number
   out_standing: number
   method: string
+  employee: EmployeeOfHistoryPaid[]
+  descriptions?: string
 }
 
 export interface CardServicesType {
@@ -139,6 +192,7 @@ export interface CardServicesType {
   session_time?: number
   price?: number
   price_paid?: number
+  date_different_paid?: Date[]
   history_paid?: HistoryPaid[]
   user_id?: ObjectId | string
   service_group_id?: ObjectId | string

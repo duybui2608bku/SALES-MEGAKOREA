@@ -2,7 +2,7 @@ import { Collection, Db, MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
 import User from '../src/models/schemas/User.schema'
 import Bracnh from '../src/models/schemas/branch/branch.schema'
-import { Services, ServicesCategory } from '../src/models/schemas/services/services.schema'
+import { Services, ServicesCategory } from '../src/models/schemas/services/Services.schema'
 import Product from '../src/models/schemas/product/Product.schema'
 import { ServicesOfCard } from '~/interface/services/services.interface'
 dotenv.config()
