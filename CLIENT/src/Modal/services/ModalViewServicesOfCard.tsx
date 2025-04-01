@@ -70,17 +70,13 @@ const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
                     <Descriptions size='small'>
                       <Descriptions.Item label='Mô tả'>{step.descriptions}</Descriptions.Item>
                       <Descriptions.Item label='Nhân viên'>{step.employee_details.name}</Descriptions.Item>
-                      <Descriptions.Item label='Giá'>{step.price.toLocaleString()} VNĐ</Descriptions.Item>
+                      <Descriptions.Item label='Giá'>{step.commision.toLocaleString()} VNĐ</Descriptions.Item>
                       <Descriptions.Item label='Loại giá'>
                         <Tag color={step.type_step_price === PriceType.FIXED ? 'blue' : 'purple'}>
                           {step.type_step_price === PriceType.PRECENT ? 'Theo tỷ lệ' : 'Cố định'}
                         </Tag>
                       </Descriptions.Item>
-                      {step.rate ? (
-                        <Descriptions.Item label='Tỷ lệ'>{step.rate * 100}%</Descriptions.Item>
-                      ) : (
-                        <Descriptions.Item label=''>{''}</Descriptions.Item>
-                      )}
+
                       <Descriptions.Item label='Vai trò'>
                         <Tag color='green'>{getRoleUser(step.employee_details.role)}</Tag>
                       </Descriptions.Item>

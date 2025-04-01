@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Button, Col, Flex, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
+import { Badge, Button, Col, Flex, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { RiMoneyDollarCircleLine, RiServiceLine } from 'react-icons/ri'
@@ -21,6 +21,8 @@ import { servicesApi } from 'src/Service/services/services.api'
 import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
 import ModalViewEmployeeCommission from 'src/Modal/services/ModalViewEmployeeCommission'
+import { GiPayMoney } from 'react-icons/gi'
+import { TbPigMoney } from 'react-icons/tb'
 const { Paragraph } = Typography
 
 enum ModalType {
@@ -165,7 +167,22 @@ const ServicesCard = () => {
       title: 'Đã thanh toán',
       dataIndex: 'price_paid',
       key: 'price_paid',
-      render: (price: number) => price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+      align: 'center',
+      render: (price_paid: number, _: ColumnsServicesCardType) => {
+        return (
+          <Flex gap={10} justify='align' align='center'>
+            <Flex>{price_paid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Flex>
+            <Flex align='center' justify='center' gap={10}>
+              <Button type='dashed'>
+                <GiPayMoney size={20} />
+              </Button>
+              <Button type='dashed'>
+                <TbPigMoney fill='yellow' size={20} />
+              </Button>
+            </Flex>
+          </Flex>
+        )
+      },
       sorter: (a: ColumnsServicesCardType, b: ColumnsServicesCardType) => a.price - b.price,
       sortDirections: ['descend', 'ascend'],
       width: 200
@@ -173,12 +190,16 @@ const ServicesCard = () => {
     {
       title: 'Số buổi',
       dataIndex: 'session_time',
-      key: 'session_time'
+      key: 'session_time',
+      align: 'center',
+      width: 100
     },
     {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',
+      minWidth: 130,
+      align: 'center',
       render: (branch: BranchType[]) => (
         <Paragraph
           ellipsis={{
@@ -186,7 +207,13 @@ const ServicesCard = () => {
             rows: 1
           }}
         >
-          {branch?.length === optionsBranch.length + 1 ? 'Toàn bộ' : branch.map((b) => b.name).join(', ')}
+          {branch?.length === optionsBranch.length + 1 ? (
+            <Badge offset={[10, 0]} count={optionsBranch.length}>
+              Toàn bộ
+            </Badge>
+          ) : (
+            branch.map((b) => b.name).join(', ')
+          )}
         </Paragraph>
       )
     },

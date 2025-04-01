@@ -15,6 +15,8 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
     return null
   }
 
+  console.log('stepServices', stepServices)
+
   return (
     <ConfigProvider
       theme={{
@@ -89,7 +91,7 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
                           </span>
                         }
                       >
-                        {step.employee.name}
+                        {step.employee_details.name}
                       </Descriptions.Item>
                       <Descriptions.Item label='Loại Tiền'>
                         <span
@@ -102,8 +104,8 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
                       </Descriptions.Item>
                       <Descriptions.Item label='Giá Tiền'>
                         <span style={{ fontWeight: 600 }}>
-                          {step.price
-                            ? step.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                          {step.commision
+                            ? step.commision.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
                             : '0 ₫'}
                         </span>
                       </Descriptions.Item>

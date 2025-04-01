@@ -9,10 +9,13 @@ export interface ProductOfServices {
 
 export interface StepServicesType {
   id_employee: string
-  price: number
+  commision: number
+  commision_other_month: {
+    date: Date
+    commision: number
+  }[]
   employee_details: User
   type_step_price: PriceType
-  rate?: number
   descriptions?: string
   type_step?: unknown
   products: ProductOfServices[]
@@ -31,8 +34,18 @@ export interface ServicesType {
   products: ProductOfServices[]
 }
 
+export interface HistoryPaid {
+  code: string
+  date: Date
+  name_user: string
+  paid: number
+  out_standing: number
+  method: string
+}
+
 export interface ServicesOfCardType {
   _id: string
+  customer_id: string | null
   code: string
   is_active: boolean
   name: string
@@ -41,7 +54,8 @@ export interface ServicesOfCardType {
   session_time: number
   price: number
   price_paid: number
-  history_price: unknown[]
+  history_price: HistoryPaid[]
+  date_different_paid: Date[]
   user_id: string | string
   service_group: ServicesCategoryType
   services_of_card: ServicesOfCard[]
@@ -95,19 +109,21 @@ export interface CreateServicesRequestBody {
 }
 
 export interface EmployeeOfServices {
-  price: number
+  commision: number
+  commision_other_month: {
+    date: Date
+    commision: number
+  }[]
   id_employee: string
   type_price: PriceType
   descriptions?: string
-  rate?: number
   employee_details: User
 }
 
 export interface StepServicesFieldType {
-  price: number
+  commision: number
   employee_id: string
   type_step_price: PriceType
-  rate?: number
   descriptions?: string
   type_step?: unknown
   products: ProductOfServices[]
@@ -155,18 +171,24 @@ export interface CreateServicesCardRequestBody {
 }
 
 export interface UpdateServicesCardRequestBody {
-  _id: string
+  _id?: string
   code?: string
   is_active?: boolean
-  name?: string
+  name: string
+  customer_id?: string | null
   branch?: string[]
   descriptions?: string
   session_time?: number
   price?: number
+  price_paid?: number
+  history_paid?: HistoryPaid[]
+  date_different_paid?: Date[]
   user_id?: string
   service_group_id?: string
   services_of_card?: ServicesOfCard[]
   employee?: EmployeeOfServices[]
+  created_at?: Date
+  updated_at?: Date
   [key: string]: unknown
 }
 

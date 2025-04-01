@@ -396,7 +396,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                             <Col span={12}>
                               <Form.Item
                                 {...restField}
-                                name={[name, 'price']}
+                                name={[name, 'commision']}
                                 label='Giá'
                                 rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}
                               >

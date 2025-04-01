@@ -29,9 +29,8 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
       }
       acc[employeeId].commissions.push({
         type: 'Sale',
-        price: sale.price,
+        price: sale.commision,
         type_price: sale.type_price,
-        rate: sale.rate,
         descriptions: 'Hoa hồng bán hàng'
       })
       return acc
@@ -50,7 +49,7 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
   data.services_of_card.forEach((service) => {
     service.service_details.step_services.forEach((step) => {
       const employeeId = step.id_employee
-      const stepKey = `${step.id_employee}-${step.descriptions}-${step.price}` // Tạo key duy nhất cho step
+      const stepKey = `${step.id_employee}-${step.descriptions}-${step.commision}` // Tạo key duy nhất cho step
 
       if (!processedStepServices.has(stepKey)) {
         if (!groupedEmployees[employeeId]) {
@@ -61,9 +60,9 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
         }
         groupedEmployees[employeeId].commissions.push({
           type: 'Step Service',
-          price: step.price,
+          price: step.commision,
           type_price: step.type_step_price,
-          rate: step.rate,
+          rate: step.commision,
           descriptions: step.descriptions || 'Hoa hồng bước dịch vụ'
         })
         processedStepServices.add(stepKey) // Đánh dấu step này đã được xử lý
@@ -124,7 +123,7 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
                         </Descriptions.Item>
                         <Descriptions.Item label='Mô tả'>{commission.descriptions}</Descriptions.Item>
                         <Descriptions.Item label='Hoa hồng'>
-                          <Text type='success'>{commission?.price?.toLocaleString()} VNĐ</Text>
+                          <Text type='success'>{commission?.price?.toLocaleString() || 0} VNĐ</Text>
                         </Descriptions.Item>
                         <Descriptions.Item label='Loại giá'>
                           <Tag
@@ -139,13 +138,13 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
                               : 'Cố định'}
                           </Tag>
                         </Descriptions.Item>
-                        {commission.rate ? (
+                        {/* {commission.rate ? (
                           <Descriptions.Item label='Tỷ lệ hoa hồng'>
                             {(commission.rate * 100).toFixed(2)}%
                           </Descriptions.Item>
                         ) : (
                           <Descriptions.Item label=''>{''}</Descriptions.Item>
-                        )}
+                        )} */}
                       </Descriptions>
                     </Card>
                   ))}

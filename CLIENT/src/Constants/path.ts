@@ -50,7 +50,7 @@ const pathServices = {
   deleteServices: '/services/detail-delete',
   updateServices: '/services/detail-update',
   getAllServicesCard: '/services-card/all',
-  updateServicesCard: '/services-card/-update',
+  updateServicesCard: '/services-card/update',
   createServicesCard: '/services-card/create',
   getAllCategoryService: '/services/category-all',
   createCategoryService: 'services/category-create',

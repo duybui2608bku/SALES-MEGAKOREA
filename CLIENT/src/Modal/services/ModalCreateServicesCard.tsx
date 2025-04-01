@@ -38,12 +38,15 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
         serviceCardToEdit?.branch?.map((branch) => (typeof branch === 'string' ? branch : branch._id)) || []
       const service_group_id = serviceCardToEdit?.service_group?._id || undefined
       const employee = serviceCardToEdit?.employee?.map((emp) => ({
-        id_employee: emp.id_employee
+        id_employee: emp.employee_details._id,
+        type_price: emp.type_price,
+        commision: emp.commision
       }))
       const services_of_card = serviceCardToEdit?.services_of_card?.map((service) => ({
-        services_id: service.services_id,
+        services_id: `${String(service.service_details?._id)}`,
         quantity: service.quantity,
-        discount: service.discount
+        discount: service.discount,
+        price: service.price
       }))
       setBranchId(branchId)
       form.setFieldsValue({
@@ -101,7 +104,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
   }
 
   const { mutate: updateServiceCard, isPending: isUpdating } = useMutation({
-    mutationFn: (data: CreateServicesCardRequestBody & { _id: string }) => servicesApi.updateServices(data),
+    mutationFn: (data: CreateServicesCardRequestBody & { _id: string }) => servicesApi.updateServicesCard(data),
     onMutate: async () => {
       return createOptimisticUpdateHandler(queryClient, ['getAllServicesCard'])()
     },
@@ -155,8 +158,6 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
     form.resetFields()
   }
 
-  console.log('serviceCardToEdit', serviceCardToEdit)
-
   return (
     <Modal
       onCancel={handleCancelModal}
@@ -206,8 +207,6 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                     style={{ width: '100%' }}
                     formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => (value ? Number(value.replace(/\$\s?|(,*)/g, '')) : 0)}
-                    min={0}
-                    defaultValue={0}
                     placeholder='Số tiền thanh toán'
                   />
                 </Form.Item>
@@ -332,8 +331,6 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                                   style={{ width: '100%' }}
                                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                   parser={(value) => (value ? Number(value.replace(/\$\s?|(,*)/g, '')) : 0)}
-                                  min={0}
-                                  defaultValue={0}
                                   placeholder='Giảm giá'
                                 />
                               </Form.Item>
@@ -395,8 +392,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                                 {...restField}
                                 name={[name, 'type_price']}
                                 label='Loại giá'
-                                rules={[{ required: true, message: 'Vui lòng chọn loại giá! ' }]}
-                                initialValue={PriceType.FIXED}
+                                rules={[{ required: true, message: 'Vui lòng chọn loại giá !' }]}
                               >
                                 <Select>
                                   <Select.Option value={PriceType.FIXED}>Cố định</Select.Option>
@@ -413,17 +409,15 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                               >
                                 <Form.Item
                                   {...restField}
-                                  name={[name, 'price']}
+                                  name={[name, 'commision']}
                                   label='Giá'
                                   // rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}
                                 >
                                   <InputNumber
                                     suffix='đ'
                                     style={{ width: '100%' }}
-                                    defaultValue={0}
                                     formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                     parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                                    min={0}
                                   />
                                 </Form.Item>
                               </Form.Item>
