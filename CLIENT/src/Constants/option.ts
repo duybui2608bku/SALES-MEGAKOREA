@@ -134,3 +134,9 @@ export const optionsUnitProduct = [
   { value: 'Sợi', label: 'Sợi', key: '26' },
   { value: 'Không', label: 'Không', key: '27' }
 ]
+
+export const optionsMethodPayment = [
+  { value: 'Tiền Mặt', label: 'Tiền Mặt', key: '1' },
+  { value: 'Quẹt Thẻ', label: 'Quẹt Thẻ', key: '2' },
+  { value: 'Chuyển Khoản', label: 'Chuyển Khoản', key: '3' }
+]

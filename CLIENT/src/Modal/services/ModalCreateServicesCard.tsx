@@ -9,7 +9,7 @@ import useQueryBranch from 'src/hook/query/useQueryBranch'
 import { queryClient } from 'src/main'
 import { CreateServicesCardRequestBody, ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
-import { generateProductCode } from 'src/Utils/util.utils'
+import { generateCode } from 'src/Utils/util.utils'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
@@ -182,7 +182,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                 <Form.Item<CreateServicesCardRequestBody>
                   name='code'
                   label='Mã dịch vụ'
-                  initialValue={serviceCardToEdit ? undefined : generateProductCode()}
+                  initialValue={serviceCardToEdit ? undefined : generateCode()}
                   rules={[{ type: 'string', message: 'Mã dịch vụ phải là chuỗi!' }]}
                 >
                   <Input placeholder='Nhập mã dịch vụ' />

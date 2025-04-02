@@ -29,7 +29,7 @@ import {
   UpdateServicesRequestBody
 } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
-import { generateProductCode } from 'src/Utils/util.utils'
+import { generateCode } from 'src/Utils/util.utils'
 import { PriceType, RoleUser } from 'src/Constants/enum'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
@@ -264,7 +264,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                 <Form.Item<FieldsType>
                   name='code'
                   label='Mã dịch vụ'
-                  initialValue={serviceToEdit ? undefined : generateProductCode()}
+                  initialValue={serviceToEdit ? undefined : generateCode()}
                 >
                   <Input placeholder='Nhập mã dịch vụ' />
                 </Form.Item>
@@ -277,7 +277,6 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                     formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                     placeholder='Nhập giá dịch vụ'
-                    min={0}
                     step={1000}
                   />
                 </Form.Item>
@@ -405,7 +404,6 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                                   style={{ width: '100%' }}
                                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                   parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                                  min={0}
                                 />
                               </Form.Item>
                             </Col>

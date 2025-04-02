@@ -14,7 +14,7 @@ import {
 } from 'src/Interfaces/product/product.interface'
 import { queryClient } from 'src/main'
 import productApi from 'src/Service/product/product.api'
-import { generateProductCode } from 'src/Utils/util.utils'
+import { generateCode } from 'src/Utils/util.utils'
 
 interface ModalCreateProductGeneralProps {
   open: boolean
@@ -93,7 +93,7 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
 
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
     mutationFn: (data: UpdateProductBody) => productApi.updateProduct(data),
-    onMutate: async (data) => {
+    onMutate: async () => {
       return createOptimisticUpdateHandler(queryClient, ['getProductsGeneral'])()
     },
     onSuccess: () => {
@@ -197,7 +197,7 @@ const ModalCreateProduct = (props: ModalCreateProductGeneralProps) => {
                 <Form.Item<FieldsType>
                   name='code'
                   label='Mã sản phẩm'
-                  initialValue={productToEdit ? undefined : generateProductCode()}
+                  initialValue={productToEdit ? undefined : generateCode()}
                   rules={[{ required: true, message: 'Vui lòng nhập mã sản phẩm!' }]}
                 >
                   <Input placeholder='Nhập mã sản phẩm' />

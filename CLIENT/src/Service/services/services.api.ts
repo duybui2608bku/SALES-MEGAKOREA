@@ -5,7 +5,7 @@ import {
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestQuery,
   GetServicesCardRequestBody,
-  UpdateServicesCardRequestBody,
+  UpdatePaidOfServicesCardRequestBody,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from 'src/Interfaces/services/services.interfaces'
@@ -55,10 +55,13 @@ export const servicesApi = {
     return await axiosInstanceMain.post<CreateServicesCardResponse>(pathServices.createServicesCard, body)
   },
 
-  async updateServicesCard(body: UpdateServicesCardRequestBody) {
+  async updateServicesCard(body: UpdatePaidOfServicesCardRequestBody) {
     return await axiosInstanceMain.patch<UpdateServicesCardResponse>(pathServices.updateServicesCard, body)
   },
   async getServicesCard(body: GetServicesCardRequestBody) {
     return axiosInstanceMain.post<GetServicesCardResponse>(pathServices.getAllServicesCard, body)
+  },
+  async updateHistoryPaid(body: UpdatePaidOfServicesCardRequestBody) {
+    return axiosInstanceMain.patch<UpdateServicesCardResponse>(pathServices.updateHistoryPaid, body)
   }
 }

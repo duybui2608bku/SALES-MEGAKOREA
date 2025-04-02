@@ -52,6 +52,7 @@ const pathServices = {
   getAllServicesCard: '/services-card/all',
   updateServicesCard: '/services-card/update',
   createServicesCard: '/services-card/create',
+  updateHistoryPaid: '/services-card/update-paid',
   getAllCategoryService: '/services/category-all',
   createCategoryService: 'services/category-create',
   updateCategoryService: 'services/category-update',

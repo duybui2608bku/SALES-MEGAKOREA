@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { RoleUser } from 'src/Constants/enum'
 
-export const generateProductCode = () => {
+export const generateCode = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   const codeArray = _.times(6, () => _.sample(characters))
   return codeArray.join('')

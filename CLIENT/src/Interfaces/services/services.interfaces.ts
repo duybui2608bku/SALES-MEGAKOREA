@@ -37,7 +37,7 @@ export interface ServicesType {
 export interface HistoryPaid {
   code: string
   date: Date
-  name_user: string
+  user_id: string
   paid: number
   out_standing: number
   method: string
@@ -174,7 +174,7 @@ export interface UpdateServicesCardRequestBody {
   _id?: string
   code?: string
   is_active?: boolean
-  name: string
+  name?: string
   customer_id?: string | null
   branch?: string[]
   descriptions?: string
@@ -201,4 +201,16 @@ export interface GetServicesCardRequestBody {
   branch?: string[]
   service_group_id?: string
   is_active?: boolean
+}
+
+export interface UpdatePaidOfServicesCardRequestBody {
+  card_services_id: string
+  code: string
+  date: Date
+  paid_initial: number
+  user_id: string
+  paid: number
+  out_standing: number
+  method: string
+  descriptions?: string
 }

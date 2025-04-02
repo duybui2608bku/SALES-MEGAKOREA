@@ -14,7 +14,6 @@ interface ModalViewEmployeeCommissionProps {
 
 const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) => {
   const { open, onCancel, data } = props
-  console.log('data', data)
   if (!data) return null
 
   // Nhóm tất cả nhân viên (sale từ employee và nhân viên từ step_services) theo id_employee

@@ -23,13 +23,15 @@ import { IoPencil } from 'react-icons/io5'
 import ModalViewEmployeeCommission from 'src/Modal/services/ModalViewEmployeeCommission'
 import { GiPayMoney } from 'react-icons/gi'
 import { TbPigMoney } from 'react-icons/tb'
+import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 const { Paragraph } = Typography
 
 enum ModalType {
   NONE = 0,
   MODAL_CREATE_SERVICE_CARD = 1,
   MODAL_PREVIEW_SERVICE = 2,
-  MODAL_VIEW_PRICE_EMPLOYEE = 3
+  MODAL_VIEW_PRICE_EMPLOYEE = 3,
+  MODAL_UPDATE_PAID = 4
 }
 
 enum SearchType {
@@ -108,7 +110,7 @@ const ServicesCard = () => {
       title: 'Mã thẻ',
       dataIndex: 'code',
       key: 'code',
-      width: 130,
+      width: 100,
       align: 'center'
     },
     {
@@ -168,12 +170,18 @@ const ServicesCard = () => {
       dataIndex: 'price_paid',
       key: 'price_paid',
       align: 'center',
-      render: (price_paid: number, _: ColumnsServicesCardType) => {
+      render: (price_paid: number, record: ColumnsServicesCardType) => {
         return (
           <Flex gap={10} justify='align' align='center'>
             <Flex>{price_paid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Flex>
             <Flex align='center' justify='center' gap={10}>
-              <Button type='dashed'>
+              <Button
+                onClick={() => {
+                  setModalType(ModalType.MODAL_UPDATE_PAID)
+                  setServicesCardSelected(record as ServicesOfCardType)
+                }}
+                type='dashed'
+              >
                 <GiPayMoney size={20} />
               </Button>
               <Button type='dashed'>
@@ -309,7 +317,8 @@ const ServicesCard = () => {
         )
       },
       width: 120,
-      align: 'center'
+      align: 'center',
+      fixed: 'right'
     }
   ]
 
@@ -381,6 +390,7 @@ const ServicesCard = () => {
           <Table
             columns={columns}
             bordered
+            scroll={{ x: 'max-content' }}
             dataSource={servicesCard}
             rowKey={(record: ColumnsServicesCardType) => record._id || ''}
             loading={isLoading}
@@ -412,6 +422,13 @@ const ServicesCard = () => {
           setServicesCardSelected(undefined)
         }}
         data={servicesCardSelected as ServicesOfCardType}
+      />
+      <ModalUpdatePaidOfServicesCard
+        visible={modalType === ModalType.MODAL_UPDATE_PAID}
+        onClose={() => {
+          setModalType(ModalType.NONE)
+        }}
+        servicesCard={servicesCardSelected as ServicesOfCardType}
       />
     </Fragment>
   )
