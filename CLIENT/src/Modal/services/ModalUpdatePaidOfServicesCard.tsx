@@ -6,11 +6,7 @@ import { Fragment } from 'react/jsx-runtime'
 import { optionsMethodPayment } from 'src/Constants/option'
 import { AppContext } from 'src/Context/AppContext'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
-import {
-  ServicesOfCardType,
-  UpdatePaidOfServicesCardRequestBody,
-  UpdateServicesCardRequestBody
-} from 'src/Interfaces/services/services.interfaces'
+import { ServicesOfCardType, UpdatePaidOfServicesCardRequestBody } from 'src/Interfaces/services/services.interfaces'
 import { queryClient } from 'src/main'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
@@ -32,13 +28,13 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
   const [form] = Form.useForm<FieldsUpdatePaidOfServicesCard>()
   const { profile } = useContext(AppContext)
   const updateMutation = useMutation({
-    mutationFn: (body: UpdatePaidOfServicesCardRequestBody) => servicesApi.updateServicesCard(body),
+    mutationFn: (body: UpdatePaidOfServicesCardRequestBody) => servicesApi.updateHistoryPaid(body),
     onMutate: async () => {
-      return createOptimisticUpdateHandler(queryClient, ['getAllServicesCategory'])()
+      return createOptimisticUpdateHandler(queryClient, ['getAllServicesCard'])()
     },
     onSuccess: () => {
       message.success('Cập nhật thanh toán thành công!')
-      queryClient.invalidateQueries({ queryKey: ['getAllServicesCategory'] })
+      queryClient.invalidateQueries({ queryKey: ['getAllServicesCard'] })
       onClose()
       form.resetFields()
     },
@@ -49,7 +45,7 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
           ? 'Dữ liệu không hợp lệ!'
           : error.response?.status === HttpStatusCode.NotFound
             ? 'Thẻ dịch vụ không tồn tại!'
-            : `Lỗi khi cập nhật danh mục: ${error.message}`
+            : `Lỗi khi cập nhật thẻ dịch vụ: ${error.message}`
       message.error(errorMsg)
     }
   })
@@ -62,20 +58,17 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
     const out_standing = servicesCard.price - servicesCard.price_paid - values.paid // Số tiền còn lại
     const user_id = profile?._id as string // Lấy id của người dùng hiện tại
     const paid = servicesCard.price_paid + values.paid // Tổng số tiền đã thanh toán
-    const history_paid = [
-      {
-        ...values,
-        date: new Date(),
-        user_id,
-        out_standing,
-        code: generateCode()
-      }
-    ]
-    updateMutation.mutate({
-      history_paid,
-      _id,
-      paid_initial: paid
-    })
+    const data = {
+      ...values,
+      code: generateCode(),
+      card_services_id: _id,
+      date: new Date(),
+      paid_initial: paid,
+      user_id,
+      out_standing
+    }
+
+    updateMutation.mutate(data)
   }
 
   const handleCancelModal = () => {

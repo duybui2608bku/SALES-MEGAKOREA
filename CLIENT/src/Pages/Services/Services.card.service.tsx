@@ -11,6 +11,7 @@ import { BranchType } from 'src/Interfaces/branch/branch.interface'
 import {
   EmployeeOfServices,
   GetServicesCardRequestBody,
+  HistoryPaid,
   ServicesCategoryType,
   ServicesOfCard,
   ServicesOfCardType
@@ -24,6 +25,7 @@ import ModalViewEmployeeCommission from 'src/Modal/services/ModalViewEmployeeCom
 import { GiPayMoney } from 'react-icons/gi'
 import { TbPigMoney } from 'react-icons/tb'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
+import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
 const { Paragraph } = Typography
 
 enum ModalType {
@@ -31,7 +33,8 @@ enum ModalType {
   MODAL_CREATE_SERVICE_CARD = 1,
   MODAL_PREVIEW_SERVICE = 2,
   MODAL_VIEW_PRICE_EMPLOYEE = 3,
-  MODAL_UPDATE_PAID = 4
+  MODAL_UPDATE_PAID = 4,
+  MODAL_VIEW_HISTORY_PAID = 5
 }
 
 enum SearchType {
@@ -45,7 +48,7 @@ interface ColumnsServicesCardType {
   name: string
   price: number
   price_paid: number
-  history_price: unknown[]
+  history_paid: HistoryPaid[]
   branch: BranchType[]
   descriptions: string
   is_active: boolean
@@ -184,7 +187,13 @@ const ServicesCard = () => {
               >
                 <GiPayMoney size={20} />
               </Button>
-              <Button type='dashed'>
+              <Button
+                onClick={() => {
+                  setModalType(ModalType.MODAL_VIEW_HISTORY_PAID)
+                  setServicesCardSelected(record as ServicesOfCardType)
+                }}
+                type='dashed'
+              >
                 <TbPigMoney fill='yellow' size={20} />
               </Button>
             </Flex>
@@ -429,6 +438,14 @@ const ServicesCard = () => {
           setModalType(ModalType.NONE)
         }}
         servicesCard={servicesCardSelected as ServicesOfCardType}
+      />
+      <ModalViewHistoryPaid
+        open={modalType === ModalType.MODAL_VIEW_HISTORY_PAID}
+        onCancel={() => {
+          setModalType(ModalType.NONE)
+          setServicesCardSelected(undefined)
+        }}
+        data={servicesCardSelected?.history_paid || []}
       />
     </Fragment>
   )

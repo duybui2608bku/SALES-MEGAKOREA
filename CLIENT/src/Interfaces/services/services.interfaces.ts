@@ -41,6 +41,8 @@ export interface HistoryPaid {
   paid: number
   out_standing: number
   method: string
+  descriptions?: string
+  user_details?: User
 }
 
 export interface ServicesOfCardType {
@@ -54,7 +56,7 @@ export interface ServicesOfCardType {
   session_time: number
   price: number
   price_paid: number
-  history_price: HistoryPaid[]
+  history_paid: HistoryPaid[]
   date_different_paid: Date[]
   user_id: string | string
   service_group: ServicesCategoryType
