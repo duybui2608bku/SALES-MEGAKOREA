@@ -4,9 +4,11 @@ import {
   CreateServicesCardData,
   GetCommisionOfDateData,
   GetServicesCardData,
+  UpdateHistoryPaidData,
   UpdateServicesCardData
 } from '~/interface/services/services.interface'
 import { CardServices } from '~/models/schemas/services/cardServices.schema'
+import { createProjectionField } from '~/utils/utils'
 
 class ServicesCardRepository {
   async createServicesCard(data: CreateServicesCardData) {
@@ -16,15 +18,43 @@ class ServicesCardRepository {
   async getAllServicesCard(data: GetServicesCardData) {
     const { page, query, limit } = data
     const skip = (page - 1) * limit
+    const projectionEmployeeDetailsFull = createProjectionField('employee.employee_details', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient'
+    ])
+    const projectionServiceDetailsFull = createProjectionField('services_of_card.service_details.step_services', [
+      'employee_details.password',
+      'employee_details.status',
+      'employee_details.forgot_password_token',
+      'employee_details.role',
+      'employee_details.coefficient'
+    ])
+    const projectionHistoryPaidFull = createProjectionField('history_paid.user_details', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient'
+    ])
 
-    const pipline = [
-      //Match
+    const finalProjection = {
+      ...projectionEmployeeDetailsFull,
+      ...projectionServiceDetailsFull,
+      ...projectionHistoryPaidFull
+    } as any
+
+    const pipeline = [
+      // Bước 1: Lọc dữ liệu theo query
       {
         $match: {
           ...query
         }
       },
-      // Lookup branch
+
+      // Bước 2: Lookup thông tin branch
       {
         $lookup: {
           from: 'branch',
@@ -34,7 +64,7 @@ class ServicesCardRepository {
         }
       },
 
-      // Lookup service_group
+      // Bước 3: Lookup thông tin service_group và lấy phần tử đầu tiên
       {
         $lookup: {
           from: 'services_category',
@@ -49,14 +79,14 @@ class ServicesCardRepository {
         }
       },
 
-      // Lưu trữ giá trị gốc của services_of_card
+      // Bước 4: Lưu trữ giá trị gốc của services_of_card
       {
         $set: {
           original_services_of_card: '$services_of_card'
         }
       },
 
-      // Unwind services_of_card
+      // Bước 5: Unwind services_of_card để xử lý từng phần tử
       {
         $unwind: {
           path: '$services_of_card',
@@ -64,7 +94,7 @@ class ServicesCardRepository {
         }
       },
 
-      // Lookup services cho services_of_card
+      // Bước 6: Lookup thông tin chi tiết của services trong services_of_card
       {
         $lookup: {
           from: 'services',
@@ -79,20 +109,20 @@ class ServicesCardRepository {
         }
       },
 
-      // Giữ price gốc từ services_of_card và tính total
+      // Bước 7: Bảo toàn price gốc và tính total cho services_of_card
       {
         $set: {
-          'services_of_card.price': { $ifNull: ['$services_of_card.price', 0] }, // Bảo toàn price gốc
+          'services_of_card.price': { $ifNull: ['$services_of_card.price', 0] },
           'services_of_card.total': {
             $subtract: [
-              { $multiply: ['$services_of_card.price', '$services_of_card.quantity'] }, // Dùng price từ services_of_card
-              { $ifNull: ['$services_of_card.discount', 0] } // Đảm bảo discount là 0 nếu null
+              { $multiply: ['$services_of_card.price', '$services_of_card.quantity'] },
+              { $ifNull: ['$services_of_card.discount', 0] }
             ]
           }
         }
       },
 
-      // Unwind step_services trong service_details
+      // Bước 8: Unwind step_services trong service_details
       {
         $unwind: {
           path: '$services_of_card.service_details.step_services',
@@ -100,7 +130,7 @@ class ServicesCardRepository {
         }
       },
 
-      // Lookup users cho id_employee trong step_services
+      // Bước 9: Lookup thông tin employee trong step_services
       {
         $lookup: {
           from: 'users',
@@ -117,7 +147,7 @@ class ServicesCardRepository {
         }
       },
 
-      // Group lại step_services thành mảng trong service_details
+      // Bước 10: Group lại step_services thành mảng trong service_details
       {
         $group: {
           _id: {
@@ -125,7 +155,7 @@ class ServicesCardRepository {
             services_of_card_id: '$services_of_card.services_id',
             quantity: '$services_of_card.quantity',
             discount: '$services_of_card.discount',
-            price: '$services_of_card.price', // Thêm price vào _id để bảo toàn
+            price: '$services_of_card.price',
             total: '$services_of_card.total'
           },
           branch: { $first: '$branch' },
@@ -135,7 +165,7 @@ class ServicesCardRepository {
           descriptions: { $first: '$descriptions' },
           session_time: { $first: '$session_time' },
           price_paid: { $first: '$price_paid' },
-          history_price: { $first: '$history_price' },
+          history_paid: { $first: '$history_paid' },
           user_id: { $first: '$user_id' },
           service_group: { $first: '$service_group' },
           created_at: { $first: '$created_at' },
@@ -147,14 +177,14 @@ class ServicesCardRepository {
         }
       },
 
-      // Gộp lại services_of_card với price
+      // Bước 11: Gộp lại services_of_card với thông tin đã xử lý
       {
         $set: {
           services_of_card: {
             services_id: '$_id.services_of_card_id',
             quantity: '$_id.quantity',
             discount: '$_id.discount',
-            price: '$_id.price', // Đưa price vào services_of_card
+            price: '$_id.price',
             total: '$_id.total',
             service_details: {
               $mergeObjects: ['$service_details', { step_services: '$step_services' }]
@@ -163,7 +193,7 @@ class ServicesCardRepository {
         }
       },
 
-      // Group lại services_of_card và tính tổng giá
+      // Bước 12: Group lại services_of_card và tính tổng giá
       {
         $group: {
           _id: '$_id._id',
@@ -174,7 +204,7 @@ class ServicesCardRepository {
           descriptions: { $first: '$descriptions' },
           session_time: { $first: '$session_time' },
           price_paid: { $first: '$price_paid' },
-          history_price: { $first: '$history_price' },
+          history_paid: { $first: '$history_paid' },
           user_id: { $first: '$user_id' },
           service_group: { $first: '$service_group' },
           created_at: { $first: '$created_at' },
@@ -190,7 +220,7 @@ class ServicesCardRepository {
         }
       },
 
-      // Đảm bảo services_of_card là [] nếu rỗng
+      // Bước 13: Đảm bảo services_of_card là mảng rỗng nếu không có dữ liệu
       {
         $set: {
           services_of_card: {
@@ -199,34 +229,18 @@ class ServicesCardRepository {
         }
       },
 
-      // Lưu trữ giá trị gốc của employee và lọc phần tử rỗng
+      // Bước 14: Xử lý employee trước khi xử lý history_paid để tránh trùng lặp
       {
         $set: {
-          original_employee: '$employee',
-          employee: {
-            $cond: [
-              { $eq: ['$employee', [{}]] },
-              [],
-              {
-                $filter: {
-                  input: '$employee',
-                  cond: { $ne: ['$$this', {}] }
-                }
-              }
-            ]
-          }
+          original_employee: '$employee' // Lưu trữ giá trị gốc của employee
         }
       },
-
-      // Unwind employee
       {
         $unwind: {
           path: '$employee',
           preserveNullAndEmptyArrays: true
         }
       },
-
-      // Lookup employee từ users
       {
         $lookup: {
           from: 'users',
@@ -240,8 +254,7 @@ class ServicesCardRepository {
           'employee.employee_details': { $arrayElemAt: ['$employee.employee_details', 0] }
         }
       },
-
-      // Group lại employee
+      // Group lại employee thành mảng hoàn chỉnh trước khi xử lý history_paid
       {
         $group: {
           _id: '$_id',
@@ -253,7 +266,7 @@ class ServicesCardRepository {
           session_time: { $first: '$session_time' },
           price: { $first: '$price' },
           price_paid: { $first: '$price_paid' },
-          history_price: { $first: '$history_price' },
+          history_paid: { $first: '$history_paid' },
           user_id: { $first: '$user_id' },
           service_group: { $first: '$service_group' },
           created_at: { $first: '$created_at' },
@@ -271,8 +284,6 @@ class ServicesCardRepository {
           original_employee: { $first: '$original_employee' }
         }
       },
-
-      // Đảm bảo employee là [] nếu rỗng
       {
         $set: {
           employee: {
@@ -285,34 +296,70 @@ class ServicesCardRepository {
         }
       },
 
-      // Xóa các trường tạm thời
+      // Bước 15: Xử lý history_paid sau khi employee đã hoàn tất
+      {
+        $unwind: {
+          path: '$history_paid',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'history_paid.user_id',
+          foreignField: '_id',
+          as: 'history_paid.user_details'
+        }
+      },
+      {
+        $set: {
+          'history_paid.user_details': { $arrayElemAt: ['$history_paid.user_details', 0] }
+        }
+      },
+      // Group lại history_paid mà không ảnh hưởng đến employee
+      {
+        $group: {
+          _id: '$_id',
+          branch: { $first: '$branch' },
+          code: { $first: '$code' },
+          is_active: { $first: '$is_active' },
+          name: { $first: '$name' },
+          descriptions: { $first: '$descriptions' },
+          session_time: { $first: '$session_time' },
+          price: { $first: '$price' },
+          price_paid: { $first: '$price_paid' },
+          history_paid: { $push: '$history_paid' },
+          user_id: { $first: '$user_id' },
+          service_group: { $first: '$service_group' },
+          created_at: { $first: '$created_at' },
+          updated_at: { $first: '$updated_at' },
+          services_of_card: { $first: '$services_of_card' },
+          employee: { $first: '$employee' } // Giữ nguyên mảng employee đã xử lý
+        }
+      },
+
+      // Bước 16: Xóa các trường tạm thời
       {
         $unset: ['original_services_of_card', 'original_employee']
       },
 
-      // Giới hạn và bỏ qua
+      // Bước 17: Phân trang
       { $skip: skip },
       { $limit: limit },
 
-      // Sort
+      // Bước 18: Sắp xếp theo _id giảm dần
       { $sort: { _id: -1 } },
 
-      // Project để loại bỏ trường không cần thiết
+      // Bước 19: Project để loại bỏ các trường không cần thiết
       {
         $project: {
           'services_of_card.services_id': 0,
-          'employee.id_employee': 0,
-          'employee.employee_details.password': 0,
-          'employee.employee_details.status': 0,
-          'employee.employee_details.forgot_password_token': 0,
-          'services_of_card.service_details.step_services.employee_details.password': 0,
-          'services_of_card.service_details.step_services.employee_details.status': 0,
-          'services_of_card.service_details.step_services.employee_details.forgot_password_token': 0
+          ...finalProjection
         }
       }
     ]
     const [servicesCard, total] = await Promise.all([
-      databaseServiceSale.services_card.aggregate(pipline).toArray(),
+      databaseServiceSale.services_card.aggregate(pipeline).toArray(),
       databaseServiceSale.services_card.countDocuments(query)
     ])
     return { servicesCard, total, limit, page }
@@ -626,6 +673,24 @@ class ServicesCardRepository {
   async updateServicesCard(data: UpdateServicesCardData) {
     const { _id, ...updateData } = data
     await databaseServiceSale.services_card.updateOne({ _id }, { $set: { ...updateData } })
+  }
+
+  async updateHistoryOfCard(data: UpdateHistoryPaidData) {
+    await databaseServiceSale.services_card.updateOne(
+      {
+        _id: data.card_services_id
+      },
+      {
+        $set: {
+          price_paid: data.paid_initial
+        },
+        $push: {
+          history_paid: {
+            ...data.history_paid
+          }
+        }
+      }
+    )
   }
 }
 

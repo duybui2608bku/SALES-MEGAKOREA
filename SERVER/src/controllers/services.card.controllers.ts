@@ -4,7 +4,8 @@ import {
   CreateServicesCardRequestBody,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
-  UpdateCardRequestBody
+  UpdateCardRequestBody,
+  UpdateHistoryPaidOfServicesCardRequestBody
 } from '~/models/requestes/Services.card.requests'
 import servicesCardServices from '../../services/services.card.services'
 import { ResponseError, ResponseSuccess } from '~/utils/handlers'
@@ -29,6 +30,18 @@ export const UpdateServicesCard = async (req: Request<ParamsDictionary, any, Upd
   await servicesCardServices.UpdateServicesCard(data)
   ResponseSuccess({
     message: servicesMessages.UPDATE_SERVICES_CARD_SUCCESS,
+    res
+  })
+}
+
+export const UpdateHistoryPaid = async (
+  req: Request<ParamsDictionary, any, UpdateHistoryPaidOfServicesCardRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  await servicesCardServices.UpdateHistoryPaid(data)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_HISTORY_PAID_SUCCESS,
     res
   })
 }

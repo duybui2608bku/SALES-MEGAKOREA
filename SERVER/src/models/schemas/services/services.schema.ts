@@ -7,7 +7,7 @@ import {
   ServicesType,
   StepServicesType
 } from '~/interface/services/services.interface'
-import { generateProductCode } from '~/utils/utils'
+import { generateCode } from '~/utils/utils'
 
 export class ServicesCategory {
   _id?: ObjectId
@@ -36,7 +36,7 @@ export class Services {
   created_at?: Date
   updated_at?: Date
   constructor(servicesCategory: ServicesType) {
-    this.code = servicesCategory.code || generateProductCode()
+    this.code = servicesCategory.code || generateCode()
     this._id = servicesCategory._id || new ObjectId()
     this.is_active = servicesCategory.is_active || true
     this.name = servicesCategory.name

@@ -109,7 +109,13 @@ export const servicesMessages = {
   NAME_MUST_NOT_BE_EMPTY: 'Name must not be empty !',
   SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Session time must be a number greater than zero !',
   CUSTOMER_ID_MUST_BE_STRING: 'Customer id must be a string !',
-  UPDATE_SERVICES_CARD_SUCCESS: 'Update services card success !'
+  UPDATE_SERVICES_CARD_SUCCESS: 'Update services card success !',
+  UPDATE_HISTORY_PAID_SUCCESS: 'Update history paid success !',
+  CARD_SERVICE_ID_MUST_BE_STRING: 'Card service id must be a string !',
+  DATE_MUST_BE_STRING: 'Date must be a string !',
+  PRICE_INITIAL_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price initial must be a number greater than zero !',
+  OUT_STANDING_MUST_BE_NUMBER: 'Out standing must be a number !',
+  METHOD_PAYMENT_MUST_BE_STRING: 'Method payment must be a string !'
 }
 
 export const productMessages = {

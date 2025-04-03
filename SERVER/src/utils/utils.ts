@@ -16,8 +16,16 @@ export const toObjectId = (id: string | ObjectId): ObjectId => {
   })
 }
 
-export const generateProductCode = () => {
+export const generateCode = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   const codeArray = _.times(6, () => _.sample(characters))
   return codeArray.join('')
+}
+
+export const createProjectionField = (fieldPath: string, fieldsToOmit: string[]): Record<string, number> => {
+  const projection: Record<string, number> = {}
+  fieldsToOmit.forEach((field) => {
+    projection[`${fieldPath}.${field}`] = 0
+  })
+  return projection
 }

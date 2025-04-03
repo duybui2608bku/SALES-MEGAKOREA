@@ -55,3 +55,15 @@ export interface GetCommisionOfDateRequestBody {
   branch?: string[]
   user_id?: string
 }
+
+export interface UpdateHistoryPaidOfServicesCardRequestBody {
+  card_services_id: string
+  code: string
+  date: Date
+  paid_initial: number
+  user_id: string
+  paid: number
+  out_standing: number
+  method: string
+  descriptions?: string
+}

@@ -187,3 +187,66 @@ export const CreateServicesCardValidator = validate(
     ['body']
   )
 )
+
+export const UpdateHistoryPaidOfCardValidator = validate(
+  checkSchema({
+    card_services_id: {
+      isString: {
+        errorMessage: servicesMessages.CARD_SERVICE_ID_MUST_BE_STRING
+      },
+      isMongoId: {
+        errorMessage: servicesMessages.INVALID_ID
+      }
+    },
+    code: {
+      isString: {
+        errorMessage: servicesMessages.CODE_MUST_BE_STRING
+      },
+      trim: true
+    },
+    date: {
+      isString: {
+        errorMessage: servicesMessages.DATE_MUST_BE_STRING
+      },
+      trim: true
+    },
+    paid: {
+      isInt: {
+        options: { min: 0 },
+        errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+      }
+    },
+    paid_initial: {
+      isInt: {
+        options: { min: 0 },
+        errorMessage: servicesMessages.PRICE_INITIAL_MUST_BE_NUMBER_GREATER_THAN_ZERO
+      }
+    },
+    out_standing: {
+      isInt: {
+        errorMessage: servicesMessages.OUT_STANDING_MUST_BE_NUMBER
+      }
+    },
+    user_id: {
+      isString: {
+        errorMessage: servicesMessages.EMPOYEE_ID_MUST_BE_STRING
+      },
+      isMongoId: {
+        errorMessage: servicesMessages.INVALID_ID
+      }
+    },
+    method: {
+      isString: {
+        errorMessage: servicesMessages.METHOD_PAYMENT_MUST_BE_STRING
+      },
+      trim: true
+    },
+    descriptions: {
+      isString: {
+        errorMessage: servicesMessages.DESCRIPTIONS_MUST_BE_STRING
+      },
+      optional: true,
+      trim: true
+    }
+  })
+)

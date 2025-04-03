@@ -3,9 +3,10 @@ import {
   createServicesCard,
   getCommissionOfDate,
   getServicesCard,
+  UpdateHistoryPaid,
   UpdateServicesCard
 } from '~/controllers/services.card.controllers'
-import { CreateServicesCardValidator } from '~/middlewares/services.card.middlewares'
+import { CreateServicesCardValidator, UpdateHistoryPaidOfCardValidator } from '~/middlewares/services.card.middlewares'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -23,6 +24,13 @@ servicesOfCardRouters.patch(
   accessTokenValidator,
   CreateServicesCardValidator,
   wrapRequestHandler(UpdateServicesCard)
+)
+
+servicesOfCardRouters.patch(
+  '/update-paid',
+  accessTokenValidator,
+  UpdateHistoryPaidOfCardValidator,
+  wrapRequestHandler(UpdateHistoryPaid)
 )
 
 servicesOfCardRouters.post('/all', accessTokenValidator, wrapRequestHandler(getServicesCard))

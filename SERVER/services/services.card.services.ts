@@ -7,7 +7,8 @@ import {
   CreateServicesCardRequestBody,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
-  UpdateCardRequestBody
+  UpdateCardRequestBody,
+  UpdateHistoryPaidOfServicesCardRequestBody
 } from '~/models/requestes/Services.card.requests'
 import { toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
@@ -72,7 +73,7 @@ class ServicesCardServices {
   }
 
   async GetServicesCard(data: GetServicesCardRequestBody) {
-    const { page, limit, branch, code, is_active, search, service_group_id, name } = data
+    const { page = 1, limit = 10, branch, code, is_active, search, service_group_id, name } = data
     const query = {
       ...(name && { name: { $regex: name, $options: 'i' } }),
       ...(code && { code: { $regex: code, $options: 'i' } }),
@@ -81,8 +82,6 @@ class ServicesCardServices {
       ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } }),
       ...(service_group_id && { service_group_id: new ObjectId(service_group_id) })
     }
-    console.log('query', query)
-
     const servicesCard = await servicesCardRepository.getAllServicesCard({
       query,
       page,
@@ -106,12 +105,27 @@ class ServicesCardServices {
   }
 
   async UpdateServicesCard(data: UpdateCardRequestBody) {
+    await this.checkServicesCardExist(new ObjectId(data._id || ''))
     const servicesCardData = (await convertServicesDataToObjectId(data)) as UpdateServicesCardData
     const _id = new ObjectId(servicesCardData._id)
-    console.log('servicesCardData', servicesCardData)
     await servicesCardRepository.updateServicesCard({
       ...servicesCardData,
       _id
+    })
+  }
+
+  async UpdateHistoryPaid(data: UpdateHistoryPaidOfServicesCardRequestBody) {
+    await this.checkServicesCardExist(new ObjectId(data.card_services_id || ''))
+    const { card_services_id, paid_initial, ...rest } = data
+    const cardServicesId = new ObjectId(card_services_id)
+    await servicesCardRepository.updateHistoryOfCard({
+      history_paid: {
+        ...rest,
+        date: new Date(rest.date),
+        user_id: new ObjectId(rest.user_id)
+      },
+      card_services_id: cardServicesId,
+      paid_initial
     })
   }
 }

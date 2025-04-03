@@ -170,14 +170,12 @@ export interface EmployeeOfHistoryPaid {
 }
 
 export interface HistoryPaid {
-  services_card_id: ObjectId | string
   code: string
   date: Date
   user_id: ObjectId | string
   paid: number
   out_standing: number
   method: string
-  employee: EmployeeOfHistoryPaid[]
   descriptions?: string
 }
 
@@ -213,4 +211,10 @@ export interface GetCommisionOfDateData {
   end_date: Date
   branch: ObjectId[]
   user_id: ObjectId | null
+}
+
+export interface UpdateHistoryPaidData {
+  history_paid: HistoryPaid
+  card_services_id: ObjectId
+  paid_initial: number
 }

@@ -5,7 +5,7 @@ import {
   HistoryPaid,
   ServicesOfCard
 } from '~/interface/services/services.interface'
-import { generateProductCode } from '~/utils/utils'
+import { generateCode } from '~/utils/utils'
 
 export class CardServices {
   _id?: ObjectId
@@ -27,7 +27,7 @@ export class CardServices {
   created_at?: Date
   updated_at?: Date
   constructor(cardServices: CardServicesType) {
-    this.code = cardServices.code || generateProductCode()
+    this.code = cardServices.code || generateCode()
     this._id = cardServices._id || new ObjectId()
     this.customer_id = cardServices.customer_id || null
     this.is_active = cardServices.is_active || true

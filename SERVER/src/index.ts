@@ -36,5 +36,5 @@ app.use('/services-card', servicesOfCardRouters)
 app.use(defaultErrorHandler)
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`)
+  console.log(`Server is running on http://localhost: ${port}`)
 })
