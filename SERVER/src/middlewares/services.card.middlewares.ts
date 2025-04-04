@@ -1,6 +1,6 @@
 import { checkSchema } from 'express-validator'
 import { ObjectId } from 'mongodb'
-import { HttpStatusCode, PriceType } from '~/constants/enum'
+import { HttpStatusCode, TypeCommision } from '~/constants/enum'
 import { servicesMessages } from '~/constants/messages'
 import { EmployeeOfServices, ServicesOfCard } from '~/interface/services/services.interface'
 import { ErrorWithStatusCode } from '~/models/Errors'
@@ -172,7 +172,7 @@ export const CreateServicesCardValidator = validate(
                   statusCode: HttpStatusCode.BadRequest
                 })
               }
-              if (employee.type_price !== PriceType.FIXED && employee.type_price !== PriceType.PRECENT) {
+              if (employee.type_price !== TypeCommision.FIXED && employee.type_price !== TypeCommision.PRECENT) {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.TYPE_PRICE_MUST_BE_FIXED_OR_PERCENT,
                   statusCode: HttpStatusCode.BadRequest

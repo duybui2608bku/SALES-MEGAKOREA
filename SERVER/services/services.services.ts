@@ -10,7 +10,7 @@ import serverRepository from '../repository/services/services.repository'
 import { ObjectId } from 'mongodb'
 import { servicesMessages } from '~/constants/messages'
 import { ErrorWithStatusCode } from '~/models/Errors'
-import { HttpStatusCode, PriceType } from '~/constants/enum'
+import { HttpStatusCode, TypeCommision } from '~/constants/enum'
 import databaseServiceSale from './database.services.sale'
 import { toObjectId } from '~/utils/utils'
 
