@@ -3,7 +3,7 @@ import MainLayout from './Layouts/MainLayout/MainLayout'
 import { useContext } from 'react'
 import { AppContext } from './Context/AppContext'
 import Home from './Pages/Home/Home'
-import { pathAuth, pathRoutersProduct, pathRoutersService, pathUtil } from './Constants/path'
+import { pathAuth, pathRoutersProduct, pathRoutersService, pathRoutersUser, pathUtil } from './Constants/path'
 
 import Login from './Pages/Auth/Login/Login'
 import { RoleUser } from './Constants/enum'
@@ -11,6 +11,7 @@ import ProductGeneral from './Pages/Product/ProductGeneral'
 import CategoryService from './Pages/Services/Category.service'
 import Service from './Pages/Services/Services.service'
 import ServicesCard from './Pages/Services/Services.card.service'
+import UserGeneral from './Pages/User/UserGeneral'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -90,6 +91,20 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <ServicesCard />
+            </MainLayout>
+          )
+        }
+      ]
+    },
+    {
+      path: pathUtil.none,
+      element: <ProtectedRoute allowedRoles={[RoleUser.ADMIN]} />,
+      children: [
+        {
+          path: pathRoutersUser.userGeneral,
+          element: (
+            <MainLayout>
+              <UserGeneral />
             </MainLayout>
           )
         }

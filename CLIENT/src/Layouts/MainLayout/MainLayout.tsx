@@ -9,7 +9,7 @@ import { FcEngineering } from 'react-icons/fc'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
-import { pathRoutersProduct, pathRoutersService } from 'src/Constants/path'
+import { pathRoutersProduct, pathRoutersService, pathRoutersUser } from 'src/Constants/path'
 import { CiCreditCard2 } from 'react-icons/ci'
 
 interface Props {
@@ -51,6 +51,12 @@ const MainLayout = ({ children }: Props) => {
             { key: '3', label: 'Dịch Vụ', onClick: () => navigate(pathRoutersService.service) },
             { key: '4', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) }
           ]
+        },
+        {
+          key: 'users',
+          label: 'Tài khoản',
+          type: 'group',
+          children: [{ key: '7', label: 'Danh sách tài khoản', onClick: () => navigate(pathRoutersUser.userGeneral) }]
         }
       ]
     },
@@ -78,6 +84,7 @@ const MainLayout = ({ children }: Props) => {
       ]
     }
   ]
+
   return (
     <Layout>
       <Sider width={250} trigger={null} collapsible collapsed={collapsed}>

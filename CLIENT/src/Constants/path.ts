@@ -6,7 +6,8 @@ const pathAuth = {
 const pathUtil = {
   home: '/',
   notFound: '/404',
-  none: ''
+  none: '',
+  admin: '/admin'
 }
 
 const pathMe = {
@@ -25,6 +26,10 @@ const pathRoutersService = {
   categoryService: '/category-service',
   service: '/service',
   cardService: '/card-service'
+}
+
+const pathRoutersUser = {
+  userGeneral: '/user-general'
 }
 
 const pathApiProduct = {
@@ -73,5 +78,6 @@ export {
   pathApiBranch,
   pathRoutersService,
   pathServices,
-  pathApiUsers
+  pathApiUsers,
+  pathRoutersUser
 }

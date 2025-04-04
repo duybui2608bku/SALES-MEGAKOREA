@@ -24,6 +24,14 @@ const axiosInstanceMain = axios.create({
   }
 })
 
+export const axiosJson = axios.create({
+  baseURL: 'http://localhost:9000',
+  timeout: 500000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
 axiosRetry(axiosInstanceMain, {
   retries: 20,
   retryDelay: (retryCount) => retryCount * 500,

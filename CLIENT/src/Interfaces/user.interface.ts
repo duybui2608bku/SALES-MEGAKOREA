@@ -1,11 +1,19 @@
-export interface User {
+import { BranchType } from './branch/branch.interface'
+
+export interface UserGeneralInterface {
   _id: string
   name: string
   email: string
   avatar: string
   role: number
   status: number
-  branch: string[]
+  branch: BranchType[]
   created_at: Date
   updated_at: Date
+}
+
+export interface GetAllUserRequestQuery {
+  page: number
+  limit: number
+  branch?: string
 }
