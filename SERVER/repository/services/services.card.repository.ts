@@ -1,5 +1,5 @@
 import databaseServiceSale from 'services/database.services.sale'
-import { PriceType } from '~/constants/enum'
+import { TypeCommision } from '~/constants/enum'
 import {
   CreateServicesCardData,
   GetCommisionOfDateData,
@@ -442,7 +442,7 @@ class ServicesCardRepository {
               $set: {
                 commissionBeforeCoefficient: {
                   $cond: [
-                    { $eq: ['$employee.type_price', PriceType.FIXED] }, // Fixed
+                    { $eq: ['$employee.type_price', TypeCommision.FIXED] }, // Fixed
                     { $min: ['$employee.commission', '$total_price_paid'] }, // Giới hạn bởi total_price_paid
                     {
                       $multiply: [{ $divide: ['$total_price_paid', '$total_price'] }, '$employee.commission']
@@ -471,7 +471,7 @@ class ServicesCardRepository {
               $set: {
                 commissionAfterCoefficient: {
                   $cond: [
-                    { $eq: ['$employee.type_price', PriceType.FIXED] }, // Fixed
+                    { $eq: ['$employee.type_price', TypeCommision.FIXED] }, // Fixed
                     '$commissionBeforeCoefficient',
                     {
                       $multiply: ['$commissionBeforeCoefficient', '$employee.employee_details.coefficient']
@@ -539,7 +539,7 @@ class ServicesCardRepository {
               $set: {
                 commissionBeforeCoefficient: {
                   $cond: [
-                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', PriceType.FIXED] }, // Fixed
+                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', TypeCommision.FIXED] }, // Fixed
                     {
                       $min: [
                         {
@@ -582,7 +582,7 @@ class ServicesCardRepository {
               $set: {
                 commissionAfterCoefficient: {
                   $cond: [
-                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', PriceType.FIXED] }, // Fixed
+                    { $eq: ['$services_of_card.service_details.step_services.type_step_price', TypeCommision.FIXED] }, // Fixed
                     '$commissionBeforeCoefficient',
                     {
                       $multiply: [

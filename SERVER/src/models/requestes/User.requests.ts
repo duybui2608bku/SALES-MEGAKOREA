@@ -1,6 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
-import { TokenType } from '~/constants/enum'
+import { TokenType, UserRole } from '~/constants/enum'
 
 export interface RegisterRequestBody {
   name: string
@@ -64,4 +64,11 @@ export interface DeleteUserFromBranchRequestBody {
 
 export interface GetAllUserWithRoleRequestParams {
   role: string
+}
+
+export interface GetAllUserRequestBody {
+  limit?: string
+  page?: string
+  branch?: string[]
+  role?: UserRole[]
 }
