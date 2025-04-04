@@ -36,7 +36,8 @@ export enum MediaType {
   Video
 }
 
-export enum PriceType {
+export enum TypeCommision {
+  NONE = 0,
   PRECENT = 1,
   FIXED = 2
 }

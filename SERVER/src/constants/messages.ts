@@ -164,3 +164,7 @@ export const branchMessages = {
   UPDATE_BRANCH_SUCCESS: 'Update branch success !',
   GET_ALL_BRANCH_SUCCESS: 'Get all branch success !'
 }
+
+export const commisionMessages = {
+  CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !'
+}

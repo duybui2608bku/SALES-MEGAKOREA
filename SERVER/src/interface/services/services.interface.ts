@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { PriceType } from '~/constants/enum'
+import { TypeCommision } from '~/constants/enum'
 
 export interface ServicesCategoryType {
   _id?: ObjectId
@@ -33,7 +33,7 @@ export interface StepServicesType {
     commision: number
   }[]
   id_employee: string | ObjectId
-  type_step_price: PriceType
+  type_step_price: TypeCommision
   descriptions?: string
   type_step?: any
   products: ProductOfServices[]
@@ -99,7 +99,7 @@ export interface EmployeeOfServices {
     commision: number
   }[]
   id_employee: string | ObjectId
-  type_price: PriceType
+  type_price: TypeCommision
   descriptions?: string
 }
 
@@ -165,7 +165,7 @@ export interface UpdateServicesCardData {
 export interface EmployeeOfHistoryPaid {
   id_employee: string | ObjectId
   commision: number
-  type_price: PriceType
+  type_price: TypeCommision
   descriptions?: string
 }
 
@@ -187,15 +187,13 @@ export interface CardServicesType {
   name: string
   branch?: ObjectId[]
   descriptions?: string
-  session_time?: number
   price?: number
   price_paid?: number
-  date_different_paid?: Date[]
   history_paid?: HistoryPaid[]
   user_id?: ObjectId | string
   service_group_id?: ObjectId | string
   services_of_card?: ServicesOfCard[]
-  employee?: EmployeeOfServices[]
+  employee_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date
 }
@@ -217,4 +215,24 @@ export interface UpdateHistoryPaidData {
   history_paid: HistoryPaid
   card_services_id: ObjectId
   paid_initial: number
+}
+
+export interface CommisionCardServicesType {
+  _id?: ObjectId
+  card_services_id: ObjectId | string
+  employee_id: ObjectId | string
+  commision: number
+  type_commision: TypeCommision
+  created_at?: Date
+  updated_at?: Date
+}
+
+export interface CreateCommisionCardServicesData {
+  _id?: ObjectId
+  card_services_id: ObjectId
+  employee_id: ObjectId
+  commision: number
+  type_commision: TypeCommision
+  created_at?: Date
+  updated_at?: Date
 }

@@ -4,6 +4,7 @@ import usersService from '../../services/users.services'
 import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
+  GetAllUserRequestBody,
   GetAllUserWithRoleRequestParams,
   getProfileRequestBody,
   LoginRequestBody,
@@ -139,8 +140,12 @@ export const deleteUserFromBranchController = async (
   })
 }
 
-export const getAllUsersController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
-  const users = await usersService.getAllUsers()
+export const getAllUsersController = async (
+  req: Request<ParamsDictionary, any, GetAllUserRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  const users = await usersService.getAllUsers(data)
   return res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.GET_ALL_USERS_SUCCESS,

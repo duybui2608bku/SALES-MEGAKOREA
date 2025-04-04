@@ -1,6 +1,7 @@
 import {
   AddUsertoBranchRequestBody,
   DeleteUserFromBranchRequestBody,
+  GetAllUserRequestBody,
   RegisterRequestBody,
   updateMeRequestBody
 } from '~/models/requestes/User.requests'
@@ -191,14 +192,34 @@ class UsersService {
     )
   }
 
-  async getAllUsers() {
+  async getAllUsers(data: GetAllUserRequestBody) {
+    const { page = 1, limit = 10, role, branch } = data
+    const branch_ids = branch?.map((b) => new ObjectId(b))
+    const skip = (Number(page) - 1) * Number(limit)
+    const query: Record<string, any> = {}
+
+    if (role) {
+      const roleNumbers = role.map((r) => Number(r))
+      query.role = { $in: roleNumbers, $nin: [UserRole.ADMIN] }
+    } else {
+      query.role = { $nin: [UserRole.ADMIN] }
+    }
+
+    if (branch_ids?.length) {
+      query.branch = { $in: branch_ids }
+    }
     const result = await databaseServiceSale.users
       .aggregate([
         {
+          $match: {
+            ...query
+          }
+        },
+        {
           $lookup: {
-            from: process.env.BRANCH_COLLECTION as string,
-            localField: '_id',
-            foreignField: 'user_id',
+            from: 'branch',
+            localField: 'branch',
+            foreignField: '_id',
             as: 'branch'
           }
         },
@@ -217,12 +238,20 @@ class UsersService {
           }
         },
         {
-          $lookup: {
-            from: process.env.ACCOUNTS_COLLECTION as string,
-            localField: '_id',
-            foreignField: 'user_id',
-            as: 'account'
+          $project: {
+            password: 0,
+            email_verify_token: 0,
+            forgot_password_token: 0
           }
+        },
+        {
+          $sort: { _id: -1 }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: Number(limit)
         }
       ])
       .toArray()

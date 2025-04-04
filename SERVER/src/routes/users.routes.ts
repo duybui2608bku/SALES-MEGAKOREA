@@ -57,6 +57,7 @@ path: /change-password
 method: POST
 Body:{old_password:string,password: string, confirm_password: string}
 */
+
 userRouters.post(
   '/change-password',
   accessTokenValidator,
