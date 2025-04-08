@@ -11,10 +11,11 @@ import { CreateServicesCardRequestBody, ServicesOfCardType } from 'src/Interface
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
+// import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
-import { PriceType, RoleUser } from 'src/Constants/enum'
+import { RoleUser, TypeCommision } from 'src/Constants/enum'
 import OptionsServices from 'src/Components/OptionsGetServices'
+// import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
 
 interface ModalCreateServiceCardProps {
   visible: boolean
@@ -30,7 +31,8 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
   const { profile } = useContext(AppContext)
   const [form] = Form.useForm()
   const { branchList } = useQueryBranch()
-  const [branchId, setBranchId] = useState<string[]>([])
+  const initialbranchId = '67cc0d4bb0c361aee3e7055c'
+  const [branchId, setBranchId] = useState<string[]>([initialbranchId])
 
   useEffect(() => {
     if (serviceCardToEdit && branchList.length > 0) {
@@ -201,42 +203,24 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item<CreateServicesCardRequestBody> name='price_paid' label='Thanh toán'>
-                  <InputNumber
-                    suffix='đ'
-                    style={{ width: '100%' }}
-                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    parser={(value) => (value ? Number(value.replace(/\$\s?|(,*)/g, '')) : 0)}
-                    placeholder='Số tiền thanh toán'
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={8}>
                 <Form.Item<CreateServicesCardRequestBody>
                   name='branch'
                   label='Chi nhánh'
-                  rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+                  // rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
                 >
                   <OptionsBranch
                     initialValue={branchId}
                     placeholder={serviceCardToEdit ? 'Toàn bộ' : 'Chọn chi nhánh'}
-                    mode='multiple'
+                    mode={undefined}
+                    disabled
                     search
                     onchange={(value) => form.setFieldsValue({ branch: value })}
                   />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Form.Item<CreateServicesCardRequestBody>
-                  name='session_time'
-                  label='Số buổi'
-                  rules={[{ type: 'number', min: 0, message: 'Số buổi phục vụ phải là số không âm!' }]}
-                >
-                  <InputNumber style={{ width: '100%' }} placeholder='Nhập buổi phục vụ' min={0} step={5} />
-                </Form.Item>
-              </Col>
+            </Row>
+            {/* <Row gutter={16}>
+              
               <Col span={8}>
                 <Form.Item<CreateServicesCardRequestBody>
                   name='service_group_id'
@@ -251,8 +235,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                   />
                 </Form.Item>
               </Col>
-            </Row>
-
+            </Row> */}
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item<CreateServicesCardRequestBody>
@@ -307,13 +290,13 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                               <Form.Item
                                 {...restField}
                                 name={[name, 'quantity']}
-                                label='Số lượng'
+                                label='Số lần'
                                 rules={[
-                                  { required: true, message: 'Vui lòng nhập số lượng!' },
-                                  { type: 'number', min: 0, message: 'Số lượng phải không âm!' }
+                                  { required: true, message: 'Vui lòng nhập số lần !' },
+                                  { type: 'number', min: 0, message: 'Số lần phải không âm!' }
                                 ]}
                               >
-                                <InputNumber min={0} style={{ width: '100%' }} placeholder='Số lượng' />
+                                <InputNumber min={0} style={{ width: '100%' }} placeholder='Số lần' />
                               </Form.Item>
                             </Col>
                             <Col span={6}>
@@ -390,13 +373,13 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                             <Col span={8}>
                               <Form.Item
                                 {...restField}
-                                name={[name, 'type_price']}
-                                label='Loại giá'
-                                rules={[{ required: true, message: 'Vui lòng chọn loại giá !' }]}
+                                name={[name, 'type_commision']}
+                                label='Loại hoa hồng'
+                                rules={[{ required: true, message: 'Vui lòng chọn loại hoa hồng !' }]}
                               >
                                 <Select>
-                                  <Select.Option value={PriceType.FIXED}>Cố định</Select.Option>
-                                  <Select.Option value={PriceType.PRECENT}>Phần trăm</Select.Option>
+                                  <Select.Option value={TypeCommision.FIXED}>Cố định</Select.Option>
+                                  <Select.Option value={TypeCommision.PRECENT}>Phần trăm</Select.Option>
                                 </Select>
                               </Form.Item>
                             </Col>

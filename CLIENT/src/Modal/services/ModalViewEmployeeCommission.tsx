@@ -1,7 +1,7 @@
 import { Modal, Card, Descriptions, Tag, Typography, Space } from 'antd'
-import { PriceType } from 'src/Constants/enum'
+import { TypeCommision } from 'src/Constants/enum'
 import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
-import { User } from 'src/Interfaces/user.interface'
+import { User } from 'src/Interfaces/user/user.interface'
 import { getRoleUser } from 'src/Utils/util.utils'
 
 const { Title, Text } = Typography
@@ -127,12 +127,12 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
                         <Descriptions.Item label='Loại giá'>
                           <Tag
                             color={
-                              commission.type_price === PriceType.FIXED || commission.type_price === 2
+                              commission.type_price === TypeCommision.FIXED || commission.type_price === 2
                                 ? 'blue'
                                 : 'purple'
                             }
                           >
-                            {commission.type_price === PriceType.PRECENT || commission.type_price === 1
+                            {commission.type_price === TypeCommision.PRECENT || commission.type_price === 1
                               ? 'Theo tỷ lệ'
                               : 'Cố định'}
                           </Tag>

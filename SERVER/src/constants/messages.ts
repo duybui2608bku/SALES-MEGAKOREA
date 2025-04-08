@@ -69,7 +69,8 @@ export const userMessages = {
   USER_EXISTS_IN_BRANCH: 'User exists in branch',
   USER_NOT_EXISTS_IN_BRANCH: 'User not exists in branch',
   DELETE_USER_FROM_BRANCH_SUCCESS: 'Delete user from branch successfully',
-  GET_ALL_USERS_SUCCESS: 'Get all users successfully'
+  GET_ALL_USERS_SUCCESS: 'Get all users successfully',
+  UPDATE_USER_SUCCESS: 'Update user successfully'
 } as const
 
 export const servicesMessages = {
@@ -115,7 +116,8 @@ export const servicesMessages = {
   DATE_MUST_BE_STRING: 'Date must be a string !',
   PRICE_INITIAL_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price initial must be a number greater than zero !',
   OUT_STANDING_MUST_BE_NUMBER: 'Out standing must be a number !',
-  METHOD_PAYMENT_MUST_BE_STRING: 'Method payment must be a string !'
+  METHOD_PAYMENT_MUST_BE_STRING: 'Method payment must be a string !',
+  UPDATE_USER_SUCCESS: 'Update user success !'
 }
 
 export const productMessages = {

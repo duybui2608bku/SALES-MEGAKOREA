@@ -63,6 +63,18 @@ const pathApiUsers = {
   getAllUsersWithRole: '/users/with-role'
 }
 
+const pathApiCustomer = {
+  searchCustomer: '/search/by-phone'
+}
+
+const pathRoutesCustomers = {
+  customers: '/customers'
+}
+
+const pathCustomers = {
+  customers: '/customers'
+}
+
 export {
   pathAuth,
   pathUtil,
@@ -73,5 +85,8 @@ export {
   pathApiBranch,
   pathRoutersService,
   pathServices,
-  pathApiUsers
+  pathApiUsers,
+  pathApiCustomer,
+  pathRoutesCustomers,
+  pathCustomers
 }

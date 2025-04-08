@@ -1,5 +1,5 @@
-import { PriceType } from 'src/Constants/enum'
-import { User } from '../user.interface'
+import { TypeCommision } from 'src/Constants/enum'
+import { User } from '../user/user.interface'
 import { BranchType } from '../branch/branch.interface'
 
 export interface ProductOfServices {
@@ -15,7 +15,7 @@ export interface StepServicesType {
     commision: number
   }[]
   employee_details: User
-  type_step_price: PriceType
+  type_step_price: TypeCommision
   descriptions?: string
   type_step?: unknown
   products: ProductOfServices[]
@@ -117,7 +117,7 @@ export interface EmployeeOfServices {
     commision: number
   }[]
   id_employee: string
-  type_price: PriceType
+  type_price: TypeCommision
   descriptions?: string
   employee_details: User
 }
@@ -125,7 +125,7 @@ export interface EmployeeOfServices {
 export interface StepServicesFieldType {
   commision: number
   employee_id: string
-  type_step_price: PriceType
+  type_step_price: TypeCommision
   descriptions?: string
   type_step?: unknown
   products: ProductOfServices[]

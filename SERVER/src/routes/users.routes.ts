@@ -9,7 +9,7 @@ import {
   loginController,
   registerController,
   resetPasswordController,
-  updateMeController
+  updateUserController
 } from '~/controllers/users.controllers'
 import {
   loginValidator,
@@ -75,13 +75,12 @@ Body:UserSchema
 userRouters.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
 
 /*
-Description: Get user profile
-path: /me
-method: GET
-Header:{Authorization: Bearer <access_token>}
+Description: Update user profile
+path: /update
+method: PATCH
 */
 
-userRouters.patch('/me', accessTokenValidator, updateMeValidator, wrapRequestHandler(updateMeController))
+userRouters.patch('/update', accessTokenValidator, updateMeValidator, wrapRequestHandler(updateUserController))
 
 /*
 Description: Add user to a branch
