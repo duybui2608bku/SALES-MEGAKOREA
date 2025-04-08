@@ -30,7 +30,7 @@ import {
 } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
-import { PriceType, RoleUser } from 'src/Constants/enum'
+import { TypeCommision, RoleUser } from 'src/Constants/enum'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
@@ -81,9 +81,9 @@ const validateCommission = (values: FieldsType): boolean => {
   const stepServices = values.step_services || []
   let totalCommission = 0
   for (const step of stepServices) {
-    if (step.type_step_price === PriceType.FIXED && step.price) {
+    if (step.type_step_price === TypeCommision.FIXED && step.price) {
       totalCommission += step.price
-    } else if (step.type_step_price === PriceType.PRECENT && step.rate) {
+    } else if (step.type_step_price === TypeCommision.PRECENT && step.rate) {
       totalCommission += servicePrice * step.rate
     }
   }
@@ -384,11 +384,11 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                                 name={[name, 'type_step_price']}
                                 label='Loại giá'
                                 rules={[{ required: true, message: 'Vui lòng chọn loại giá!' }]}
-                                initialValue={PriceType.FIXED}
+                                initialValue={TypeCommision.FIXED}
                               >
                                 <Select>
-                                  <Select.Option value={PriceType.FIXED}>Cố định</Select.Option>
-                                  <Select.Option value={PriceType.PRECENT}>Phần trăm</Select.Option>
+                                  <Select.Option value={TypeCommision.FIXED}>Cố định</Select.Option>
+                                  <Select.Option value={TypeCommision.PRECENT}>Phần trăm</Select.Option>
                                 </Select>
                               </Form.Item>
                             </Col>

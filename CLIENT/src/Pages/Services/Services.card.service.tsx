@@ -135,23 +135,6 @@ const ServicesCard = () => {
       key: 'name'
     },
     {
-      title: 'Danh mục',
-      dataIndex: 'service_group',
-      key: 'service_group',
-      render: (service_group: ServicesCategoryType) => {
-        return (
-          <Paragraph
-            ellipsis={{
-              expandable: true,
-              rows: 1
-            }}
-          >
-            {service_group?.name || 'Chưa có'}
-          </Paragraph>
-        )
-      }
-    },
-    {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
@@ -203,13 +186,6 @@ const ServicesCard = () => {
       sorter: (a: ColumnsServicesCardType, b: ColumnsServicesCardType) => a.price - b.price,
       sortDirections: ['descend', 'ascend'],
       width: 200
-    },
-    {
-      title: 'Số buổi',
-      dataIndex: 'session_time',
-      key: 'session_time',
-      align: 'center',
-      width: 100
     },
     {
       title: 'Chi nhánh',

@@ -11,7 +11,7 @@ import {
   RegisterRequestBody,
   resetPasswordRequestBody,
   TokenPayload,
-  updateMeRequestBody
+  UpdateUserRequestBody
 } from '~/models/requestes/User.requests'
 import { HttpStatusCode, UserRole } from '~/constants/enum'
 import { userMessages } from '~/constants/messages'
@@ -105,13 +105,14 @@ export const getUserWithRole = async (
   // })
 }
 
-export const updateMeController = async (req: Request<ParamsDictionary, any, updateMeRequestBody>, res: Response) => {
-  const { user_id } = req.decode_authorization as TokenPayload
-  const body = omit(req.body, ['forgot_password_token', 'email_verify_token'])
-  const user = await usersService.updateProfile(user_id, body)
+export const updateUserController = async (
+  req: Request<ParamsDictionary, any, UpdateUserRequestBody>,
+  res: Response
+) => {
+  const user = await usersService.updateUser(req.body)
   return res.status(HttpStatusCode.Ok).json({
     success: true,
-    message: userMessages.UPDATE_PROFILE_SUCCESS,
+    message: userMessages.UPDATE_USER_SUCCESS,
     user
   })
 }

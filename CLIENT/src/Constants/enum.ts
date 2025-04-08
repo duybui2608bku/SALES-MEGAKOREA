@@ -13,7 +13,7 @@ export enum ProductType {
   NON_CONSUMABLE = 1
 }
 
-export enum PriceType {
+export enum TypeCommision {
   PRECENT = 1,
   FIXED = 2
 }

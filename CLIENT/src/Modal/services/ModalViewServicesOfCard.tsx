@@ -1,5 +1,5 @@
 import { Modal, Card, Descriptions, Tag, Typography, Space } from 'antd'
-import { PriceType } from 'src/Constants/enum'
+import { TypeCommision } from 'src/Constants/enum'
 import { ServicesOfCard } from 'src/Interfaces/services/services.interfaces'
 import { getRoleUser } from 'src/Utils/util.utils'
 
@@ -72,8 +72,8 @@ const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
                       <Descriptions.Item label='Nhân viên'>{step.employee_details.name}</Descriptions.Item>
                       <Descriptions.Item label='Giá'>{step.commision.toLocaleString()} VNĐ</Descriptions.Item>
                       <Descriptions.Item label='Loại giá'>
-                        <Tag color={step.type_step_price === PriceType.FIXED ? 'blue' : 'purple'}>
-                          {step.type_step_price === PriceType.PRECENT ? 'Theo tỷ lệ' : 'Cố định'}
+                        <Tag color={step.type_step_price === TypeCommision.FIXED ? 'blue' : 'purple'}>
+                          {step.type_step_price === TypeCommision.PRECENT ? 'Theo tỷ lệ' : 'Cố định'}
                         </Tag>
                       </Descriptions.Item>
 

@@ -13,12 +13,12 @@ export default class User {
   avatar: string
   role?: UserRole
   status?: UserStatus
-  branch?: ObjectId[]
+  branch?: ObjectId | null
   constructor(user: UserType) {
     this._id = user._id
     this.name = user.name || ''
     this.email = user.email
-    this.branch = (user.branch || []).map((b) => new ObjectId(b))
+    this.branch = user.branch || null
     this.password = user.password
     this.forgot_password_token = user.forgot_password_token || ''
     this.avatar = user.avatar || ''

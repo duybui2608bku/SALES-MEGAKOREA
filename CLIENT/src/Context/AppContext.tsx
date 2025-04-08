@@ -2,7 +2,7 @@ import { createContext, useState } from 'react'
 import { getAccessTokenFormLS, getProfileFromLS } from 'src/Utils/localStorage'
 import { notification } from 'antd'
 import { NotificationInstance } from 'antd/es/notification/interface'
-import { User } from 'src/Interfaces/user.interface'
+import { User } from 'src/Interfaces/user/user.interface'
 interface AppContext {
   isAuthenticated: boolean
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>

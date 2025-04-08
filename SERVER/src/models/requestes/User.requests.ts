@@ -1,6 +1,7 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
-import { TokenType, UserRole } from '~/constants/enum'
+import { TokenType, UserRole, UserStatus } from '~/constants/enum'
+import User from '../schemas/User.schema'
 
 export interface RegisterRequestBody {
   name: string
@@ -35,15 +36,19 @@ export interface getProfileRequestBody {
   user_id: string
 }
 
-export interface updateMeRequestBody {
-  name?: string
-  date_of_birth?: string
-  bio?: string
-  website?: string
-  location?: string
-  username?: string
+export interface UpdateUserRequestBody {
+  _id: string
+  name: string
+  email: string
+  password: string
+  branch?: ObjectId | null
+  created_at?: Date
+  updated_at?: Date
+  role?: UserRole
+  coefficient?: number
+  status?: UserStatus
+  forgot_password_token?: string
   avatar?: string
-  coverphoto?: string
 }
 
 export interface changePasswordRequestBody {

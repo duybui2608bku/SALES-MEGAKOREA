@@ -6,7 +6,7 @@ export interface UserType {
   name: string
   email: string
   password: string
-  branch?: ObjectId[]
+  branch?: ObjectId | null
   created_at?: Date
   updated_at?: Date
   role?: UserRole
