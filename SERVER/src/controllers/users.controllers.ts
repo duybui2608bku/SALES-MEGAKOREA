@@ -112,7 +112,7 @@ export const updateUserController = async (
   const user = await usersService.updateUser(req.body)
   return res.status(HttpStatusCode.Ok).json({
     success: true,
-    message: userMessages.UPDATE_PROFILE_SUCCESS,
+    message: userMessages.UPDATE_USER_SUCCESS,
     user
   })
 }
