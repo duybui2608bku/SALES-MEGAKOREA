@@ -1,6 +1,6 @@
 import { Menu, MenuProps, Layout, Button } from 'antd'
 import { useState } from 'react'
-import { MdMailLock, MdSettings } from 'react-icons/md'
+import { MdSettings } from 'react-icons/md'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
@@ -11,6 +11,7 @@ import './MainLayout.scss'
 import { useNavigate } from 'react-router'
 import { pathRoutersProduct, pathRoutersService, pathRoutersUser } from 'src/Constants/path'
 import { CiCreditCard2 } from 'react-icons/ci'
+import { UserOutlined } from '@ant-design/icons'
 
 interface Props {
   children?: React.ReactNode
@@ -51,23 +52,20 @@ const MainLayout = ({ children }: Props) => {
             { key: '3', label: 'Dịch Vụ', onClick: () => navigate(pathRoutersService.service) },
             { key: '4', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) }
           ]
-        },
-        {
-          key: 'users',
-          label: 'Tài khoản',
-          type: 'group',
-          children: [{ key: '7', label: 'Danh sách tài khoản', onClick: () => navigate(pathRoutersUser.userGeneral) }]
         }
+        // {
+        //   key: 'users',
+        //   label: 'Tài khoản',
+        //   type: 'group',
+        //   children: [{ key: '7', label: 'Danh sách tài khoản', onClick: () => navigate(pathRoutersUser.userGeneral) }]
+        // }
       ]
     },
     {
-      key: 'sub2',
-      label: 'Navigation Two',
-      icon: <MdMailLock />,
-      children: [
-        { key: '5', label: 'Option 5' },
-        { key: '6', label: 'Option 6' }
-      ]
+      key: 'users',
+      label: 'Nhân viên',
+      icon: <UserOutlined />,
+      children: [{ key: '5', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) }]
     },
     {
       type: 'divider'

@@ -7,11 +7,12 @@ export interface UserWithRole {
   role: number
 }
 
-export type GetUserResponse = SuccessResponse<{
-  users: UserGeneralInterface[]
-  limit: number
-  page: number
-  total: number
-}>
+export type CreateUserResponse = SuccessResponse<void>
+
+export type DeleteUserResponse = SuccessResponse<void>
+
+export type GetUserResponse = SuccessResponse<UserGeneralInterface[]>
+
+export type SearchUserResponse = SuccessResponse<UserGeneralInterface[]>
 
 export type GetUsersWithRoleResponse = SuccessResponse<UserWithRole[]>

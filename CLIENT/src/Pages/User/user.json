@@ -6,10 +6,21 @@
       "email": "admin_ben3u2@megakorea.vn",
       "avatar": "",
       "role": 2,
-      "status": 0,
-      "branch": [],
+      "status": 1,
+      "branch": [
+        "Quảng Bình",
+        "Huế",
+        "Quảng Trị",
+        "Buôn Ma Thuột",
+        "Cà Mau",
+        "Phan Thiết",
+        "Nha Trang",
+        "Medicare NT",
+        "Đà Nẵng"
+      ],
       "created_at": "2024-09-14 03:37:06",
-      "updated_at": "2024-12-13 03:37:06"
+      "updated_at": "2025-04-08T08:42:44.765Z",
+      "id": "0474"
     },
     {
       "_id": "259e7db248714804b73693f9",
@@ -18,9 +29,13 @@
       "avatar": "",
       "role": 2,
       "status": 1,
-      "branch": [],
+      "branch": [
+        "Buôn Ma Thuộc",
+        "Đà Nẵng"
+      ],
       "created_at": "2024-08-18 03:37:06",
-      "updated_at": "2024-07-22 03:37:06"
+      "updated_at": "2025-04-08T10:38:04.536Z",
+      "id": "4915"
     },
     {
       "_id": "e14aec6fc51a4b5094ddbf02",
@@ -28,10 +43,13 @@
       "email": "admin_86gumz@megakorea.vn",
       "avatar": "",
       "role": 1,
-      "status": 1,
-      "branch": [],
+      "status": 2,
+      "branch": [
+        "Quảng Bình"
+      ],
       "created_at": "2024-11-23 03:37:06",
-      "updated_at": "2024-06-20 03:37:06"
+      "updated_at": "2025-04-08T09:07:24.124Z",
+      "id": "d49a"
     },
     {
       "_id": "bd2b7c1360e7473eaf65e66c",
@@ -40,9 +58,12 @@
       "avatar": "",
       "role": 2,
       "status": 1,
-      "branch": [],
+      "branch": [
+        "Medicare NT"
+      ],
       "created_at": "2024-11-02 03:37:06",
-      "updated_at": "2025-03-07 03:37:06"
+      "updated_at": "2025-03-07 03:37:06",
+      "id": "92c8"
     },
     {
       "_id": "82439a1d63b74f8d95465403",
@@ -51,9 +72,12 @@
       "avatar": "",
       "role": 1,
       "status": 0,
-      "branch": [],
+      "branch": [
+        "Nha Trang"
+      ],
       "created_at": "2024-08-03 03:37:06",
-      "updated_at": "2024-05-11 03:37:06"
+      "updated_at": "2024-05-11 03:37:06",
+      "id": "397b"
     },
     {
       "_id": "5d08f4dae2c3436aaa34ffa4",
@@ -62,9 +86,12 @@
       "avatar": "",
       "role": 2,
       "status": 1,
-      "branch": [],
+      "branch": [
+        "Phan Thiết"
+      ],
       "created_at": "2024-06-12 03:37:06",
-      "updated_at": "2025-03-10 03:37:06"
+      "updated_at": "2025-03-10 03:37:06",
+      "id": "0641"
     },
     {
       "_id": "da6b152ceab4431387cdb941",
@@ -72,10 +99,13 @@
       "email": "admin_iembf6@megakorea.vn",
       "avatar": "",
       "role": 1,
-      "status": 1,
-      "branch": [],
+      "status": 0,
+      "branch": [
+        "Cà Mau"
+      ],
       "created_at": "2024-08-03 03:37:06",
-      "updated_at": "2024-11-12 03:37:06"
+      "updated_at": "2024-11-12 03:37:06",
+      "id": "d4fd"
     },
     {
       "_id": "822519afee60480c93521b87",
@@ -84,9 +114,12 @@
       "avatar": "",
       "role": 2,
       "status": 1,
-      "branch": [],
+      "branch": [
+        "Buôn Ma Thuột"
+      ],
       "created_at": "2025-02-03 03:37:06",
-      "updated_at": "2024-08-04 03:37:06"
+      "updated_at": "2024-08-04 03:37:06",
+      "id": "6cdd"
     },
     {
       "_id": "896b8b8c2f54421599a77dd8",
@@ -95,20 +128,12 @@
       "avatar": "",
       "role": 1,
       "status": 1,
-      "branch": [],
+      "branch": [
+        "Quảng Trị"
+      ],
       "created_at": "2024-11-12 03:37:06",
-      "updated_at": "2025-03-28 03:37:06"
-    },
-    {
-      "_id": "26ca8dad5a574e2bb6b71ca6",
-      "name": "Admin Megakoera vpg2zg",
-      "email": "admin_vpg2zg@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-04-15 03:37:06",
-      "updated_at": "2024-05-07 03:37:06"
+      "updated_at": "2025-03-28 03:37:06",
+      "id": "318e"
     },
     {
       "_id": "f740b598c94e4a5b9b0005df",
@@ -117,988 +142,20 @@
       "avatar": "",
       "role": 2,
       "status": 0,
-      "branch": [],
+      "branch": [
+        "Huế"
+      ],
       "created_at": "2025-01-21 03:37:06",
-      "updated_at": "2024-09-14 03:37:06"
-    },
-    {
-      "_id": "7169b8ab39744dc3b163cc4d",
-      "name": "Admin Megakoera 2mzy7r",
-      "email": "admin_2mzy7r@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-12-30 03:37:06",
-      "updated_at": "2024-06-15 03:37:06"
-    },
-    {
-      "_id": "d074da7d85fa4e77bbe331ff",
-      "name": "Admin Megakoera chxd14",
-      "email": "admin_chxd14@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-02-24 03:37:06",
-      "updated_at": "2025-02-01 03:37:06"
-    },
-    {
-      "_id": "0575dc9697294f8dac90eb5f",
-      "name": "Admin Megakoera lhnozt",
-      "email": "admin_lhnozt@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-03-05 03:37:06",
-      "updated_at": "2025-01-21 03:37:06"
-    },
-    {
-      "_id": "ddb8dcb864ae410bac3caa60",
-      "name": "Admin Megakoera mwz32b",
-      "email": "admin_mwz32b@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-04-29 03:37:06",
-      "updated_at": "2024-08-21 03:37:06"
-    },
-    {
-      "_id": "d2bac2e81f0442c4a41f08e3",
-      "name": "Admin Megakoera 58me4a",
-      "email": "admin_58me4a@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-02-08 03:37:06",
-      "updated_at": "2025-02-20 03:37:06"
-    },
-    {
-      "_id": "7503a08bb2374fef96148074",
-      "name": "Admin Megakoera eenl14",
-      "email": "admin_eenl14@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-06-04 03:37:06",
-      "updated_at": "2024-12-14 03:37:06"
-    },
-    {
-      "_id": "80c9fae7c97b47c290125383",
-      "name": "Admin Megakoera qwua0c",
-      "email": "admin_qwua0c@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-01-26 03:37:06",
-      "updated_at": "2024-06-04 03:37:06"
-    },
-    {
-      "_id": "1c929f60294840a0ad56a2eb",
-      "name": "Admin Megakoera bosh49",
-      "email": "admin_bosh49@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-03-02 03:37:06",
-      "updated_at": "2024-07-14 03:37:06"
-    },
-    {
-      "_id": "ad5213eec07b46c9bdb94ce7",
-      "name": "Admin Megakoera iuut1z",
-      "email": "admin_iuut1z@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-10-08 03:37:06",
-      "updated_at": "2024-11-29 03:37:06"
-    },
-    {
-      "_id": "6cf53bd5a6e94dd485eb9a7a",
-      "name": "Admin Megakoera hhnxo9",
-      "email": "admin_hhnxo9@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-02-11 03:37:06",
-      "updated_at": "2024-12-09 03:37:06"
-    },
-    {
-      "_id": "fd9db82eebc34866a20eb420",
-      "name": "Admin Megakoera qky3eh",
-      "email": "admin_qky3eh@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-09 03:37:06",
-      "updated_at": "2025-02-19 03:37:06"
-    },
-    {
-      "_id": "3d6a2d229ce3418dbf9987c9",
-      "name": "Admin Megakoera 9oxfr0",
-      "email": "admin_9oxfr0@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-07-07 03:37:06",
-      "updated_at": "2024-12-21 03:37:06"
-    },
-    {
-      "_id": "7ea14339ec2a48318091bb2d",
-      "name": "Admin Megakoera ylkrdd",
-      "email": "admin_ylkrdd@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-09-08 03:37:06",
-      "updated_at": "2024-10-24 03:37:06"
-    },
-    {
-      "_id": "2e2ef4ee2b744ebdb1c48d91",
-      "name": "Admin Megakoera 69n483",
-      "email": "admin_69n483@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-04-07 03:37:06",
-      "updated_at": "2025-03-08 03:37:06"
-    },
-    {
-      "_id": "ded81e0bf17349bf876c3f1e",
-      "name": "Admin Megakoera nukmck",
-      "email": "admin_nukmck@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-05-30 03:37:06",
-      "updated_at": "2024-07-27 03:37:06"
-    },
-    {
-      "_id": "c4aa2dd84e5a47b7a7e91faa",
-      "name": "Admin Megakoera 6c8r2d",
-      "email": "admin_6c8r2d@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-05-01 03:37:06",
-      "updated_at": "2025-03-01 03:37:06"
-    },
-    {
-      "_id": "709d9c5949fa4542a14fdfb3",
-      "name": "Admin Megakoera fvwzjf",
-      "email": "admin_fvwzjf@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-07-15 03:37:06",
-      "updated_at": "2024-12-08 03:37:06"
-    },
-    {
-      "_id": "ff924701be6a4fe1bc71477a",
-      "name": "Admin Megakoera aowsjm",
-      "email": "admin_aowsjm@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-10-14 03:37:06",
-      "updated_at": "2024-09-25 03:37:06"
-    },
-    {
-      "_id": "18a0ac190bc84a73aa1d7374",
-      "name": "Admin Megakoera lpgc7f",
-      "email": "admin_lpgc7f@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-04-28 03:37:06",
-      "updated_at": "2025-03-19 03:37:06"
-    },
-    {
-      "_id": "142b06a751b242feb5f40f88",
-      "name": "Admin Megakoera qr2e10",
-      "email": "admin_qr2e10@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-06-17 03:37:06",
-      "updated_at": "2024-09-01 03:37:06"
-    },
-    {
-      "_id": "e5f1622c0f774ec791c36543",
-      "name": "Admin Megakoera a43yp0",
-      "email": "admin_a43yp0@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-05-20 03:37:06",
-      "updated_at": "2025-01-05 03:37:06"
-    },
-    {
-      "_id": "198d25562a944af38a6cca7a",
-      "name": "Admin Megakoera qtjibx",
-      "email": "admin_qtjibx@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-11-29 03:37:06",
-      "updated_at": "2025-03-22 03:37:06"
-    },
-    {
-      "_id": "e1b14d8cb5ca438c9ccd7baf",
-      "name": "Admin Megakoera lt22eb",
-      "email": "admin_lt22eb@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-08-18 03:37:06",
-      "updated_at": "2024-10-08 03:37:06"
-    },
-    {
-      "_id": "0ef7915535c248d094dc73d6",
-      "name": "Admin Megakoera 3rskol",
-      "email": "admin_3rskol@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-06-12 03:37:06",
-      "updated_at": "2024-11-13 03:37:06"
-    },
-    {
-      "_id": "0a017d83a5ce411f99730080",
-      "name": "Admin Megakoera eg9vbr",
-      "email": "admin_eg9vbr@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-02-09 03:37:06",
-      "updated_at": "2025-01-04 03:37:06"
-    },
-    {
-      "_id": "139506332ec2433ab5d99329",
-      "name": "Admin Megakoera 73powi",
-      "email": "admin_73powi@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-08-23 03:37:06",
-      "updated_at": "2025-03-12 03:37:06"
-    },
-    {
-      "_id": "414869be894e450f882e89ec",
-      "name": "Admin Megakoera jxpokz",
-      "email": "admin_jxpokz@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-07-01 03:37:06",
-      "updated_at": "2024-05-10 03:37:06"
-    },
-    {
-      "_id": "0186a61155854206ab074361",
-      "name": "Admin Megakoera d4aq61",
-      "email": "admin_d4aq61@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-04-15 03:37:06",
-      "updated_at": "2024-06-17 03:37:06"
-    },
-    {
-      "_id": "58ba15dcbabe48d9a5da5e93",
-      "name": "Admin Megakoera 9do8wj",
-      "email": "admin_9do8wj@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-10-28 03:37:06",
-      "updated_at": "2025-01-12 03:37:06"
-    },
-    {
-      "_id": "a845acee87554e058d9db4c9",
-      "name": "Admin Megakoera pv3r9j",
-      "email": "admin_pv3r9j@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-05-27 03:37:06",
-      "updated_at": "2024-08-02 03:37:06"
-    },
-    {
-      "_id": "55f372e214574c80927cdd12",
-      "name": "Admin Megakoera ahqk58",
-      "email": "admin_ahqk58@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-05-09 03:37:06",
-      "updated_at": "2025-01-16 03:37:06"
-    },
-    {
-      "_id": "12bd9161f13f4cfa9ad1b9ad",
-      "name": "Admin Megakoera rc6bzm",
-      "email": "admin_rc6bzm@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-08-07 03:37:06",
-      "updated_at": "2024-09-02 03:37:06"
-    },
-    {
-      "_id": "0d61fd1404a5494f92e1a925",
-      "name": "Admin Megakoera 9yutak",
-      "email": "admin_9yutak@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-03-02 03:37:06",
-      "updated_at": "2025-01-14 03:37:06"
-    },
-    {
-      "_id": "dedcdcd513e64d789ffe42f6",
-      "name": "Admin Megakoera 20nsqx",
-      "email": "admin_20nsqx@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-11-07 03:37:06",
-      "updated_at": "2024-05-04 03:37:06"
-    },
-    {
-      "_id": "5124c4f3017e474e94cc58f9",
-      "name": "Admin Megakoera riooe8",
-      "email": "admin_riooe8@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-31 03:37:06",
-      "updated_at": "2025-02-06 03:37:06"
-    },
-    {
-      "_id": "f6d8ca21ab384af2a318f7c3",
-      "name": "Admin Megakoera sa92yg",
-      "email": "admin_sa92yg@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-12-26 03:37:06",
-      "updated_at": "2024-09-23 03:37:06"
-    },
-    {
-      "_id": "ce5b768a109c49b6a56bade4",
-      "name": "Admin Megakoera s3friq",
-      "email": "admin_s3friq@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-01-23 03:37:06",
-      "updated_at": "2024-08-28 03:37:06"
-    },
-    {
-      "_id": "0b63bfb690984c3e98dfdaca",
-      "name": "Admin Megakoera f35yb5",
-      "email": "admin_f35yb5@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-12-24 03:37:06",
-      "updated_at": "2024-08-24 03:37:06"
-    },
-    {
-      "_id": "b700a34a3eea4d0e9dc12110",
-      "name": "Admin Megakoera 6nc897",
-      "email": "admin_6nc897@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-12-29 03:37:06",
-      "updated_at": "2024-06-05 03:37:06"
-    },
-    {
-      "_id": "82090284bab645beb4746b07",
-      "name": "Admin Megakoera fxbwrn",
-      "email": "admin_fxbwrn@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-09-16 03:37:06",
-      "updated_at": "2024-04-27 03:37:06"
-    },
-    {
-      "_id": "c86acb68aa784541bb404e1d",
-      "name": "Admin Megakoera 0o034v",
-      "email": "admin_0o034v@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-05-31 03:37:06",
-      "updated_at": "2024-10-27 03:37:06"
-    },
-    {
-      "_id": "105036c86dc24eaf9044f2eb",
-      "name": "Admin Megakoera qdqe3s",
-      "email": "admin_qdqe3s@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-08-22 03:37:06",
-      "updated_at": "2024-05-28 03:37:06"
-    },
-    {
-      "_id": "f2bf6e567cac47218cf3c16c",
-      "name": "Admin Megakoera vdd7n3",
-      "email": "admin_vdd7n3@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-08-25 03:37:06",
-      "updated_at": "2024-09-21 03:37:06"
-    },
-    {
-      "_id": "0e2b06fc1cd44e1eb4ee4d74",
-      "name": "Admin Megakoera em41ph",
-      "email": "admin_em41ph@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-08-17 03:37:06",
-      "updated_at": "2025-03-21 03:37:06"
-    },
-    {
-      "_id": "71f4e4b738144bf9b6cc1884",
-      "name": "Admin Megakoera tq6f78",
-      "email": "admin_tq6f78@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-03-08 03:37:06",
-      "updated_at": "2025-01-01 03:37:06"
-    },
-    {
-      "_id": "df7661121b954b9ead92b31b",
-      "name": "Admin Megakoera dejgle",
-      "email": "admin_dejgle@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-01-01 03:37:06",
-      "updated_at": "2024-10-04 03:37:06"
-    },
-    {
-      "_id": "a1c42c976b3d4636bc0e1e82",
-      "name": "Admin Megakoera n5w4i5",
-      "email": "admin_n5w4i5@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-06-22 03:37:06",
-      "updated_at": "2024-05-28 03:37:06"
-    },
-    {
-      "_id": "d773d1b1c7a340b1b42cca05",
-      "name": "Admin Megakoera ijp8pe",
-      "email": "admin_ijp8pe@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-22 03:37:06",
-      "updated_at": "2024-09-29 03:37:06"
-    },
-    {
-      "_id": "18c52bf701b64113b47e59b3",
-      "name": "Admin Megakoera 4h62jt",
-      "email": "admin_4h62jt@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-11-23 03:37:06",
-      "updated_at": "2024-05-19 03:37:06"
-    },
-    {
-      "_id": "f12d6ed9cc264f48989bd78f",
-      "name": "Admin Megakoera srxvaj",
-      "email": "admin_srxvaj@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-11-20 03:37:06",
-      "updated_at": "2025-01-18 03:37:06"
-    },
-    {
-      "_id": "8d2535f0e1734c9d8c3b0a84",
-      "name": "Admin Megakoera ipt8hp",
-      "email": "admin_ipt8hp@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-07-01 03:37:06",
-      "updated_at": "2024-05-27 03:37:06"
-    },
-    {
-      "_id": "87ca98827c5347fab02fdc16",
-      "name": "Admin Megakoera 1ednne",
-      "email": "admin_1ednne@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-01-21 03:37:06",
-      "updated_at": "2024-12-19 03:37:06"
-    },
-    {
-      "_id": "7391a92405904e97b53c5b31",
-      "name": "Admin Megakoera ya5b9w",
-      "email": "admin_ya5b9w@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-10-06 03:37:06",
-      "updated_at": "2024-12-10 03:37:06"
-    },
-    {
-      "_id": "9289a4b13f5f48a48321b2ab",
-      "name": "Admin Megakoera xhr3nw",
-      "email": "admin_xhr3nw@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-10-17 03:37:06",
-      "updated_at": "2024-05-26 03:37:06"
-    },
-    {
-      "_id": "3ba308564b1a450a88604c46",
-      "name": "Admin Megakoera 3ewq3t",
-      "email": "admin_3ewq3t@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-08-19 03:37:06",
-      "updated_at": "2025-01-10 03:37:06"
-    },
-    {
-      "_id": "ca75990b250e413a8f3ac0ee",
-      "name": "Admin Megakoera ntp2uq",
-      "email": "admin_ntp2uq@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-04-15 03:37:06",
-      "updated_at": "2025-01-17 03:37:06"
-    },
-    {
-      "_id": "e9f21b22441440e49d8dbd20",
-      "name": "Admin Megakoera 9iump4",
-      "email": "admin_9iump4@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-11-29 03:37:06",
-      "updated_at": "2024-07-29 03:37:06"
-    },
-    {
-      "_id": "eed1da563f12472390f45dbe",
-      "name": "Admin Megakoera tf0a3s",
-      "email": "admin_tf0a3s@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-06-04 03:37:06",
-      "updated_at": "2024-07-03 03:37:06"
-    },
-    {
-      "_id": "cb8f9d0fcdd54e63bc68a38c",
-      "name": "Admin Megakoera fxtadl",
-      "email": "admin_fxtadl@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-08 03:37:06",
-      "updated_at": "2024-04-22 03:37:06"
-    },
-    {
-      "_id": "61d7e3abb4a04ec1bed29e04",
-      "name": "Admin Megakoera oigsr3",
-      "email": "admin_oigsr3@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-06-28 03:37:06",
-      "updated_at": "2024-05-25 03:37:06"
-    },
-    {
-      "_id": "27431520a2f648d0ba715a54",
-      "name": "Admin Megakoera ok0cf6",
-      "email": "admin_ok0cf6@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-06-25 03:37:06",
-      "updated_at": "2024-12-12 03:37:06"
-    },
-    {
-      "_id": "5d71e557e339432092e9192a",
-      "name": "Admin Megakoera 5cy8v8",
-      "email": "admin_5cy8v8@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-27 03:37:06",
-      "updated_at": "2024-10-06 03:37:06"
-    },
-    {
-      "_id": "56484667c1c7492383f663f3",
-      "name": "Admin Megakoera tyuame",
-      "email": "admin_tyuame@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-08-03 03:37:06",
-      "updated_at": "2024-10-02 03:37:06"
-    },
-    {
-      "_id": "cc49e649b8b24307b202f6e6",
-      "name": "Admin Megakoera swuyyp",
-      "email": "admin_swuyyp@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-03-18 03:37:06",
-      "updated_at": "2024-04-16 03:37:06"
-    },
-    {
-      "_id": "18d7cc1db4124ea8beb65694",
-      "name": "Admin Megakoera q11hxe",
-      "email": "admin_q11hxe@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-11-03 03:37:06",
-      "updated_at": "2024-12-15 03:37:06"
-    },
-    {
-      "_id": "99214988fe0947c3a04d1ad0",
-      "name": "Admin Megakoera v6qc6o",
-      "email": "admin_v6qc6o@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-11-09 03:37:06",
-      "updated_at": "2024-07-29 03:37:06"
-    },
-    {
-      "_id": "d401384441dd41a483c5b644",
-      "name": "Admin Megakoera goinc0",
-      "email": "admin_goinc0@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-02-04 03:37:06",
-      "updated_at": "2024-11-24 03:37:06"
-    },
-    {
-      "_id": "ed3d6b917619440a9b86a861",
-      "name": "Admin Megakoera 7r2k40",
-      "email": "admin_7r2k40@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-03-04 03:37:06",
-      "updated_at": "2024-12-21 03:37:06"
-    },
-    {
-      "_id": "ac8c7fe44f544558a4c117db",
-      "name": "Admin Megakoera d96gks",
-      "email": "admin_d96gks@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-08-18 03:37:06",
-      "updated_at": "2025-03-17 03:37:06"
-    },
-    {
-      "_id": "028ad01a94ab428ea51ab8f5",
-      "name": "Admin Megakoera w8p6wl",
-      "email": "admin_w8p6wl@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-01-18 03:37:06",
-      "updated_at": "2024-04-05 03:37:06"
-    },
-    {
-      "_id": "de54cedbafd045849767b63a",
-      "name": "Admin Megakoera yi1s2e",
-      "email": "admin_yi1s2e@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-01-08 03:37:06",
-      "updated_at": "2025-02-28 03:37:06"
-    },
-    {
-      "_id": "6be77fa637da4ac4bff07d65",
-      "name": "Admin Megakoera i9sazk",
-      "email": "admin_i9sazk@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-06-14 03:37:06",
-      "updated_at": "2025-02-05 03:37:06"
-    },
-    {
-      "_id": "82ca8d946e6347399dbe4a2a",
-      "name": "Admin Megakoera bzib8q",
-      "email": "admin_bzib8q@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-08-12 03:37:06",
-      "updated_at": "2024-08-11 03:37:06"
-    },
-    {
-      "_id": "fdcfd049fdd84b4595a1c216",
-      "name": "Admin Megakoera frc7fk",
-      "email": "admin_frc7fk@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-29 03:37:06",
-      "updated_at": "2025-03-10 03:37:06"
-    },
-    {
-      "_id": "347f4a1128084bb4ad7759c0",
-      "name": "Admin Megakoera 0gy9t6",
-      "email": "admin_0gy9t6@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-12-21 03:37:06",
-      "updated_at": "2024-10-31 03:37:06"
-    },
-    {
-      "_id": "f0cdce92e8964afc9d7d6ca7",
-      "name": "Admin Megakoera l7daa5",
-      "email": "admin_l7daa5@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-07-05 03:37:06",
-      "updated_at": "2024-07-27 03:37:06"
-    },
-    {
-      "_id": "cc87f91fa03548d4889f21f7",
-      "name": "Admin Megakoera 8bqvj6",
-      "email": "admin_8bqvj6@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-10-22 03:37:06",
-      "updated_at": "2024-08-27 03:37:06"
-    },
-    {
-      "_id": "dbc9ee0222ea4c20b2c96b6a",
-      "name": "Admin Megakoera 7i53me",
-      "email": "admin_7i53me@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2025-01-31 03:37:06",
-      "updated_at": "2024-05-07 03:37:06"
-    },
-    {
-      "_id": "17541fb3b3d64df0ad792110",
-      "name": "Admin Megakoera b5q1pm",
-      "email": "admin_b5q1pm@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-10-15 03:37:06",
-      "updated_at": "2025-02-10 03:37:06"
-    },
-    {
-      "_id": "f851d2d49223421eb4e2d0a8",
-      "name": "Admin Megakoera detcn1",
-      "email": "admin_detcn1@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2025-01-02 03:37:06",
-      "updated_at": "2024-10-18 03:37:06"
-    },
-    {
-      "_id": "1bbc88a74b2c4fb0b13a6e41",
-      "name": "Admin Megakoera cgnsoc",
-      "email": "admin_cgnsoc@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-05-05 03:37:06",
-      "updated_at": "2024-06-25 03:37:06"
-    },
-    {
-      "_id": "5c6417a4ba7745cbb889ffc7",
-      "name": "Admin Megakoera mmhnhe",
-      "email": "admin_mmhnhe@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-06-17 03:37:06",
-      "updated_at": "2024-09-26 03:37:06"
-    },
-    {
-      "_id": "728b7ba188ff400eb91ddb4f",
-      "name": "Admin Megakoera 6wmcil",
-      "email": "admin_6wmcil@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-05-18 03:37:06",
-      "updated_at": "2024-08-24 03:37:06"
-    },
-    {
-      "_id": "44d5ae63d1e0499883bcc44b",
-      "name": "Admin Megakoera 27ou7n",
-      "email": "admin_27ou7n@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-04-15 03:37:06",
-      "updated_at": "2025-03-28 03:37:06"
-    },
-    {
-      "_id": "ba89b0e774f546ce9bdadd2b",
-      "name": "Admin Megakoera tmrf5e",
-      "email": "admin_tmrf5e@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [],
-      "created_at": "2024-11-24 03:37:06",
-      "updated_at": "2024-09-24 03:37:06"
-    },
-    {
-      "_id": "d15e155c4d90438285db4c47",
-      "name": "Admin Megakoera pcr953",
-      "email": "admin_pcr953@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-12-26 03:37:06",
-      "updated_at": "2024-06-01 03:37:06"
-    },
-    {
-      "_id": "154c469af82d4f12b5ef2ded",
-      "name": "Admin Megakoera uq5nnd",
-      "email": "admin_uq5nnd@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-04-25 03:37:06",
-      "updated_at": "2024-05-17 03:37:06"
-    },
-    {
-      "_id": "9709536617844398889ae3db",
-      "name": "Admin Megakoera y5tvl1",
-      "email": "admin_y5tvl1@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-09-15 03:37:06",
-      "updated_at": "2024-06-17 03:37:06"
-    },
-    {
-      "_id": "e740097558d54e0ca14053a8",
-      "name": "Admin Megakoera bqvjci",
-      "email": "admin_bqvjci@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [],
-      "created_at": "2024-05-29 03:37:06",
-      "updated_at": "2024-06-08 03:37:06"
+      "updated_at": "2024-09-14 03:37:06",
+      "id": "c950"
+    },
+    {
+      "id": "9a63",
+      "name": "Mai",
+      "email": "mai@gmail.com",
+      "role": 3,
+      "branch": "HCM",
+      "created_at": "2025-04-08T13:07:36.950Z"
     }
   ]
 }

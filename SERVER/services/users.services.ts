@@ -146,14 +146,14 @@ class UsersService {
   }
 
   async updateProfile(user_id: string, payload: updateMeRequestBody) {
-    const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
+    console.log('payload', payload)
     const user = await databaseServiceSale.users.findOneAndUpdate(
       {
         _id: new ObjectId(user_id)
       },
       {
         $set: {
-          ...(_payload as updateMeRequestBody & { date_of_birth: Date })
+          ...payload
         },
         $currentDate: { updated_at: true }
       },

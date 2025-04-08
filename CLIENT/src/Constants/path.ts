@@ -42,6 +42,12 @@ const pathApiProduct = {
   updateProductStock: '/products/update/stock'
 }
 
+const pathApiUsers = {
+  getAllUser: '/users/all',
+  getAllUsersWithRole: '/users/with-role',
+  updateUser: '/users/me'
+}
+
 const pathApiBranch = {
   createBranch: '/branch/create',
   getAllBranch: '/branch/all',
@@ -64,9 +70,6 @@ const pathServices = {
   deleteCategoryService: 'services/category-delete'
 }
 
-const pathApiUsers = {
-  getAllUsersWithRole: '/users/with-role'
-}
 
 export {
   pathAuth,
