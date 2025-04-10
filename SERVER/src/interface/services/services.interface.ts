@@ -179,9 +179,16 @@ export interface HistoryPaid {
   descriptions?: string
 }
 
+export interface HistoryUsed {
+  name_order: string
+  name_service: string
+  user_id: ObjectId | string
+  date: Date
+  descriptions?: string
+}
+
 export interface CardServicesType {
   _id?: ObjectId
-  customer_id?: ObjectId | string | null
   code?: string
   is_active?: boolean
   name: string
@@ -189,9 +196,25 @@ export interface CardServicesType {
   descriptions?: string
   price?: number
   price_paid?: number
-  history_paid?: HistoryPaid[]
   user_id?: ObjectId | string
-  service_group_id?: ObjectId | string
+  services_of_card?: ServicesOfCard[]
+  employee_commision?: ObjectId[]
+  created_at?: Date
+  updated_at?: Date
+}
+
+export interface CardServicesSoldType {
+  _id?: ObjectId
+  code?: string
+  is_active?: boolean
+  name: string
+  branch?: ObjectId[]
+  descriptions?: string
+  price?: number
+  history_paid?: HistoryPaid[]
+  history_used?: HistoryUsed[]
+  price_paid?: number
+  user_id?: ObjectId | string
   services_of_card?: ServicesOfCard[]
   employee_commision?: ObjectId[]
   created_at?: Date

@@ -71,6 +71,7 @@ const pathServices = {
 }
 
 
+
 export {
   pathAuth,
   pathUtil,
@@ -81,6 +82,5 @@ export {
   pathApiBranch,
   pathRoutersService,
   pathServices,
-  pathApiUsers,
-  pathRoutersUser
+  pathApiUsers
 }

@@ -3,7 +3,7 @@ import config from 'src/Constants/config'
 import { getAccessTokenFormLS, getProfileFromLS, saveAccessTokenToLS, setProfileFromLS } from 'src/Utils/localStorage'
 import axiosRetry from 'axios-retry'
 
-import { User } from 'src/Interfaces/user.interface'
+import { User } from 'src/Interfaces/user/user.interface'
 import { pathApi } from 'src/Constants/path'
 
 interface LoginResponse {

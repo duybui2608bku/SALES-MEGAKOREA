@@ -1,4 +1,4 @@
-import { User } from 'src/Interfaces/user.interface'
+import { User } from 'src/Interfaces/user/user.interface'
 
 export const saveAccessTokenToLS = (access_token: string) => {
   return localStorage.setItem('access_token', access_token)

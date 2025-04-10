@@ -3,15 +3,16 @@ import { useEffect, useState } from 'react'
 import useQueryBranch from 'src/hook/query/useQueryBranch'
 
 interface BranchOptionsType {
-  mode: 'multiple' | 'tags'
+  mode: 'multiple' | 'tags' | undefined
   placeholder?: string
   search: boolean
   onchange?: (value: string[]) => void
   initialValue?: string[]
+  disabled?: boolean
 }
 
 const OptionsBranch = (props: BranchOptionsType) => {
-  const { mode, search, onchange, placeholder, initialValue } = props
+  const { mode, search, onchange, placeholder, initialValue, disabled } = props
   const { branchList, isLoading } = useQueryBranch()
   const [selectedValue, setSelectedValue] = useState<string[]>(initialValue || [])
 
@@ -39,6 +40,7 @@ const OptionsBranch = (props: BranchOptionsType) => {
       style={{ width: '100%' }}
       mode={mode}
       allowClear
+      disabled={disabled}
       placeholder={placeholder || 'Chọn chi nhánh'}
       loading={isLoading}
       options={branchOptionsWithAll}

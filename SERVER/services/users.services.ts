@@ -3,7 +3,7 @@ import {
   DeleteUserFromBranchRequestBody,
   GetAllUserRequestBody,
   RegisterRequestBody,
-  updateMeRequestBody
+  UpdateUserRequestBody
 } from '~/models/requestes/User.requests'
 import databaseServiceSale from '../services/database.services.sale'
 import User from '../src/models/schemas/User.schema'
@@ -145,15 +145,16 @@ class UsersService {
     }
   }
 
-  async updateProfile(user_id: string, payload: updateMeRequestBody) {
-    console.log('payload', payload)
+  async updateUser(payload: UpdateUserRequestBody) {
+    const { _id, ...rest } = payload
+    const userObjectId = new ObjectId(_id)
     const user = await databaseServiceSale.users.findOneAndUpdate(
       {
-        _id: new ObjectId(user_id)
+        _id: new ObjectId(userObjectId)
       },
       {
         $set: {
-          ...payload
+          ...rest
         },
         $currentDate: { updated_at: true }
       },

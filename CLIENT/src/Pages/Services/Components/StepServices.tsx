@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal, Steps, Descriptions, Row, Col, Flex, Typography, ConfigProvider } from 'antd'
 import { StepServicesType } from 'src/Interfaces/services/services.interfaces'
-import { PriceType } from 'src/Constants/enum'
+import { TypeCommision } from 'src/Constants/enum'
 import { CheckCircleOutlined, UserOutlined } from '@ant-design/icons'
 
 interface ServiceStepsModalProps {
@@ -96,10 +96,10 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
                       <Descriptions.Item label='Loại Tiền'>
                         <span
                           style={{
-                            color: step.type_step_price === PriceType.FIXED ? '#52c41a' : '#fa8c16'
+                            color: step.type_step_price === TypeCommision.FIXED ? '#52c41a' : '#fa8c16'
                           }}
                         >
-                          {step.type_step_price === PriceType.FIXED ? 'Cố định' : 'Tỷ lệ phần trăm'}
+                          {step.type_step_price === TypeCommision.FIXED ? 'Cố định' : 'Tỷ lệ phần trăm'}
                         </span>
                       </Descriptions.Item>
                       <Descriptions.Item label='Giá Tiền'>

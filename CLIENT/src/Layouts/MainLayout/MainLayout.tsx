@@ -8,7 +8,8 @@ import { FcEngineering, FcAssistant, FcKindle, FcSettings } from 'react-icons/fc
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
-import { pathRoutersProduct, pathRoutersService, pathRoutersUser } from 'src/Constants/path'
+import { pathRoutersProduct, pathRoutersService } from 'src/Constants/path'
+import { CiCreditCard2 } from 'react-icons/ci'
 
 interface Props {
   children?: React.ReactNode
@@ -21,6 +22,13 @@ const MainLayout = ({ children }: Props) => {
   type MenuItem = Required<MenuProps>['items'][number]
 
   const items: MenuItem[] = [
+    {
+      key: 'customers',
+      label: 'Khách hàng',
+      // eslint-disable-next-line react/jsx-no-undef
+      icon: <CiUser size={20} />,
+      onClick: () => navigate(pathRoutesCustomers.customers)
+    },
     {
       key: 'card-service',
       label: 'Thẻ dịch vụ',
