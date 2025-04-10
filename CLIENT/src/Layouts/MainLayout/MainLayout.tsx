@@ -1,17 +1,14 @@
 import { Menu, MenuProps, Layout, Button } from 'antd'
 import { useState } from 'react'
-import { MdSettings } from 'react-icons/md'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
-import { FcEngineering } from 'react-icons/fc'
+import { FcEngineering, FcAssistant, FcKindle, FcSettings } from 'react-icons/fc'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
 import { pathRoutersProduct, pathRoutersService, pathRoutersUser } from 'src/Constants/path'
-import { CiCreditCard2 } from 'react-icons/ci'
-import { UserOutlined } from '@ant-design/icons'
 
 interface Props {
   children?: React.ReactNode
@@ -27,7 +24,7 @@ const MainLayout = ({ children }: Props) => {
     {
       key: 'card-service',
       label: 'Thẻ dịch vụ',
-      icon: <CiCreditCard2 size={20} />,
+      icon: <FcKindle size={20} />,
       onClick: () => navigate(pathRoutersService.cardService)
     },
     {
@@ -64,7 +61,7 @@ const MainLayout = ({ children }: Props) => {
     {
       key: 'users',
       label: 'Nhân viên',
-      icon: <UserOutlined />,
+      icon: <FcAssistant size={20} />,
       children: [{ key: '5', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) }]
     },
     {
@@ -73,7 +70,7 @@ const MainLayout = ({ children }: Props) => {
     {
       key: 'sub4',
       label: 'Navigation Three',
-      icon: <MdSettings />,
+      icon: <FcSettings size={20} />,
       children: [
         { key: '9', label: 'Option 9' },
         { key: '10', label: 'Option 10' },

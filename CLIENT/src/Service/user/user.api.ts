@@ -40,7 +40,7 @@ const userApi = {
   },
 
   searchUser(query: SearchUserRequestQuery) {
-    return axiosJson.get<SearchUserResponse>(`/users?name=${query.result}&branch=${query.branch}`)
+    return axiosJson.get<SearchUserResponse>(`/users?name=${query.result}`)
   },
 
   deleteUser(id: string) {

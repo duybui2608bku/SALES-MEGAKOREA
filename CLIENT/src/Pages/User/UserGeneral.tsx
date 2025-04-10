@@ -1,21 +1,33 @@
-import { Button, Col, Flex, message, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
+import {
+  Button,
+  Col,
+  Flex,
+  message,
+  Popconfirm,
+  Row,
+  Switch,
+  Table,
+  TableColumnType,
+  Typography,
+  Tag,
+  Select
+} from 'antd'
 import Title from 'antd/es/typography/Title'
 import { Fragment } from 'react/jsx-runtime'
-import { PlusOutlined, StopOutlined } from '@ant-design/icons'
-import OptionsBranch from 'src/Components/OptionsBranch'
+import { CheckCircleOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons'
+// import OptionsBranch from 'src/Components/OptionsBranch'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
 import { UserGeneralInterface } from 'src/Interfaces/user.interface'
 import { useEffect, useState } from 'react'
 import userApi from 'src/Service/user/user.api'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { RoleUser, UserStatus } from 'src/Constants/enum'
-import { getRoleUser } from 'src/Utils/util.utils'
 import { queryClient } from 'src/main'
 import InforUserComponent from './Components/InforUserComponent'
 import { IoPencil } from 'react-icons/io5'
 import { IoMdTrash } from 'react-icons/io'
-import { optionsBranch } from 'src/Constants/option'
-import ModalCreateOrUpdateUser from 'src/Modal/ModalCreateOrUpdateUser'
+import ModalCreateOrUpdateUser from 'src/Modal/users/ModalCreateOrUpdateUser'
+import TagRoleUserComponent from './Components/tagRoleUserComponent'
 const { Paragraph } = Typography
 
 type ColumsUserGeneralType = UserGeneralInterface
@@ -24,30 +36,36 @@ const PAGE = 1
 const LIMIT = 10
 const STALETIME = 5 * 60 * 1000
 
+export enum FuncBanned {
+  BANNED = 1,
+  UNBANNED = 2
+}
+
 const UserGeneral = () => {
   const [openModalCreateOrUpdateUser, setOpenModalCreateOrUpdateUser] = useState(false)
   const [userToEdit, setUserToEdit] = useState<UserGeneralInterface | null>(null)
   const [loadingStatus, setLoadingStatus] = useState('')
+  const [loadingBanned, setLoadingBanned] = useState('')
   const [usersGeneral, setUsersGeneral] = useState<UserGeneralInterface[]>([])
+  const [usersSearch, setUsersSearch] = useState<UserGeneralInterface[]>([])
   const [pagination, setPagination] = useState({
     page: PAGE,
     limit: LIMIT,
     total: 0
   })
   const [searchQuery, setSearchQuery] = useState('')
-  const [usersSearch, setUsersSearch] = useState<UserGeneralInterface[]>([])
-  const [filterBranch, setFilterBranch] = useState<string[]>([])
+  const [filterBranch, setFilterBranch] = useState<string>('')
 
   //   Fetch users data
   const { data, isLoading } = useQuery({
     queryKey: ['getUsersGeneral', filterBranch, pagination.page, pagination.limit],
     queryFn: async () => {
       const query =
-        filterBranch.length > 0
+        filterBranch.length > 0 && filterBranch != 'all'
           ? {
               page: pagination.page,
               limit: LIMIT,
-              branch: encodeURI(filterBranch.join(','))
+              branch: filterBranch
             }
           : {
               page: pagination.page,
@@ -65,13 +83,13 @@ const UserGeneral = () => {
     queryKey: ['searchUser', searchQuery, filterBranch],
     queryFn: async () => {
       const query = {
-        result: searchQuery,
-        branch: encodeURI(filterBranch.join(',')) || ''
+        result: searchQuery
       }
       const response = await userApi.searchUser(query)
       return response
     },
-    staleTime: STALETIME
+    staleTime: STALETIME,
+    enabled: !!searchQuery
   })
 
   // Delete user
@@ -116,7 +134,7 @@ const UserGeneral = () => {
     goToNextPage(page)
   }
 
-  const handleFilterBranch = (branch: string[]) => {
+  const handleFilterBranch = (branch: string) => {
     console.log('branch: ', branch)
     setFilterBranch(branch)
   }
@@ -130,7 +148,7 @@ const UserGeneral = () => {
     deleteUser(id)
   }
 
-  // Hande change status
+  // Handle change status
   const handleUpdateStatusUser = async (id: string, status: number) => {
     try {
       setLoadingStatus(id)
@@ -153,14 +171,48 @@ const UserGeneral = () => {
     }
   }
 
+  // Handle change status (BANNED)
+  const handleBannedUser = async (id: string, func: FuncBanned) => {
+    try {
+      setLoadingBanned(id)
+      const status = func == FuncBanned.BANNED ? UserStatus.BANNED : UserStatus.ACTIVE
+      const response = await userApi.updateUser({
+        id: id,
+        status: status,
+        updated_at: new Date()
+      })
+
+      console.log(response.data)
+
+      if (response.data) {
+        setLoadingBanned('')
+        if (func == FuncBanned.BANNED) {
+          message.success('Cập nhật trạng thái (BANNED) nhân viên thành công!')
+        } else {
+          message.success('Cập nhật trạng thái (UNBANNED) nhân viên thành công!')
+        }
+        queryClient.invalidateQueries({ queryKey: ['getUsersGeneral'] })
+      }
+    } catch (error) {
+      setLoadingBanned('')
+      message.error('Lỗi khi cập nhật trạng thái (BANNED) nhân viên')
+    }
+  }
+
+  // Handle update user
+  const handleUpdateUser = (user: UserGeneralInterface) => {
+    console.log('user: ', user)
+    setUserToEdit(user)
+    setOpenModalCreateOrUpdateUser(true)
+  }
+
   const columsUserGeneral: TableColumnType<ColumsUserGeneralType>[] = [
     {
       title: 'Thông tin nhân viên',
       key: 'avatar-name',
-      align: 'center',
       render: (_: unknown, record: UserGeneralInterface) => (
-        <Flex justify='center'>
-          <InforUserComponent avatar={record.avatar} name={record.name} />
+        <Flex align='center'>
+          <InforUserComponent avatar={record.avatar} name={record.name} status={record.status} />
         </Flex>
       )
     },
@@ -172,6 +224,7 @@ const UserGeneral = () => {
       render: (status: number, record: UserGeneralInterface) => (
         <Flex justify='center'>
           <Switch
+            disabled={record.status == UserStatus.BANNED}
             onChange={() => handleUpdateStatusUser(record.id, status)}
             loading={loadingStatus === record.id}
             checked={status == UserStatus.ACTIVE ? true : false}
@@ -193,7 +246,7 @@ const UserGeneral = () => {
       render: (role: RoleUser) => {
         return (
           <Flex justify='center'>
-            <Typography>{getRoleUser(role)}</Typography>
+            <TagRoleUserComponent roleUser={role} />
           </Flex>
         )
       }
@@ -203,22 +256,27 @@ const UserGeneral = () => {
       dataIndex: 'branch',
       key: 'branch',
       align: 'center',
-      render: (branch: string[]) => (
-        <Paragraph
-          ellipsis={{
-            rows: 1,
-            expandable: true
-          }}
-        >
-          {branch.length === optionsBranch.length ? 'Toàn bộ' : branch.map((b) => b).join(', ')}
-        </Paragraph>
-      )
+      width: 150,
+      render: (branch: string) => {
+        if (!branch) return <Paragraph>Không có</Paragraph>
+        return (
+          <Paragraph
+            ellipsis={{
+              rows: 1,
+              expandable: true
+            }}
+          >
+            {branch}
+          </Paragraph>
+        )
+      }
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
-      align: 'center'
+      align: 'center',
+      render: (created_at: string) => new Date(created_at).toLocaleDateString('vi-VN')
     },
     {
       title: 'Hành động',
@@ -227,21 +285,82 @@ const UserGeneral = () => {
       align: 'center',
       render: (_: unknown, record: UserGeneralInterface) => (
         <Flex gap={10}>
-          <Button title='Sửa' icon={<IoPencil color='blue' />} />
+          {/* Button update */}
+          <Button
+            disabled={record.status === UserStatus.BANNED}
+            onClick={() => handleUpdateUser(record)}
+            title='Sửa'
+            icon={<IoPencil color='blue' />}
+          />
+
+          {/* Button ban */}
+          {record.status === UserStatus.BANNED ? (
+            <Popconfirm
+              okButtonProps={{ loading: loadingBanned == record.id }}
+              title={
+                <Typography>
+                  Bạn có chắc chắn muốn mở khoá
+                  <div>
+                    <Tag bordered={false} color='error'>
+                      {record.name}
+                    </Tag>
+                    không?
+                  </div>
+                </Typography>
+              }
+              onConfirm={() => handleBannedUser(record.id, FuncBanned.UNBANNED)}
+              okText='Có'
+              cancelText='Không'
+            >
+              <Button
+                disabled={loadingBanned == record.id}
+                title='Mở'
+                icon={<CheckCircleOutlined style={{ color: 'green' }} />}
+              />
+            </Popconfirm>
+          ) : (
+            <Popconfirm
+              okButtonProps={{ loading: loadingBanned == record.id }}
+              title={
+                <Typography>
+                  Bạn có chắc chắn muốn khoá{' '}
+                  <div>
+                    <Tag bordered={false} color='error'>
+                      {record.name}
+                    </Tag>
+                    không?
+                  </div>
+                </Typography>
+              }
+              onConfirm={() => handleBannedUser(record.id, FuncBanned.BANNED)}
+              okText='Có'
+              cancelText='Không'
+            >
+              <Button disabled={loadingBanned == record.id} title='Cấm' icon={<StopOutlined color='black' />} />
+            </Popconfirm>
+          )}
+
+          {/* Button delete */}
           <Popconfirm
             okButtonProps={{ loading: isPending }}
             title={
               <Typography>
-                Bạn có chắc chắn muốn <div>xoá nhân viên này không?</div>
+                Bạn có chắc chắn muốn xoá
+                <div>
+                  {' '}
+                  <Tag bordered={false} color='red'>
+                    {record.name}
+                  </Tag>
+                  không?
+                </div>
               </Typography>
             }
             onConfirm={() => handleDeleteUser(record.id)}
             okText='Có'
             cancelText='Không'
           >
-            <Button title='Xóa' icon={<IoMdTrash color='red' />} />
+            <Button disabled={record.status === UserStatus.BANNED} title='Xóa' icon={<IoMdTrash color='red' />} />
           </Popconfirm>
-          <Button title='Cấm' icon={<StopOutlined color='black' />} />
         </Flex>
       )
     }
@@ -251,20 +370,39 @@ const UserGeneral = () => {
     <Fragment>
       {/* Title User General */}
       <Row style={{ padding: '20px' }} gutter={[16, 16]}>
-        <Col span={24}>
-          <Title className='center-div' level={2}>
+        <Col xs={24}>
+          <Title style={{ textAlign: 'center' }} className='center-div' level={2}>
             Danh Sách Nhân Viên
           </Title>
         </Col>
-        <Col span={8} sm={24} md={4}>
-          <Button onClick={() => setOpenModalCreateOrUpdateUser(true)} icon={<PlusOutlined />} type='primary'>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <Button block onClick={() => setOpenModalCreateOrUpdateUser(true)} icon={<PlusOutlined />} type='primary'>
             Thêm tài khoản
           </Button>
         </Col>
-        <Col span={8} sm={24} md={4}>
-          <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
+        <Col xs={24} sm={12} md={6} lg={6}>
+          {/* <OptionsBranch mode='multiple' search onchange={handleFilterBranch} /> */}
+          <Select
+            style={{ width: '100%' }}
+            showSearch
+            onChange={handleFilterBranch}
+            placeholder='Chọn chi nhánh'
+            defaultValue={'all'}
+            options={[
+              { value: 'all', label: 'Tất cả' },
+              { value: 'Quảng Bình', label: 'Quảng Bình' },
+              { value: 'Huế', label: 'Huế' },
+              { value: 'Quảng Trị', label: 'Quảng Trị' },
+              { value: 'Buôn Ma Thuột', label: 'Buôn Ma Thuột' },
+              { value: 'Cà Mau', label: 'Cà Mau' },
+              { value: 'Phan Thiết', label: 'Phan Thiết' },
+              { value: 'Nha Trang', label: 'Nha Trang' },
+              { value: 'Medicare NT', label: 'Medicare NT' },
+              { value: 'Đà Nẵng', label: 'Đà Nẵng' }
+            ]}
+          />
         </Col>
-        <Col span={8} sm={24} md={6}>
+        <Col xs={24} sm={12} md={6} lg={6}>
           <DebouncedSearch
             placeholder='Tìm kiếm nhân viên'
             onSearch={(value) => handleSearch(value)}
@@ -277,9 +415,9 @@ const UserGeneral = () => {
       <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
-            scroll={{ x: 'fit-content' }}
+            scroll={{ x: '1000px' }}
             loading={isLoading || isLoadingSearch}
-            dataSource={searchQuery.length > 0 ? usersSearch : usersGeneral}
+            dataSource={searchQuery.length != 0 ? usersSearch : usersGeneral}
             bordered
             columns={columsUserGeneral}
             pagination={{

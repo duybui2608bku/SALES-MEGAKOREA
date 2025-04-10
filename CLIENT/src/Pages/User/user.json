@@ -1,161 +1,100 @@
 {
   "users": [
     {
-      "_id": "3be26ffd7edf4affa88c6199",
-      "name": "Admin Megakoera ben3u2",
-      "email": "admin_ben3u2@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [
-        "Quảng Bình",
-        "Huế",
-        "Quảng Trị",
-        "Buôn Ma Thuột",
-        "Cà Mau",
-        "Phan Thiết",
-        "Nha Trang",
-        "Medicare NT",
-        "Đà Nẵng"
-      ],
-      "created_at": "2024-09-14 03:37:06",
-      "updated_at": "2025-04-08T08:42:44.765Z",
-      "id": "0474"
-    },
-    {
-      "_id": "259e7db248714804b73693f9",
-      "name": "Admin Megakoera 2f2zmw",
-      "email": "admin_2f2zmw@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [
-        "Buôn Ma Thuộc",
-        "Đà Nẵng"
-      ],
-      "created_at": "2024-08-18 03:37:06",
-      "updated_at": "2025-04-08T10:38:04.536Z",
-      "id": "4915"
-    },
-    {
-      "_id": "e14aec6fc51a4b5094ddbf02",
-      "name": "Admin Megakoera 86gumz",
-      "email": "admin_86gumz@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 2,
-      "branch": [
-        "Quảng Bình"
-      ],
-      "created_at": "2024-11-23 03:37:06",
-      "updated_at": "2025-04-08T09:07:24.124Z",
-      "id": "d49a"
-    },
-    {
-      "_id": "bd2b7c1360e7473eaf65e66c",
-      "name": "Admin Megakoera 267rr8",
-      "email": "admin_267rr8@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [
-        "Medicare NT"
-      ],
-      "created_at": "2024-11-02 03:37:06",
-      "updated_at": "2025-03-07 03:37:06",
-      "id": "92c8"
-    },
-    {
-      "_id": "82439a1d63b74f8d95465403",
-      "name": "Admin Megakoera 8gwoil",
-      "email": "admin_8gwoil@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [
-        "Nha Trang"
-      ],
-      "created_at": "2024-08-03 03:37:06",
-      "updated_at": "2024-05-11 03:37:06",
-      "id": "397b"
-    },
-    {
-      "_id": "5d08f4dae2c3436aaa34ffa4",
-      "name": "Admin Megakoera a6qpsm",
-      "email": "admin_a6qpsm@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [
-        "Phan Thiết"
-      ],
-      "created_at": "2024-06-12 03:37:06",
-      "updated_at": "2025-03-10 03:37:06",
-      "id": "0641"
-    },
-    {
-      "_id": "da6b152ceab4431387cdb941",
-      "name": "Admin Megakoera iembf6",
-      "email": "admin_iembf6@megakorea.vn",
-      "avatar": "",
-      "role": 1,
-      "status": 0,
-      "branch": [
-        "Cà Mau"
-      ],
-      "created_at": "2024-08-03 03:37:06",
-      "updated_at": "2024-11-12 03:37:06",
-      "id": "d4fd"
-    },
-    {
-      "_id": "822519afee60480c93521b87",
-      "name": "Admin Megakoera 2ha687",
-      "email": "admin_2ha687@megakorea.vn",
-      "avatar": "",
-      "role": 2,
-      "status": 1,
-      "branch": [
-        "Buôn Ma Thuột"
-      ],
-      "created_at": "2025-02-03 03:37:06",
-      "updated_at": "2024-08-04 03:37:06",
-      "id": "6cdd"
-    },
-    {
       "_id": "896b8b8c2f54421599a77dd8",
       "name": "Admin Megakoera jusv2n",
       "email": "admin_jusv2n@megakorea.vn",
       "avatar": "",
-      "role": 1,
-      "status": 1,
-      "branch": [
-        "Quảng Trị"
-      ],
+      "role": 4,
+      "status": 3,
+      "branch": "Cà Mau",
       "created_at": "2024-11-12 03:37:06",
-      "updated_at": "2025-03-28 03:37:06",
+      "updated_at": "2025-04-10T04:47:19.128Z",
       "id": "318e"
     },
     {
-      "_id": "f740b598c94e4a5b9b0005df",
-      "name": "Admin Megakoera ybo9i7",
-      "email": "admin_ybo9i7@megakorea.vn",
+      "id": "25e8",
+      "name": "Huỳnh Minh Trung",
+      "email": "minhtrung@gmail.com",
       "avatar": "",
-      "role": 2,
-      "status": 0,
-      "branch": [
-        "Huế"
-      ],
-      "created_at": "2025-01-21 03:37:06",
-      "updated_at": "2024-09-14 03:37:06",
-      "id": "c950"
+      "role": 5,
+      "branch": "Medicare NT",
+      "status": 1,
+      "created_at": "2025-04-09T06:46:05.137Z",
+      "updated_at": "2025-04-10T01:43:14.553Z"
     },
     {
-      "id": "9a63",
-      "name": "Mai",
-      "email": "mai@gmail.com",
+      "id": "f519",
+      "name": "Nguyễn Văn A",
+      "email": "vanA@gmail.com",
+      "avatar": "",
+      "role": 7,
+      "branch": "Phan Thiết",
+      "status": 2,
+      "created_at": "2025-04-10T04:48:44.470Z",
+      "updated_at": "2025-04-10T07:12:40.712Z"
+    },
+    {
+      "id": "a1f1",
+      "name": "Lê Đức Minh",
+      "email": "ducMinh@gmail.com",
+      "avatar": "",
+      "role": 4,
+      "branch": "Buôn Ma Thuột",
+      "status": 1,
+      "created_at": "2025-04-10T04:49:15.370Z",
+      "updated_at": "2025-04-10T06:11:16.515Z"
+    },
+    {
+      "id": "ea6f",
+      "name": "Trung Đức",
+      "email": "trungduc@gmail.com",
+      "avatar": "",
+      "role": 7,
+      "branch": "Quảng Trị",
+      "status": 3,
+      "created_at": "2025-04-10T04:50:13.277Z",
+      "updated_at": "2025-04-10T06:32:20.986Z"
+    },
+    {
+      "id": "a18f",
+      "name": "Quang Vinh",
+      "email": "quanggg12@gmail.com",
+      "avatar": "",
       "role": 3,
-      "branch": "HCM",
-      "created_at": "2025-04-08T13:07:36.950Z"
+      "branch": "Buôn Ma Thuột",
+      "status": 1,
+      "created_at": "2025-04-10T04:50:45.827Z",
+      "updated_at": "2025-04-10T07:18:03.650Z"
+    },
+    {
+      "id": "a440",
+      "name": "Minh Trung",
+      "email": "minhtrung010321@gmail.com",
+      "avatar": "",
+      "role": 5,
+      "branch": "Nha Trang",
+      "status": 2,
+      "created_at": "2025-04-10T08:09:39.102Z"
+    },
+    {
+      "id": "ddd7",
+      "name": "Minh TRung",
+      "email": "minhtrungro@gmail.com",
+      "avatar": "",
+      "role": 5,
+      "branch": "Nha Trang",
+      "status": 1,
+      "created_at": "2025-04-10T08:19:01.589Z"
+    },
+    {
+      "id": "6125",
+      "name": "íudfinusdf",
+      "email": "mídnfi@gmail.com",
+      "avatar": "",
+      "role": 7,
+      "status": 1,
+      "created_at": "2025-04-10T08:20:59.901Z"
     }
   ]
 }

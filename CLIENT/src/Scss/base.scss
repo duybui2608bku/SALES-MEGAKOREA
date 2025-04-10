@@ -103,3 +103,20 @@ iframe {
   width: 100%;
   text-align: center;
 }
+
+.global-spinner {
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #212121;
+}
+
+.ant-upload-select {
+  width: 100% !important;
+}
