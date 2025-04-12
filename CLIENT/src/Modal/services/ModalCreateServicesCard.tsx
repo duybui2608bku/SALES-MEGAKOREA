@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Button, Card, Select } from 'antd'
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Button, Card } from 'antd'
 import { HttpStatusCode } from 'axios'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
@@ -12,8 +12,7 @@ import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 // import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
-import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
-import { RoleUser, TypeCommision } from 'src/Constants/enum'
+
 import OptionsServices from 'src/Components/OptionsGetServices'
 // import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
 
@@ -31,19 +30,18 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
   const { profile } = useContext(AppContext)
   const [form] = Form.useForm()
   const { branchList } = useQueryBranch()
-  const initialbranchId = '67cc0d4bb0c361aee3e7055c'
+  const initialbranchId = 'all'
   const [branchId, setBranchId] = useState<string[]>([initialbranchId])
 
   useEffect(() => {
     if (serviceCardToEdit && branchList.length > 0) {
       const branchId =
         serviceCardToEdit?.branch?.map((branch) => (typeof branch === 'string' ? branch : branch._id)) || []
-      const service_group_id = serviceCardToEdit?.service_group?._id || undefined
-      const employee = serviceCardToEdit?.employee?.map((emp) => ({
-        id_employee: emp.employee_details._id,
-        type_price: emp.type_price,
-        commision: emp.commision
-      }))
+      // const employee = serviceCardToEdit?.employee?.map((emp) => ({
+      //   id_employee: emp.employee_details._id,
+      //   type_price: emp.type_price,
+      //   commision: emp.commision
+      // }))
       const services_of_card = serviceCardToEdit?.services_of_card?.map((service) => ({
         services_id: `${String(service.service_details?._id)}`,
         quantity: service.quantity,
@@ -54,8 +52,6 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
       form.setFieldsValue({
         ...serviceCardToEdit,
         branch: branchId,
-        service_group_id,
-        employee,
         services_of_card
       })
     } else {
@@ -134,7 +130,9 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
       message.error('Không thể cập nhật dịch vụ: Service ID không hợp lệ!')
       return
     }
-    updateServiceCard({ ...values, _id: serviceCardToEdit._id })
+    const branch = getBranchList(values.branch || [])
+    console.log('values', values.branch)
+    updateServiceCard({ ...values, _id: serviceCardToEdit._id, branch: branch })
   }
 
   const onFinish = (values: CreateServicesCardRequestBody & { _id?: string }) => {
@@ -209,10 +207,10 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                   // rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
                 >
                   <OptionsBranch
-                    initialValue={branchId}
+                    // initialValue={branchId}
                     placeholder={serviceCardToEdit ? 'Toàn bộ' : 'Chọn chi nhánh'}
-                    mode={undefined}
-                    disabled
+                    mode={'multiple'}
+                    // disabled
                     search
                     onchange={(value) => form.setFieldsValue({ branch: value })}
                   />
@@ -331,7 +329,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                 </Form.List>
               </Col>
             </Row>
-            <Row gutter={16}>
+            {/* <Row gutter={16}>
               <Col span={24}>
                 <Form.List name='employee'>
                   {(fields, { add, remove }) => (
@@ -417,7 +415,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                   )}
                 </Form.List>
               </Col>
-            </Row>
+            </Row> */}
           </Form>
         </Col>
       </Row>

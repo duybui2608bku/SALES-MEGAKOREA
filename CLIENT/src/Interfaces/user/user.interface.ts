@@ -1,3 +1,5 @@
+import { BranchType } from '../branch/branch.interface'
+
 export interface User {
   _id: string
   name: string
@@ -5,7 +7,7 @@ export interface User {
   avatar: string
   role: number
   status: number
-  branch: string[]
+  branch: BranchType
   created_at: Date
   updated_at: Date
 }

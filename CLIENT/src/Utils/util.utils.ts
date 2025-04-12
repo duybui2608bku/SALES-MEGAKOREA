@@ -33,3 +33,7 @@ export const getRoleUser = (role: RoleUser) => {
       return 'Khách hàng'
   }
 }
+
+export const isAdminValidator = (role: RoleUser) => {
+  return role === RoleUser.ADMIN
+}

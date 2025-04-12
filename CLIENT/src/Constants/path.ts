@@ -64,7 +64,9 @@ const pathApiUsers = {
 }
 
 const pathApiCustomer = {
-  searchCustomer: '/search/by-phone'
+  searchCustomer: '/search/by-phone',
+  getCustomersSchedule: '/customers/schedule-telesales-success',
+  searchCustomerschedule: '/search/by-phone-success-schedule'
 }
 
 const pathRoutesCustomers = {

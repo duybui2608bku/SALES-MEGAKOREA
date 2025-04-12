@@ -49,3 +49,12 @@ export interface Customer {
   created_at: Date
   updated_at: Date
 }
+
+export type CustomerFilterRequestType = {
+  branch?: string[]
+  service?: string[]
+  status?: string
+  date?: string
+  telesale_id?: string
+  date_schedule?: string
+}

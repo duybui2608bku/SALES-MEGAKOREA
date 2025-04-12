@@ -21,7 +21,8 @@ const useRouterElements = () => {
     if (!isAuthenticated) {
       return <Navigate to='/login' />
     }
-    if (allowedRoles && rule && !allowedRoles.includes(rule)) {
+
+    if (allowedRoles !== undefined && rule && !allowedRoles.includes(rule)) {
       return <Navigate to='/404' />
     }
 
@@ -68,7 +69,11 @@ const useRouterElements = () => {
     },
     {
       path: pathUtil.none,
-      element: <ProtectedRoute allowedRoles={[RoleUser.ADMIN, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE]} />,
+      element: (
+        <ProtectedRoute
+          allowedRoles={[RoleUser.ADMIN, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE, RoleUser.TECHNICIAN]}
+        />
+      ),
       children: [
         {
           path: pathRoutersService.categoryService,
