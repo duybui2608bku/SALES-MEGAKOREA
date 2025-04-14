@@ -109,12 +109,7 @@ const UserGeneral = () => {
     if (data?.data.result) {
       const response = data.data.result as unknown as UserGeneralInterface[]
 
-      const dataWithKey = response.map((item) => ({
-        ...item,
-        key: item._id
-      }))
-
-      setUsersGeneral(dataWithKey)
+      setUsersGeneral(response)
       setPagination({
         page: 1,
         limit: 10,

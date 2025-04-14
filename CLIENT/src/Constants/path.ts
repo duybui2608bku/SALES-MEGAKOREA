@@ -56,8 +56,8 @@ const pathApiUsers = {
   deleteUserById: '/users'
 }
 
-const pathApiUploadImage = {
-  uploadImage: '/upload/image'
+const pathApiUploadAvatarUser = {
+  uploadAvatar: '/upload/image'
 }
 
 const pathApiBranch = {
@@ -95,5 +95,5 @@ export {
   pathApiUsers,
   pathRoutersUser,
   pathRoutesCustomers,
-  pathApiUploadImage
+  pathApiUploadAvatarUser
 }

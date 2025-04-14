@@ -34,7 +34,7 @@ export const axiosJson = axios.create({
 })
 
 // Path upload image
-export const axiosUploadImage = axios.create({
+export const axiosUploadAvatar = axios.create({
   baseURL: 'https://api.mediccare.vn',
   timeout: 500000,
   headers: {

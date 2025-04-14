@@ -8,7 +8,7 @@ type ValueInforProps = {
 
 const ShowInforUserComponent = ({ title, value }: ValueInforProps) => {
   return (
-    <Col span={11}>
+    <Col xs={24} md={11}>
       <Text>{title}</Text>
       <Paragraph
         style={{

@@ -10,6 +10,7 @@ export interface UserGeneralInterface {
   branch: string
   created_at: Date
   updated_at: Date
+  coefficient: number
 }
 
 export interface CreateUserRequestBody {
@@ -21,6 +22,7 @@ export interface CreateUserRequestBody {
   branch?: string
   created_at?: Date
   updated_at?: Date
+  coefficient?: number
 }
 
 export interface GetAllUserRequestQuery {
@@ -39,6 +41,7 @@ export interface UpdateUserBody {
   status?: UserStatus
   branch?: string
   created_at?: Date
+  coefficient?: number
 }
 
 export interface SearchUserRequestQuery {

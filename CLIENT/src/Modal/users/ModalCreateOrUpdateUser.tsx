@@ -1,13 +1,13 @@
-import { Image, Button, Col, Form, Input, message, Modal, Radio, Row, Select, Tooltip, Typography, Upload } from 'antd'
+import { Image, Col, Form, Input, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd'
 import { CreateUserRequestBody, UpdateUserBody, UserGeneralInterface } from 'src/Interfaces/user/user.interface'
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   DeleteOutlined,
   EyeInvisibleOutlined,
-  EyeTwoTone,
-  UploadOutlined
+  EyeTwoTone
 } from '@ant-design/icons'
+import { BarLoader } from 'react-spinners'
 import { RiAiGenerate } from 'react-icons/ri'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import userApi from 'src/Service/user/user.api'
@@ -17,6 +17,7 @@ import { Fragment, useEffect, useState } from 'react'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import HttpStatusCode from 'src/Constants/httpCode'
 import { generatePassword } from 'src/Utils/generatePassword'
+import UploadAvatar from './components/uploadAvatar'
 const Text = Typography
 
 interface ModalCreateOrUpdateUserProps {
@@ -27,12 +28,6 @@ interface ModalCreateOrUpdateUserProps {
 }
 
 const STALETIME = 5 * 50 * 1000
-// byte -> kb -> mb
-// 1MB = 1024 KB
-// 1KB = 1024 byte
-// file.size trả về giá trị byte
-const oneByte = 1024
-const oneMB = 1
 
 interface FieldsType {
   name: string
@@ -51,6 +46,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
   const { open, close, userToEdit, setUserToEdit } = props
   const [form] = Form.useForm()
   const [imageUrl, setImageUrl] = useState('')
+  const [isPendingAvatar, setIsPendingAvatar] = useState(false)
 
   // Check role user
   const { data: dataUser } = useQuery({
@@ -110,6 +106,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
       return createOptimisticUpdateHandler(queryClient, ['getUsersGeneral'])()
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMe'] })
       message.success('Cập nhật nhân viên thành công!')
       form.resetFields()
       setUserToEdit?.(null)
@@ -129,36 +126,6 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
     },
     retry: 2
   })
-
-  // Xử lý upload ảnh
-  const formData: FormData = new FormData()
-  const uploadImageMutation = useMutation({
-    mutationFn: async (file: File) => {
-      formData.append('image', file)
-      const response = await userApi.uploadImageUser(formData)
-
-      if (!response) {
-        message.error('Upload ảnh thất bại!')
-      }
-      return response
-    },
-    onSuccess: (data) => {
-      setImageUrl(data.data.result[0].url)
-      message.success('Tải ảnh lên thành công!')
-    }
-  })
-
-  const { mutate } = uploadImageMutation
-
-  const handleUpload = (file: File) => {
-    mutate(file)
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const customRequest = (options: any) => {
-    const { file } = options
-    handleUpload(file as File)
-  }
 
   const handleDeleteAvatar = () => {
     setImageUrl('')
@@ -183,6 +150,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
     })
   }
 
+  // Hàm tạo nhân viên mới
   const handleCreateUser = (values: FieldsType) => {
     // Check password và password-confirm
     if (passConfirmValue && passConfirmValue !== passValue) {
@@ -194,6 +162,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
     createUser(user)
   }
 
+  // Hàm sửa đổi thông tin nhân viên
   const handleUpdateUser = (values: FieldsType) => {
     if (!userToEdit || !userToEdit._id) {
       message.error('Không thể cập nhật nhân viên: UserID không hợp lệ!')
@@ -358,44 +327,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                 <Row gutter={16}>
                   <Col xs={24} md={12}>
                     <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
-                      <Upload
-                        fileList={[]}
-                        style={{ display: 'block', width: '100%' }}
-                        showUploadList={false}
-                        maxCount={1}
-                        customRequest={customRequest}
-                        beforeUpload={(file) => {
-                          // Check có phải là hình ảnh hay không
-                          const isImage = file.type.startsWith('image/')
-                          if (!isImage) {
-                            message.error('Chỉ được phép tải lên hình ảnh!')
-                            return Upload.LIST_IGNORE
-                          }
-
-                          // Check dung lượng (dung lượng ảnh phải <= 1MB)
-                          const isLt1M = file.size / oneByte / oneByte <= oneMB
-                          if (!isLt1M) {
-                            message.error('Dung lượng ảnh phải nhỏ hơn hoặc bằng 1MB!')
-                            return Upload.LIST_IGNORE
-                          }
-
-                          return true
-                        }}
-                      >
-                        <Button
-                          block
-                          style={{
-                            fontSize: '12px',
-                            backgroundColor: 'white',
-                            color: '#000',
-                            border: '1px solid lightgray'
-                          }}
-                          type='primary'
-                          icon={<UploadOutlined />}
-                        >
-                          Upload avtar
-                        </Button>
-                      </Upload>
+                      <UploadAvatar setImageUrl={setImageUrl} setIsPendingUploadAvatar={setIsPendingAvatar} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} md={12}>
@@ -449,43 +381,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                   </Col>
                   <Col xs={24} md={8}>
                     <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
-                      <Upload
-                        style={{ display: 'block', width: '100%' }}
-                        showUploadList={false}
-                        maxCount={1}
-                        customRequest={customRequest}
-                        beforeUpload={(file) => {
-                          // Check có phải là hình ảnh hay không
-                          const isImage = file.type.startsWith('image/')
-                          if (!isImage) {
-                            message.error('Chỉ được phép tải lên hình ảnh!')
-                            return Upload.LIST_IGNORE
-                          }
-
-                          // Check dung lượng (dung lượng ảnh phải <= 1MB)
-                          const isLt1M = file.size / oneByte / oneByte <= oneMB
-                          if (!isLt1M) {
-                            message.error('Dung lượng ảnh phải nhỏ hơn hoặc bằng 1MB!')
-                            return Upload.LIST_IGNORE
-                          }
-
-                          return true
-                        }}
-                      >
-                        <Button
-                          block
-                          style={{
-                            fontSize: '12px',
-                            backgroundColor: 'white',
-                            color: '#000',
-                            border: '1px solid lightgray'
-                          }}
-                          type='primary'
-                          icon={<UploadOutlined />}
-                        >
-                          Click to upload
-                        </Button>
-                      </Upload>
+                      <UploadAvatar setImageUrl={setImageUrl} setIsPendingUploadAvatar={setIsPendingAvatar} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} md={8}>
@@ -519,6 +415,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
               </>
             )}
 
+            {isPendingAvatar && <BarLoader color='#1677ff' loading={true} width={'100%'} />}
             {imageUrl && (
               <Fragment>
                 <Text style={{ marginBottom: '8px' }}>Preview</Text>

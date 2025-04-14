@@ -7,8 +7,8 @@ import {
   SearchUserResponse,
   UploadAvatarResponse
 } from 'src/Types/user/user.type'
-import axiosInstanceMain, { axiosJson, axiosUploadImage } from '../axious.api'
-import { pathApiUploadImage, pathApiUsers } from 'src/Constants/path'
+import axiosInstanceMain, { axiosJson, axiosUploadAvatar } from '../axious.api'
+import { pathApiUploadAvatarUser, pathApiUsers } from 'src/Constants/path'
 import {
   CreateUserRequestBody,
   GetAllUserRequestQuery,
@@ -37,8 +37,8 @@ const userApi = {
     return axiosInstanceMain.patch<CreateUserResponse>(pathApiUsers.updateUser, user)
   },
 
-  uploadImageUser(imageData: FormData) {
-    return axiosUploadImage.post<UploadAvatarResponse>(pathApiUploadImage.uploadImage, imageData)
+  uploadAvatarUser(imageData: FormData) {
+    return axiosUploadAvatar.post<UploadAvatarResponse>(pathApiUploadAvatarUser.uploadAvatar, imageData)
   },
 
   searchUser(query: SearchUserRequestQuery) {

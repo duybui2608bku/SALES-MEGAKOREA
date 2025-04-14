@@ -8,6 +8,8 @@ import { FaSignOutAlt } from 'react-icons/fa'
 import { clearLS } from 'src/Utils/localStorage'
 import { useNavigate } from 'react-router'
 import { pathRoutersUser } from 'src/Constants/path'
+import { useQuery } from '@tanstack/react-query'
+import userApi from 'src/Service/user/user.api'
 const HeaderMain = () => {
   const { profile, reset } = useContext(AppContext)
   const navigate = useNavigate()
@@ -16,6 +18,14 @@ const HeaderMain = () => {
     reset()
     clearLS()
   }
+
+  const { data: dataMe } = useQuery({
+    queryKey: ['getMe'],
+    queryFn: async () => {
+      const response = await userApi.getUser()
+      return response
+    }
+  })
 
   return (
     <div className='header-container'>
@@ -35,7 +45,16 @@ const HeaderMain = () => {
       </div>
       <div className='header-container__user'>
         <p className='header-container__user__name'>{profile?.name}</p>
-        <Avatar onClick={() => navigate(pathRoutersUser.userInformation)} size={50} src={logo} />
+        {!dataMe?.data.result[0].avatar && (
+          <Avatar onClick={() => navigate(pathRoutersUser.userInformation)} size={50} src={logo} />
+        )}
+        {dataMe?.data.result[0].avatar && (
+          <Avatar
+            onClick={() => navigate(pathRoutersUser.userInformation)}
+            size={50}
+            src={dataMe?.data.result[0].avatar}
+          />
+        )}
       </div>
     </div>
   )

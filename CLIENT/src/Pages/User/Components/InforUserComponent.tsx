@@ -44,7 +44,11 @@ const InforUserComponent = ({ avatar, name, status }: InforUserProps) => {
       {status == UserStatus.BANNED && (
         <Row align={'middle'} gutter={[16, 16]}>
           <Col xs={24} xl={7}>
-            <Avatar style={{ border: '1px solid red', backgroundColor: '#fff' }} size={50} icon={<FcCancel />} />
+            <Avatar
+              style={{ border: '2px solid red', backgroundColor: 'rgba(0,0,0,8%)' }}
+              size={50}
+              icon={<FcCancel />}
+            />
           </Col>
           <Col xs={24} xl={17} flex='auto'>
             <Typography>{name}</Typography>
