@@ -12,6 +12,7 @@ import CategoryService from './Pages/Services/Category.service'
 import Service from './Pages/Services/Services.service'
 import ServicesCard from './Pages/Services/Services.card.service'
 import Customers from './Pages/customer/customers'
+import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -96,6 +97,14 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <ServicesCard />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.soldCardService,
+          element: (
+            <MainLayout>
+              <SoldServicesCardService />
             </MainLayout>
           )
         }

@@ -53,13 +53,8 @@ export interface ServicesOfCardType {
   name: string
   branch: BranchType[]
   descriptions: string
-  session_time: number
-  price: number
-  price_paid: number
-  history_paid: HistoryPaid[]
-  date_different_paid: Date[]
   user_id: string | string
-  service_group: ServicesCategoryType
+  price: number
   services_of_card: ServicesOfCard[]
   employee: EmployeeOfServices[]
   created_at: Date

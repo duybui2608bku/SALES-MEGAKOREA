@@ -24,7 +24,8 @@ const pathRoutersProduct = {
 const pathRoutersService = {
   categoryService: '/category-service',
   service: '/service',
-  cardService: '/card-service'
+  cardService: '/card-service',
+  soldCardService: '/card-service/sold'
 }
 
 const pathApiProduct = {
