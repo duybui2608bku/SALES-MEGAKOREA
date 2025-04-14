@@ -153,3 +153,12 @@ export const getAllUsersController = async (
     result: users
   })
 }
+
+export const deleteUserById = async (req: Request<ParamsDictionary, any, GetAllUserRequestBody>, res: Response) => {
+  const { id } = req.params
+  await usersService.deleteUser(id)
+  ResponseSuccess({
+    message: userMessages.DELETE_BY_ID_SUCCESS,
+    res
+  })
+}

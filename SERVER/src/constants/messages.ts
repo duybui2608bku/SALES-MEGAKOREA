@@ -1,4 +1,7 @@
 export const userMessages = {
+  INVALID_ID: 'Invalid ID!',
+  USER_EXISTS: 'This user does not exist',
+  DELETE_BY_ID_SUCCESS: 'This user deleted successfully',
   NOT_ADMIN: 'User is not admin',
   VALIDATION_ERROR: 'Validation Error',
   EMAIL_EXISTS: 'Email already exists',

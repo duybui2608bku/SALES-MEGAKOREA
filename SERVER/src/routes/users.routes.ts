@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   addUserToBranchController,
   changePasswordController,
+  deleteUserById,
   deleteUserFromBranchController,
   getAllUsersController,
   getMeController,
@@ -18,7 +19,8 @@ import {
   resetPasswordValidator,
   updateMeValidator,
   changePasswordValidator,
-  isAdminValidator
+  isAdminValidator,
+  DeleteUserValidator
   // addUserToBranchValidator,
   // deleteUserFormBranchValidator
 } from '~/middlewares/users.middlewares'
@@ -137,5 +139,18 @@ method: GET
 Header:{Authorization: Bearer <access_token>}
 */
 userRouters.get('/with-role', accessTokenValidator, wrapRequestHandler(getUserWithRole))
+
+/*
+Description: Delete User by ID
+path: /:id
+method: DELETE
+*/
+userRouters.delete(
+  '/:id',
+  accessTokenValidator,
+  isAdminValidator,
+  DeleteUserValidator,
+  wrapRequestHandler(deleteUserById)
+)
 
 export default userRouters

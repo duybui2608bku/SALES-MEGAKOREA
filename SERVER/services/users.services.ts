@@ -14,10 +14,23 @@ import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
 import { userMessages } from '~/constants/messages'
 import _ from 'lodash'
+import { ErrorWithStatusCode } from '~/models/Errors'
+import { HttpStatusCode } from 'axios'
 
 config()
 
 class UsersService {
+  // Prive
+  private async checkUserExist(id: ObjectId) {
+    const User = await databaseServiceSale.users.findOne({ _id: id })
+    if (!User) {
+      throw new ErrorWithStatusCode({
+        message: userMessages.USER_EXISTS,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+  }
+
   private signAccessToken(user_id: string, role?: UserRole) {
     return signToken({
       payload: { user_id, token_type: TokenType.AccessToken, role },
@@ -224,20 +237,20 @@ class UsersService {
             as: 'branch'
           }
         },
-        {
-          $addFields: {
-            branch: {
-              $map: {
-                input: '$branch',
-                as: 'b',
-                in: {
-                  _id: '$$b._id',
-                  name: '$$b.name'
-                }
-              }
-            }
-          }
-        },
+        // {
+        //   $addFields: {
+        //     branch: {
+        //       $map: {
+        //         input: '$branch',
+        //         as: 'b',
+        //         in: {
+        //           _id: '$$b._id',
+        //           name: '$$b.name'
+        //         }
+        //       }
+        //     }
+        //   }
+        // },
         {
           $project: {
             password: 0,
@@ -276,6 +289,12 @@ class UsersService {
       ])
       .toArray()
     return result
+  }
+
+  async deleteUser(user_id: string) {
+    const _id = new ObjectId(user_id)
+    await this.checkUserExist(_id)
+    await databaseServiceSale.users.deleteOne({ _id: _id })
   }
 }
 

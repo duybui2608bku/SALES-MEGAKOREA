@@ -52,7 +52,8 @@ const pathApiUsers = {
   getAllUser: '/users/all',
   getAllUsersWithRole: '/users/with-role',
   updateUser: '/users/update',
-  createUser: '/users/register'
+  createUser: '/users/register',
+  deleteUserById: '/users'
 }
 
 const pathApiUploadImage = {

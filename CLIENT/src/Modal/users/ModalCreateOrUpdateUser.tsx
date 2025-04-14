@@ -3,6 +3,7 @@ import { CreateUserRequestBody, UpdateUserBody, UserGeneralInterface } from 'src
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  DeleteOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
   UploadOutlined
@@ -26,6 +27,12 @@ interface ModalCreateOrUpdateUserProps {
 }
 
 const STALETIME = 5 * 50 * 1000
+// byte -> kb -> mb
+// 1MB = 1024 KB
+// 1KB = 1024 byte
+// file.size trả về giá trị byte
+const oneByte = 1024
+const oneMB = 1
 
 interface FieldsType {
   name: string
@@ -126,9 +133,9 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
   // Xử lý upload ảnh
   const formData: FormData = new FormData()
   const uploadImageMutation = useMutation({
-    mutationFn: (file: File) => {
+    mutationFn: async (file: File) => {
       formData.append('image', file)
-      const response = userApi.uploadImageUser(formData)
+      const response = await userApi.uploadImageUser(formData)
 
       if (!response) {
         message.error('Upload ảnh thất bại!')
@@ -151,6 +158,10 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
   const customRequest = (options: any) => {
     const { file } = options
     handleUpload(file as File)
+  }
+
+  const handleDeleteAvatar = () => {
+    setImageUrl('')
   }
 
   // Check password và password-confirm
@@ -282,179 +293,19 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                 </Form.Item>
               </Col>
             </Row>
-            {dataUser?.data.result[0].role === RoleUser.ADMIN && userToEdit ? (
+            {/* 
+              - Nếu tài khoản là ADMIN: Khi mở Modal Edit NHÂN VIÊN sẽ hiển thị 2 ô input [password, password-confirm] 
+              - Không phân biệt RoleUser: Khi không tồn tại userToEdit(giá trị để mở Modal Edit NHÂN VIÊN) 
+                => Modal Create NHÂN VIÊN mặc định hiển thị 2 ô input [password, password-confirm]
+            */}
+            {((dataUser?.data.result[0].role == RoleUser.ADMIN && userToEdit) || !userToEdit) && (
               <>
                 <Row gutter={16}>
-                  <Col xs={24} md={8}>
-                    <Form.Item rules={[{ required: false }]} name='password' label='Mật khẩu'>
-                      <Input.Password
-                        prefix={
-                          <Tooltip title='Tạo mật khẩu tự động'>
-                            <RiAiGenerate
-                              style={{ cursor: 'pointer', color: 'purple' }}
-                              onClick={handleGeneratePassword}
-                            />
-                          </Tooltip>
-                        }
-                        placeholder='Nhập mật khẩu'
-                        iconRender={(visivle) => (visivle ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item rules={[{ required: false }]} name='passwordConfirm' label='Nhập lại mật khẩu'>
-                      <Input.Password
-                        placeholder='Nhập lại mật khẩu'
-                        iconRender={(visivle) => (visivle ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
-                      <Select
-                        showSearch
-                        options={[
-                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
-                          { value: RoleUser.MANAGER, label: 'Quản lý' },
-                          { value: RoleUser.SALE, label: 'Saler' },
-                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
-                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
-                          { value: RoleUser.USER, label: 'Khách hàng' }
-                        ]}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col xs={24} md={12}>
-                    <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
-                      <Upload
-                        style={{ display: 'block', width: '100%' }}
-                        showUploadList={false}
-                        maxCount={1}
-                        customRequest={customRequest}
-                      >
-                        <Button
-                          block
-                          style={{
-                            fontSize: '12px',
-                            backgroundColor: 'white',
-                            color: '#000',
-                            border: '1px solid lightgray'
-                          }}
-                          type='primary'
-                          icon={<UploadOutlined />}
-                        >
-                          Click to upload
-                        </Button>
-                      </Upload>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Form.Item name='status' label='Trạng thái'>
-                      <Radio.Group
-                        defaultValue={UserStatus.ACTIVE}
-                        options={[
-                          {
-                            label: (
-                              <Tooltip title='Hoạt động'>
-                                <CheckCircleOutlined />
-                              </Tooltip>
-                            ),
-                            value: UserStatus.ACTIVE
-                          },
-                          {
-                            label: (
-                              <Tooltip title='Không hoạt động'>
-                                <CloseCircleOutlined />
-                              </Tooltip>
-                            ),
-                            value: UserStatus.INACTIVE
-                          }
-                        ]}
-                        block
-                        optionType='button'
-                        buttonStyle='solid'
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </>
-            ) : (
-              <>
-                <Row gutter={16}>
-                  <Col xs={24} md={8}>
-                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
-                      <Select
-                        showSearch
-                        options={[
-                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
-                          { value: RoleUser.MANAGER, label: 'Quản lý' },
-                          { value: RoleUser.SALE, label: 'Saler' },
-                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
-                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
-                          { value: RoleUser.USER, label: 'Khách hàng' }
-                        ]}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
-                      <Upload
-                        style={{ display: 'block', width: '100%' }}
-                        showUploadList={false}
-                        maxCount={1}
-                        customRequest={customRequest}
-                      >
-                        <Button
-                          block
-                          style={{
-                            fontSize: '12px',
-                            backgroundColor: 'white',
-                            color: '#000',
-                            border: '1px solid lightgray'
-                          }}
-                          type='primary'
-                          icon={<UploadOutlined />}
-                        >
-                          Click to upload
-                        </Button>
-                      </Upload>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item name='status' label='Trạng thái'>
-                      <Radio.Group
-                        defaultValue={UserStatus.ACTIVE}
-                        options={[
-                          {
-                            label: (
-                              <Tooltip title='Hoạt động'>
-                                <CheckCircleOutlined />
-                              </Tooltip>
-                            ),
-                            value: UserStatus.ACTIVE
-                          },
-                          {
-                            label: (
-                              <Tooltip title='Không hoạt động'>
-                                <CloseCircleOutlined />
-                              </Tooltip>
-                            ),
-                            value: UserStatus.INACTIVE
-                          }
-                        ]}
-                        block
-                        optionType='button'
-                        buttonStyle='solid'
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                {/* <Row gutter={16}>
                   <Col xs={24} md={8}>
                     <Form.Item
-                      rules={[{ required: true, message: 'Vui lòng nhập mật khẩu nhân viên!' }]}
+                      rules={
+                        userToEdit ? [{ required: false }] : [{ required: true, message: 'Vui lòng nhập mật khẩu!' }]
+                      }
                       name='password'
                       label='Mật khẩu'
                     >
@@ -474,7 +325,11 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                   </Col>
                   <Col xs={24} md={8}>
                     <Form.Item
-                      rules={[{ required: true, message: 'Vui lòng nhập mật khẩu nhân viên!' }]}
+                      rules={
+                        userToEdit
+                          ? [{ required: false }]
+                          : [{ required: true, message: 'Vui lòng nhập lại mật khẩu!' }]
+                      }
                       name='passwordConfirm'
                       label='Nhập lại mật khẩu'
                     >
@@ -504,10 +359,28 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                   <Col xs={24} md={12}>
                     <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
                       <Upload
+                        fileList={[]}
                         style={{ display: 'block', width: '100%' }}
                         showUploadList={false}
                         maxCount={1}
                         customRequest={customRequest}
+                        beforeUpload={(file) => {
+                          // Check có phải là hình ảnh hay không
+                          const isImage = file.type.startsWith('image/')
+                          if (!isImage) {
+                            message.error('Chỉ được phép tải lên hình ảnh!')
+                            return Upload.LIST_IGNORE
+                          }
+
+                          // Check dung lượng (dung lượng ảnh phải <= 1MB)
+                          const isLt1M = file.size / oneByte / oneByte <= oneMB
+                          if (!isLt1M) {
+                            message.error('Dung lượng ảnh phải nhỏ hơn hoặc bằng 1MB!')
+                            return Upload.LIST_IGNORE
+                          }
+
+                          return true
+                        }}
                       >
                         <Button
                           block
@@ -520,15 +393,14 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                           type='primary'
                           icon={<UploadOutlined />}
                         >
-                          Click to upload
+                          Upload avtar
                         </Button>
                       </Upload>
                     </Form.Item>
                   </Col>
                   <Col xs={24} md={12}>
-                    <Form.Item name='status' label='Trạng thái'>
+                    <Form.Item name='status' label='Trạng thái' initialValue={UserStatus.ACTIVE}>
                       <Radio.Group
-                        defaultValue={UserStatus.ACTIVE}
                         options={[
                           {
                             label: (
@@ -553,7 +425,97 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                       />
                     </Form.Item>
                   </Col>
-                </Row> */}
+                </Row>
+              </>
+            )}
+            {/* Nếu tài khoản không phải là ADMIN: Khi mở Modal Edit NHÂN VIÊN sẽ không hiển thị 2 ô input [password, password-confỉrm]  */}
+            {dataUser?.data.result[0].role != RoleUser.ADMIN && userToEdit && (
+              <>
+                <Row gutter={16}>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
+                      <Select
+                        showSearch
+                        options={[
+                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
+                          { value: RoleUser.MANAGER, label: 'Quản lý' },
+                          { value: RoleUser.SALE, label: 'Saler' },
+                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
+                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
+                          { value: RoleUser.USER, label: 'Khách hàng' }
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
+                      <Upload
+                        style={{ display: 'block', width: '100%' }}
+                        showUploadList={false}
+                        maxCount={1}
+                        customRequest={customRequest}
+                        beforeUpload={(file) => {
+                          // Check có phải là hình ảnh hay không
+                          const isImage = file.type.startsWith('image/')
+                          if (!isImage) {
+                            message.error('Chỉ được phép tải lên hình ảnh!')
+                            return Upload.LIST_IGNORE
+                          }
+
+                          // Check dung lượng (dung lượng ảnh phải <= 1MB)
+                          const isLt1M = file.size / oneByte / oneByte <= oneMB
+                          if (!isLt1M) {
+                            message.error('Dung lượng ảnh phải nhỏ hơn hoặc bằng 1MB!')
+                            return Upload.LIST_IGNORE
+                          }
+
+                          return true
+                        }}
+                      >
+                        <Button
+                          block
+                          style={{
+                            fontSize: '12px',
+                            backgroundColor: 'white',
+                            color: '#000',
+                            border: '1px solid lightgray'
+                          }}
+                          type='primary'
+                          icon={<UploadOutlined />}
+                        >
+                          Click to upload
+                        </Button>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='status' label='Trạng thái' initialValue={UserStatus.ACTIVE}>
+                      <Radio.Group
+                        options={[
+                          {
+                            label: (
+                              <Tooltip title='Hoạt động'>
+                                <CheckCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.ACTIVE
+                          },
+                          {
+                            label: (
+                              <Tooltip title='Không hoạt động'>
+                                <CloseCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.INACTIVE
+                          }
+                        ]}
+                        block
+                        optionType='button'
+                        buttonStyle='solid'
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </>
             )}
 
@@ -566,6 +528,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                     borderRadius: '8px',
                     border: '1px solid rgba(0,0,0,15%)',
                     gap: '20px',
+                    justifyContent: 'space-between',
                     alignItems: 'center'
                   }}
                 >
@@ -579,6 +542,9 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                     />
                   </Col>
                   <Col>{imageUrl}</Col>
+                  <Col style={{ paddingRight: '20px' }}>
+                    <DeleteOutlined style={{ color: 'lightred' }} onClick={handleDeleteAvatar} />
+                  </Col>
                 </Row>
               </Fragment>
             )}

@@ -95,7 +95,7 @@ const UserGeneral = () => {
 
   // Delete user
   const { mutate: deleteUser, isPending } = useMutation({
-    mutationFn: userApi.deleteUser,
+    mutationFn: userApi.deleteUserById,
     onSuccess: () => {
       message.success('Xoá nhân viên thành công!')
       queryClient.invalidateQueries({ queryKey: ['getUsersGeneral'] })
@@ -207,7 +207,6 @@ const UserGeneral = () => {
 
   // Handle update user
   const handleUpdateUser = (user: UserGeneralInterface) => {
-    console.log('user: ', user)
     setUserToEdit(user)
     setOpenModalCreateOrUpdateUser(true)
   }

@@ -16,15 +16,33 @@ export const queryClient = new QueryClient({
   }
 })
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <GlobalLoadingPage />
-      <AppProvider>
-        <ConfigProvider locale={viVN}>
-          <App />
-        </ConfigProvider>
-      </AppProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
-)
+// Ngặn chặn việc re-render ReactDOM.createRoot(container!)
+const container = document.getElementById('root')
+if (!container?.hasChildNodes()) {
+  const root = ReactDOM.createRoot(container!)
+  root.render(
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <GlobalLoadingPage />
+        <AppProvider>
+          <ConfigProvider locale={viVN}>
+            <App />
+          </ConfigProvider>
+        </AppProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
+  )
+}
+
+// ReactDOM.createRoot(document.getElementById('root')!).render(
+//   <BrowserRouter>
+//     <QueryClientProvider client={queryClient}>
+//       <GlobalLoadingPage />
+//       <AppProvider>
+//         <ConfigProvider locale={viVN}>
+//           <App />
+//         </ConfigProvider>
+//       </AppProvider>
+//     </QueryClientProvider>
+//   </BrowserRouter>
+// )

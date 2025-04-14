@@ -734,6 +734,19 @@ export const isAdminValidator = validate(
   )
 )
 
+export const DeleteUserValidator = validate(
+  checkSchema(
+    {
+      id: {
+        isString: true,
+        isMongoId: true,
+        errorMessage: userMessages.INVALID_ID
+      }
+    },
+    ['params']
+  )
+)
+
 // export const addUserToBranchValidator = validate(
 //   checkSchema({
 //     user_id: {

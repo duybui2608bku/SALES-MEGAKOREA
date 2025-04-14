@@ -25,8 +25,8 @@ const userApi = {
     return axiosInstanceMain.get<GetUserResponse>(`${pathApiUsers.getUser}`)
   },
 
-  async getUsers(query: GetAllUserRequestQuery) {
-    return await axiosInstanceMain.get<GetUsersResponse>(pathApiUsers.getAllUser, { params: query })
+  getUsers(query: GetAllUserRequestQuery) {
+    return axiosInstanceMain.get<GetUsersResponse>(pathApiUsers.getAllUser, { params: query })
   },
 
   createUser(user: CreateUserRequestBody) {
@@ -45,25 +45,9 @@ const userApi = {
     return axiosJson.get<SearchUserResponse>(`/users?name=${query.result}`)
   },
 
-  deleteUser(id: string) {
-    return axiosJson.delete<DeleteUserResponse>(`/users/${id}`)
+  deleteUserById(id: string) {
+    return axiosInstanceMain.delete<DeleteUserResponse>(`${pathApiUsers.deleteUserById}/${id}`)
   }
-
-  // async getUsers(query: GetAllUserRequestQuery) {
-  //   return await axiosJson.get<GetUserResponse>(`/users`, { params: query })
-  // },
-
-  // updateUser(user: UpdateUserBody) {
-  //   return axiosInstanceMain.patch<CreateUserRespone>(pathApiUsers.updateUser, user)
-  // },
-
-  // updateUser(user: UpdateUserBody) {
-  //   return axiosJson.patch<CreateUserResponse>(`/users/${user.id}`, user)
-  // },
-
-  // createUser(user: CreateUserRequestBody) {
-  //   return axiosJson.post<CreateUserResponse>(`/users`, user)
-  // },
 }
 
 export default userApi
