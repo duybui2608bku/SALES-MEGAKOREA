@@ -151,42 +151,42 @@ const ServicesCard = () => {
       sortDirections: ['descend', 'ascend'],
       width: 150
     },
-    {
-      title: 'Đã thanh toán',
-      dataIndex: 'price_paid',
-      key: 'price_paid',
-      align: 'center',
-      render: (price_paid: number, record: ColumnsServicesCardType) => {
-        return (
-          <Flex gap={10} justify='align' align='center'>
-            <Flex>{price_paid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Flex>
-            <Flex align='center' justify='center' gap={10}>
-              <Button
-                onClick={() => {
-                  setModalType(ModalType.MODAL_UPDATE_PAID)
-                  setServicesCardSelected(record as ServicesOfCardType)
-                }}
-                type='dashed'
-              >
-                <GiPayMoney size={20} />
-              </Button>
-              <Button
-                onClick={() => {
-                  setModalType(ModalType.MODAL_VIEW_HISTORY_PAID)
-                  setServicesCardSelected(record as ServicesOfCardType)
-                }}
-                type='dashed'
-              >
-                <TbPigMoney fill='yellow' size={20} />
-              </Button>
-            </Flex>
-          </Flex>
-        )
-      },
-      sorter: (a: ColumnsServicesCardType, b: ColumnsServicesCardType) => a.price - b.price,
-      sortDirections: ['descend', 'ascend'],
-      width: 200
-    },
+    // {
+    //   title: 'Đã thanh toán',
+    //   dataIndex: 'price_paid',
+    //   key: 'price_paid',
+    //   align: 'center',
+    //   render: (price_paid: number, record: ColumnsServicesCardType) => {
+    //     return (
+    //       <Flex gap={10} justify='align' align='center'>
+    //         <Flex>{price_paid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Flex>
+    //         <Flex align='center' justify='center' gap={10}>
+    //           <Button
+    //             onClick={() => {
+    //               setModalType(ModalType.MODAL_UPDATE_PAID)
+    //               setServicesCardSelected(record as ServicesOfCardType)
+    //             }}
+    //             type='dashed'
+    //           >
+    //             <GiPayMoney size={20} />
+    //           </Button>
+    //           <Button
+    //             onClick={() => {
+    //               setModalType(ModalType.MODAL_VIEW_HISTORY_PAID)
+    //               setServicesCardSelected(record as ServicesOfCardType)
+    //             }}
+    //             type='dashed'
+    //           >
+    //             <TbPigMoney fill='yellow' size={20} />
+    //           </Button>
+    //         </Flex>
+    //       </Flex>
+    //     )
+    //   },
+    //   sorter: (a: ColumnsServicesCardType, b: ColumnsServicesCardType) => a.price - b.price,
+    //   sortDirections: ['descend', 'ascend'],
+    //   width: 200
+    // },
     {
       title: 'Chi nhánh',
       dataIndex: 'branch',
@@ -253,25 +253,25 @@ const ServicesCard = () => {
         )
       }
     },
-    {
-      title: 'Nhân viên',
-      dataIndex: 'employee',
-      key: 'employee',
-      width: 120,
-      align: 'center',
-      render: (_, record: ColumnsServicesCardType) => {
-        return (
-          <RiMoneyDollarCircleLine
-            onClick={() => {
-              setServicesCardSelected(record as unknown as ServicesOfCardType)
-              setModalType(ModalType.MODAL_VIEW_PRICE_EMPLOYEE)
-            }}
-            cursor={'pointer'}
-            size={30}
-          />
-        )
-      }
-    },
+    // {
+    //   title: 'Nhân viên',
+    //   dataIndex: 'employee',
+    //   key: 'employee',
+    //   width: 120,
+    //   align: 'center',
+    //   render: (_, record: ColumnsServicesCardType) => {
+    //     return (
+    //       <RiMoneyDollarCircleLine
+    //         onClick={() => {
+    //           setServicesCardSelected(record as unknown as ServicesOfCardType)
+    //           setModalType(ModalType.MODAL_VIEW_PRICE_EMPLOYEE)
+    //         }}
+    //         cursor={'pointer'}
+    //         size={30}
+    //       />
+    //     )
+    //   }
+    // },
     {
       title: 'Hành động',
       dataIndex: 'action',
@@ -401,13 +401,13 @@ const ServicesCard = () => {
         }}
         data={servicesToView || []}
       />
-      <ModalViewEmployeeCommission
+      {/* <ModalViewEmployeeCommission
         open={modalType === ModalType.MODAL_VIEW_PRICE_EMPLOYEE}
         onCancel={() => {
           setServicesCardSelected(undefined)
         }}
         data={servicesCardSelected as ServicesOfCardType}
-      />
+      /> */}
       <ModalUpdatePaidOfServicesCard
         visible={modalType === ModalType.MODAL_UPDATE_PAID}
         onClose={() => {
@@ -415,14 +415,14 @@ const ServicesCard = () => {
         }}
         servicesCard={servicesCardSelected as ServicesOfCardType}
       />
-      <ModalViewHistoryPaid
+      {/* <ModalViewHistoryPaid
         open={modalType === ModalType.MODAL_VIEW_HISTORY_PAID}
         onCancel={() => {
           setModalType(ModalType.NONE)
           setServicesCardSelected(undefined)
         }}
         data={servicesCardSelected?.history_paid || []}
-      />
+      /> */}
     </Fragment>
   )
 }

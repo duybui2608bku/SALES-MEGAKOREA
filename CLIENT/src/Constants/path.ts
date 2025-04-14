@@ -25,7 +25,8 @@ const pathRoutersProduct = {
 const pathRoutersService = {
   categoryService: '/category-service',
   service: '/service',
-  cardService: '/card-service'
+  cardService: '/card-service',
+  soldCardService: '/card-service/sold'
 }
 
 const pathRoutersUser = {
@@ -82,6 +83,16 @@ const pathServices = {
   deleteCategoryService: 'services/category-delete'
 }
 
+const pathApiCustomer = {
+  searchCustomer: '/search/by-phone',
+  getCustomersSchedule: '/customers/schedule-telesales-success',
+  searchCustomerschedule: '/search/by-phone-success-schedule'
+}
+
+const pathCustomers = {
+  customers: '/customers'
+}
+
 export {
   pathAuth,
   pathUtil,
@@ -95,5 +106,7 @@ export {
   pathApiUsers,
   pathRoutersUser,
   pathRoutesCustomers,
-  pathApiUploadAvatarUser
+  pathApiUploadAvatarUser,
+  pathApiCustomer,
+  pathCustomers
 }

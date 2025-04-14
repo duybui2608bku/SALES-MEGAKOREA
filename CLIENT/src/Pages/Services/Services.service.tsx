@@ -18,7 +18,7 @@ import ServiceStepsModal from './Components/StepServices'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
 import { GoPlus } from 'react-icons/go'
-import ModalCreateService from 'src/Modal/ModalCreateService'
+import ModalCreateService from 'src/Modal/services/ModalCreateService'
 import { FcCancel } from 'react-icons/fc'
 import { queryClient } from 'src/main'
 const { Paragraph } = Typography

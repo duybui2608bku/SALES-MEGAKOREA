@@ -32,7 +32,19 @@ const MainLayout = ({ children }: Props) => {
       key: 'card-service',
       label: 'Thẻ dịch vụ',
       icon: <FcKindle size={20} />,
-      onClick: () => navigate(pathRoutersService.cardService)
+
+      children: [
+        {
+          key: 'card-service',
+          label: 'Thẻ dịch vụ',
+          onClick: () => navigate(pathRoutersService.soldCardService)
+        },
+        {
+          key: 'sold-card-service',
+          label: 'Thẻ dịch vụ đã bán',
+          onClick: () => navigate(pathRoutersService.soldCardService)
+        }
+      ]
     },
     {
       key: 'setting',

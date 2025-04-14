@@ -21,6 +21,7 @@ import ServicesCard from './Pages/Services/Services.card.service'
 import UserGeneral from './Pages/User/UserGeneral'
 import Customers from './Pages/customer/customers'
 import UserInformation from './Pages/User/UserInformation'
+import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -30,7 +31,8 @@ const useRouterElements = () => {
     if (!isAuthenticated) {
       return <Navigate to='/login' />
     }
-    if (allowedRoles && rule && !allowedRoles.includes(rule)) {
+
+    if (allowedRoles !== undefined && rule && !allowedRoles.includes(rule)) {
       return <Navigate to='/404' />
     }
 
@@ -77,7 +79,11 @@ const useRouterElements = () => {
     },
     {
       path: pathUtil.none,
-      element: <ProtectedRoute allowedRoles={[RoleUser.ADMIN, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE]} />,
+      element: (
+        <ProtectedRoute
+          allowedRoles={[RoleUser.ADMIN, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE, RoleUser.TECHNICIAN]}
+        />
+      ),
       children: [
         {
           path: pathRoutersService.categoryService,
@@ -100,6 +106,14 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <ServicesCard />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.soldCardService,
+          element: (
+            <MainLayout>
+              <SoldServicesCardService />
             </MainLayout>
           )
         }

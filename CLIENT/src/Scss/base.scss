@@ -104,6 +104,20 @@ iframe {
   text-align: center;
 }
 
+.spin-icon {
+  margin-right: 7px;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
 .global-spinner {
   z-index: 9999;
   position: fixed;

@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
 import { ServicesCategoryType } from 'src/Interfaces/services/services.interfaces'
-import ModalCreateServicesCategory from 'src/Modal/ModalCreateServicesCategory'
+import ModalCreateServicesCategory from 'src/Modal/services/ModalCreateServicesCategory'
 import { servicesApi } from 'src/Service/services/services.api'
 import { PaginationType } from 'src/Types/util.type'
 
