@@ -3,6 +3,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@tanstack/react-query'
 import userApi from 'src/Service/user/user.api'
 import { useEffect } from 'react'
+import { RcFile } from 'antd/es/upload'
 
 // byte -> kb -> mb
 // 1MB = 1024 KB
@@ -53,6 +54,24 @@ const UploadAvatar = (prop: uploadAvatarProps) => {
     handleUpload(file as File)
   }
 
+  const validateImage = (file: RcFile) => {
+    // Check file có phải là hình ảnh không
+    const isImage = file.type.startsWith('image/')
+    if (!isImage) {
+      message.error('Chỉ được phép tải lên định dạng hình ảnh!')
+      return Upload.LIST_IGNORE
+    }
+
+    // Check dung lượng (<= 1MB)
+    const isLt1MB = file.size / ONE_BYTE / ONE_BYTE <= ONE_MB
+    if (!isLt1MB) {
+      message.error('Dung lượng hình ảnh phải nhỏ hơn hoặc bằng 1MB!')
+      return Upload.LIST_IGNORE
+    }
+
+    return true
+  }
+
   return (
     <Upload
       fileList={[]}
@@ -60,23 +79,7 @@ const UploadAvatar = (prop: uploadAvatarProps) => {
       showUploadList={false}
       maxCount={1}
       customRequest={customRequest}
-      beforeUpload={(file) => {
-        // Check file có phải là hình ảnh không
-        const isImage = file.type.startsWith('image/')
-        if (!isImage) {
-          message.error('Chỉ được phép tải lên định dạng hình ảnh!')
-          return Upload.LIST_IGNORE
-        }
-
-        // Check dung lượng (dung lượng phải <= 1MB)
-        const isLt1M = file.size / ONE_BYTE / ONE_BYTE <= ONE_MB
-        if (!isLt1M) {
-          message.error('Dung lượng ảnh phải nhỏ hơn hoặc bằng 1MB!')
-          return Upload.LIST_IGNORE
-        }
-
-        return true
-      }}
+      beforeUpload={(file) => validateImage(file)}
     >
       <Button
         block
