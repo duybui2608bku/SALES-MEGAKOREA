@@ -28,7 +28,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.LOGIN_SUCCESS,
-    result
+    result: result
   })
 }
 
@@ -41,7 +41,7 @@ export const registerController = async (
   return res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.REGISTER_SUCCESS,
-    result
+    result: result
   })
 }
 
@@ -113,7 +113,7 @@ export const updateUserController = async (
   return res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.UPDATE_USER_SUCCESS,
-    user
+    result: user
   })
 }
 

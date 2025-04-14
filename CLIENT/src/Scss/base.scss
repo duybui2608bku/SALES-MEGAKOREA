@@ -120,3 +120,7 @@ iframe {
 .ant-upload-select {
   width: 100% !important;
 }
+
+.ant-image-preview-img {
+  object-fit: contain !important;
+}

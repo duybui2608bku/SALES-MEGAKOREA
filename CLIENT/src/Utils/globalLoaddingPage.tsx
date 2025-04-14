@@ -1,6 +1,5 @@
 import { useIsFetching } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-// import { RingLoader } from 'react-spinners'
 import LoaderComponent from 'src/Components/GlobalLoadingPageComponent'
 
 const GlobalLoadingPage = () => {
@@ -11,7 +10,7 @@ const GlobalLoadingPage = () => {
     let timeout: NodeJS.Timeout | undefined
 
     if (isFetching) {
-      timeout = setTimeout(() => setShowSpinner(true), 200)
+      timeout = setTimeout(() => setShowSpinner(true), 1000)
     } else {
       setShowSpinner(false)
       if (timeout) clearTimeout(timeout)

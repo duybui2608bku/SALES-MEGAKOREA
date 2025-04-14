@@ -2,41 +2,43 @@ import {
   CreateUserResponse,
   DeleteUserResponse,
   GetUserResponse,
+  GetUsersResponse,
   GetUsersWithRoleResponse,
-  SearchUserResponse
+  SearchUserResponse,
+  UploadAvatarResponse
 } from 'src/Types/user/user.type'
-import axiosInstanceMain, { axiosJson } from '../axious.api'
-import { pathApiUsers } from 'src/Constants/path'
+import axiosInstanceMain, { axiosJson, axiosUploadImage } from '../axious.api'
+import { pathApiUploadImage, pathApiUsers } from 'src/Constants/path'
 import {
   CreateUserRequestBody,
   GetAllUserRequestQuery,
   SearchUserRequestQuery,
   UpdateUserBody
-} from 'src/Interfaces/user.interface'
+} from 'src/Interfaces/user/user.interface'
 
 const userApi = {
   getUsersWithRole: async (role: number) => {
     return axiosInstanceMain.get<GetUsersWithRoleResponse>(`${pathApiUsers.getAllUsersWithRole}?role=${role}`)
   },
 
-  // async getUsers(query: GetAllUserRequestQuery) {
-  //   return await axiosInstanceMain.get<GetUserResponse>(pathApiUsers.getAllUser, { params: query })
-  // },
-
-  async getUsers(query: GetAllUserRequestQuery) {
-    return await axiosJson.get<GetUserResponse>(`/users`, { params: query })
+  getUser() {
+    return axiosInstanceMain.get<GetUserResponse>(`${pathApiUsers.getUser}`)
   },
 
-  // updateUser(user: UpdateUserBody) {
-  //   return axiosInstanceMain.patch<CreateUserRespone>(pathApiUsers.updateUser, user)
-  // }
+  async getUsers(query: GetAllUserRequestQuery) {
+    return await axiosInstanceMain.get<GetUsersResponse>(pathApiUsers.getAllUser, { params: query })
+  },
 
   createUser(user: CreateUserRequestBody) {
-    return axiosJson.post<CreateUserResponse>(`/users`, user)
+    return axiosInstanceMain.post<CreateUserResponse>(pathApiUsers.createUser, user)
   },
 
   updateUser(user: UpdateUserBody) {
-    return axiosJson.patch<CreateUserResponse>(`/users/${user.id}`, user)
+    return axiosInstanceMain.patch<CreateUserResponse>(pathApiUsers.updateUser, user)
+  },
+
+  uploadImageUser(imageData: FormData) {
+    return axiosUploadImage.post<UploadAvatarResponse>(pathApiUploadImage.uploadImage, imageData)
   },
 
   searchUser(query: SearchUserRequestQuery) {
@@ -46,6 +48,22 @@ const userApi = {
   deleteUser(id: string) {
     return axiosJson.delete<DeleteUserResponse>(`/users/${id}`)
   }
+
+  // async getUsers(query: GetAllUserRequestQuery) {
+  //   return await axiosJson.get<GetUserResponse>(`/users`, { params: query })
+  // },
+
+  // updateUser(user: UpdateUserBody) {
+  //   return axiosInstanceMain.patch<CreateUserRespone>(pathApiUsers.updateUser, user)
+  // },
+
+  // updateUser(user: UpdateUserBody) {
+  //   return axiosJson.patch<CreateUserResponse>(`/users/${user.id}`, user)
+  // },
+
+  // createUser(user: CreateUserRequestBody) {
+  //   return axiosJson.post<CreateUserResponse>(`/users`, user)
+  // },
 }
 
 export default userApi

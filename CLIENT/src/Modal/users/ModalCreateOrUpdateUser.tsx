@@ -1,15 +1,22 @@
-import { Button, Col, Form, Input, message, Modal, Radio, Row, Select, Switch, Tooltip, Typography, Upload } from 'antd'
-import { CreateUserRequestBody, UpdateUserBody, UserGeneralInterface } from 'src/Interfaces/user.interface'
-import { CheckCircleOutlined, CloseCircleOutlined, UploadOutlined } from '@ant-design/icons'
-import { useMutation } from '@tanstack/react-query'
+import { Image, Button, Col, Form, Input, message, Modal, Radio, Row, Select, Tooltip, Typography, Upload } from 'antd'
+import { CreateUserRequestBody, UpdateUserBody, UserGeneralInterface } from 'src/Interfaces/user/user.interface'
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+  UploadOutlined
+} from '@ant-design/icons'
+import { RiAiGenerate } from 'react-icons/ri'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import userApi from 'src/Service/user/user.api'
 import { queryClient } from 'src/main'
 import { RoleUser, UserStatus } from 'src/Constants/enum'
-import { useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import HttpStatusCode from 'src/Constants/httpCode'
-import StatusUserComponent from './components/StatusUserComponent'
-import { values } from 'lodash'
+import { generatePassword } from 'src/Utils/generatePassword'
+const Text = Typography
 
 interface ModalCreateOrUpdateUserProps {
   open: boolean
@@ -18,9 +25,13 @@ interface ModalCreateOrUpdateUserProps {
   setUserToEdit?: (value: UserGeneralInterface | null) => void
 }
 
+const STALETIME = 5 * 50 * 1000
+
 interface FieldsType {
   name: string
   email: string
+  password: string
+  passwordConfirm: string
   avatar?: string
   role?: number
   status?: number
@@ -32,18 +43,27 @@ interface FieldsType {
 const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
   const { open, close, userToEdit, setUserToEdit } = props
   const [form] = Form.useForm()
+  const [imageUrl, setImageUrl] = useState('')
+
+  // Check role user
+  const { data: dataUser } = useQuery({
+    queryKey: ['getUser'],
+    queryFn: async () => {
+      const response = await userApi.getUser()
+      return response
+    },
+    staleTime: STALETIME
+  })
 
   // Fetch data user to edit
   useEffect(() => {
     if (userToEdit) {
       const formattedDataUser = {
         ...userToEdit,
-        avatar: userToEdit.avatar === '' && [],
-        status: userToEdit.status === UserStatus.ACTIVE,
-        branch: userToEdit.branch || [],
-        updated_at: new Date()
+        branch: ''
       }
       form.setFieldsValue(formattedDataUser)
+      setImageUrl(userToEdit.avatar)
     } else {
       form.resetFields()
     }
@@ -103,29 +123,77 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
     retry: 2
   })
 
+  // Xử lý upload ảnh
+  const formData: FormData = new FormData()
+  const uploadImageMutation = useMutation({
+    mutationFn: (file: File) => {
+      formData.append('image', file)
+      const response = userApi.uploadImageUser(formData)
+
+      if (!response) {
+        message.error('Upload ảnh thất bại!')
+      }
+      return response
+    },
+    onSuccess: (data) => {
+      setImageUrl(data.data.result[0].url)
+      message.success('Tải ảnh lên thành công!')
+    }
+  })
+
+  const { mutate } = uploadImageMutation
+
+  const handleUpload = (file: File) => {
+    mutate(file)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const customRequest = (options: any) => {
+    const { file } = options
+    handleUpload(file as File)
+  }
+
+  // Check password và password-confirm
+  const passValue = Form.useWatch('password', form)
+  const passConfirmValue = Form.useWatch('password-confirm', form)
+
+  // Hàm generate password
+  const handleGeneratePassword = () => {
+    const password = generatePassword()
+
+    form.setFieldsValue({
+      password: password,
+      passwordConfirm: password
+    })
+
+    // Copy password vào Clipboard
+    navigator.clipboard.writeText(password).then(() => {
+      message.success('Mật khẩu đã được sao chép vào clipboard!')
+    })
+  }
+
   const handleCreateUser = (values: FieldsType) => {
-    const created_at = new Date()
-    const status = values.status ? UserStatus.ACTIVE : UserStatus.INACTIVE
-    const avatar = !values.avatar || values.avatar.length === 0 ? '' : values.avatar
-    const user: CreateUserRequestBody = { ...values, avatar, status, created_at }
+    // Check password và password-confirm
+    if (passConfirmValue && passConfirmValue !== passValue) {
+      message.error('Mật khẩu bạn nhập không khớp!')
+      return
+    }
+    const avatar = !imageUrl ? '' : imageUrl
+    const user: CreateUserRequestBody = { ...values, avatar }
     createUser(user)
   }
 
   const handleUpdateUser = (values: FieldsType) => {
-    if (!userToEdit || !userToEdit.id) {
+    if (!userToEdit || !userToEdit._id) {
       message.error('Không thể cập nhật nhân viên: UserID không hợp lệ!')
       setUserToEdit?.(null)
       return
     }
-    const updated_at = new Date()
-    const status = values.status ? UserStatus.ACTIVE : UserStatus.INACTIVE
-    const avatar = !values.avatar || values.avatar.length === 0 ? '' : values.avatar
+    const avatar = !imageUrl ? '' : imageUrl
     const userUpdate: UpdateUserBody = {
       ...values,
-      id: userToEdit.id,
-      status: status,
-      avatar: avatar,
-      updated_at: updated_at
+      _id: userToEdit._id,
+      avatar: avatar
     }
     updateUser(userUpdate)
   }
@@ -144,12 +212,8 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
 
   const handleCancelModal = () => {
     close(false)
-    // form.resetFields()
     setUserToEdit?.(null)
-  }
-
-  const handleTest = (value: string[]) => {
-    console.log('value: ', value)
+    setImageUrl('')
   }
 
   // Sự kiện loading
@@ -157,8 +221,8 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
 
   return (
     <Modal
-      // open={open}
-      open={true}
+      open={open}
+      // open={true}
       onCancel={handleCancelModal}
       width='90%'
       style={{ maxWidth: 800 }}
@@ -193,123 +257,331 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                     { type: 'email', message: 'Email không hợp lệ!' }
                   ]}
                   name='email'
-                  label='Email nhân viên'
+                  label='Email'
                 >
-                  <Input placeholder='Nhập email nhân viên' />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={8}>
-                <Form.Item
-                  style={{ width: '100%' }}
-                  name='avatar'
-                  label='Avatar'
-                  valuePropName='fileList'
-                  getValueFromEvent={(e) => {
-                    if (Array.isArray(e)) return e
-                    return e?.fileList
-                  }}
-                >
-                  <Upload
-                    style={{ display: 'block', width: '100%' }}
-                    name='file'
-                    onChange={(infor) => {
-                      if (infor.file.status === 'done') {
-                        message.success(`${infor.file.name} đã tải lên thành công!`)
-                      } else if (infor.file.status === 'error') {
-                        console.log('infor.file: ', infor.file.status)
-                        message.error(`${infor.file.name} tải lên thất bại!`)
-                      }
-                    }}
-                    maxCount={1}
-                    // action='https://www.mocky.io/v2/5cc8019d300000980a055e76'
-                    action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'
-                    listType='picture'
-                    beforeUpload={() => true}
-                  >
-                    <Button
-                      block
-                      style={{
-                        fontSize: '12px',
-                        backgroundColor: 'white',
-                        color: '#000',
-                        border: '1px solid lightgray'
-                      }}
-                      type='primary'
-                      icon={<UploadOutlined />}
-                    >
-                      Click to upload
-                    </Button>
-                  </Upload>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col xs={24} md={8}>
-                <Form.Item name='role' label='Vai trò nhân viên' initialValue={RoleUser.USER}>
-                  <Select
-                    showSearch
-                    options={[
-                      { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
-                      { value: RoleUser.MANAGER, label: 'Quản lý' },
-                      { value: RoleUser.SALE, label: 'Saler' },
-                      { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
-                      { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
-                      { value: RoleUser.USER, label: 'Khách hàng' }
-                    ]}
-                  />
+                  <Input placeholder='Nhập email' />
                 </Form.Item>
               </Col>
               <Col xs={24} md={8}>
                 <Form.Item name='branch' label='Chi nhánh'>
                   <Select
                     showSearch
-                    onChange={handleTest}
                     placeholder='Chọn chi nhánh'
                     options={[
-                      { value: 'Quảng Bình', label: 'Quảng Bình' },
-                      { value: 'Huế', label: 'Huế' },
-                      { value: 'Quảng Trị', label: 'Quảng Trị' },
-                      { value: 'Buôn Ma Thuột', label: 'Buôn Ma Thuột' },
-                      { value: 'Cà Mau', label: 'Cà Mau' },
-                      { value: 'Phan Thiết', label: 'Phan Thiết' },
-                      { value: 'Nha Trang', label: 'Nha Trang' },
-                      { value: 'Medicare NT', label: 'Medicare NT' },
-                      { value: 'Đà Nẵng', label: 'Đà Nẵng' }
+                      { value: 'Quảng Bình', label: 'Quảng Bình', key: 1 },
+                      { value: 'Huế', label: 'Huế', key: 2 },
+                      { value: 'Quảng Trị', label: 'Quảng Trị', key: 3 },
+                      { value: 'Buôn Ma Thuột', label: 'Buôn Ma Thuột', key: 4 },
+                      { value: 'Cà Mau', label: 'Cà Mau', key: 5 },
+                      { value: 'Phan Thiết', label: 'Phan Thiết', key: 6 },
+                      { value: 'Nha Trang', label: 'Nha Trang', key: 7 },
+                      { value: 'Medicare NT', label: 'Medicare NT', key: 8 },
+                      { value: 'Đà Nẵng', label: 'Đà Nẵng', key: 9 }
                     ]}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col xs={24} md={8}>
-                <Form.Item name='status' label='Trạng thái'>
-                  {/* <Switch defaultChecked /> */}
-                  <Radio.Group
-                    defaultValue={UserStatus.ACTIVE}
-                    options={[
-                      {
-                        label: (
-                          <Tooltip title='Hoạt động'>
-                            <CheckCircleOutlined />
-                          </Tooltip>
-                        ),
-                        value: UserStatus.ACTIVE
-                      },
-                      {
-                        label: (
-                          <Tooltip title='Không hoạt động'>
-                            <CloseCircleOutlined style={{ color: 'red' }} />
-                          </Tooltip>
-                        ),
-                        value: UserStatus.INACTIVE
-                      }
-                    ]}
-                    block
-                    optionType='button'
-                    buttonStyle='solid'
                   />
                 </Form.Item>
               </Col>
             </Row>
+            {dataUser?.data.result[0].role === RoleUser.ADMIN && userToEdit ? (
+              <>
+                <Row gutter={16}>
+                  <Col xs={24} md={8}>
+                    <Form.Item rules={[{ required: false }]} name='password' label='Mật khẩu'>
+                      <Input.Password
+                        prefix={
+                          <Tooltip title='Tạo mật khẩu tự động'>
+                            <RiAiGenerate
+                              style={{ cursor: 'pointer', color: 'purple' }}
+                              onClick={handleGeneratePassword}
+                            />
+                          </Tooltip>
+                        }
+                        placeholder='Nhập mật khẩu'
+                        iconRender={(visivle) => (visivle ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item rules={[{ required: false }]} name='passwordConfirm' label='Nhập lại mật khẩu'>
+                      <Input.Password
+                        placeholder='Nhập lại mật khẩu'
+                        iconRender={(visivle) => (visivle ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
+                      <Select
+                        showSearch
+                        options={[
+                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
+                          { value: RoleUser.MANAGER, label: 'Quản lý' },
+                          { value: RoleUser.SALE, label: 'Saler' },
+                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
+                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
+                          { value: RoleUser.USER, label: 'Khách hàng' }
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col xs={24} md={12}>
+                    <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
+                      <Upload
+                        style={{ display: 'block', width: '100%' }}
+                        showUploadList={false}
+                        maxCount={1}
+                        customRequest={customRequest}
+                      >
+                        <Button
+                          block
+                          style={{
+                            fontSize: '12px',
+                            backgroundColor: 'white',
+                            color: '#000',
+                            border: '1px solid lightgray'
+                          }}
+                          type='primary'
+                          icon={<UploadOutlined />}
+                        >
+                          Click to upload
+                        </Button>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Form.Item name='status' label='Trạng thái'>
+                      <Radio.Group
+                        defaultValue={UserStatus.ACTIVE}
+                        options={[
+                          {
+                            label: (
+                              <Tooltip title='Hoạt động'>
+                                <CheckCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.ACTIVE
+                          },
+                          {
+                            label: (
+                              <Tooltip title='Không hoạt động'>
+                                <CloseCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.INACTIVE
+                          }
+                        ]}
+                        block
+                        optionType='button'
+                        buttonStyle='solid'
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </>
+            ) : (
+              <>
+                <Row gutter={16}>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
+                      <Select
+                        showSearch
+                        options={[
+                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
+                          { value: RoleUser.MANAGER, label: 'Quản lý' },
+                          { value: RoleUser.SALE, label: 'Saler' },
+                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
+                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
+                          { value: RoleUser.USER, label: 'Khách hàng' }
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
+                      <Upload
+                        style={{ display: 'block', width: '100%' }}
+                        showUploadList={false}
+                        maxCount={1}
+                        customRequest={customRequest}
+                      >
+                        <Button
+                          block
+                          style={{
+                            fontSize: '12px',
+                            backgroundColor: 'white',
+                            color: '#000',
+                            border: '1px solid lightgray'
+                          }}
+                          type='primary'
+                          icon={<UploadOutlined />}
+                        >
+                          Click to upload
+                        </Button>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='status' label='Trạng thái'>
+                      <Radio.Group
+                        defaultValue={UserStatus.ACTIVE}
+                        options={[
+                          {
+                            label: (
+                              <Tooltip title='Hoạt động'>
+                                <CheckCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.ACTIVE
+                          },
+                          {
+                            label: (
+                              <Tooltip title='Không hoạt động'>
+                                <CloseCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.INACTIVE
+                          }
+                        ]}
+                        block
+                        optionType='button'
+                        buttonStyle='solid'
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                {/* <Row gutter={16}>
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      rules={[{ required: true, message: 'Vui lòng nhập mật khẩu nhân viên!' }]}
+                      name='password'
+                      label='Mật khẩu'
+                    >
+                      <Input.Password
+                        prefix={
+                          <Tooltip title='Tạo mật khẩu tự động'>
+                            <RiAiGenerate
+                              style={{ cursor: 'pointer', color: 'purple' }}
+                              onClick={handleGeneratePassword}
+                            />
+                          </Tooltip>
+                        }
+                        placeholder='Nhập mật khẩu'
+                        iconRender={(visivle) => (visivle ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      rules={[{ required: true, message: 'Vui lòng nhập mật khẩu nhân viên!' }]}
+                      name='passwordConfirm'
+                      label='Nhập lại mật khẩu'
+                    >
+                      <Input.Password
+                        placeholder='Nhập lại mật khẩu'
+                        iconRender={(visivle) => (visivle ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
+                      <Select
+                        showSearch
+                        options={[
+                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
+                          { value: RoleUser.MANAGER, label: 'Quản lý' },
+                          { value: RoleUser.SALE, label: 'Saler' },
+                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
+                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
+                          { value: RoleUser.USER, label: 'Khách hàng' }
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col xs={24} md={12}>
+                    <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
+                      <Upload
+                        style={{ display: 'block', width: '100%' }}
+                        showUploadList={false}
+                        maxCount={1}
+                        customRequest={customRequest}
+                      >
+                        <Button
+                          block
+                          style={{
+                            fontSize: '12px',
+                            backgroundColor: 'white',
+                            color: '#000',
+                            border: '1px solid lightgray'
+                          }}
+                          type='primary'
+                          icon={<UploadOutlined />}
+                        >
+                          Click to upload
+                        </Button>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Form.Item name='status' label='Trạng thái'>
+                      <Radio.Group
+                        defaultValue={UserStatus.ACTIVE}
+                        options={[
+                          {
+                            label: (
+                              <Tooltip title='Hoạt động'>
+                                <CheckCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.ACTIVE
+                          },
+                          {
+                            label: (
+                              <Tooltip title='Không hoạt động'>
+                                <CloseCircleOutlined />
+                              </Tooltip>
+                            ),
+                            value: UserStatus.INACTIVE
+                          }
+                        ]}
+                        block
+                        optionType='button'
+                        buttonStyle='solid'
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row> */}
+              </>
+            )}
+
+            {imageUrl && (
+              <Fragment>
+                <Text style={{ marginBottom: '8px' }}>Preview</Text>
+                <Row
+                  style={{
+                    padding: '8px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(0,0,0,15%)',
+                    gap: '20px',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Col>
+                    <Image
+                      preview={{ src: imageUrl }}
+                      style={{ objectFit: 'cover', borderRadius: '8px' }}
+                      width={'100px'}
+                      height={'100px'}
+                      src={imageUrl}
+                    />
+                  </Col>
+                  <Col>{imageUrl}</Col>
+                </Row>
+              </Fragment>
+            )}
           </Form>
         </Col>
       </Row>

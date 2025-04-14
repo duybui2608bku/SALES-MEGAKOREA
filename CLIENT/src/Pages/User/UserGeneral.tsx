@@ -17,7 +17,7 @@ import { Fragment } from 'react/jsx-runtime'
 import { CheckCircleOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons'
 // import OptionsBranch from 'src/Components/OptionsBranch'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
-import { UserGeneralInterface } from 'src/Interfaces/user.interface'
+import { UserGeneralInterface } from 'src/Interfaces/user/user.interface'
 import { useEffect, useState } from 'react'
 import userApi from 'src/Service/user/user.api'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -28,7 +28,8 @@ import { IoPencil } from 'react-icons/io5'
 import { IoMdTrash } from 'react-icons/io'
 import ModalCreateOrUpdateUser from 'src/Modal/users/ModalCreateOrUpdateUser'
 import TagRoleUserComponent from './Components/tagRoleUserComponent'
-const { Paragraph } = Typography
+import { omit } from 'lodash'
+// const { Paragraph } = Typography
 
 type ColumsUserGeneralType = UserGeneralInterface
 
@@ -47,16 +48,16 @@ const UserGeneral = () => {
   const [loadingStatus, setLoadingStatus] = useState('')
   const [loadingBanned, setLoadingBanned] = useState('')
   const [usersGeneral, setUsersGeneral] = useState<UserGeneralInterface[]>([])
-  const [usersSearch, setUsersSearch] = useState<UserGeneralInterface[]>([])
+  // const [usersSearch, setUsersSearch] = useState<UserGeneralInterface[]>([])
   const [pagination, setPagination] = useState({
     page: PAGE,
     limit: LIMIT,
     total: 0
   })
-  const [searchQuery, setSearchQuery] = useState('')
+  // const [searchQuery, setSearchQuery] = useState('')
   const [filterBranch, setFilterBranch] = useState<string>('')
 
-  //   Fetch users data
+  //   Fetch users data (Gọi từ API phía SERVER)
   const { data, isLoading } = useQuery({
     queryKey: ['getUsersGeneral', filterBranch, pagination.page, pagination.limit],
     queryFn: async () => {
@@ -69,7 +70,7 @@ const UserGeneral = () => {
             }
           : {
               page: pagination.page,
-              limit: LIMIT
+              limit: pagination.limit
             }
 
       const response = await userApi.getUsers(query)
@@ -79,18 +80,18 @@ const UserGeneral = () => {
   })
 
   // Fetch users data with search
-  const { data: searchUsers, isLoading: isLoadingSearch } = useQuery({
-    queryKey: ['searchUser', searchQuery, filterBranch],
-    queryFn: async () => {
-      const query = {
-        result: searchQuery
-      }
-      const response = await userApi.searchUser(query)
-      return response
-    },
-    staleTime: STALETIME,
-    enabled: !!searchQuery
-  })
+  // const { data: searchUsers, isLoading: isLoadingSearch } = useQuery({
+  //   queryKey: ['searchUser', searchQuery, filterBranch],
+  //   queryFn: async () => {
+  //     const query = {
+  //       result: searchQuery
+  //     }
+  //     const response = await userApi.searchUser(query)
+  //     return response
+  //   },
+  //   staleTime: STALETIME,
+  //   enabled: !!searchQuery
+  // })
 
   // Delete user
   const { mutate: deleteUser, isPending } = useMutation({
@@ -105,60 +106,66 @@ const UserGeneral = () => {
   })
 
   useEffect(() => {
-    if (data?.data) {
-      const response = data.data as unknown as UserGeneralInterface[]
-      setUsersGeneral(response)
+    if (data?.data.result) {
+      const response = data.data.result as unknown as UserGeneralInterface[]
+
+      const dataWithKey = response.map((item) => ({
+        ...item,
+        key: item._id
+      }))
+
+      setUsersGeneral(dataWithKey)
       setPagination({
         page: 1,
         limit: 10,
-        total: 1
+        total: 100
       })
     }
-  }, [data])
+  }, [data?.data.result])
 
-  useEffect(() => {
-    if (searchUsers?.data) {
-      const users = searchUsers.data as unknown as UserGeneralInterface[]
-      setUsersSearch(users)
-    }
-  }, [searchUsers])
+  // useEffect(() => {
+  //   if (searchUsers?.data) {
+  //     const users = searchUsers.data as unknown as UserGeneralInterface[]
+  //     setUsersSearch(users)
+  //   }
+  // }, [searchUsers])
 
-  const goToNextPage = (page: number) => {
-    setPagination((prev) => ({
-      ...prev,
-      page
-    }))
-  }
+  // const goToNextPage = (page: number) => {
+  //   setPagination((prev) => ({
+  //     ...prev,
+  //     page
+  //   }))
+  // }
 
-  const handleTableChange = async (page: number) => {
-    goToNextPage(page)
-  }
+  // const handleTableChange = async (page: number) => {
+  //   goToNextPage(page)
+  // }
 
   const handleFilterBranch = (branch: string) => {
     console.log('branch: ', branch)
     setFilterBranch(branch)
   }
 
-  const handleSearch = (value: string) => {
-    console.log('value: ', value)
-    setSearchQuery(value)
-  }
+  // const handleSearch = (value: string) => {
+  //   console.log('value: ', value)
+  //   setSearchQuery(value)
+  // }
 
   const handleDeleteUser = (id: string) => {
     deleteUser(id)
   }
 
   // Handle change status
-  const handleUpdateStatusUser = async (id: string, status: number) => {
+  const handleUpdateStatusUser = async (user: UserGeneralInterface) => {
     try {
-      setLoadingStatus(id)
-      const response = await userApi.updateUser({
-        id: id,
-        status: status == UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE,
-        updated_at: new Date()
-      })
+      setLoadingStatus(user._id)
+      // Loại bỏ trường 'update_at" ra khỏi Object user
+      const userData = omit(user, ['updated_at'])
 
-      console.log(response.data)
+      const response = await userApi.updateUser({
+        ...userData,
+        status: user.status == UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE
+      })
 
       if (response.data) {
         setLoadingStatus('')
@@ -172,17 +179,16 @@ const UserGeneral = () => {
   }
 
   // Handle change status (BANNED)
-  const handleBannedUser = async (id: string, func: FuncBanned) => {
+  const handleBannedUser = async (user: UserGeneralInterface, func: FuncBanned) => {
     try {
-      setLoadingBanned(id)
-      const status = func == FuncBanned.BANNED ? UserStatus.BANNED : UserStatus.ACTIVE
+      setLoadingBanned(user._id)
+      // Loại bỏ trường 'update_at" ra khỏi Object user
+      const userData = omit(user, ['updated_at'])
+      const status = func == FuncBanned.BANNED ? UserStatus.BANNED : UserStatus.INACTIVE
       const response = await userApi.updateUser({
-        id: id,
-        status: status,
-        updated_at: new Date()
+        ...userData,
+        status: status
       })
-
-      console.log(response.data)
 
       if (response.data) {
         setLoadingBanned('')
@@ -210,6 +216,7 @@ const UserGeneral = () => {
     {
       title: 'Thông tin nhân viên',
       key: 'avatar-name',
+      width: 280,
       render: (_: unknown, record: UserGeneralInterface) => (
         <Flex align='center'>
           <InforUserComponent avatar={record.avatar} name={record.name} status={record.status} />
@@ -225,8 +232,8 @@ const UserGeneral = () => {
         <Flex justify='center'>
           <Switch
             disabled={record.status == UserStatus.BANNED}
-            onChange={() => handleUpdateStatusUser(record.id, status)}
-            loading={loadingStatus === record.id}
+            onChange={() => handleUpdateStatusUser(record)}
+            loading={loadingStatus === record._id}
             checked={status == UserStatus.ACTIVE ? true : false}
           />
         </Flex>
@@ -245,32 +252,32 @@ const UserGeneral = () => {
       align: 'center',
       render: (role: RoleUser) => {
         return (
-          <Flex justify='center'>
+          <Flex justify='center' style={{ margin: '0', padding: '0' }}>
             <TagRoleUserComponent roleUser={role} />
           </Flex>
         )
       }
     },
-    {
-      title: 'Chi nhánh',
-      dataIndex: 'branch',
-      key: 'branch',
-      align: 'center',
-      width: 150,
-      render: (branch: string) => {
-        if (!branch) return <Paragraph>Không có</Paragraph>
-        return (
-          <Paragraph
-            ellipsis={{
-              rows: 1,
-              expandable: true
-            }}
-          >
-            {branch}
-          </Paragraph>
-        )
-      }
-    },
+    // {
+    //   title: 'Chi nhánh',
+    //   dataIndex: 'branch',
+    //   key: 'branch',
+    //   align: 'center',
+    //   width: 150,
+    //   render: (branch: string) => {
+    //     if (!branch) return <Paragraph>Không có</Paragraph>
+    //     return (
+    //       <Paragraph
+    //         ellipsis={{
+    //           rows: 1,
+    //           expandable: true
+    //         }}
+    //       >
+    //         {branch}
+    //       </Paragraph>
+    //     )
+    //   }
+    // },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
@@ -296,7 +303,7 @@ const UserGeneral = () => {
           {/* Button ban */}
           {record.status === UserStatus.BANNED ? (
             <Popconfirm
-              okButtonProps={{ loading: loadingBanned == record.id }}
+              okButtonProps={{ loading: loadingBanned == record._id }}
               title={
                 <Typography>
                   Bạn có chắc chắn muốn mở khoá
@@ -308,19 +315,19 @@ const UserGeneral = () => {
                   </div>
                 </Typography>
               }
-              onConfirm={() => handleBannedUser(record.id, FuncBanned.UNBANNED)}
+              onConfirm={() => handleBannedUser(record, FuncBanned.UNBANNED)}
               okText='Có'
               cancelText='Không'
             >
               <Button
-                disabled={loadingBanned == record.id}
+                disabled={loadingBanned == record._id}
                 title='Mở'
                 icon={<CheckCircleOutlined style={{ color: 'green' }} />}
               />
             </Popconfirm>
           ) : (
             <Popconfirm
-              okButtonProps={{ loading: loadingBanned == record.id }}
+              okButtonProps={{ loading: loadingBanned == record._id }}
               title={
                 <Typography>
                   Bạn có chắc chắn muốn khoá{' '}
@@ -332,11 +339,11 @@ const UserGeneral = () => {
                   </div>
                 </Typography>
               }
-              onConfirm={() => handleBannedUser(record.id, FuncBanned.BANNED)}
+              onConfirm={() => handleBannedUser(record, FuncBanned.BANNED)}
               okText='Có'
               cancelText='Không'
             >
-              <Button disabled={loadingBanned == record.id} title='Cấm' icon={<StopOutlined color='black' />} />
+              <Button disabled={loadingBanned == record._id} title='Cấm' icon={<StopOutlined color='black' />} />
             </Popconfirm>
           )}
 
@@ -355,7 +362,7 @@ const UserGeneral = () => {
                 </div>
               </Typography>
             }
-            onConfirm={() => handleDeleteUser(record.id)}
+            onConfirm={() => handleDeleteUser(record._id)}
             okText='Có'
             cancelText='Không'
           >
@@ -405,7 +412,7 @@ const UserGeneral = () => {
         <Col xs={24} sm={12} md={6} lg={6}>
           <DebouncedSearch
             placeholder='Tìm kiếm nhân viên'
-            onSearch={(value) => handleSearch(value)}
+            onSearch={(value) => console.log(value)}
             debounceTime={1000}
           />
         </Col>
@@ -416,16 +423,16 @@ const UserGeneral = () => {
         <Col span={24}>
           <Table
             scroll={{ x: '1000px' }}
-            loading={isLoading || isLoadingSearch}
-            dataSource={searchQuery.length != 0 ? usersSearch : usersGeneral}
+            loading={isLoading}
+            dataSource={usersGeneral}
             bordered
             columns={columsUserGeneral}
             pagination={{
               current: 1,
-              pageSize: pagination.limit,
-              total: 10,
+              pageSize: 10,
+              total: 100,
               showSizeChanger: true,
-              onChange: handleTableChange,
+              // onChange: handleTableChange,
               position: ['bottomCenter']
             }}
           />

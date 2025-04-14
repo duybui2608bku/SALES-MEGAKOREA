@@ -4,12 +4,11 @@ import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
-import { FcEngineering, FcAssistant, FcKindle, FcSettings } from 'react-icons/fc'
+import { FcEngineering, FcAssistant, FcKindle, FcSettings, FcButtingIn } from 'react-icons/fc'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
-import { pathRoutersProduct, pathRoutersService } from 'src/Constants/path'
-import { CiCreditCard2 } from 'react-icons/ci'
+import { pathRoutersProduct, pathRoutersService, pathRoutersUser, pathRoutesCustomers } from 'src/Constants/path'
 
 interface Props {
   children?: React.ReactNode
@@ -26,7 +25,7 @@ const MainLayout = ({ children }: Props) => {
       key: 'customers',
       label: 'Khách hàng',
       // eslint-disable-next-line react/jsx-no-undef
-      icon: <CiUser size={20} />,
+      icon: <FcButtingIn size={20} />,
       onClick: () => navigate(pathRoutesCustomers.customers)
     },
     {

@@ -33,7 +33,7 @@ method: POST
 Body:{name: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601}
 */
 
-userRouters.post('/register', registerValidator, wrapRequestHandler(registerController))
+userRouters.post('/register', wrapRequestHandler(registerController))
 
 /*
 Description: User login
@@ -80,7 +80,7 @@ path: /update
 method: PATCH
 */
 
-userRouters.patch('/update', accessTokenValidator, updateMeValidator, wrapRequestHandler(updateUserController))
+userRouters.patch('/update', accessTokenValidator, wrapRequestHandler(updateUserController))
 
 /*
 Description: Add user to a branch

@@ -29,7 +29,12 @@ const pathRoutersService = {
 }
 
 const pathRoutersUser = {
-  userGeneral: '/user-general'
+  userGeneral: '/user-general',
+  userInformation: '/user-information'
+}
+
+const pathRoutesCustomers = {
+  customers: '/customer'
 }
 
 const pathApiProduct = {
@@ -43,9 +48,15 @@ const pathApiProduct = {
 }
 
 const pathApiUsers = {
+  getUser: '/users/me',
   getAllUser: '/users/all',
   getAllUsersWithRole: '/users/with-role',
-  updateUser: '/users/me'
+  updateUser: '/users/update',
+  createUser: '/users/register'
+}
+
+const pathApiUploadImage = {
+  uploadImage: '/upload/image'
 }
 
 const pathApiBranch = {
@@ -70,8 +81,6 @@ const pathServices = {
   deleteCategoryService: 'services/category-delete'
 }
 
-
-
 export {
   pathAuth,
   pathUtil,
@@ -82,5 +91,8 @@ export {
   pathApiBranch,
   pathRoutersService,
   pathServices,
-  pathApiUsers
+  pathApiUsers,
+  pathRoutersUser,
+  pathRoutesCustomers,
+  pathApiUploadImage
 }

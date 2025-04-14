@@ -6,8 +6,11 @@ import './Header.scss'
 import { Avatar, Badge, Popconfirm } from 'antd'
 import { FaSignOutAlt } from 'react-icons/fa'
 import { clearLS } from 'src/Utils/localStorage'
+import { useNavigate } from 'react-router'
+import { pathRoutersUser } from 'src/Constants/path'
 const HeaderMain = () => {
   const { profile, reset } = useContext(AppContext)
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     reset()
@@ -32,7 +35,7 @@ const HeaderMain = () => {
       </div>
       <div className='header-container__user'>
         <p className='header-container__user__name'>{profile?.name}</p>
-        <Avatar size={50} src={logo} />
+        <Avatar onClick={() => navigate(pathRoutersUser.userInformation)} size={50} src={logo} />
       </div>
     </div>
   )

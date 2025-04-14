@@ -1,8 +1,7 @@
 import { RoleUser, UserStatus } from 'src/Constants/enum'
 
 export interface UserGeneralInterface {
-  // _id: string
-  id: string
+  _id: string
   name: string
   email: string
   avatar: string
@@ -20,7 +19,7 @@ export interface CreateUserRequestBody {
   role?: RoleUser
   status?: UserStatus
   branch?: string
-  created_at: Date
+  created_at?: Date
   updated_at?: Date
 }
 
@@ -32,14 +31,14 @@ export interface GetAllUserRequestQuery {
 }
 
 export interface UpdateUserBody {
-  id: string
+  _id: string
   name?: string
   email?: string
   avatar?: string
   role?: RoleUser
   status?: UserStatus
   branch?: string
-  updated_at: Date
+  created_at?: Date
 }
 
 export interface SearchUserRequestQuery {

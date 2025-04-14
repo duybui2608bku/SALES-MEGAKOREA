@@ -33,6 +33,17 @@ export const axiosJson = axios.create({
   }
 })
 
+// Path upload image
+export const axiosUploadImage = axios.create({
+  baseURL: 'https://api.mediccare.vn',
+  timeout: 500000,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjZmNGQ0NWQ0NTk2Y2NjOGZjZGNjMDEyIiwidG9rZW5fdHlwZSI6MCwicm9sZSI6IlRFTEVTQUxFIiwiaWF0IjoxNzQ0MjcyNzIyLCJleHAiOjE4NzM4NzI3MjJ9.S8TdrhGUy1QM1ZiU2svQWDVe9rQkNEfLrloATg8WSgU'
+  }
+})
+
 axiosRetry(axiosInstanceMain, {
   retries: 20,
   retryDelay: (retryCount) => retryCount * 500,
