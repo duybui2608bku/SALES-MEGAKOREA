@@ -11,9 +11,8 @@ import axiosInstanceMain, { axiosJson, axiosUploadAvatar } from '../axious.api'
 import { pathApiUploadAvatarUser, pathApiUsers } from 'src/Constants/path'
 import {
   CreateUserRequestBody,
-  GetAllUserRequestQuery,
   SearchUserRequestQuery,
-  UpdateUserBody
+  UpdateUserRequestBody
 } from 'src/Interfaces/user/user.interface'
 
 const userApi = {
@@ -25,15 +24,15 @@ const userApi = {
     return axiosInstanceMain.get<GetUserResponse>(`${pathApiUsers.getUser}`)
   },
 
-  getUsers(query: GetAllUserRequestQuery) {
-    return axiosInstanceMain.get<GetUsersResponse>(pathApiUsers.getAllUser, { params: query })
+  getUsers() {
+    return axiosInstanceMain.get<GetUsersResponse>(pathApiUsers.getAllUser)
   },
 
   createUser(user: CreateUserRequestBody) {
     return axiosInstanceMain.post<CreateUserResponse>(pathApiUsers.createUser, user)
   },
 
-  updateUser(user: UpdateUserBody) {
+  updateUser(user: UpdateUserRequestBody) {
     return axiosInstanceMain.patch<CreateUserResponse>(pathApiUsers.updateUser, user)
   },
 

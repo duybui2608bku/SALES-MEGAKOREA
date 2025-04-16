@@ -1,5 +1,5 @@
 import { Image, Col, Form, Input, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd'
-import { CreateUserRequestBody, UpdateUserBody, UserGeneralInterface } from 'src/Interfaces/user/user.interface'
+import { CreateUserRequestBody, UpdateUserRequestBody, UserGeneralInterface } from 'src/Interfaces/user/user.interface'
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -18,6 +18,7 @@ import createOptimisticUpdateHandler from 'src/Function/product/createOptimistic
 import HttpStatusCode from 'src/Constants/httpCode'
 import { generatePassword } from 'src/Utils/generatePassword'
 import UploadAvatar from './components/uploadAvatar'
+import OptionsBranchUser from 'src/Components/OptionsBranchUser'
 const Text = Typography
 
 interface ModalCreateOrUpdateUserProps {
@@ -61,11 +62,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
   // Fetch data user to edit
   useEffect(() => {
     if (userToEdit) {
-      const formattedDataUser = {
-        ...userToEdit,
-        branch: ''
-      }
-      form.setFieldsValue(formattedDataUser)
+      form.setFieldsValue(userToEdit)
       setImageUrl(userToEdit.avatar)
     } else {
       form.resetFields()
@@ -101,7 +98,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
 
   // Func update user
   const { mutate: updateUser, isPending: isUpdating } = useMutation({
-    mutationFn: (data: UpdateUserBody) => userApi.updateUser(data),
+    mutationFn: (data: UpdateUserRequestBody) => userApi.updateUser(data),
     onMutate: async () => {
       return createOptimisticUpdateHandler(queryClient, ['getUsersGeneral'])()
     },
@@ -170,10 +167,11 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
       return
     }
     const avatar = !imageUrl ? '' : imageUrl
-    const userUpdate: UpdateUserBody = {
+    const userUpdate: UpdateUserRequestBody = {
       ...values,
       _id: userToEdit._id,
-      avatar: avatar
+      avatar: avatar,
+      branch: userToEdit.branch._id
     }
     updateUser(userUpdate)
   }
@@ -202,7 +200,6 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
   return (
     <Modal
       open={open}
-      // open={true}
       onCancel={handleCancelModal}
       width='90%'
       style={{ maxWidth: 800 }}
@@ -244,20 +241,12 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
               </Col>
               <Col xs={24} md={8}>
                 <Form.Item name='branch' label='Chi nhánh'>
-                  <Select
-                    showSearch
-                    placeholder='Chọn chi nhánh'
-                    options={[
-                      { value: 'Quảng Bình', label: 'Quảng Bình', key: 1 },
-                      { value: 'Huế', label: 'Huế', key: 2 },
-                      { value: 'Quảng Trị', label: 'Quảng Trị', key: 3 },
-                      { value: 'Buôn Ma Thuột', label: 'Buôn Ma Thuột', key: 4 },
-                      { value: 'Cà Mau', label: 'Cà Mau', key: 5 },
-                      { value: 'Phan Thiết', label: 'Phan Thiết', key: 6 },
-                      { value: 'Nha Trang', label: 'Nha Trang', key: 7 },
-                      { value: 'Medicare NT', label: 'Medicare NT', key: 8 },
-                      { value: 'Đà Nẵng', label: 'Đà Nẵng', key: 9 }
-                    ]}
+                  <OptionsBranchUser
+                    mode={undefined}
+                    initialValue={userToEdit?.branch.name}
+                    placeholder={userToEdit ? 'Chọn chi nhánh' : 'Chọn chi nhánh'}
+                    search
+                    onchange={(value) => form.setFieldsValue({ branch: value })}
                   />
                 </Form.Item>
               </Col>

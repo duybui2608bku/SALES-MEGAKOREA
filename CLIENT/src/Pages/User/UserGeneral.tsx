@@ -29,12 +29,11 @@ import { IoMdTrash } from 'react-icons/io'
 import ModalCreateOrUpdateUser from 'src/Modal/users/ModalCreateOrUpdateUser'
 import TagRoleUserComponent from './Components/tagRoleUserComponent'
 import { omit } from 'lodash'
-// const { Paragraph } = Typography
+import { BranchType } from 'src/Interfaces/branch/branch.interface'
+const { Paragraph } = Typography
 
 type ColumsUserGeneralType = UserGeneralInterface
 
-const PAGE = 1
-const LIMIT = 10
 const STALETIME = 5 * 60 * 1000
 
 export enum FuncBanned {
@@ -48,50 +47,16 @@ const UserGeneral = () => {
   const [loadingStatus, setLoadingStatus] = useState('')
   const [loadingBanned, setLoadingBanned] = useState('')
   const [usersGeneral, setUsersGeneral] = useState<UserGeneralInterface[]>([])
-  // const [usersSearch, setUsersSearch] = useState<UserGeneralInterface[]>([])
-  const [pagination, setPagination] = useState({
-    page: PAGE,
-    limit: LIMIT,
-    total: 0
-  })
-  // const [searchQuery, setSearchQuery] = useState('')
-  const [filterBranch, setFilterBranch] = useState<string>('')
 
   //   Fetch users data (Gọi từ API phía SERVER)
   const { data, isLoading } = useQuery({
-    queryKey: ['getUsersGeneral', filterBranch, pagination.page, pagination.limit],
+    queryKey: ['getUsersGeneral'],
     queryFn: async () => {
-      const query =
-        filterBranch.length > 0 && filterBranch != 'all'
-          ? {
-              page: pagination.page,
-              limit: LIMIT,
-              branch: filterBranch
-            }
-          : {
-              page: pagination.page,
-              limit: pagination.limit
-            }
-
-      const response = await userApi.getUsers(query)
+      const response = await userApi.getUsers()
       return response
     },
     staleTime: STALETIME
   })
-
-  // Fetch users data with search
-  // const { data: searchUsers, isLoading: isLoadingSearch } = useQuery({
-  //   queryKey: ['searchUser', searchQuery, filterBranch],
-  //   queryFn: async () => {
-  //     const query = {
-  //       result: searchQuery
-  //     }
-  //     const response = await userApi.searchUser(query)
-  //     return response
-  //   },
-  //   staleTime: STALETIME,
-  //   enabled: !!searchQuery
-  // })
 
   // Delete user
   const { mutate: deleteUser, isPending } = useMutation({
@@ -110,41 +75,8 @@ const UserGeneral = () => {
       const response = data.data.result as unknown as UserGeneralInterface[]
 
       setUsersGeneral(response)
-      setPagination({
-        page: 1,
-        limit: 10,
-        total: 100
-      })
     }
   }, [data?.data.result])
-
-  // useEffect(() => {
-  //   if (searchUsers?.data) {
-  //     const users = searchUsers.data as unknown as UserGeneralInterface[]
-  //     setUsersSearch(users)
-  //   }
-  // }, [searchUsers])
-
-  // const goToNextPage = (page: number) => {
-  //   setPagination((prev) => ({
-  //     ...prev,
-  //     page
-  //   }))
-  // }
-
-  // const handleTableChange = async (page: number) => {
-  //   goToNextPage(page)
-  // }
-
-  const handleFilterBranch = (branch: string) => {
-    console.log('branch: ', branch)
-    setFilterBranch(branch)
-  }
-
-  // const handleSearch = (value: string) => {
-  //   console.log('value: ', value)
-  //   setSearchQuery(value)
-  // }
 
   const handleDeleteUser = (id: string) => {
     deleteUser(id)
@@ -159,7 +91,8 @@ const UserGeneral = () => {
 
       const response = await userApi.updateUser({
         ...userData,
-        status: user.status == UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE
+        status: user.status == UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE,
+        branch: user.branch._id
       })
 
       if (response.data) {
@@ -182,7 +115,8 @@ const UserGeneral = () => {
       const status = func == FuncBanned.BANNED ? UserStatus.BANNED : UserStatus.INACTIVE
       const response = await userApi.updateUser({
         ...userData,
-        status: status
+        status: status,
+        branch: user.branch._id
       })
 
       if (response.data) {
@@ -210,7 +144,7 @@ const UserGeneral = () => {
     {
       title: 'Thông tin nhân viên',
       key: 'avatar-name',
-      width: 280,
+      width: 270,
       render: (_: unknown, record: UserGeneralInterface) => (
         <Flex align='center'>
           <InforUserComponent avatar={record.avatar} name={record.name} status={record.status} />
@@ -222,6 +156,7 @@ const UserGeneral = () => {
       dataIndex: 'status',
       key: 'status',
       align: 'center',
+      width: 120,
       render: (status: number, record: UserGeneralInterface) => (
         <Flex justify='center'>
           <Switch
@@ -237,13 +172,15 @@ const UserGeneral = () => {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      align: 'center'
+      align: 'center',
+      width: 220
     },
     {
       title: 'Vai trò',
       dataIndex: 'role',
       key: 'role',
       align: 'center',
+      width: 150,
       render: (role: RoleUser) => {
         return (
           <Flex justify='center' style={{ margin: '0', padding: '0' }}>
@@ -252,31 +189,32 @@ const UserGeneral = () => {
         )
       }
     },
-    // {
-    //   title: 'Chi nhánh',
-    //   dataIndex: 'branch',
-    //   key: 'branch',
-    //   align: 'center',
-    //   width: 150,
-    //   render: (branch: string) => {
-    //     if (!branch) return <Paragraph>Không có</Paragraph>
-    //     return (
-    //       <Paragraph
-    //         ellipsis={{
-    //           rows: 1,
-    //           expandable: true
-    //         }}
-    //       >
-    //         {branch}
-    //       </Paragraph>
-    //     )
-    //   }
-    // },
+    {
+      title: 'Chi nhánh',
+      dataIndex: 'branch',
+      key: 'branch',
+      align: 'center',
+      width: 150,
+      render: (branch: BranchType) => {
+        if (!branch) return <Paragraph>Không có</Paragraph>
+        return (
+          <Paragraph
+            ellipsis={{
+              rows: 1,
+              expandable: true
+            }}
+          >
+            {branch.name}
+          </Paragraph>
+        )
+      }
+    },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
       align: 'center',
+      width: 130,
       render: (created_at: string) => new Date(created_at).toLocaleDateString('vi-VN')
     },
     {
@@ -284,8 +222,10 @@ const UserGeneral = () => {
       dataIndex: 'action',
       key: 'action',
       align: 'center',
+      width: 150,
+      fixed: 'right',
       render: (_: unknown, record: UserGeneralInterface) => (
-        <Flex gap={10}>
+        <Flex gap={10} justify='center'>
           {/* Button update */}
           <Button
             disabled={record.status === UserStatus.BANNED}
@@ -382,11 +322,10 @@ const UserGeneral = () => {
           </Button>
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          {/* <OptionsBranch mode='multiple' search onchange={handleFilterBranch} /> */}
           <Select
             style={{ width: '100%' }}
             showSearch
-            onChange={handleFilterBranch}
+            // onChange={handleFilterBranch}
             placeholder='Chọn chi nhánh'
             defaultValue={'all'}
             options={[
@@ -416,19 +355,14 @@ const UserGeneral = () => {
       <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
-            scroll={{ x: '1000px' }}
+            sticky
+            style={{ width: '100%' }}
+            scroll={{ x: '1200px' }}
             loading={isLoading}
             dataSource={usersGeneral}
             bordered
             columns={columsUserGeneral}
-            pagination={{
-              current: 1,
-              pageSize: 10,
-              total: 100,
-              showSizeChanger: true,
-              // onChange: handleTableChange,
-              position: ['bottomCenter']
-            }}
+            pagination={false}
           />
         </Col>
       </Row>

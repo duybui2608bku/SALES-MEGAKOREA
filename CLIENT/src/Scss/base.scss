@@ -105,8 +105,16 @@ iframe {
 }
 
 .spin-icon {
-  margin-right: 7px;
+  // margin-right: 7px;
   animation: spin 1s infinite linear;
+}
+
+.status-customer-tagName {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 10px;
 }
 
 @keyframes spin {
@@ -137,4 +145,16 @@ iframe {
 
 .ant-image-preview-img {
   object-fit: contain !important;
+}
+
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 8px purple;
+  }
+  50% {
+    text-shadow: 0 0 18px purple;
+  }
+  100% {
+    text-shadow: 0 0 8px purple;
+  }
 }

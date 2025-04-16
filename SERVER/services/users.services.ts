@@ -2,6 +2,7 @@ import {
   AddUsertoBranchRequestBody,
   DeleteUserFromBranchRequestBody,
   GetAllUserRequestBody,
+  GetAllUserRequestBodyTest,
   RegisterRequestBody,
   UpdateUserRequestBody
 } from '~/models/requestes/User.requests'
@@ -159,17 +160,29 @@ class UsersService {
   }
 
   async updateUser(payload: UpdateUserRequestBody) {
-    const { _id, ...rest } = payload
+    const { _id, branch, ...rest } = payload
     const userObjectId = new ObjectId(_id)
+
+    const updateDoc: Record<string, any> = {
+      ...rest,
+      updated_at: new Date()
+    }
+
+    // Nếu có branch -> ép về ObjectId
+    if (branch) {
+      try {
+        updateDoc.branch = new ObjectId(branch)
+      } catch (error) {
+        console.error('Ivalid branch ID: ', branch)
+        throw new Error('Chi nhánh không hợp lệ!')
+      }
+    }
     const user = await databaseServiceSale.users.findOneAndUpdate(
       {
         _id: new ObjectId(userObjectId)
       },
       {
-        $set: {
-          ...rest
-        },
-        $currentDate: { updated_at: true }
+        $set: updateDoc
       },
       {
         returnDocument: 'after',
@@ -229,14 +242,14 @@ class UsersService {
             ...query
           }
         },
-        {
-          $lookup: {
-            from: 'branch',
-            localField: 'branch',
-            foreignField: '_id',
-            as: 'branch'
-          }
-        },
+        // {
+        //   $lookup: {
+        //     from: 'branch',
+        //     localField: 'branch',
+        //     foreignField: '_id',
+        //     as: 'branch'
+        //   }
+        // },
         // {
         //   $addFields: {
         //     branch: {
@@ -271,6 +284,82 @@ class UsersService {
       .toArray()
     return result
   }
+
+  // Test
+  async getAllUsersTest(data: GetAllUserRequestBodyTest) {
+    const { page = 1, limit = 10, branch } = data
+
+    let parsedPage = Number(page)
+    let parsedLimit = Number(limit)
+    if (isNaN(parsedPage) || parsedPage <= 0) parsedPage = 1
+    if (isNaN(parsedLimit) || parsedLimit <= 0) parsedLimit = 10
+
+    const skip = (parsedPage - 1) * parsedLimit
+    const query: Record<string, any> = {}
+    query.role = { $nin: [UserRole.ADMIN] }
+
+    // Xử lý branch (dạng string, chỉ 1 branch)
+    if (branch) {
+      try {
+        query.branch = new ObjectId(branch)
+      } catch (error) {
+        console.error('Invalid branch ID format: ', branch)
+        throw new Error('Chi nhánh không hợp lệ!')
+      }
+    }
+
+    const result = await databaseServiceSale.users
+      .aggregate([
+        {
+          $match: query
+        },
+        {
+          $lookup: {
+            from: 'branch',
+            localField: 'branch',
+            foreignField: '_id',
+            as: 'branch_info'
+          }
+        },
+        {
+          $unwind: {
+            path: '$branch_info',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            branch: {
+              _id: '$branch_info._id',
+              name: '$branch_info.name'
+            }
+          }
+        },
+        {
+          $project: {
+            password: 0,
+            email_verify_token: 0,
+            forgot_password_token: 0,
+            branch_info: 0
+          }
+        },
+        {
+          $sort: { _id: -1 }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: parsedLimit
+        }
+      ])
+      .toArray()
+
+    console.log('result: ', result)
+
+    return result
+  }
+
   async getUserWithRole(role: string) {
     const result = await databaseServiceSale.users
       .aggregate([

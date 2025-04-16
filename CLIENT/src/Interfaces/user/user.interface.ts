@@ -1,4 +1,5 @@
 import { RoleUser, UserStatus } from 'src/Constants/enum'
+import { BranchType } from '../branch/branch.interface'
 
 export interface UserGeneralInterface {
   _id: string
@@ -7,7 +8,7 @@ export interface UserGeneralInterface {
   avatar: string
   role: RoleUser
   status: UserStatus
-  branch: string
+  branch: BranchType
   created_at: Date
   updated_at: Date
   coefficient: number
@@ -32,7 +33,7 @@ export interface GetAllUserRequestQuery {
   role?: string
 }
 
-export interface UpdateUserBody {
+export interface UpdateUserRequestBody {
   _id: string
   name?: string
   email?: string

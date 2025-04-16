@@ -5,6 +5,7 @@ import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
   GetAllUserRequestBody,
+  GetAllUserRequestBodyTest,
   GetAllUserWithRoleRequestParams,
   getProfileRequestBody,
   LoginRequestBody,
@@ -147,6 +148,20 @@ export const getAllUsersController = async (
 ) => {
   const data = req.body
   const users = await usersService.getAllUsers(data)
+  return res.status(HttpStatusCode.Ok).json({
+    success: true,
+    message: userMessages.GET_ALL_USERS_SUCCESS,
+    result: users
+  })
+}
+
+// Test
+export const getAllUsersControllerTest = async (
+  req: Request<ParamsDictionary, any, GetAllUserRequestBodyTest>,
+  res: Response
+) => {
+  const data = req.body
+  const users = await usersService.getAllUsersTest(data)
   return res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.GET_ALL_USERS_SUCCESS,

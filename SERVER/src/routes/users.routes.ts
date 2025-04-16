@@ -5,6 +5,7 @@ import {
   deleteUserById,
   deleteUserFromBranchController,
   getAllUsersController,
+  getAllUsersControllerTest,
   getMeController,
   getUserWithRole,
   loginController,
@@ -121,7 +122,8 @@ method: GET
 Header:{Authorization: Bearer <access_token>}
 */
 
-userRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllUsersController))
+// userRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllUsersController))
+userRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllUsersControllerTest))
 
 /*
 Description: Get me
