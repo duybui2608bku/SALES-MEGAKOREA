@@ -9,10 +9,11 @@ const { Title, Text } = Typography
 // Interface cho props
 interface ServiceCardListProps {
   cards: ServicesOfCardType[]
-  onServiceClick?: (service: ServicesOfCardType['services_of_card'][0]) => void
+  onServiceClick?: (service: string[]) => void
+  columnsGird?: number
 }
 
-const ServiceCardList = ({ cards, onServiceClick }: ServiceCardListProps) => {
+const ServiceCardList = ({ cards, onServiceClick, columnsGird = 6 }: ServiceCardListProps) => {
   // State để theo dõi các card được chọn
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([])
 
@@ -29,11 +30,13 @@ const ServiceCardList = ({ cards, onServiceClick }: ServiceCardListProps) => {
     )
   }
 
+  onServiceClick?.(selectedCardIds)
+
   return (
     <div>
       <Row gutter={[24, 24]} justify='center'>
         {limitedCards.map((card) => (
-          <Col xs={24} sm={12} md={6} lg={4.8} key={card._id}>
+          <Col xs={24} sm={12} md={columnsGird} lg={4.8} key={card._id}>
             <Card
               hoverable
               style={{
@@ -104,7 +107,6 @@ const ServiceCardList = ({ cards, onServiceClick }: ServiceCardListProps) => {
                         }}
                         onClick={(e) => {
                           e.stopPropagation() // Ngăn sự kiện click card khi nhấn Tag
-                          onServiceClick?.(service)
                         }}
                       >
                         {service.service_details.name}
