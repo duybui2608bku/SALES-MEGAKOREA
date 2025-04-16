@@ -4,7 +4,6 @@ import usersService from '../../services/users.services'
 import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
-  DeleteUserParams,
   GetAllUserRequestBody,
   GetAllUserRequestBodyTest,
   GetAllUserWithRoleRequestParams,

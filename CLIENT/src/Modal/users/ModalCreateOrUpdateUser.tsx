@@ -171,7 +171,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
       ...values,
       _id: userToEdit._id,
       avatar: avatar,
-      branch: userToEdit.branch._id
+      branch: form.getFieldValue('branch')
     }
     updateUser(userUpdate)
   }
