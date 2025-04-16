@@ -1,12 +1,17 @@
 import { Router } from 'express'
 import {
   createServicesCard,
-  getCommissionOfDate,
+  createServicesCardSold,
+  createServicesCardSoldOfCustomer,
   getServicesCard,
   UpdateHistoryPaid,
   UpdateServicesCard
 } from '~/controllers/services.card.controllers'
-import { CreateServicesCardValidator, UpdateHistoryPaidOfCardValidator } from '~/middlewares/services.card.middlewares'
+import {
+  CreateServicesCardSoldValidator,
+  CreateServicesCardValidator,
+  UpdateHistoryPaidOfCardValidator
+} from '~/middlewares/services.card.middlewares'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -17,6 +22,13 @@ servicesOfCardRouters.post(
   accessTokenValidator,
   CreateServicesCardValidator,
   wrapRequestHandler(createServicesCard)
+)
+
+servicesOfCardRouters.post(
+  '/sold/create',
+  accessTokenValidator,
+  CreateServicesCardSoldValidator,
+  wrapRequestHandler(createServicesCardSold)
 )
 
 servicesOfCardRouters.patch(
@@ -35,6 +47,10 @@ servicesOfCardRouters.patch(
 
 servicesOfCardRouters.post('/all', accessTokenValidator, wrapRequestHandler(getServicesCard))
 
-servicesOfCardRouters.post('/commission', accessTokenValidator, wrapRequestHandler(getCommissionOfDate))
+servicesOfCardRouters.post(
+  '/sold-of-customer/create',
+  accessTokenValidator,
+  wrapRequestHandler(createServicesCardSoldOfCustomer)
+)
 
 export default servicesOfCardRouters

@@ -107,7 +107,6 @@ export interface ServicesOfCard {
   services_id?: ObjectId | string
   quantity?: number
   discount?: number
-  price?: number
   up_sale?: boolean
 }
 
@@ -194,28 +193,23 @@ export interface CardServicesType {
   name: string
   branch?: ObjectId[]
   descriptions?: string
-  price?: number
-  price_paid?: number
+  price?: number | null
   user_id?: ObjectId | string
   services_of_card?: ServicesOfCard[]
-  employee_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date
 }
 
-export interface CardServicesSoldType {
+export interface CardServicesSoldOfCustomerType {
   _id?: ObjectId
   code?: string
-  is_active?: boolean
-  name: string
-  branch?: ObjectId[]
+  customer_id: ObjectId
   descriptions?: string
-  price?: number
+  price?: number | null
+  card_services_sold_id: ObjectId[]
   history_paid?: HistoryPaid[]
   history_used?: HistoryUsed[]
-  price_paid?: number
-  user_id?: ObjectId | string
-  services_of_card?: ServicesOfCard[]
+  user_id: ObjectId | string
   employee_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date
@@ -242,8 +236,8 @@ export interface UpdateHistoryPaidData {
 
 export interface CommisionCardServicesType {
   _id?: ObjectId
-  card_services_id: ObjectId | string
-  employee_id: ObjectId | string
+  card_services_sold_id: ObjectId
+  employee_id: ObjectId
   commision: number
   type_commision: TypeCommision
   created_at?: Date
@@ -258,4 +252,12 @@ export interface CreateCommisionCardServicesData {
   type_commision: TypeCommision
   created_at?: Date
   updated_at?: Date
+}
+
+export interface CreateServicesCardSoldOfCustomerData {
+  code?: string
+  customer_id: ObjectId
+  descriptions?: string
+  card_services_sold_id: ObjectId[]
+  user_id: ObjectId
 }

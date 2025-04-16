@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   addUserToBranchController,
   changePasswordController,
+  deleteUserController,
   deleteUserFromBranchController,
   getAllUsersController,
   getMeController,
@@ -137,5 +138,14 @@ method: GET
 Header:{Authorization: Bearer <access_token>}
 */
 userRouters.get('/with-role', accessTokenValidator, wrapRequestHandler(getUserWithRole))
+
+/*
+Description: Delete user
+path: /:id
+method: DELETE
+Header:{Authorization: Bearer <access_token>}
+*/
+
+userRouters.delete('/:id', accessTokenValidator, isAdminValidator, wrapRequestHandler(deleteUserController))
 
 export default userRouters

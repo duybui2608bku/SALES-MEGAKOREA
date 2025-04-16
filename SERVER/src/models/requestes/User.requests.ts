@@ -77,3 +77,7 @@ export interface GetAllUserRequestBody {
   branch?: string[]
   role?: UserRole[]
 }
+
+export interface DeleteUserParams {
+  _id: string
+}

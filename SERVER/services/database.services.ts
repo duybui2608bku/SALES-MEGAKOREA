@@ -4,7 +4,7 @@ import Product from '~/models/schemas/product/Product.schema'
 import { Services, ServicesCategory } from '~/models/schemas/services/Services.schema'
 import Bracnh from '~/models/schemas/branch/branch.schema'
 import User from '~/models/schemas/User.schema'
-import Customer from '~/models/schemas/Customer.shema'
+import Customer from '~/models/schemas/customer/Customer.shema'
 dotenv.config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@megakorae-call.rrq1b.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=MEGAKORAE-CALL&tls=true`
 

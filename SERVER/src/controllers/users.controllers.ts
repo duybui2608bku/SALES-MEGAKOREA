@@ -4,6 +4,7 @@ import usersService from '../../services/users.services'
 import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
+  DeleteUserParams,
   GetAllUserRequestBody,
   GetAllUserWithRoleRequestParams,
   getProfileRequestBody,
@@ -16,8 +17,6 @@ import {
 import { HttpStatusCode, UserRole } from '~/constants/enum'
 import { userMessages } from '~/constants/messages'
 import { ObjectId } from 'mongodb'
-
-import { omit } from 'lodash'
 import { ResponseSuccess } from '~/utils/handlers'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
@@ -151,5 +150,17 @@ export const getAllUsersController = async (
     success: true,
     message: userMessages.GET_ALL_USERS_SUCCESS,
     result: users
+  })
+}
+
+export const deleteUserController = async (
+  req: Request<ParamsDictionary, DeleteUserParams, any, any>,
+  res: Response
+) => {
+  const { id } = req.params
+  await usersService.deleteUser(id)
+  return res.status(HttpStatusCode.Ok).json({
+    success: true,
+    message: userMessages.DELETE_USER_SUCCESS
   })
 }

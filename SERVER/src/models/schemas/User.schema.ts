@@ -14,6 +14,7 @@ export default class User {
   role?: UserRole
   status?: UserStatus
   branch?: ObjectId | null
+  coefficient?: number
   constructor(user: UserType) {
     this._id = user._id
     this.name = user.name || ''
@@ -23,6 +24,7 @@ export default class User {
     this.forgot_password_token = user.forgot_password_token || ''
     this.avatar = user.avatar || ''
     this.role = user.role || UserRole.USER
+    this.coefficient = user.coefficient || 0
     this.created_at = user.created_at || new Date()
     this.updated_at = user.updated_at || new Date()
     this.status = user.status || UserStatus.ACTIVE

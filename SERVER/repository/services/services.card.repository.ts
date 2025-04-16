@@ -2,12 +2,15 @@ import databaseServiceSale from 'services/database.services.sale'
 import { TypeCommision } from '~/constants/enum'
 import {
   CreateServicesCardData,
+  CreateServicesCardSoldOfCustomerData,
   GetCommisionOfDateData,
   GetServicesCardData,
   UpdateHistoryPaidData,
   UpdateServicesCardData
 } from '~/interface/services/services.interface'
 import { CardServices } from '~/models/schemas/services/cardServices.schema'
+import { CardServicesSold } from '~/models/schemas/services/cardServicesSold.schema'
+import { CardServicesSoldOfCustomer } from '~/models/schemas/services/cardServicesSoldOfCustomer.schema'
 import { createProjectionField } from '~/utils/utils'
 
 class ServicesCardRepository {
@@ -15,9 +18,14 @@ class ServicesCardRepository {
     await databaseServiceSale.services_card.insertOne(new CardServices(data))
   }
 
+  async createServicesCardSold(data: CreateServicesCardData[]) {
+    await databaseServiceSale.services_card_sold.insertMany(data.map((item) => new CardServicesSold(item)))
+  }
+
   async getAllServicesCard(data: GetServicesCardData) {
     const { page, query, limit } = data
     const skip = (page - 1) * limit
+
     const projectionEmployeeDetailsFull = createProjectionField('employee.employee_details', [
       'password',
       'status',
@@ -25,6 +33,7 @@ class ServicesCardRepository {
       'role',
       'coefficient'
     ])
+
     const projectionServiceDetailsFull = createProjectionField('services_of_card.service_details.step_services', [
       'employee_details.password',
       'employee_details.status',
@@ -109,13 +118,15 @@ class ServicesCardRepository {
         }
       },
 
-      // Bước 7: Bảo toàn price gốc và tính total cho services_of_card
+      // Bước 7: Lấy price từ service_details và tính total cho services_of_card
       {
         $set: {
-          'services_of_card.price': { $ifNull: ['$services_of_card.price', 0] },
+          'services_of_card.price': { $ifNull: ['$services_of_card.service_details.price', 0] },
           'services_of_card.total': {
             $subtract: [
-              { $multiply: ['$services_of_card.price', '$services_of_card.quantity'] },
+              {
+                $multiply: [{ $ifNull: ['$services_of_card.service_details.price', 0] }, '$services_of_card.quantity']
+              },
               { $ifNull: ['$services_of_card.discount', 0] }
             ]
           }
@@ -232,7 +243,7 @@ class ServicesCardRepository {
       // Bước 14: Xử lý employee trước khi xử lý history_paid để tránh trùng lặp
       {
         $set: {
-          original_employee: '$employee' // Lưu trữ giá trị gốc của employee
+          original_employee: '$employee'
         }
       },
       {
@@ -334,7 +345,7 @@ class ServicesCardRepository {
           created_at: { $first: '$created_at' },
           updated_at: { $first: '$updated_at' },
           services_of_card: { $first: '$services_of_card' },
-          employee: { $first: '$employee' } // Giữ nguyên mảng employee đã xử lý
+          employee: { $first: '$employee' }
         }
       },
 
@@ -691,6 +702,10 @@ class ServicesCardRepository {
         }
       }
     )
+  }
+
+  async createServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerData) {
+    await databaseServiceSale.services_card_sold_of_customer.insertOne(new CardServicesSoldOfCustomer(data))
   }
 }
 
