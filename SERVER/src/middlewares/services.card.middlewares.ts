@@ -16,15 +16,6 @@ export const CreateServicesCardValidator = validate(
         optional: true,
         trim: true
       },
-      customer_id: {
-        isString: {
-          errorMessage: servicesMessages.CUSTOMER_ID_MUST_BE_STRING
-        },
-        isMongoId: {
-          errorMessage: servicesMessages.INVALID_ID
-        },
-        optional: true
-      },
       is_active: {
         isBoolean: {
           errorMessage: servicesMessages.IS_ACTIVE_MUST_BE_BOOLEAN
@@ -62,36 +53,6 @@ export const CreateServicesCardValidator = validate(
         optional: true,
         trim: true
       },
-      session_time: {
-        isNumeric: {
-          errorMessage: servicesMessages.SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        isInt: {
-          options: { min: 0 },
-          errorMessage: servicesMessages.SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        optional: true
-      },
-      price: {
-        isNumeric: {
-          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        isInt: {
-          options: { min: 0 },
-          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        optional: true
-      },
-      price_paid: {
-        isNumeric: {
-          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        isInt: {
-          options: { min: 0 },
-          errorMessage: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        optional: true
-      },
       user_id: {
         isString: {
           errorMessage: servicesMessages.EMPOYEE_ID_MUST_BE_STRING
@@ -100,15 +61,6 @@ export const CreateServicesCardValidator = validate(
           errorMessage: servicesMessages.INVALID_ID
         },
         optional: true
-      },
-      service_group_id: {
-        isString: {
-          errorMessage: servicesMessages.SERVICE_GROUP_ID_MUST_BE_STRING
-        },
-        isMongoId: {
-          errorMessage: servicesMessages.INVALID_ID
-        },
-        optional: { options: { nullable: true, checkFalsy: true } }
       },
       services_of_card: {
         isArray: {
@@ -134,47 +86,6 @@ export const CreateServicesCardValidator = validate(
               if (service.discount !== undefined && typeof service.discount !== 'number' && service.discount < 0) {
                 throw new ErrorWithStatusCode({
                   message: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-              if (service.price !== undefined && typeof service.price !== 'number' && service.price < 0) {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-            })
-            return true
-          }
-        }
-      },
-      employee: {
-        isArray: {
-          errorMessage: servicesMessages.EMPLOYEE_MUST_BE_ARRAY
-        },
-        optional: true,
-        custom: {
-          options: (value: EmployeeOfServices[]) => {
-            if (!value) return true
-            value.forEach((employee) => {
-              if (!ObjectId.isValid(employee.id_employee)) {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.EMPOYEE_ID_MUST_BE_STRING_AND_OBJECT_ID,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-              if (
-                (employee.commision !== undefined && typeof employee.commision !== 'number') ||
-                employee.commision < 0
-              ) {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-              if (employee.type_price !== TypeCommision.FIXED && employee.type_price !== TypeCommision.PRECENT) {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.TYPE_PRICE_MUST_BE_FIXED_OR_PERCENT,
                   statusCode: HttpStatusCode.BadRequest
                 })
               }
@@ -249,4 +160,25 @@ export const UpdateHistoryPaidOfCardValidator = validate(
       trim: true
     }
   })
+)
+
+export const CreateServicesCardSoldValidator = validate(
+  checkSchema(
+    {
+      services_card_id: {
+        isArray: {
+          errorMessage: servicesMessages.SERVICES_CARD_ID_MUST_BE_ARRAY
+        },
+        custom: {
+          options: (value: string[]) => {
+            if (value && !value.every((item) => typeof item === 'string' && ObjectId.isValid(item))) {
+              throw new Error(servicesMessages.SERVICES_CARD_ID_MUST_BE_ARRAY)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
 )

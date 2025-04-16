@@ -1,4 +1,4 @@
-import { Button, Col, Input, Row } from 'antd'
+import { Button, Col, Empty, Input, message, Row, Skeleton } from 'antd'
 import { useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { Fragment } from 'react/jsx-runtime'
@@ -13,14 +13,15 @@ import ServiceCardList from './Components/ServiceCardList'
 
 const { Search } = Input
 
-const LIMIT = 8
+const LIMIT = 6
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
 const SoldServicesCardService = () => {
-  const [customer, setCustomer] = useState<Customer>()
+  const [customer, setCustomer] = useState<Customer | null>(null)
 
   const [listServicesCard, setListServicesCard] = useState<ServicesOfCardType[]>([])
+  const [serviceCardSelected, setServiceCardSelected] = useState<string[]>([])
 
   const handleChangeCustomer = (value: Customer) => {
     setCustomer(value)
@@ -32,6 +33,8 @@ const SoldServicesCardService = () => {
     staleTime: STALETIME
   })
 
+  console.log(customer)
+
   useEffect(() => {
     if (data) {
       const result = data.data.result.servicesCard
@@ -39,12 +42,24 @@ const SoldServicesCardService = () => {
     }
   }, [data])
 
+  const handleSoldServicesCard = () => {
+    if (listServicesCard.length < 0 || customer === null) {
+      message.error('Vui lòng chọn khách hàng và thẻ dịch vụ')
+      return
+    }
+  }
+
+  const handleSelectServiceCard = (serviceCardIds: string[]) => {
+    setServiceCardSelected(serviceCardIds)
+  }
+
   return (
     <Fragment>
       <Row
         gutter={[16, 16]}
         style={{
-          padding: 20
+          padding: 20,
+          position: 'relative'
         }}
       >
         <Col span={24}>
@@ -73,19 +88,60 @@ const SoldServicesCardService = () => {
               </Button>
             </Col>
           </Row>
-          <Row>
-            <Col span={24} style={{ marginTop: 30 }}>
-              {customer && <CustomerSingleCard data={customer} />}
+          <Row gutter={[32, 32]} style={{ marginTop: 30 }}>
+            <Col span={8} style={{ marginTop: 30 }}>
+              {customer ? (
+                <CustomerSingleCard data={customer} />
+              ) : (
+                <Empty
+                  style={{
+                    margin: 'auto',
+                    paddingTop: 250,
+                    height: '100%',
+                    border: '1px solid #e8ecef',
+                    borderRadius: 16
+                  }}
+                  description='Chưa có khách hàng nào được chọn'
+                />
+              )}
             </Col>
-          </Row>
-          <Row gutter={[16, 16]}>
-            <Col span={24}>
-              <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
+            <Col span={16}>
+              <Row gutter={[16, 16]} style={{ marginTop: 30 }}>
+                <Col
+                  span={24}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
+                  <Button
+                    onClick={handleSoldServicesCard}
+                    type='primary'
+                    style={{ width: 'auto' }}
+                    title='Thêm liệu trình mới'
+                    disabled={serviceCardSelected.length < 1 || customer === null}
+                  >
+                    Tạo
+                  </Button>
+                </Col>
+                <Col span={24}>
+                  <Search placeholder='Tìm thẻ liệu trình' loading enterButton />
+                </Col>
+                <Col span={24}>
+                  {listServicesCard.length > 0 ? (
+                    <ServiceCardList
+                      columnsGird={8}
+                      onServiceClick={handleSelectServiceCard}
+                      cards={listServicesCard}
+                    />
+                  ) : (
+                    <Skeleton />
+                  )}
+                </Col>
+              </Row>
             </Col>
-            <Col span={24}>
-              <Search placeholder='Tìm thẻ liệu trình' loading enterButton />
-            </Col>
-            <Col span={24}>{listServicesCard.length > 0 ? <ServiceCardList cards={listServicesCard} /> : null}</Col>
           </Row>
         </Col>
       </Row>

@@ -1,4 +1,5 @@
-import { EmployeeOfServices, HistoryPaid, ServicesOfCard } from '~/interface/services/services.interface'
+import { ObjectId } from 'mongodb'
+import { EmployeeOfServices, HistoryPaid, HistoryUsed, ServicesOfCard } from '~/interface/services/services.interface'
 
 export interface CreateServicesCardRequestBody {
   code?: string
@@ -14,6 +15,10 @@ export interface CreateServicesCardRequestBody {
   service_group_id?: string
   services_of_card?: ServicesOfCard[]
   employee?: EmployeeOfServices[]
+}
+
+export interface CreateServicesCardSoldRequestBody {
+  services_card_id: string[]
 }
 
 export interface UpdateCardRequestBody {
@@ -66,4 +71,12 @@ export interface UpdateHistoryPaidOfServicesCardRequestBody {
   out_standing: number
   method: string
   descriptions?: string
+}
+
+export interface CreateServicesCardSoldOfCustomerRequestBody {
+  code?: string
+  customer_id: string
+  descriptions?: string
+  card_services_sold_id: string[]
+  user_id: string
 }

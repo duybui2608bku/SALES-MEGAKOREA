@@ -73,7 +73,8 @@ export const userMessages = {
   USER_NOT_EXISTS_IN_BRANCH: 'User not exists in branch',
   DELETE_USER_FROM_BRANCH_SUCCESS: 'Delete user from branch successfully',
   GET_ALL_USERS_SUCCESS: 'Get all users successfully',
-  UPDATE_USER_SUCCESS: 'Update user successfully'
+  UPDATE_USER_SUCCESS: 'Update user successfully',
+  DELETE_USER_SUCCESS: 'Delete user successfully'
 } as const
 
 export const servicesMessages = {
@@ -120,7 +121,10 @@ export const servicesMessages = {
   PRICE_INITIAL_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Price initial must be a number greater than zero !',
   OUT_STANDING_MUST_BE_NUMBER: 'Out standing must be a number !',
   METHOD_PAYMENT_MUST_BE_STRING: 'Method payment must be a string !',
-  UPDATE_USER_SUCCESS: 'Update user success !'
+  UPDATE_USER_SUCCESS: 'Update user success !',
+  CREATE_SERVICES_CARD_SOLD_SUCCESS: 'Create services card sold success !',
+  SERVICES_CARD_ID_MUST_BE_ARRAY: 'Services card id must be a array !',
+  CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Create services card sold of customer success !'
 }
 
 export const productMessages = {
@@ -172,4 +176,8 @@ export const branchMessages = {
 
 export const commisionMessages = {
   CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !'
+}
+
+export const customerMessages = {
+  CREATE_CUSTOMER_SUCCESS: 'Create customer success !'
 }

@@ -4,6 +4,7 @@ import usersService from '../../services/users.services'
 import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
+  DeleteUserParams,
   GetAllUserRequestBody,
   GetAllUserRequestBodyTest,
   GetAllUserWithRoleRequestParams,
@@ -17,8 +18,6 @@ import {
 import { HttpStatusCode, UserRole } from '~/constants/enum'
 import { userMessages } from '~/constants/messages'
 import { ObjectId } from 'mongodb'
-
-import { omit } from 'lodash'
 import { ResponseSuccess } from '~/utils/handlers'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { CardServicesSoldType, HistoryPaid, ServicesOfCard } from '~/interface/services/services.interface'
+import { CardServicesType, ServicesOfCard } from '~/interface/services/services.interface'
 import { generateCode } from '~/utils/utils'
 
 export class CardServicesSold {
@@ -9,25 +9,18 @@ export class CardServicesSold {
   name: string
   branch?: ObjectId[]
   descriptions?: string
-  price?: number
-  price_paid?: number
-  history_paid?: HistoryPaid[]
-  history_used?: HistoryPaid[]
+  price?: number | null
   user_id?: ObjectId | string
   services_of_card?: ServicesOfCard[]
-  employee_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date
-  constructor(cardServices: CardServicesSoldType) {
+  constructor(cardServices: CardServicesType) {
     this.code = cardServices.code || generateCode()
     this._id = cardServices._id || new ObjectId()
     this.is_active = cardServices.is_active || true
     this.name = cardServices.name
     this.user_id = cardServices.user_id || new ObjectId()
-    this.price = cardServices.price || 0
-    this.price_paid = cardServices.price_paid || 0
-    this.history_paid = cardServices.history_paid || []
-    this.employee_commision = cardServices.employee_commision || []
+    this.price = cardServices.price || null
     this.branch = (cardServices.branch || []).map((branch) => new ObjectId(branch))
     this.descriptions = cardServices.descriptions || ''
     this.services_of_card = cardServices.services_of_card || []

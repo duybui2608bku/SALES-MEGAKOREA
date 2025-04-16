@@ -2,6 +2,8 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateServicesCardRequestBody,
+  CreateServicesCardSoldOfCustomerRequestBody,
+  CreateServicesCardSoldRequestBody,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
   UpdateCardRequestBody,
@@ -21,6 +23,18 @@ export const createServicesCard = async (
   await servicesCardServices.CreateServicesCard(data)
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SUCCESS,
+    res
+  })
+}
+
+export const createServicesCardSold = async (
+  req: Request<ParamsDictionary, any, CreateServicesCardSoldRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  await servicesCardServices.CreateServicesCardSold(data)
+  ResponseSuccess({
+    message: servicesMessages.CREATE_SERVICES_CARD_SOLD_SUCCESS,
     res
   })
 }
@@ -70,6 +84,19 @@ export const getCommissionOfDate = async (
   const result = await servicesCardServices.GetCommissionOfDate(data)
   ResponseSuccess({
     message: servicesMessages.GET_COMMISSION_SUCCESS,
+    result,
+    res
+  })
+}
+
+export const createServicesCardSoldOfCustomer = async (
+  req: Request<ParamsDictionary, any, CreateServicesCardSoldOfCustomerRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await servicesCardServices.CreateServicesCardSoldOfCustomer(data)
+  ResponseSuccess({
+    message: servicesMessages.CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
     result,
     res
   })

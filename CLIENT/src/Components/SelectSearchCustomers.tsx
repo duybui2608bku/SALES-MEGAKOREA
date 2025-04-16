@@ -16,7 +16,7 @@ const SelectSearchCustomers: React.FC<{
   placeholder?: string
   style?: CSSProperties
   clear?: boolean
-  onHandleChange?: (value: Customer) => void
+  onHandleChange?: (value: Customer | null) => void
 }> = ({ placeholder = 'Nhập số điện thoại để tìm kiếm', style, clear = true, onHandleChange }) => {
   const [searchPhone, setSearchPhone] = useState<string>('') // Giá trị tìm kiếm hiện tại
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null) // Khách hàng được chọn
@@ -53,6 +53,7 @@ const SelectSearchCustomers: React.FC<{
   const handleClear = () => {
     setSearchPhone('')
     setSelectedCustomer(null)
+    onHandleChange?.(null) // Xóa danh sách khách hàng
   }
 
   useEffect(() => {

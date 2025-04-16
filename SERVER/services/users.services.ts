@@ -74,18 +74,38 @@ class UsersService {
     const [access_token, refresh_token, user] = await Promise.all([
       this.signAccessToken(user_id, role),
       this.signRefreshToken(user_id, role),
-      databaseServiceSale.users.findOne(
-        { _id: new ObjectId(user_id) },
-        {
-          projection: {
-            password: 0,
-            created_at: 0,
-            updated_at: 0
+      databaseServiceSale.users
+        .aggregate([
+          {
+            $match: {
+              _id: new ObjectId(user_id)
+            }
+          },
+          {
+            $lookup: {
+              from: 'branch',
+              localField: 'branch',
+              foreignField: '_id',
+              as: 'branch'
+            }
+          },
+          {
+            $unwind: {
+              path: '$branch',
+              preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $project: {
+              password: 0,
+              created_at: 0,
+              updated_at: 0
+            }
           }
-        }
-      )
+        ])
+        .toArray()
     ])
-    return { access_token, refresh_token, user }
+    return { access_token, refresh_token, user: user[0] || null }
   }
 
   async resetPassword(user_id: string, password: string) {

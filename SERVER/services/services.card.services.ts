@@ -5,6 +5,8 @@ import { HttpStatusCode } from '../src/constants/enum'
 import { servicesMessages } from '../src/constants/messages'
 import {
   CreateServicesCardRequestBody,
+  CreateServicesCardSoldOfCustomerRequestBody,
+  CreateServicesCardSoldRequestBody,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
   UpdateCardRequestBody,
@@ -21,20 +23,9 @@ const getServicePriceFromDB = async (services_id: string): Promise<number> => {
 
 const convertServicesDataToObjectId = async (servicesCardData: CreateServicesCardRequestBody) => {
   const { service_group_id, services_of_card, employee, branch, user_id, ...data } = servicesCardData
-  let totalPrice = 0
-  if (services_of_card && services_of_card.length > 0) {
-    totalPrice = await services_of_card.reduce(async (accPromise, service) => {
-      const acc = await accPromise
-      const servicePrice = await getServicePriceFromDB(String(service.services_id || ''))
-      const quantity = service.quantity || 0
-      const discount = service.discount || 0
-      return acc + (servicePrice * quantity - discount)
-    }, Promise.resolve(0))
-  }
 
   const servicesCardDataWithObjectId = {
     ...data,
-    price: totalPrice,
     service_group_id: service_group_id !== undefined ? toObjectId(service_group_id) : '',
     user_id: user_id !== undefined ? toObjectId(user_id) : '',
     branch: branch?.map((branchId) => toObjectId(branchId)) || [],
@@ -47,7 +38,6 @@ const convertServicesDataToObjectId = async (servicesCardData: CreateServicesCar
     services_of_card:
       services_of_card?.map((service) => ({
         ...service,
-        price: service.price || 0,
         services_id: toObjectId(service.services_id || '')
       })) || []
   }
@@ -127,6 +117,37 @@ class ServicesCardServices {
       card_services_id: cardServicesId,
       paid_initial
     })
+  }
+
+  async CreateServicesCardSold(data: CreateServicesCardSoldRequestBody) {
+    const ids = data.services_card_id.map((id) => new ObjectId(id))
+    const servicesCardData = await Promise.all(
+      ids.map(async (id) => {
+        const servicesCard = await databaseServiceSale.services_card.findOne({ _id: id })
+        if (!servicesCard) {
+          throw new ErrorWithStatusCode({
+            message: servicesMessages.SERVICES_CARD_NOT_FOUND,
+            statusCode: HttpStatusCode.NotFound
+          })
+        }
+        return servicesCard
+      })
+    )
+    await servicesCardRepository.createServicesCardSold(servicesCardData as CreateServicesCardData[])
+  }
+
+  async CreateServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerRequestBody) {
+    const { customer_id, card_services_sold_id, user_id, ...rest } = data
+    const customerId = new ObjectId(customer_id)
+    const cardServicesSoldId = card_services_sold_id.map((id) => new ObjectId(id))
+    const userId = new ObjectId(user_id)
+    const cardServicesSoldData = {
+      ...rest,
+      customer_id: customerId,
+      card_services_sold_id: cardServicesSoldId,
+      user_id: userId
+    }
+    await servicesCardRepository.createServicesCardSoldOfCustomer(cardServicesSoldData)
   }
 }
 

@@ -9,3 +9,5 @@ export type GetAllCustomersResponseBody = SuccessResponse<{
 }>
 
 export type SearchCustomersByPhoneResponse = SuccessResponse<Customer[]>
+
+export type CreateCustomerResponse = SuccessResponse<void>

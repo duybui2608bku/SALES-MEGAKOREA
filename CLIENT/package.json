@@ -21,7 +21,7 @@
     "antd": "^5.22.2",
     "axios": "^1.6.8",
     "axios-retry": "^4.5.0",
-    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
     "lodash": "^4.17.21",
     "papaparse": "^5.5.2",

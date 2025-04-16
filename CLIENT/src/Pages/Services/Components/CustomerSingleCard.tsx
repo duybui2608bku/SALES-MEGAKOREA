@@ -33,11 +33,11 @@ const CustomerSingleCard: React.FC<CustomerSingleCardProps> = ({ data }) => {
       hoverable
       style={{
         width: '100%', // Giới hạn max-width để không quá rộng trên màn hình lớn
-        margin: '0 auto', // Căn giữa card
+        margin: '0 auto', // Căn giữa card,
+        height: '100%',
         borderRadius: '20px',
         overflow: 'hidden',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
-        border: 'none',
+        border: '1px solid #e8ecef',
         background: 'linear-gradient(145deg, #f6f9fc 0%, #ffffff 100%)',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease'
       }}
