@@ -4,7 +4,8 @@ import Customer from '~/models/schemas/customer/Customer.shema'
 
 class CustomerRepository {
   async createCustomer(data: CreateCustomerData) {
-    await databaseServiceSale.customers.insertOne(new Customer(data))
+    const result = await databaseServiceSale.customers.insertOne(new Customer(data))
+    return result.insertedId
   }
 }
 

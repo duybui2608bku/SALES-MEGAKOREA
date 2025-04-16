@@ -10,9 +10,10 @@ export const createCustomerControllers = async (
   res: Response
 ) => {
   const data = req.body
-  await customerServices.createCustomer(data)
+  const result = await customerServices.createCustomer(data)
   return ResponseSuccess({
     res,
-    message: customerMessages.CREATE_CUSTOMER_SUCCESS
+    message: customerMessages.CREATE_CUSTOMER_SUCCESS,
+    result
   })
 }

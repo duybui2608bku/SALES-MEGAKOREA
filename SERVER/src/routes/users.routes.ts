@@ -2,9 +2,10 @@ import { Router } from 'express'
 import {
   addUserToBranchController,
   changePasswordController,
-  deleteUserController,
+  deleteUserById,
   deleteUserFromBranchController,
   getAllUsersController,
+  getAllUsersControllerTest,
   getMeController,
   getUserWithRole,
   loginController,
@@ -19,7 +20,8 @@ import {
   resetPasswordValidator,
   updateMeValidator,
   changePasswordValidator,
-  isAdminValidator
+  isAdminValidator,
+  DeleteUserValidator
   // addUserToBranchValidator,
   // deleteUserFormBranchValidator
 } from '~/middlewares/users.middlewares'
@@ -34,7 +36,7 @@ method: POST
 Body:{name: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601}
 */
 
-userRouters.post('/register', registerValidator, wrapRequestHandler(registerController))
+userRouters.post('/register', wrapRequestHandler(registerController))
 
 /*
 Description: User login
@@ -81,7 +83,7 @@ path: /update
 method: PATCH
 */
 
-userRouters.patch('/update', accessTokenValidator, updateMeValidator, wrapRequestHandler(updateUserController))
+userRouters.patch('/update', accessTokenValidator, wrapRequestHandler(updateUserController))
 
 /*
 Description: Add user to a branch
@@ -120,7 +122,8 @@ method: GET
 Header:{Authorization: Bearer <access_token>}
 */
 
-userRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllUsersController))
+// userRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllUsersController))
+userRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllUsersControllerTest))
 
 /*
 Description: Get me
@@ -140,12 +143,16 @@ Header:{Authorization: Bearer <access_token>}
 userRouters.get('/with-role', accessTokenValidator, wrapRequestHandler(getUserWithRole))
 
 /*
-Description: Delete user
+Description: Delete User by ID
 path: /:id
 method: DELETE
-Header:{Authorization: Bearer <access_token>}
 */
-
-userRouters.delete('/:id', accessTokenValidator, isAdminValidator, wrapRequestHandler(deleteUserController))
+userRouters.delete(
+  '/:id',
+  accessTokenValidator,
+  isAdminValidator,
+  DeleteUserValidator,
+  wrapRequestHandler(deleteUserById)
+)
 
 export default userRouters

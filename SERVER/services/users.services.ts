@@ -2,6 +2,7 @@ import {
   AddUsertoBranchRequestBody,
   DeleteUserFromBranchRequestBody,
   GetAllUserRequestBody,
+  GetAllUserRequestBodyTest,
   RegisterRequestBody,
   UpdateUserRequestBody
 } from '~/models/requestes/User.requests'
@@ -14,10 +15,23 @@ import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
 import { userMessages } from '~/constants/messages'
 import _ from 'lodash'
+import { ErrorWithStatusCode } from '~/models/Errors'
+import { HttpStatusCode } from 'axios'
 
 config()
 
 class UsersService {
+  // Prive
+  private async checkUserExist(id: ObjectId) {
+    const User = await databaseServiceSale.users.findOne({ _id: id })
+    if (!User) {
+      throw new ErrorWithStatusCode({
+        message: userMessages.USER_EXISTS,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+  }
+
   private signAccessToken(user_id: string, role?: UserRole) {
     return signToken({
       payload: { user_id, token_type: TokenType.AccessToken, role },
@@ -166,17 +180,29 @@ class UsersService {
   }
 
   async updateUser(payload: UpdateUserRequestBody) {
-    const { _id, ...rest } = payload
+    const { _id, branch, ...rest } = payload
     const userObjectId = new ObjectId(_id)
+
+    const updateDoc: Record<string, any> = {
+      ...rest,
+      updated_at: new Date()
+    }
+
+    // Nếu có branch -> ép về ObjectId
+    if (branch) {
+      try {
+        updateDoc.branch = new ObjectId(branch)
+      } catch (error) {
+        console.error('Ivalid branch ID: ', branch)
+        throw new Error('Chi nhánh không hợp lệ!')
+      }
+    }
     const user = await databaseServiceSale.users.findOneAndUpdate(
       {
         _id: new ObjectId(userObjectId)
       },
       {
-        $set: {
-          ...rest
-        },
-        $currentDate: { updated_at: true }
+        $set: updateDoc
       },
       {
         returnDocument: 'after',
@@ -236,28 +262,28 @@ class UsersService {
             ...query
           }
         },
-        {
-          $lookup: {
-            from: 'branch',
-            localField: 'branch',
-            foreignField: '_id',
-            as: 'branch'
-          }
-        },
-        {
-          $addFields: {
-            branch: {
-              $map: {
-                input: '$branch',
-                as: 'b',
-                in: {
-                  _id: '$$b._id',
-                  name: '$$b.name'
-                }
-              }
-            }
-          }
-        },
+        // {
+        //   $lookup: {
+        //     from: 'branch',
+        //     localField: 'branch',
+        //     foreignField: '_id',
+        //     as: 'branch'
+        //   }
+        // },
+        // {
+        //   $addFields: {
+        //     branch: {
+        //       $map: {
+        //         input: '$branch',
+        //         as: 'b',
+        //         in: {
+        //           _id: '$$b._id',
+        //           name: '$$b.name'
+        //         }
+        //       }
+        //     }
+        //   }
+        // },
         {
           $project: {
             password: 0,
@@ -278,6 +304,82 @@ class UsersService {
       .toArray()
     return result
   }
+
+  // Test
+  async getAllUsersTest(data: GetAllUserRequestBodyTest) {
+    const { page = 1, limit = 10, branch } = data
+
+    let parsedPage = Number(page)
+    let parsedLimit = Number(limit)
+    if (isNaN(parsedPage) || parsedPage <= 0) parsedPage = 1
+    if (isNaN(parsedLimit) || parsedLimit <= 0) parsedLimit = 10
+
+    const skip = (parsedPage - 1) * parsedLimit
+    const query: Record<string, any> = {}
+    query.role = { $nin: [UserRole.ADMIN] }
+
+    // Xử lý branch (dạng string, chỉ 1 branch)
+    if (branch) {
+      try {
+        query.branch = new ObjectId(branch)
+      } catch (error) {
+        console.error('Invalid branch ID format: ', branch)
+        throw new Error('Chi nhánh không hợp lệ!')
+      }
+    }
+
+    const result = await databaseServiceSale.users
+      .aggregate([
+        {
+          $match: query
+        },
+        {
+          $lookup: {
+            from: 'branch',
+            localField: 'branch',
+            foreignField: '_id',
+            as: 'branch_info'
+          }
+        },
+        {
+          $unwind: {
+            path: '$branch_info',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            branch: {
+              _id: '$branch_info._id',
+              name: '$branch_info.name'
+            }
+          }
+        },
+        {
+          $project: {
+            password: 0,
+            email_verify_token: 0,
+            forgot_password_token: 0,
+            branch_info: 0
+          }
+        },
+        {
+          $sort: { _id: -1 }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: parsedLimit
+        }
+      ])
+      .toArray()
+
+    console.log('result: ', result)
+
+    return result
+  }
+
   async getUserWithRole(role: string) {
     const result = await databaseServiceSale.users
       .aggregate([
@@ -299,9 +401,9 @@ class UsersService {
   }
 
   async deleteUser(user_id: string) {
-    await databaseServiceSale.users.deleteOne({
-      _id: new ObjectId(user_id)
-    })
+    const _id = new ObjectId(user_id)
+    await this.checkUserExist(_id)
+    await databaseServiceSale.users.deleteOne({ _id: _id })
   }
 }
 

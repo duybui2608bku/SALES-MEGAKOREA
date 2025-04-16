@@ -17,3 +17,9 @@ export enum TypeCommision {
   PRECENT = 1,
   FIXED = 2
 }
+
+export enum UserStatus {
+  ACTIVE = 1,
+  INACTIVE = 2,
+  BANNED = 3
+}

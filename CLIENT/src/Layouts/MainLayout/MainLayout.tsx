@@ -1,16 +1,14 @@
 import { Menu, MenuProps, Layout, Button } from 'antd'
 import { useState } from 'react'
-import { MdMailLock, MdSettings } from 'react-icons/md'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
-import { FcEngineering } from 'react-icons/fc'
+import { FcEngineering, FcAssistant, FcKindle, FcSettings, FcButtingIn } from 'react-icons/fc'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
-import { pathRoutersProduct, pathRoutersService, pathRoutesCustomers } from 'src/Constants/path'
-import { CiCreditCard2, CiUser } from 'react-icons/ci'
+import { pathRoutersProduct, pathRoutersService, pathRoutersUser, pathRoutesCustomers } from 'src/Constants/path'
 
 interface Props {
   children?: React.ReactNode
@@ -27,13 +25,13 @@ const MainLayout = ({ children }: Props) => {
       key: 'customers',
       label: 'Khách hàng',
       // eslint-disable-next-line react/jsx-no-undef
-      icon: <CiUser size={20} />,
+      icon: <FcButtingIn size={20} />,
       onClick: () => navigate(pathRoutesCustomers.customers)
     },
     {
       key: 'card-service',
       label: 'Thẻ dịch vụ',
-      icon: <CiCreditCard2 size={20} />,
+      icon: <FcKindle size={20} />,
 
       children: [
         {
@@ -71,16 +69,19 @@ const MainLayout = ({ children }: Props) => {
             { key: '4', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) }
           ]
         }
+        // {
+        //   key: 'users',
+        //   label: 'Tài khoản',
+        //   type: 'group',
+        //   children: [{ key: '7', label: 'Danh sách tài khoản', onClick: () => navigate(pathRoutersUser.userGeneral) }]
+        // }
       ]
     },
     {
-      key: 'sub2',
-      label: 'Navigation Two',
-      icon: <MdMailLock />,
-      children: [
-        { key: '5', label: 'Option 5' },
-        { key: '6', label: 'Option 6' }
-      ]
+      key: 'users',
+      label: 'Nhân viên',
+      icon: <FcAssistant size={20} />,
+      children: [{ key: '5', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) }]
     },
     {
       type: 'divider'
@@ -88,7 +89,7 @@ const MainLayout = ({ children }: Props) => {
     {
       key: 'sub4',
       label: 'Navigation Three',
-      icon: <MdSettings />,
+      icon: <FcSettings size={20} />,
       children: [
         { key: '9', label: 'Option 9' },
         { key: '10', label: 'Option 10' },
@@ -97,6 +98,7 @@ const MainLayout = ({ children }: Props) => {
       ]
     }
   ]
+
   return (
     <Layout>
       <Sider width={250} trigger={null} collapsible collapsed={collapsed}>

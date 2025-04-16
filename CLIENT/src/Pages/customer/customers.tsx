@@ -11,17 +11,18 @@ import {
   message,
   Tag,
   DatePicker,
-  Select
+  Select,
+  Grid
 } from 'antd'
 import dayjs from 'dayjs'
-import { useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { FaFacebook, FaRegCopy } from 'react-icons/fa'
 import { FcApproval } from 'react-icons/fc'
 import { GoPlus } from 'react-icons/go'
 import { ImSpinner10 } from 'react-icons/im'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
-import { MdKeyboardDoubleArrowDown } from 'react-icons/md'
+import { MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp } from 'react-icons/md'
 import { SlPlus } from 'react-icons/sl'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
 import OptionsBranch from 'src/Components/OptionsBranch'
@@ -32,8 +33,9 @@ import { AppContext } from 'src/Context/AppContext'
 import { Customer, CustomerFilterRequestType } from 'src/Interfaces/customers/customers.interfaces'
 import { customerApi } from 'src/Service/customers/customer.api'
 import { isAdminValidator } from 'src/Utils/util.utils'
+import ExpandableParagraph from 'src/Components/ExpandableParagraph'
+const { useBreakpoint } = Grid
 const { Text } = Typography
-const { Paragraph } = Typography
 const LIMIT = 10
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
@@ -55,6 +57,9 @@ enum FillterOptions {
 const today = dayjs().format('YYYY-MM-DD')
 
 const Customers = () => {
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
+
   const { profile } = useContext(AppContext)
   const [pagination, setPagination] = useState({
     page: PAGE,
@@ -113,7 +118,7 @@ const Customers = () => {
         page
       })
     }
-  }, [customersResponse])
+  }, [customersResponse, pagination])
 
   useEffect(() => {
     if (customersByPhone) {
@@ -139,8 +144,8 @@ const Customers = () => {
       title: 'Lịch hẹn',
       dataIndex: 'schedule',
       key: 'schedule',
-      width: 200,
-      fixed: 'left',
+      fixed: isMobile ? undefined : 'left',
+      width: 190,
       render: (date) => {
         return date?.length > 10 ? (
           <Text strong>
@@ -156,29 +161,15 @@ const Customers = () => {
       title: 'C.Nhánh XN',
       dataIndex: 'final_status',
       key: 'final_status',
-      fixed: 'right',
       align: 'center',
       render: (text) => {
         return text === optionsFinalStatus[1].value ? (
-          <Tag
-            icon={
-              <FcApproval
-                size={15}
-                style={{
-                  marginRight: '5px',
-                  marginTop: '2px'
-                }}
-              />
-            }
-            color='success'
-          >
+          <Tag className='status-customer-tagName' icon={<FcApproval size={15} />} color='success'>
             {text}
           </Tag>
         ) : (
           <Tag
-            style={{
-              padding: '2px 10px'
-            }}
+            className='status-customer-tagName'
             icon={<ImSpinner10 className='spin-icon' size={15} />}
             color='processing'
           >
@@ -191,15 +182,15 @@ const Customers = () => {
     {
       title: 'Tên khách hàng',
       dataIndex: 'name',
-      fixed: 'left',
       key: 'name',
-      minWidth: 200,
+      fixed: isMobile ? undefined : 'left',
+      width: 120,
       render: (name, record) => {
         return (
           <Flex align='center'>
             <Text>{name}</Text>
             {record.parent_id !== null && (
-              <Tooltip title={`Đi cùng :${record.parent_id}`}>
+              <Tooltip title={`Đi cùng: ${record.parent_id}`}>
                 <IoIosInformationCircleOutline
                   size={30}
                   style={{
@@ -215,9 +206,9 @@ const Customers = () => {
     },
     {
       title: 'Số điện thoại',
+      align: 'center',
       width: 160,
       dataIndex: 'phone',
-      fixed: 'left',
       render: (phone: string, record) => {
         return (
           <Typography
@@ -227,7 +218,9 @@ const Customers = () => {
               alignItems: 'center',
               color: record.is_old_phone ? 'purple' : 'black',
               fontWeight: record.is_old_phone ? 'bold' : 'normal',
-              fontSize: record.is_old_phone ? 16 : 14
+              fontSize: record.is_old_phone ? 14 : 14,
+              textShadow: record.is_old_phone ? '0 0 5px purple' : undefined,
+              animation: record.is_old_phone ? 'pulse 1.5s infinite' : undefined
             }}
           >
             {phone}
@@ -245,27 +238,34 @@ const Customers = () => {
     {
       title: 'Chi nhánh',
       dataIndex: 'branch',
-      key: 'branch'
+      key: 'branch',
+      width: 120
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
-      minWidth: 120
+      width: 120
     },
     {
       title: 'Dịch vụ',
       dataIndex: 'service',
       key: 'service',
-      minWidth: 150,
+      width: 130,
       render: (services) => services.join(', ')
     },
     {
       title: 'Chi tiết dịch vụ',
       dataIndex: 'service_detail',
       key: 'service_detail',
+      width: 180,
       render: (text) => (
-        <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: <MdKeyboardDoubleArrowDown /> }}>{text}</Paragraph>
+        <ExpandableParagraph
+          text={text}
+          rows={1}
+          moreText={<MdKeyboardDoubleArrowDown />}
+          lessText={<MdKeyboardDoubleArrowUp />}
+        />
       )
     },
     {
@@ -274,7 +274,7 @@ const Customers = () => {
       key: 'source',
       width: 80,
       render: (source) => {
-        return source === 'Facebook' ? <FaFacebook color='blue' size={20} cursor={'pointer'} /> : source
+        return source === 'Facebook' ? <FaFacebook color='#1677ff' size={20} cursor={'pointer'} /> : source
       },
       align: 'center'
     },
@@ -282,7 +282,7 @@ const Customers = () => {
       title: 'T.Thái số',
       dataIndex: 'status_data',
       key: 'status_data',
-      minWidth: 100,
+      width: 100,
       align: 'center'
     },
 
@@ -323,100 +323,88 @@ const Customers = () => {
   }
 
   return (
-    <Row style={{ padding: 20 }} gutter={[16, 16]}>
-      <Col span={24}>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>{Title({ title: 'Danh Sách Khách Hàng', level: 2 })}</Col>
-        </Row>
-        <Row gutter={[16, 16]}>
-          <Col
-            span={24}
-            style={{
-              display: 'flex',
-              gap: 10,
-              marginBottom: 20,
-              marginTop: 20
-            }}
+    <Fragment>
+      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
+        <Col xs={24}>{Title({ title: 'Danh Sách Khách Hàng', level: 2 })}</Col>
+        <Col xs={24} sm={12} md={4} lg={4}>
+          <Button
+            // onClick={() => {
+            //   setModalType(ModalType.MODAL_CREATE_SERVICE_CARD)
+            // }}
+            type='primary'
+            style={{ width: '100%' }}
+            icon={<GoPlus size={20} />}
+            title='Thêm dịch vụ'
           >
-            <Col sm={24} md={3}>
-              <Button
-                // onClick={() => {
-                //   setModalType(ModalType.MODAL_CREATE_SERVICE_CARD)
-                // }}
-                type='primary'
-                style={{ width: '100%' }}
-                icon={<GoPlus size={20} />}
-                title='Thêm dịch vụ'
-              >
-                Thêm khách hàng
-              </Button>
-            </Col>
-            <Col sm={24} md={4}>
-              <DebouncedSearch
-                placeholder='Tìm điện thoại'
-                onSearch={(value) => {
-                  setSearchQuery(value)
-                }}
-                debounceTime={1000}
-              />
-            </Col>
-            <Col span={4}>
-              <DatePicker
-                placeholder='Ngày hẹn'
-                style={{ width: '100%' }}
-                format='YYYY-MM-DD'
-                defaultValue={dayjs(today)}
-                onChange={(date) => {
-                  handleFilter(FillterOptions.date, date.format('YYYY-MM-DD'))
-                }}
-              />
-            </Col>
-            <Col sm={24} md={3}>
-              <OptionsBranch
-                initialValue={
-                  isAdminValidator(profile?.role as RoleUser)
-                    ? undefined
-                    : [profile?.branch._id].filter((id): id is string => id !== undefined)
-                }
-                mode={isAdminValidator(profile?.role as RoleUser) ? 'multiple' : undefined}
-                disabled={!isAdminValidator(profile?.role as RoleUser)}
-                search
-              />
-            </Col>
-            <Col span={4}>
-              <Select
-                showSearch
-                placeholder='Dich vụ'
-                allowClear
-                mode='multiple'
-                style={{ width: '100%' }}
-                onChange={(value) => handleFilter(FillterOptions.SERVICES, value)}
-                options={optionsService}
-              />
-            </Col>
-          </Col>
-        </Row>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              columns={columnsCustomers}
-              bordered
-              loading={isLoading || isLoadingSearch}
-              dataSource={customers}
-              pagination={{
-                pageSize: pagination.limit,
-                total: pagination.total,
-                current: pagination.page,
-                showSizeChanger: false,
-                onChange: handleTableChange,
-                position: ['bottomCenter']
-              }}
-              scroll={{ x: 'fit-content' }}
-            />
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+            Thêm khách hàng
+          </Button>
+        </Col>
+        <Col xs={24} sm={12} md={4} lg={4}>
+          <DebouncedSearch
+            placeholder='Tìm điện thoại'
+            onSearch={(value) => {
+              setSearchQuery(value)
+            }}
+            debounceTime={1000}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={4} lg={4}>
+          <DatePicker
+            placeholder='Ngày hẹn'
+            style={{ width: '100%' }}
+            format='YYYY-MM-DD'
+            defaultValue={dayjs(today)}
+            onChange={(date) => {
+              handleFilter(FillterOptions.date, date.format('YYYY-MM-DD'))
+            }}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={4} lg={4}>
+          <OptionsBranch
+            initialValue={
+              isAdminValidator(profile?.role as RoleUser)
+                ? undefined
+                : [profile?.branch._id].filter((id): id is string => id !== undefined)
+            }
+            mode={isAdminValidator(profile?.role as RoleUser) ? 'multiple' : undefined}
+            disabled={!isAdminValidator(profile?.role as RoleUser)}
+            search
+          />
+        </Col>
+        <Col xs={24} sm={12} md={4} lg={4}>
+          <Select
+            showSearch
+            placeholder='Dich vụ'
+            allowClear
+            mode='multiple'
+            style={{ width: '100%' }}
+            onChange={(value) => handleFilter(FillterOptions.SERVICES, value)}
+            options={optionsService}
+          />
+        </Col>
+      </Row>
+
+      {/* Table Customer */}
+      <Row gutter={16} style={{ padding: '20px' }}>
+        <Col span={24}>
+          <Table
+            columns={columnsCustomers}
+            bordered
+            loading={isLoading || isLoadingSearch}
+            dataSource={customers}
+            pagination={{
+              pageSize: pagination.limit,
+              total: pagination.total,
+              current: pagination.page,
+              showSizeChanger: false,
+              onChange: handleTableChange,
+              position: ['bottomCenter']
+            }}
+            scroll={{ x: '1000px' }}
+          />
+        </Col>
+      </Row>
+    </Fragment>
   )
 }
 

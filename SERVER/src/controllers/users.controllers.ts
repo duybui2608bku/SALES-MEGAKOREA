@@ -4,8 +4,8 @@ import usersService from '../../services/users.services'
 import {
   AddUsertoBranchRequestBody,
   changePasswordRequestBody,
-  DeleteUserParams,
   GetAllUserRequestBody,
+  GetAllUserRequestBodyTest,
   GetAllUserWithRoleRequestParams,
   getProfileRequestBody,
   LoginRequestBody,
@@ -27,7 +27,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.LOGIN_SUCCESS,
-    result
+    result: result
   })
 }
 
@@ -40,7 +40,7 @@ export const registerController = async (
   return res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.REGISTER_SUCCESS,
-    result
+    result: result
   })
 }
 
@@ -112,7 +112,7 @@ export const updateUserController = async (
   return res.status(HttpStatusCode.Ok).json({
     success: true,
     message: userMessages.UPDATE_USER_SUCCESS,
-    user
+    result: user
   })
 }
 
@@ -153,14 +153,25 @@ export const getAllUsersController = async (
   })
 }
 
-export const deleteUserController = async (
-  req: Request<ParamsDictionary, DeleteUserParams, any, any>,
+// Test
+export const getAllUsersControllerTest = async (
+  req: Request<ParamsDictionary, any, GetAllUserRequestBodyTest>,
   res: Response
 ) => {
-  const { id } = req.params
-  await usersService.deleteUser(id)
+  const data = req.body
+  const users = await usersService.getAllUsersTest(data)
   return res.status(HttpStatusCode.Ok).json({
     success: true,
-    message: userMessages.DELETE_USER_SUCCESS
+    message: userMessages.GET_ALL_USERS_SUCCESS,
+    result: users
+  })
+}
+
+export const deleteUserById = async (req: Request<ParamsDictionary, any, GetAllUserRequestBody>, res: Response) => {
+  const { id } = req.params
+  await usersService.deleteUser(id)
+  ResponseSuccess({
+    message: userMessages.DELETE_BY_ID_SUCCESS,
+    res
   })
 }

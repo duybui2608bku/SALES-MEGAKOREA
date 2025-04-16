@@ -41,7 +41,7 @@ export interface UpdateUserRequestBody {
   name: string
   email: string
   password: string
-  branch?: ObjectId | null
+  branch: string
   created_at?: Date
   updated_at?: Date
   role?: UserRole
@@ -78,6 +78,10 @@ export interface GetAllUserRequestBody {
   role?: UserRole[]
 }
 
-export interface DeleteUserParams {
-  _id: string
+// Test
+export interface GetAllUserRequestBodyTest {
+  limit?: number
+  page?: number
+  branch?: string
+  rol?: UserRole
 }

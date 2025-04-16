@@ -12,7 +12,8 @@ const Title = ({ title, level = DEFAULT_LEVEL, justify }: TitleProps) => {
     <Flex
       justify={justify || 'center'}
       style={{
-        width: '100%'
+        width: '100%',
+        textAlign: 'center'
       }}
     >
       <Typography.Title level={level}>{title}</Typography.Title>

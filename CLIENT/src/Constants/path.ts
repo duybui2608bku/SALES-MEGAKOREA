@@ -6,7 +6,8 @@ const pathAuth = {
 const pathUtil = {
   home: '/',
   notFound: '/404',
-  none: ''
+  none: '',
+  admin: '/admin'
 }
 
 const pathMe = {
@@ -28,6 +29,11 @@ const pathRoutersService = {
   soldCardService: '/card-service/sold'
 }
 
+const pathRoutersUser = {
+  userGeneral: '/user-general',
+  userInformation: '/user-information'
+}
+
 const pathApiProduct = {
   createProduct: '/products',
   getAllProduct: '/products',
@@ -36,6 +42,19 @@ const pathApiProduct = {
   searchProduct: '/products/search',
   importProduct: '/products/import',
   updateProductStock: '/products/update/stock'
+}
+
+const pathApiUsers = {
+  getUser: '/users/me',
+  getAllUser: '/users/all',
+  getAllUsersWithRole: '/users/with-role',
+  updateUser: '/users/update',
+  createUser: '/users/register',
+  deleteUserById: '/users'
+}
+
+const pathApiUploadAvatarUser = {
+  uploadAvatar: '/upload/image'
 }
 
 const pathApiBranch = {
@@ -60,8 +79,8 @@ const pathServices = {
   deleteCategoryService: 'services/category-delete'
 }
 
-const pathApiUsers = {
-  getAllUsersWithRole: '/users/with-role'
+const pathRoutesCustomers = {
+  customers: '/customer'
 }
 
 const pathApiCustomer = {
@@ -69,14 +88,6 @@ const pathApiCustomer = {
   getCustomersSchedule: '/customers/schedule-telesales-success',
   searchCustomerschedule: '/search/by-phone-success-schedule',
   createCustomer: '/customers/create'
-}
-
-const pathRoutesCustomers = {
-  customers: '/customers'
-}
-
-const pathCustomers = {
-  customers: '/customers'
 }
 
 export {
@@ -90,7 +101,8 @@ export {
   pathRoutersService,
   pathServices,
   pathApiUsers,
-  pathApiCustomer,
+  pathRoutersUser,
   pathRoutesCustomers,
-  pathCustomers
+  pathApiUploadAvatarUser,
+  pathApiCustomer
 }

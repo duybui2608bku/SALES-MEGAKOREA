@@ -105,8 +105,16 @@ iframe {
 }
 
 .spin-icon {
-  margin-right: 7px;
+  // margin-right: 7px;
   animation: spin 1s infinite linear;
+}
+
+.status-customer-tagName {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 10px;
 }
 
 @keyframes spin {
@@ -115,5 +123,38 @@ iframe {
   }
   to {
     transform: scale(1) rotate(360deg);
+  }
+}
+
+.global-spinner {
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #212121;
+}
+
+.ant-upload-select {
+  width: 100% !important;
+}
+
+.ant-image-preview-img {
+  object-fit: contain !important;
+}
+
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 8px purple;
+  }
+  50% {
+    text-shadow: 0 0 18px purple;
+  }
+  100% {
+    text-shadow: 0 0 8px purple;
   }
 }
