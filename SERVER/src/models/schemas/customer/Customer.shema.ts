@@ -3,7 +3,7 @@ import { CustomerType } from '~/interface/customer/customer.interface'
 
 export default class Customer {
   _id?: ObjectId
-  branch: string
+  branch: ObjectId
   date: string
   source: string
   name: string
@@ -14,7 +14,7 @@ export default class Customer {
   updated_at: Date
   constructor(customer: CustomerType) {
     this._id = new ObjectId(customer._id)
-    this.branch = customer.branch || ''
+    this.branch = customer.branch
     this.date = customer.date || ''
     this.source = customer.source || ''
     this.name = customer.name || ''

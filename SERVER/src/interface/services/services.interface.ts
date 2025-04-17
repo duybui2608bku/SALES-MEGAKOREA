@@ -206,6 +206,7 @@ export interface CardServicesSoldOfCustomerType {
   customer_id: ObjectId
   descriptions?: string
   price?: number | null
+  branch: ObjectId[]
   card_services_sold_id: ObjectId[]
   history_paid?: HistoryPaid[]
   history_used?: HistoryUsed[]
@@ -258,6 +259,7 @@ export interface CreateServicesCardSoldOfCustomerData {
   code?: string
   customer_id: ObjectId
   descriptions?: string
+  branch: ObjectId[]
   card_services_sold_id: ObjectId[]
   user_id: ObjectId
 }

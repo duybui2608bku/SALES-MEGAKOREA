@@ -1,5 +1,5 @@
 export interface CreateCustomerRequestBody {
-  branch?: string
+  branch: string
   date?: string
   source?: string
   name?: string
