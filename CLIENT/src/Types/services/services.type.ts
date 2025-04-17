@@ -29,6 +29,8 @@ export type CreateServicesCardResponse = SuccessResponse<void>
 export type UpdateServicesCardResponse = SuccessResponse<void>
 export type DeleteServicesCardResponse = SuccessResponse<void>
 
+export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>
+
 export type GetServicesCardResponse = SuccessResponse<{
   servicesCard: ServicesOfCardType[]
   limit: number

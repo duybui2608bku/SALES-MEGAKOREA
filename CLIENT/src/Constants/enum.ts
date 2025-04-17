@@ -23,3 +23,7 @@ export enum UserStatus {
   INACTIVE = 2,
   BANNED = 3
 }
+
+export enum Branch {
+  BMT = 'Buôn Ma Thuột'
+}

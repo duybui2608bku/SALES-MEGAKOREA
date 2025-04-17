@@ -211,3 +211,11 @@ export interface UpdatePaidOfServicesCardRequestBody {
   method: string
   descriptions?: string
 }
+
+export interface CreateServicesCardSoldOfCustomerRequestBody {
+  code?: string
+  customer_id: string
+  descriptions?: string
+  card_services_sold_id: string[]
+  user_id: string
+}
