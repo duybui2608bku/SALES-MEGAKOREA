@@ -10,13 +10,12 @@ import databaseServiceSale from '../services/database.services.sale'
 import User from '../src/models/schemas/User.schema'
 import { hashPassword } from '~/utils/crypro'
 import { signToken } from '~/utils/jwt'
-import { TokenType, UserRole } from '~/constants/enum'
+import { HttpStatusCode, TokenType, UserRole } from '~/constants/enum'
 import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
 import { userMessages } from '~/constants/messages'
 import _ from 'lodash'
 import { ErrorWithStatusCode } from '~/models/Errors'
-import { HttpStatusCode } from 'axios'
 
 config()
 

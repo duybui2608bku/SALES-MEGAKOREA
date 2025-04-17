@@ -137,15 +137,17 @@ class ServicesCardServices {
   }
 
   async CreateServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerRequestBody) {
-    const { customer_id, card_services_sold_id, user_id, ...rest } = data
+    const { customer_id, card_services_sold_id, user_id, branch, ...rest } = data
     const customerId = new ObjectId(customer_id)
+    const branchId = branch.map((branchId) => new ObjectId(branchId))
     const cardServicesSoldId = card_services_sold_id.map((id) => new ObjectId(id))
     const userId = new ObjectId(user_id)
     const cardServicesSoldData = {
       ...rest,
       customer_id: customerId,
       card_services_sold_id: cardServicesSoldId,
-      user_id: userId
+      user_id: userId,
+      branch: branchId
     }
     await servicesCardRepository.createServicesCardSoldOfCustomer(cardServicesSoldData)
   }
