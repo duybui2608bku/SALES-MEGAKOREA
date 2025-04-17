@@ -77,6 +77,7 @@ export interface CreateServicesCardSoldOfCustomerRequestBody {
   code?: string
   customer_id: string
   descriptions?: string
+  branch: string[]
   card_services_sold_id: string[]
   user_id: string
 }

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 export interface CreateCustomerData {
-  branch?: string
+  branch: ObjectId
   date?: string
   source?: string
   name?: string
@@ -12,7 +12,7 @@ export interface CreateCustomerData {
 
 export interface CustomerType {
   _id?: ObjectId | string
-  branch?: string
+  branch: ObjectId
   date?: string
   source?: string
   name?: string

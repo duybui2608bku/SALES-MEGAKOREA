@@ -1,9 +1,15 @@
+import { ObjectId } from 'mongodb'
 import customerRepository from 'repository/services/customer.services.repository'
-import { CreateCustomerData } from '~/interface/customer/customer.interface'
+import { CreateCustomerRequestBody } from '~/models/requestes/Customer.request'
 
 class CustomerServices {
-  async createCustomer(data: CreateCustomerData) {
-    const result = await customerRepository.createCustomer(data)
+  async createCustomer(data: CreateCustomerRequestBody) {
+    const { branch, ...customerData } = data
+    const customerDataWithObjectId = {
+      ...customerData,
+      branch: new ObjectId(branch)
+    }
+    const result = await customerRepository.createCustomer(customerDataWithObjectId)
     return result
   }
 }

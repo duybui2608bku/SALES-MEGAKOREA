@@ -1,10 +1,5 @@
 import { ObjectId } from 'mongodb'
-import {
-  CardServicesSoldOfCustomerType,
-  HistoryPaid,
-  HistoryUsed,
-  ServicesOfCard
-} from '~/interface/services/services.interface'
+import { CardServicesSoldOfCustomerType, HistoryPaid, HistoryUsed } from '~/interface/services/services.interface'
 import { generateCode } from '~/utils/utils'
 
 export class CardServicesSoldOfCustomer {
@@ -13,6 +8,7 @@ export class CardServicesSoldOfCustomer {
   customer_id: ObjectId
   descriptions?: string
   price?: number | null
+  branch: ObjectId[]
   card_services_sold_id: ObjectId[]
   history_paid?: HistoryPaid[]
   history_used?: HistoryUsed[]
@@ -25,6 +21,7 @@ export class CardServicesSoldOfCustomer {
     this.code = cardServices.code || generateCode()
     this.user_id = cardServices.user_id
     this.price = cardServices.price || null
+    this.branch = (cardServices.branch || []).map((branch) => new ObjectId(branch))
     this.history_paid = cardServices.history_paid || []
     this.history_used = cardServices.history_used || []
     this.card_services_sold_id = cardServices.card_services_sold_id
