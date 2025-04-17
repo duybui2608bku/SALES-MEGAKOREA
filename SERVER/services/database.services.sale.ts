@@ -17,14 +17,18 @@ const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}
 
 class DatabaseServiceSale {
   private client: MongoClient
-  private db: Db
+  // private db: Db
+  private db!: Db
   constructor() {
     this.client = new MongoClient(uri)
-    this.db = this.client.db(process.env.DB_NAME_SALE_MEGA)
+    // this.db = this.client.db(process.env.DB_NAME_SALE_MEGA)
   }
   async connect() {
     // eslint-disable-next-line no-useless-catch
     try {
+      await this.client.connect()
+      this.db = this.client.db(process.env.DB_NAME_SALE_MEGA)
+
       await this.db.command({ ping: 1 })
       console.log('Pinged your deployment. You successfully connected to MongoDB - Sale!')
     } catch (error) {

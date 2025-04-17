@@ -55,7 +55,6 @@ const SoldServicesCardService = () => {
   }
 
   // Create database customer
-  console.log('Customer: ', customer)
   const { mutateAsync: createCustomerService, isPending: isCreatingCustomer } = useMutation({
     mutationFn: customerApi.createCustomer,
     onSuccess: () => {
@@ -100,14 +99,20 @@ const SoldServicesCardService = () => {
     console.log('customerId: ', customerId)
 
     const userId = String(profile._id)
+    // const userBranch = profile.branch
     console.log('userId: ', userId)
 
-    const createServiceCard = {
-      customer_id: customerId,
-      user_id: userId,
-      card_services_sold_id: serviceCardSelected
+    try {
+      const createServiceCard = {
+        customer_id: customerId,
+        card_services_sold_id: serviceCardSelected,
+        user_id: userId
+        // branch: userBranch
+      }
+      createServiceCardSoldOfCustomer(createServiceCard)
+    } catch (error) {
+      message.error('Lỗi trong quá trình tạo Service card sold of customer!')
     }
-    createServiceCardSoldOfCustomer(createServiceCard)
   }
 
   return (
@@ -132,7 +137,7 @@ const SoldServicesCardService = () => {
             <Col span={24}>
               <Title title='Thông tin khách hàng' level={4} justify='left' />
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <SelectSearchCustomers
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onHandleChange={handleChangeCustomer as any}
@@ -140,7 +145,7 @@ const SoldServicesCardService = () => {
                 placeholder='Tìm khách hàng bằng số điện thoại'
               />
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Button type='primary' style={{ width: '100%' }} icon={<GoPlus size={20} />} title='Tạo khách hàng mới'>
                 Tạo Khách Hàng Mới
               </Button>
@@ -175,6 +180,7 @@ const SoldServicesCardService = () => {
                 >
                   <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
                   <Popconfirm
+                    okButtonProps={{ loading: isCreatingCustomer || isCreatingServiceCard }}
                     onConfirm={() => handleCreateServiceCardSoldOfCustomer()}
                     title={
                       <Typography>
