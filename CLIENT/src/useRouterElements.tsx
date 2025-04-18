@@ -21,6 +21,7 @@ import ServicesCard from './Pages/Services/Services.card.service'
 import UserGeneral from './Pages/User/UserGeneral'
 import Customers from './Pages/customer/customers'
 import UserInformation from './Pages/User/UserInformation'
+import SellServicesCardService from './Pages/Services/SellServices.card.service'
 import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
 
 const useRouterElements = () => {
@@ -106,6 +107,14 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <ServicesCard />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.sellCardService,
+          element: (
+            <MainLayout>
+              <SellServicesCardService />
             </MainLayout>
           )
         },

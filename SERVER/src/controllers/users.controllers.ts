@@ -21,6 +21,7 @@ import { ResponseSuccess } from '~/utils/handlers'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const { user } = req
+  console.log('user', user)
   const user_id = user?._id as ObjectId
   const role = user?.role
   const result = await usersService.login(user_id.toHexString(), role as UserRole)

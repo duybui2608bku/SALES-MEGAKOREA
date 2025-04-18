@@ -9,6 +9,7 @@ import {
   CreateServicesCardSoldRequestBody,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
+  GetServicesCardSoldOfCustomerRequestBody,
   UpdateCardRequestBody,
   UpdateHistoryPaidOfServicesCardRequestBody
 } from '~/models/requestes/Services.card.requests'
@@ -139,8 +140,8 @@ class ServicesCardServices {
   async CreateServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerRequestBody) {
     const { customer_id, card_services_sold_id, user_id, branch, ...rest } = data
     const customerId = new ObjectId(customer_id)
-    const branchId = branch.map((branchId) => new ObjectId(branchId))
     const cardServicesSoldId = card_services_sold_id.map((id) => new ObjectId(id))
+    const branchId = branch?.map((branchId) => new ObjectId(branchId))
     const userId = new ObjectId(user_id)
     const cardServicesSoldData = {
       ...rest,
@@ -150,6 +151,22 @@ class ServicesCardServices {
       branch: branchId
     }
     await servicesCardRepository.createServicesCardSoldOfCustomer(cardServicesSoldData)
+  }
+
+  async GetServicesCardSoldOfCustomer(data: GetServicesCardSoldOfCustomerRequestBody) {
+    const { page = 1, limit = 10, branch, code, search } = data
+    const query = {
+      ...(code && { code: { $regex: code, $options: 'i' } }),
+      ...(search && { name: { $regex: search, $options: 'i' } }),
+      ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } })
+    }
+
+    const servicesCardSold = await servicesCardRepository.getAllServicesCardSoldOfCustomer({
+      page,
+      limit,
+      query
+    })
+    return servicesCardSold
   }
 }
 

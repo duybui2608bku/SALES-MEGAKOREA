@@ -1,65 +1,105 @@
-import { Button, Col, Empty, Input, message, Row, Skeleton } from 'antd'
-import { useEffect, useState } from 'react'
-import { GoPlus } from 'react-icons/go'
-import { Fragment } from 'react/jsx-runtime'
-import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
-import Title from 'src/Components/Title'
-import { Customer } from 'src/Interfaces/customers/customers.interfaces'
-import CustomerSingleCard from './Components/CustomerSingleCard'
-import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
 import { useQuery } from '@tanstack/react-query'
+import { Button, Col, DatePicker, Flex, Row, TableColumnType, Typography } from 'antd'
+import { useEffect, useState } from 'react'
+import { Fragment } from 'react/jsx-runtime'
+import DebouncedSearch from 'src/Components/DebouncedSearch'
+import OptionsBranch from 'src/Components/OptionsBranch'
+import Title from 'src/Components/Title'
+import { BranchType } from 'src/Interfaces/branch/branch.interface'
+import { Customer } from 'src/Interfaces/customers/customers.interfaces'
+import { GetServicesCardSoldOfCustomer, HistoryPaid } from 'src/Interfaces/services/services.interfaces'
+import { UserGeneralInterface } from 'src/Interfaces/user/user.interface'
 import { servicesApi } from 'src/Service/services/services.api'
-import ServiceCardList from './Components/ServiceCardList'
 
-const { Search } = Input
+const { Text } = Typography
 
-const LIMIT = 6
+const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
-const SoldServicesCardService = () => {
-  const [customer, setCustomer] = useState<Customer | null>(null)
+interface ColumnsServicesCardSoldOfCustomerType {
+  code: string
+  descriptions: string
+  price: number
+  branch: BranchType
+  history_paid: HistoryPaid[]
+  history_used: unknown[]
+  employee_commision: unknown[]
+  created_at: Date
+  customers: Customer
+  userInfo: UserGeneralInterface
+  cards: {
+    _id: string
+    price: number | null
+    name: string
+    services_of_card: {
+      _id: string
+      name: string
+      lineTotal: number
+    }
+  }[]
+}
 
-  const [listServicesCard, setListServicesCard] = useState<ServicesOfCardType[]>([])
-  const [serviceCardSelected, setServiceCardSelected] = useState<string[]>([])
-
-  const handleChangeCustomer = (value: Customer) => {
-    setCustomer(value)
-  }
+const SoldServicesCard = () => {
+  const [servicesCardSoldOfCustomer, setServicesCardSoldOfCustomer] = useState<GetServicesCardSoldOfCustomer[]>([])
+  const [pagination, setPagination] = useState({
+    page: PAGE,
+    limit: LIMIT,
+    total: 0
+  })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['services-card'],
-    queryFn: () => servicesApi.getServicesCard({ page: PAGE, limit: LIMIT }),
+    queryKey: ['services-card-sold-customer'],
+    queryFn: () =>
+      servicesApi.GetServicesCardSoldOfCustomer({
+        page: pagination.page,
+        limit: pagination.limit
+      }),
     staleTime: STALETIME
   })
 
-  console.log(customer)
-
   useEffect(() => {
     if (data) {
-      const result = data.data.result.servicesCard
-      setListServicesCard(result)
+      const result = data.data.result.servicesCardSold
+      console.log(result)
     }
   }, [data])
 
-  const handleSoldServicesCard = () => {
-    if (listServicesCard.length < 0 || customer === null) {
-      message.error('Vui lòng chọn khách hàng và thẻ dịch vụ')
-      return
+  const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
+    {
+      title: 'Mã thẻ / Ngày tạo',
+      dataIndex: 'code/created_at',
+      key: 'code/created_at',
+      render: (_, record) => {
+        return (
+          <Flex>
+            <Text>{record.code}</Text>
+            <Text>{new Date(record.created_at).toLocaleDateString()}</Text>
+          </Flex>
+        )
+      }
+    },
+    {
+      title: 'Khách hàng',
+      dataIndex: 'customers',
+      key: 'customers',
+      render: (_, record) => {
+        return (
+          <Flex>
+            <Text>{record.customers?.name}</Text>
+            <Text>{record.customers?.phone}</Text>
+          </Flex>
+        )
+      }
     }
-  }
-
-  const handleSelectServiceCard = (serviceCardIds: string[]) => {
-    setServiceCardSelected(serviceCardIds)
-  }
+  ]
 
   return (
     <Fragment>
       <Row
         gutter={[16, 16]}
         style={{
-          padding: 20,
-          position: 'relative'
+          padding: 20
         }}
       >
         <Col span={24}>
@@ -71,76 +111,20 @@ const SoldServicesCardService = () => {
               })}
             </Col>
           </Row>
-          <Row style={{ marginTop: 20 }} gutter={[16, 16]}>
-            <Col span={24}>
-              <Title title='Thông tin khách hàng' level={4} justify='left' />
-            </Col>
-            <Col span={12}>
-              <SelectSearchCustomers
-                onHandleChange={handleChangeCustomer as any}
-                style={{ width: '100%' }}
-                placeholder='Tìm khách hàng bằng số điện thoại'
-              />
-            </Col>
-            <Col span={12}>
-              <Button type='primary' style={{ width: '100%' }} icon={<GoPlus size={20} />} title='Tạo khách hàng mới'>
-                Tạo Khách Hàng Mới
+          <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+            <Col span={2}>
+              <Button style={{ width: '100%' }} type='primary'>
+                + Bán Thẻ
               </Button>
             </Col>
-          </Row>
-          <Row gutter={[32, 32]} style={{ marginTop: 30 }}>
-            <Col span={8} style={{ marginTop: 30 }}>
-              {customer ? (
-                <CustomerSingleCard data={customer} />
-              ) : (
-                <Empty
-                  style={{
-                    margin: 'auto',
-                    paddingTop: 250,
-                    height: '100%',
-                    border: '1px solid #e8ecef',
-                    borderRadius: 16
-                  }}
-                  description='Chưa có khách hàng nào được chọn'
-                />
-              )}
+            <Col span={4}>
+              <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => console.log(value)} />
             </Col>
-            <Col span={16}>
-              <Row gutter={[16, 16]} style={{ marginTop: 30 }}>
-                <Col
-                  span={24}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
-                  <Button
-                    onClick={handleSoldServicesCard}
-                    type='primary'
-                    style={{ width: 'auto' }}
-                    title='Thêm liệu trình mới'
-                    disabled={serviceCardSelected.length < 1 || customer === null}
-                  >
-                    Tạo
-                  </Button>
-                </Col>
-                <Col span={24}>
-                  <Search placeholder='Tìm thẻ liệu trình' loading enterButton />
-                </Col>
-                <Col span={24}>
-                  {listServicesCard.length > 0 ? (
-                    <ServiceCardList
-                      columnsGird={8}
-                      onServiceClick={handleSelectServiceCard}
-                      cards={listServicesCard}
-                    />
-                  ) : (
-                    <Skeleton />
-                  )}
-                </Col>
-              </Row>
+            <Col span={4}>
+              <DatePicker style={{ width: '100%' }}></DatePicker>
+            </Col>
+            <Col span={4}>
+              <OptionsBranch />
             </Col>
           </Row>
         </Col>
@@ -149,4 +133,4 @@ const SoldServicesCardService = () => {
   )
 }
 
-export default SoldServicesCardService
+export default SoldServicesCard

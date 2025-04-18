@@ -1,6 +1,7 @@
 import { TypeCommision } from 'src/Constants/enum'
-import { User } from '../user/user.interface'
 import { BranchType } from '../branch/branch.interface'
+import { UserGeneralInterface } from '../user/user.interface'
+import { Customer } from '../customers/customers.interfaces'
 
 export interface ProductOfServices {
   product_id: string
@@ -14,7 +15,7 @@ export interface StepServicesType {
     date: Date
     commision: number
   }[]
-  employee_details: User
+  employee_details: UserGeneralInterface
   type_step_price: TypeCommision
   descriptions?: string
   type_step?: unknown
@@ -42,7 +43,7 @@ export interface HistoryPaid {
   out_standing: number
   method: string
   descriptions?: string
-  user_details?: User
+  user_details?: UserGeneralInterface
 }
 
 export interface ServicesOfCardType {
@@ -114,7 +115,7 @@ export interface EmployeeOfServices {
   id_employee: string
   type_price: TypeCommision
   descriptions?: string
-  employee_details: User
+  employee_details: UserGeneralInterface
 }
 
 export interface StepServicesFieldType {
@@ -210,4 +211,37 @@ export interface UpdatePaidOfServicesCardRequestBody {
   out_standing: number
   method: string
   descriptions?: string
+}
+
+export interface GetServicesCardSoldOfCustomerRequestBody {
+  limit?: number
+  page?: number
+  branch?: string[]
+  code?: string
+  search?: string
+  search_type?: string
+  date?: string
+}
+
+export interface GetServicesCardSoldOfCustomer {
+  _id: string
+  code: string
+  descriptions: string
+  price: number | null
+  branch: BranchType[]
+  history_paid: HistoryPaid[]
+  history_used: any[]
+  employee_commision: any[]
+  customers: Customer
+  userInfo: UserGeneralInterface
+  cards: {
+    _id: string
+    price: number | null
+    name: string
+    services_of_card: {
+      _id: string
+      name: string
+      lineTotal: number
+    }
+  }[]
 }

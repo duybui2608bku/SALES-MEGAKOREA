@@ -26,6 +26,7 @@ const pathRoutersService = {
   categoryService: '/category-service',
   service: '/service',
   cardService: '/card-service',
+  sellCardService: '/card-service/sell',
   soldCardService: '/card-service/sold'
 }
 
@@ -76,7 +77,8 @@ const pathServices = {
   getAllCategoryService: '/services/category-all',
   createCategoryService: 'services/category-create',
   updateCategoryService: 'services/category-update',
-  deleteCategoryService: 'services/category-delete'
+  deleteCategoryService: 'services/category-delete',
+  getAllSoldServicesCardOfCustomer: '/services-card/sold-of-customer'
 }
 
 const pathRoutesCustomers = {

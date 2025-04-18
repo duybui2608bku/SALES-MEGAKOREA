@@ -1,21 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
-import {
-  Col,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Row,
-  Typography,
-  Switch,
-  Select,
-  Button,
-  Space,
-  Card
-} from 'antd'
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Switch } from 'antd'
 import { HttpStatusCode } from 'axios'
-import { Fragment, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import { AppContext } from 'src/Context/AppContext'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
@@ -30,10 +16,8 @@ import {
 } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
-import { TypeCommision, RoleUser } from 'src/Constants/enum'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { TypeCommision } from 'src/Constants/enum'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
-import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
 
 interface ModalCreateServiceProps {
   visible: boolean
@@ -76,24 +60,24 @@ interface FieldsCreateType {
 
 const SELECT_ALL_BRANCH = 'all'
 
-const validateCommission = (values: FieldsType): boolean => {
-  const servicePrice = values.price || 0
-  const stepServices = values.step_services || []
-  let totalCommission = 0
-  for (const step of stepServices) {
-    if (step.type_step_price === TypeCommision.FIXED && step.price) {
-      totalCommission += step.price
-    } else if (step.type_step_price === TypeCommision.PRECENT && step.rate) {
-      totalCommission += servicePrice * step.rate
-    }
-  }
+// const validateCommission = (values: FieldsType): boolean => {
+//   const servicePrice = values.price || 0
+//   const stepServices = values.step_services || []
+//   let totalCommission = 0
+//   for (const step of stepServices) {
+//     if (step.type_step_price === TypeCommision.FIXED && step.price) {
+//       totalCommission += step.price
+//     } else if (step.type_step_price === TypeCommision.PRECENT && step.rate) {
+//       totalCommission += servicePrice * step.rate
+//     }
+//   }
 
-  if (totalCommission > servicePrice) {
-    message.error('Tổng giá hoa hồng của nhân viên vượt quá giá gốc của dịch vụ!')
-    return false
-  }
-  return true
-}
+//   if (totalCommission > servicePrice) {
+//     message.error('Tổng giá hoa hồng của nhân viên vượt quá giá gốc của dịch vụ!')
+//     return false
+//   }
+//   return true
+// }
 
 const ModalCreateService = (props: ModalCreateServiceProps) => {
   const { visible, onClose, serviceToEdit, setServiceToEdit } = props
@@ -106,19 +90,11 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     if (serviceToEdit && branchList.length > 0) {
       const branchId = serviceToEdit?.branch?.map((branch) => (typeof branch === 'string' ? branch : branch._id)) || []
       const service_group_id = serviceToEdit?.service_group._id || ''
-      const servicesStep = serviceToEdit?.step_services?.map((step) => ({
-        id_employee: step.employee._id,
-        type_step_price: step.type_step_price,
-        price: step.price,
-        descriptions: step.descriptions,
-        rate: step.rate || undefined
-      }))
       setBranchId(branchId)
       form.setFieldsValue({
         ...serviceToEdit,
         branch: branchId,
-        service_group_id: service_group_id,
-        step_services: servicesStep
+        service_group_id: service_group_id
       })
     } else {
       form.resetFields()
@@ -202,18 +178,18 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
   const onFinish = (values: FieldsType) => {
     try {
       if (serviceToEdit) {
-        if (!validateCommission(values)) {
-          return
-        }
+        // if (!validateCommission(values)) {
+        //   return
+        // }
         const serviceId = serviceToEdit._id
         handleUpdateService({
           ...values,
           _id: serviceId
         })
       } else {
-        if (!validateCommission(values)) {
-          return
-        }
+        // if (!validateCommission(values)) {
+        //   return
+        // }
         handleCreateService(values)
       }
     } catch (error) {
@@ -326,7 +302,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                 </Form.Item>
               </Col>
             </Row>
-            <Row gutter={16}>
+            {/* <Row gutter={16}>
               <Col span={24}>
                 <Form.List name='step_services'>
                   {(fields, { add, remove }) => (
@@ -419,7 +395,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   )}
                 </Form.List>
               </Col>
-            </Row>
+            </Row> */}
           </Form>
         </Col>
       </Row>

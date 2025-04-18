@@ -4,6 +4,7 @@ import {
   createServicesCardSold,
   createServicesCardSoldOfCustomer,
   getServicesCard,
+  getServicesCardSoldOfCustomer,
   UpdateHistoryPaid,
   UpdateServicesCard
 } from '~/controllers/services.card.controllers'
@@ -52,5 +53,7 @@ servicesOfCardRouters.post(
   accessTokenValidator,
   wrapRequestHandler(createServicesCardSoldOfCustomer)
 )
+
+servicesOfCardRouters.post('/sold-of-customer', accessTokenValidator, wrapRequestHandler(getServicesCardSoldOfCustomer))
 
 export default servicesOfCardRouters

@@ -81,3 +81,13 @@ export interface CreateServicesCardSoldOfCustomerRequestBody {
   card_services_sold_id: string[]
   user_id: string
 }
+
+export interface GetServicesCardSoldOfCustomerRequestBody {
+  limit?: number
+  page?: number
+  branch?: string[]
+  code?: string
+  search?: string
+  search_type?: string
+  date?: string
+}

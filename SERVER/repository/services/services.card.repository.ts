@@ -1,3 +1,4 @@
+import { match } from 'assert'
 import databaseServiceSale from 'services/database.services.sale'
 import { TypeCommision } from '~/constants/enum'
 import {
@@ -5,6 +6,7 @@ import {
   CreateServicesCardSoldOfCustomerData,
   GetCommisionOfDateData,
   GetServicesCardData,
+  GetServicesCardSoldOfCustomerData,
   UpdateHistoryPaidData,
   UpdateServicesCardData
 } from '~/interface/services/services.interface'
@@ -706,6 +708,213 @@ class ServicesCardRepository {
 
   async createServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerData) {
     await databaseServiceSale.services_card_sold_of_customer.insertOne(new CardServicesSoldOfCustomer(data))
+  }
+
+  async getAllServicesCardSoldOfCustomer(data: GetServicesCardSoldOfCustomerData) {
+    const { page, query, limit } = data
+    const skip = (page - 1) * limit
+
+    const projectionUserDetail = createProjectionField('userInfo', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient'
+    ])
+
+    const projectCardServicesDetails = createProjectionField('cards', [
+      'branch',
+      'branch',
+      'is_active',
+      'code',
+      'descriptions',
+      'user_id',
+      'employee',
+      'service_group_id'
+    ])
+
+    const projectionServices = createProjectionField('cards.services_of_card', [
+      'services_id',
+      'quantity',
+      'discount',
+      'price',
+      'branch',
+      'descriptions',
+      'service_group_id',
+      'user_id',
+      'is_active',
+      'code',
+      'product',
+      'employee',
+      'step_services'
+    ])
+
+    const servicesCardSold = await databaseServiceSale.services_card_sold_of_customer
+      .aggregate([
+        {
+          $match: {
+            ...query
+          }
+        },
+        {
+          $lookup: {
+            from: 'customers',
+            localField: 'customer_id',
+            foreignField: '_id',
+            as: 'customers'
+          }
+        },
+        // 1. Lookup thông tin chi nhánh
+        {
+          $lookup: {
+            from: 'branch',
+            localField: 'branch',
+            foreignField: '_id',
+            as: 'branch'
+          }
+        },
+        // 2. Lookup thông tin user
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'userInfo'
+          }
+        },
+        // 3. Lookup các thẻ dịch vụ đã bán
+        {
+          $lookup: {
+            from: 'services_card',
+            localField: 'card_services_sold_id',
+            foreignField: '_id',
+            as: 'cards'
+          }
+        },
+        // 4. Unwind từng thẻ để xử lý riêng
+        {
+          $unwind: {
+            path: '$cards',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        // 5. Lookup chi tiết tất cả services trong mỗi card
+        {
+          $lookup: {
+            from: 'services',
+            localField: 'cards.services_of_card.services_id',
+            foreignField: '_id',
+            as: 'serviceDetails'
+          }
+        },
+        // 6. Nhúng serviceDetails + tính lineTotal vào mỗi phần tử services_of_card
+        {
+          $addFields: {
+            'cards.services_of_card': {
+              $map: {
+                input: '$cards.services_of_card',
+                as: 'so',
+                in: {
+                  $let: {
+                    vars: {
+                      detail: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$serviceDetails',
+                              as: 'sd',
+                              cond: { $eq: ['$$sd._id', '$$so.services_id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    },
+                    in: {
+                      $mergeObjects: [
+                        '$$so',
+                        '$$detail',
+                        {
+                          lineTotal: {
+                            $subtract: [
+                              { $multiply: ['$$detail.price', '$$so.quantity'] },
+                              { $ifNull: ['$$so.discount', 0] }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        // 7. Group lại, giữ nguyên toàn bộ document gốc và gom mảng cards
+        {
+          $group: {
+            _id: '$_id',
+            root: { $first: '$$ROOT' },
+            cards: { $push: '$cards' }
+          }
+        },
+        // 8. Merge root với cards array, thay document mới
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: ['$root', { cards: '$cards' }]
+            }
+          }
+        },
+        {
+          $addFields: {
+            userInfo: { $arrayElemAt: ['$userInfo', 0] }
+          }
+        },
+        {
+          $addFields: {
+            customers: { $arrayElemAt: ['$customers', 0] }
+          }
+        },
+        // 9. Tính totalPrice là tổng tất cả lineTotal của mọi services trong mọi card
+        {
+          $addFields: {
+            price: {
+              $sum: {
+                $map: {
+                  input: '$cards',
+                  as: 'c',
+                  in: {
+                    $sum: {
+                      $map: {
+                        input: '$$c.services_of_card',
+                        as: 's',
+                        in: '$$s.lineTotal'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        // 10. Project trường đầu ra
+        {
+          $project: {
+            user_id: 0,
+            serviceDetails: 0,
+            customer_id: 0,
+            ...projectionUserDetail,
+            ...projectCardServicesDetails,
+            ...projectionServices
+          }
+        }
+      ])
+      .skip(skip)
+      .limit(limit)
+      .toArray()
+    const total = await databaseServiceSale.services_card_sold_of_customer.countDocuments(query)
+    return { servicesCardSold, total, limit, page }
   }
 }
 

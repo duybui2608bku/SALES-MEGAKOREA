@@ -263,3 +263,9 @@ export interface CreateServicesCardSoldOfCustomerData {
   card_services_sold_id: ObjectId[]
   user_id: ObjectId
 }
+
+export interface GetServicesCardSoldOfCustomerData {
+  limit: number
+  page: number
+  query: any
+}
