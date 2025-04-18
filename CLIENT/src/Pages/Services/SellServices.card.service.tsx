@@ -1,27 +1,33 @@
-import { Button, Col, Empty, Input, message, Row, Skeleton } from 'antd'
-import { useEffect, useState } from 'react'
+import { Button, Col, Empty, Input, message, Popconfirm, Row, Skeleton, Tag, Typography } from 'antd'
+import { useContext, useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { Fragment } from 'react/jsx-runtime'
-import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
 import Title from 'src/Components/Title'
+import { BranchType } from 'src/Interfaces/branch/branch.interface'
 import { Customer } from 'src/Interfaces/customers/customers.interfaces'
 import CustomerSingleCard from './Components/CustomerSingleCard'
 import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
-import { useQuery } from '@tanstack/react-query'
-import { servicesApi } from 'src/Service/services/services.api'
 import ServiceCardList from './Components/ServiceCardList'
+import { customerApi } from 'src/Service/customers/customer.api'
+import { BranchDataHardCode } from 'src/Utils/util.utils'
+import { AppContext } from 'src/Context/AppContext'
+import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
+import { servicesApi } from 'src/Service/services/services.api'
 
 const { Search } = Input
 
-const LIMIT = 6
+const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
-const SellServicesCardService = () => {
+const SoldServicesCardService = () => {
   const [customer, setCustomer] = useState<Customer | null>(null)
-
+  const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<ServicesOfCardType[]>([])
   const [serviceCardSelected, setServiceCardSelected] = useState<string[]>([])
+  const [resetServiceCard, setResetServiceCard] = useState(false)
+  const [resetValueSearchCustomer, setResetValueSearchCustomer] = useState(false)
 
   const handleChangeCustomer = (value: Customer) => {
     setCustomer(value)
@@ -32,8 +38,6 @@ const SellServicesCardService = () => {
     queryFn: () => servicesApi.getServicesCard({ page: PAGE, limit: LIMIT }),
     staleTime: STALETIME
   })
-
-  console.log(customer)
 
   useEffect(() => {
     if (data) {
@@ -53,6 +57,73 @@ const SellServicesCardService = () => {
     setServiceCardSelected(serviceCardIds)
   }
 
+  // Create Customer
+  const { mutateAsync: createCustomerService, isPending: isCreatingCustomer } = useMutation({
+    mutationFn: customerApi.createCustomer,
+    onSuccess: () => {
+      // message.success('Tạo khách hàng thành công!')
+    },
+    onError: (error: Error) => {
+      message.error(`Lỗi khi tạo khách hàng: ${error.message}`)
+    }
+  })
+
+  // Create Service Card Sold Of Customer
+  const { mutate: createServiceCardSoldOfCustomer, isPending: isCreatingServiceCard } = useMutation({
+    mutationFn: servicesApi.createServicesCardSoldOfCustomer,
+    onSuccess: () => {
+      message.success('Bán thẻ dịch vụ thành công!')
+      // Reset click service card
+      setResetServiceCard(true)
+      setTimeout(() => setResetServiceCard(false), 200)
+      // Reset value search customer
+      setResetValueSearchCustomer(true)
+      setTimeout(() => setResetValueSearchCustomer(false), 200)
+    },
+    onError: (error: Error) => {
+      message.error(`Lỗi khi tạo thẻ dịch vụ: ${error.message}`)
+    }
+  })
+
+  const handleCreateServiceCardSoldOfCustomer = async () => {
+    // Format createCustomer cho RequestBody
+    const convertBranchToId = (name: string | undefined) => {
+      const branch = BranchDataHardCode.find((branch) => branch.name === name)
+      return branch?._id
+    }
+
+    const branchId = convertBranchToId(customer?.branch)
+    const createCustomer = {
+      branch: branchId,
+      date: customer?.date,
+      source: customer?.source,
+      name: customer?.name,
+      phone: customer?.phone,
+      address: customer?.address,
+      sex: customer?.sex
+    }
+
+    const response = await createCustomerService(createCustomer)
+    const customerId = String(response.data.result)
+    const userId = String(profile._id)
+    const userBranchId = Array.isArray(profile.branch)
+      ? profile.branch.map((b: BranchType) => b._id)
+      : [profile.branch._id]
+
+    try {
+      const createServiceCard = {
+        customer_id: customerId,
+        card_services_sold_id: serviceCardSelected,
+        user_id: userId,
+        branch: userBranchId
+      }
+
+      createServiceCardSoldOfCustomer(createServiceCard)
+    } catch (error) {
+      message.error('Lỗi trong quá trình tạo Service card sold of customer!')
+    }
+  }
+
   return (
     <Fragment>
       <Row
@@ -66,7 +137,7 @@ const SellServicesCardService = () => {
           <Row>
             <Col span={24}>
               {Title({
-                title: 'Bán Thẻ Dịch Vụ',
+                title: 'Thẻ dịch vụ đã bán',
                 level: 2
               })}
             </Col>
@@ -75,14 +146,16 @@ const SellServicesCardService = () => {
             <Col span={24}>
               <Title title='Thông tin khách hàng' level={4} justify='left' />
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <SelectSearchCustomers
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onHandleChange={handleChangeCustomer as any}
+                resetSearchValue={resetValueSearchCustomer}
                 style={{ width: '100%' }}
                 placeholder='Tìm khách hàng bằng số điện thoại'
               />
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Button type='primary' style={{ width: '100%' }} icon={<GoPlus size={20} />} title='Tạo khách hàng mới'>
                 Tạo Khách Hàng Mới
               </Button>
@@ -116,28 +189,47 @@ const SellServicesCardService = () => {
                   }}
                 >
                   <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
-                  <Button
-                    onClick={handleSoldServicesCard}
-                    type='primary'
-                    style={{ width: 'auto' }}
-                    title='Thêm liệu trình mới'
-                    disabled={serviceCardSelected.length < 1 || customer === null}
+                  <Popconfirm
+                    okButtonProps={{ loading: isCreatingCustomer || isCreatingServiceCard }}
+                    onConfirm={() => handleCreateServiceCardSoldOfCustomer()}
+                    title={
+                      <Typography>
+                        Bạn có muốn tạo liệu trình cho
+                        <div>
+                          <Tag bordered={false} color='error'>
+                            {customer?.name}
+                          </Tag>
+                          không?
+                        </div>
+                      </Typography>
+                    }
+                    okText='Có'
+                    cancelText='Không'
                   >
-                    Tạo
-                  </Button>
+                    <Button
+                      onClick={handleSoldServicesCard}
+                      type='primary'
+                      style={{ width: 'auto' }}
+                      title='Thêm liệu trình mới'
+                      disabled={serviceCardSelected.length < 1 || customer === null}
+                    >
+                      Tạo
+                    </Button>
+                  </Popconfirm>
                 </Col>
                 <Col span={24}>
                   <Search placeholder='Tìm thẻ liệu trình' loading enterButton />
                 </Col>
                 <Col span={24}>
-                  {listServicesCard.length > 0 ? (
+                  {isLoading || listServicesCard.length > 0 ? (
                     <ServiceCardList
                       columnsGird={8}
                       onServiceClick={handleSelectServiceCard}
                       cards={listServicesCard}
+                      resetCard={resetServiceCard}
                     />
                   ) : (
-                    <Skeleton />
+                    <Skeleton active />
                   )}
                 </Col>
               </Row>
@@ -149,4 +241,4 @@ const SellServicesCardService = () => {
   )
 }
 
-export default SellServicesCardService
+export default SoldServicesCardService
