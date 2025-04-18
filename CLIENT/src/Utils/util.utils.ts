@@ -90,3 +90,9 @@ export const BranchDataHardCode = [
     acronym: 'HUE'
   }
 ]
+
+export const getChangedFields = (original: any, updated: any): Partial<any> => {
+  return _.pickBy(updated, (value, key) => {
+    return !_.isEqual(value, original[key as keyof any])
+  }) as Partial<any>
+}

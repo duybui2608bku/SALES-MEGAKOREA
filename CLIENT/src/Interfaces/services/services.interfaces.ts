@@ -213,7 +213,7 @@ export interface UpdatePaidOfServicesCardRequestBody {
 }
 
 export interface CreateServicesCardSoldOfCustomerRequestBody {
-  // branch: string[]
+  branch: string[]
   code?: string
   customer_id: string
   descriptions?: string

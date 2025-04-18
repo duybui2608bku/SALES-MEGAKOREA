@@ -22,6 +22,7 @@ import UserGeneral from './Pages/User/UserGeneral'
 import Customers from './Pages/customer/customers'
 import UserInformation from './Pages/User/UserInformation'
 import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
+import Page404 from './Pages/404/404'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -60,6 +61,16 @@ const useRouterElements = () => {
               <Home />
             </MainLayout>
           )
+        }
+      ]
+    },
+    {
+      path: pathUtil.none,
+      element: <ProtectedRoute allowedRoles={[RoleUser.USER, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE]} />,
+      children: [
+        {
+          path: pathUtil.notFound,
+          element: <Page404 />
         }
       ]
     },

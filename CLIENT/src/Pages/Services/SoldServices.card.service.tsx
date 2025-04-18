@@ -13,6 +13,7 @@ import ServiceCardList from './Components/ServiceCardList'
 import { customerApi } from 'src/Service/customers/customer.api'
 import { BranchDataHardCode } from 'src/Utils/util.utils'
 import { AppContext } from 'src/Context/AppContext'
+import { BranchType } from 'src/Interfaces/branch/branch.interface'
 
 const { Search } = Input
 
@@ -25,6 +26,8 @@ const SoldServicesCardService = () => {
   const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<ServicesOfCardType[]>([])
   const [serviceCardSelected, setServiceCardSelected] = useState<string[]>([])
+  const [resetServiceCard, setResetServiceCard] = useState(false)
+  const [resetValueSearchCustomer, setResetValueSearchCustomer] = useState(false)
 
   const handleChangeCustomer = (value: Customer) => {
     setCustomer(value)
@@ -58,7 +61,7 @@ const SoldServicesCardService = () => {
   const { mutateAsync: createCustomerService, isPending: isCreatingCustomer } = useMutation({
     mutationFn: customerApi.createCustomer,
     onSuccess: () => {
-      message.success('Tạo khách hàng thành công!')
+      // message.success('Tạo khách hàng thành công!')
     },
     onError: (error: Error) => {
       message.error(`Lỗi khi tạo khách hàng: ${error.message}`)
@@ -69,7 +72,13 @@ const SoldServicesCardService = () => {
   const { mutate: createServiceCardSoldOfCustomer, isPending: isCreatingServiceCard } = useMutation({
     mutationFn: servicesApi.createServicesCardSoldOfCustomer,
     onSuccess: () => {
-      message.success('Tạo Service card sold of customer thành công!')
+      message.success('Bán thẻ dịch vụ thành công!')
+      // Reset click service card
+      setResetServiceCard(true)
+      setTimeout(() => setResetServiceCard(false), 200)
+      // Reset value search customer
+      setResetValueSearchCustomer(true)
+      setTimeout(() => setResetValueSearchCustomer(false), 200)
     },
     onError: (error: Error) => {
       message.error(`Lỗi khi tạo Service card: ${error.message}`)
@@ -96,18 +105,19 @@ const SoldServicesCardService = () => {
 
     const response = await createCustomerService(createCustomer)
     const customerId = String(response.data.result)
-    console.log('customerId: ', customerId)
-
     const userId = String(profile._id)
-    // const userBranch = profile.branch
-    console.log('userId: ', userId)
+    const userBranchId = Array.isArray(profile.branch)
+      ? profile.branch.map((b: BranchType) => b._id)
+      : [profile.branch._id]
+
+    console.log('branchId: ', userBranchId)
 
     try {
       const createServiceCard = {
         customer_id: customerId,
         card_services_sold_id: serviceCardSelected,
-        user_id: userId
-        // branch: userBranch
+        user_id: userId,
+        branch: userBranchId
       }
       createServiceCardSoldOfCustomer(createServiceCard)
     } catch (error) {
@@ -141,6 +151,7 @@ const SoldServicesCardService = () => {
               <SelectSearchCustomers
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onHandleChange={handleChangeCustomer as any}
+                resetSearchValue={resetValueSearchCustomer}
                 style={{ width: '100%' }}
                 placeholder='Tìm khách hàng bằng số điện thoại'
               />
@@ -216,6 +227,7 @@ const SoldServicesCardService = () => {
                       columnsGird={8}
                       onServiceClick={handleSelectServiceCard}
                       cards={listServicesCard}
+                      resetCard={resetServiceCard}
                     />
                   ) : (
                     <Skeleton active />

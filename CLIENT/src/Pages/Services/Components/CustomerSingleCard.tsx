@@ -47,7 +47,7 @@ const CustomerSingleCard: React.FC<CustomerSingleCardProps> = ({ data }) => {
     >
       <Space direction='vertical' size='large' style={{ width: '100%' }}>
         {/* Header with Avatar and Name */}
-        <Space align='center' size='large' style={{ justifyContent: 'space-between', width: '100%' }}>
+        <Space align='center' size='large' style={{ justifyContent: 'space-between', width: '100%', flexWrap: 'wrap' }}>
           <Space>
             <Avatar
               size={80}
@@ -59,7 +59,20 @@ const CustomerSingleCard: React.FC<CustomerSingleCardProps> = ({ data }) => {
               }}
             />
             <div>
-              <Title level={3} style={{ margin: 0, color: '#2d3436', fontWeight: 600 }}>
+              <Title
+                level={3}
+                style={{
+                  margin: 0,
+                  color: '#2d3436',
+                  fontWeight: 600,
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2
+                }}
+              >
                 {name}
               </Title>
               <Text type='secondary' style={{ fontSize: '16px' }}>

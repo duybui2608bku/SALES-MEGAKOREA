@@ -23,7 +23,6 @@ if (!container?.hasChildNodes()) {
   root.render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        {/* <GlobalLoadingPage /> */}
         <AppProvider>
           <ConfigProvider locale={viVN}>
             <App />
@@ -33,16 +32,3 @@ if (!container?.hasChildNodes()) {
     </BrowserRouter>
   )
 }
-
-// ReactDOM.createRoot(document.getElementById('root')!).render(
-//   <BrowserRouter>
-//     <QueryClientProvider client={queryClient}>
-//       <GlobalLoadingPage />
-//       <AppProvider>
-//         <ConfigProvider locale={viVN}>
-//           <App />
-//         </ConfigProvider>
-//       </AppProvider>
-//     </QueryClientProvider>
-//   </BrowserRouter>
-// )

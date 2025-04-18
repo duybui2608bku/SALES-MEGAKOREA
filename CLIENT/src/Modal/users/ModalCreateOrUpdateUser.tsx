@@ -19,6 +19,8 @@ import HttpStatusCode from 'src/Constants/httpCode'
 import { generatePassword } from 'src/Utils/generatePassword'
 import UploadAvatar from './components/uploadAvatar'
 import OptionsBranchUser from 'src/Components/OptionsBranchUser'
+import { isString } from 'lodash'
+import { getChangedFields } from 'src/Utils/util.utils'
 const Text = Typography
 
 interface ModalCreateOrUpdateUserProps {
@@ -39,8 +41,6 @@ interface FieldsType {
   role?: number
   status?: number
   branch?: string
-  created_at: Date
-  updated_at?: Date
 }
 
 const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
@@ -124,6 +124,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
     retry: 2
   })
 
+  // Func delete avtar
   const handleDeleteAvatar = () => {
     setImageUrl('')
   }
@@ -166,14 +167,19 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
       setUserToEdit?.(null)
       return
     }
+
     const avatar = !imageUrl ? '' : imageUrl
+    const branchValue = form.getFieldValue('branch')
+    const branchId = !isString(branchValue) ? branchValue._id : branchValue
     const userUpdate: UpdateUserRequestBody = {
       ...values,
       _id: userToEdit._id,
       avatar: avatar,
-      branch: form.getFieldValue('branch')
+      branch: branchId
     }
-    updateUser(userUpdate)
+
+    const resultValueUserUpdate = getChangedFields(userToEdit, userUpdate)
+    updateUser({ ...resultValueUserUpdate, _id: userToEdit._id })
   }
 
   const onFinish = (values: FieldsType) => {
@@ -217,47 +223,47 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
         </Col>
         <Col span={24} style={{ marginTop: 20 }}>
           <Form onFinish={onFinish} autoComplete='off' layout='vertical' name='create-update-user' form={form}>
-            <Row gutter={16}>
-              <Col xs={24} md={8}>
-                <Form.Item
-                  name='name'
-                  label='Tên nhân viên'
-                  rules={[{ required: true, message: 'Vui lòng nhập tên nhân viên!' }]}
-                >
-                  <Input placeholder='Nhập tên nhân viên' />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={8}>
-                <Form.Item
-                  rules={[
-                    { required: true, message: 'Vui lòng nhập email nhân viên!' },
-                    { type: 'email', message: 'Email không hợp lệ!' }
-                  ]}
-                  name='email'
-                  label='Email'
-                >
-                  <Input placeholder='Nhập email' />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={8}>
-                <Form.Item name='branch' label='Chi nhánh'>
-                  <OptionsBranchUser
-                    mode={undefined}
-                    initialValue={userToEdit?.branch.name}
-                    placeholder={userToEdit ? 'Chọn chi nhánh' : 'Chọn chi nhánh'}
-                    search
-                    onchange={(value) => form.setFieldsValue({ branch: value })}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
             {/* 
               - Nếu tài khoản là ADMIN: Khi mở Modal Edit NHÂN VIÊN sẽ hiển thị 2 ô input [password, password-confirm] 
               - Không phân biệt RoleUser: Khi không tồn tại userToEdit(giá trị để mở Modal Edit NHÂN VIÊN) 
-                => Modal Create NHÂN VIÊN mặc định hiển thị 2 ô input [password, password-confirm]
+                => Modal Create NHÂN VIÊN mặc định hiển thị đầy đủ
             */}
-            {((dataUser?.data.result[0].role == RoleUser.ADMIN && userToEdit) || !userToEdit) && (
+            {((dataUser?.data.result.role == RoleUser.ADMIN && userToEdit) || !userToEdit) && (
               <>
+                <Row gutter={16}>
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      name='name'
+                      label='Tên nhân viên'
+                      rules={[{ required: true, message: 'Vui lòng nhập tên nhân viên!' }]}
+                    >
+                      <Input placeholder='Nhập tên nhân viên' />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      rules={[
+                        { required: true, message: 'Vui lòng nhập email nhân viên!' },
+                        { type: 'email', message: 'Email không hợp lệ!' }
+                      ]}
+                      name='email'
+                      label='Email'
+                    >
+                      <Input placeholder='Nhập email' />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='branch' label='Chi nhánh'>
+                      <OptionsBranchUser
+                        mode={undefined}
+                        placeholder={'Chọn chi nhánh'}
+                        initialValue={userToEdit?.branch.name || ''}
+                        search
+                        onchange={(value) => form.setFieldsValue({ branch: value })}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
                 <Row gutter={16}>
                   <Col xs={24} md={8}>
                     <Form.Item
@@ -307,7 +313,8 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                           { value: RoleUser.SALE, label: 'Saler' },
                           { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
                           { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
-                          { value: RoleUser.USER, label: 'Khách hàng' }
+                          { value: RoleUser.USER, label: 'Khách hàng' },
+                          userToEdit?.role === RoleUser.ADMIN ? { value: RoleUser.ADMIN, label: 'Admin' } : {}
                         ]}
                       />
                     </Form.Item>
@@ -349,55 +356,34 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                 </Row>
               </>
             )}
-            {/* Nếu tài khoản không phải là ADMIN: Khi mở Modal Edit NHÂN VIÊN sẽ không hiển thị 2 ô input [password, password-confỉrm]  */}
-            {dataUser?.data.result[0].role != RoleUser.ADMIN && userToEdit && (
+            {/* Nếu tài khoản không phải là ADMIN: Khi mở Modal Edit NHÂN VIÊN chỉ hiển thị ô input [name, email, uploadAvatar]  */}
+            {dataUser?.data.result.role != RoleUser.ADMIN && userToEdit && (
               <>
                 <Row gutter={16}>
                   <Col xs={24} md={8}>
-                    <Form.Item name='role' label='Vai trò' initialValue={RoleUser.USER}>
-                      <Select
-                        showSearch
-                        options={[
-                          { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
-                          { value: RoleUser.MANAGER, label: 'Quản lý' },
-                          { value: RoleUser.SALE, label: 'Saler' },
-                          { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
-                          { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
-                          { value: RoleUser.USER, label: 'Khách hàng' }
-                        ]}
-                      />
+                    <Form.Item
+                      name='name'
+                      label='Tên nhân viên'
+                      rules={[{ required: true, message: 'Vui lòng nhập tên nhân viên!' }]}
+                    >
+                      <Input placeholder='Nhập tên nhân viên' />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      rules={[
+                        { required: true, message: 'Vui lòng nhập email nhân viên!' },
+                        { type: 'email', message: 'Email không hợp lệ!' }
+                      ]}
+                      name='email'
+                      label='Email'
+                    >
+                      <Input placeholder='Nhập email' />
                     </Form.Item>
                   </Col>
                   <Col xs={24} md={8}>
                     <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
                       <UploadAvatar setImageUrl={setImageUrl} setIsPendingUploadAvatar={setIsPendingAvatar} />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item name='status' label='Trạng thái' initialValue={UserStatus.ACTIVE}>
-                      <Radio.Group
-                        options={[
-                          {
-                            label: (
-                              <Tooltip title='Hoạt động'>
-                                <CheckCircleOutlined />
-                              </Tooltip>
-                            ),
-                            value: UserStatus.ACTIVE
-                          },
-                          {
-                            label: (
-                              <Tooltip title='Không hoạt động'>
-                                <CloseCircleOutlined />
-                              </Tooltip>
-                            ),
-                            value: UserStatus.INACTIVE
-                          }
-                        ]}
-                        block
-                        optionType='button'
-                        buttonStyle='solid'
-                      />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -407,7 +393,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
             {isPendingAvatar && <BarLoader color='#1677ff' loading={true} width={'100%'} />}
             {imageUrl && (
               <Fragment>
-                <Text style={{ marginBottom: '8px' }}>Preview</Text>
+                <Text style={{ marginBottom: '8px' }}>Xem trước</Text>
                 <Row
                   style={{
                     padding: '8px',

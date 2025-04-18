@@ -147,21 +147,22 @@ class UsersService {
         {
           $lookup: {
             from: 'branch',
-            localField: '_id',
-            foreignField: 'user_id',
-            as: 'branch'
+            localField: 'branch',
+            foreignField: '_id',
+            as: 'branch_info'
           }
         },
         {
           $addFields: {
-            branch: '$branch._id'
+            branch: { $arrayElemAt: ['$branch_info', 0] }
           }
         },
         {
           $project: {
             password: 0,
             email_verify_token: 0,
-            forgot_password_token: 0
+            forgot_password_token: 0,
+            branch_info: 0
           }
         }
       ])
@@ -174,17 +175,24 @@ class UsersService {
     }
     return {
       message: userMessages.GET_PROFILE_SUCCESS,
-      user
+      user: user[0]
     }
   }
 
   async updateUser(payload: UpdateUserRequestBody) {
-    const { _id, branch, ...rest } = payload
+    const { _id, branch, password, ...rest } = payload
+
     const userObjectId = new ObjectId(_id)
 
     const updateDoc: Record<string, any> = {
       ...rest,
       updated_at: new Date()
+    }
+
+    // Hash mật khẩu nếu có truyền lên
+    if (password) {
+      const hashedPassword = hashPassword(password)
+      updateDoc.password = hashedPassword
     }
 
     // Nếu có branch -> ép về ObjectId
@@ -196,6 +204,7 @@ class UsersService {
         throw new Error('Chi nhánh không hợp lệ!')
       }
     }
+
     const user = await databaseServiceSale.users.findOneAndUpdate(
       {
         _id: new ObjectId(userObjectId)
@@ -212,6 +221,8 @@ class UsersService {
         }
       }
     )
+    console.log('UserUpdate: ', user)
+
     return user
   }
 
@@ -373,9 +384,6 @@ class UsersService {
         }
       ])
       .toArray()
-
-    console.log('result: ', result)
-
     return result
   }
 
