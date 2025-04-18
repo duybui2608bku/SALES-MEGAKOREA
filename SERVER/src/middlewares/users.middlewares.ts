@@ -29,7 +29,7 @@ export const loginValidator = validate(
               email: value,
               password: hashPassword(req.body.password)
             })
-            console.log(hashPassword(req.body.password))
+
             if (user === null) {
               throw new Error(userMessages.USER_NOT_FOUND)
             }

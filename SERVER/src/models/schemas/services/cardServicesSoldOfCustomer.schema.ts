@@ -21,7 +21,7 @@ export class CardServicesSoldOfCustomer {
     this.code = cardServices.code || generateCode()
     this.user_id = cardServices.user_id
     this.price = cardServices.price || null
-    this.branch = (cardServices.branch || []).map((branch) => new ObjectId(branch))
+    this.branch = cardServices.branch || []
     this.history_paid = cardServices.history_paid || []
     this.history_used = cardServices.history_used || []
     this.card_services_sold_id = cardServices.card_services_sold_id

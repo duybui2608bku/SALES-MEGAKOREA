@@ -124,7 +124,8 @@ export const servicesMessages = {
   UPDATE_USER_SUCCESS: 'Update user success !',
   CREATE_SERVICES_CARD_SOLD_SUCCESS: 'Create services card sold success !',
   SERVICES_CARD_ID_MUST_BE_ARRAY: 'Services card id must be a array !',
-  CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Create services card sold of customer success !'
+  CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Create services card sold of customer success !',
+  GET_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Get services card sold of customer success !'
 }
 
 export const productMessages = {

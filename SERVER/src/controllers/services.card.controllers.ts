@@ -6,6 +6,7 @@ import {
   CreateServicesCardSoldRequestBody,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
+  GetServicesCardSoldOfCustomerRequestBody,
   UpdateCardRequestBody,
   UpdateHistoryPaidOfServicesCardRequestBody
 } from '~/models/requestes/Services.card.requests'
@@ -97,6 +98,19 @@ export const createServicesCardSoldOfCustomer = async (
   const result = await servicesCardServices.CreateServicesCardSoldOfCustomer(data)
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
+    result,
+    res
+  })
+}
+
+export const getServicesCardSoldOfCustomer = async (
+  req: Request<ParamsDictionary, any, GetServicesCardSoldOfCustomerRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await servicesCardServices.GetServicesCardSoldOfCustomer(data)
+  ResponseSuccess({
+    message: servicesMessages.GET_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
     result,
     res
   })

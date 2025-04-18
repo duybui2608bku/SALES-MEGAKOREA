@@ -37,7 +37,12 @@ const MainLayout = ({ children }: Props) => {
         {
           key: 'card-service',
           label: 'Thẻ dịch vụ',
-          onClick: () => navigate(pathRoutersService.soldCardService)
+          onClick: () => navigate(pathRoutersService.cardService)
+        },
+        {
+          key: 'sell-card-service',
+          label: 'Bán thẻ dịch vụ',
+          onClick: () => navigate(pathRoutersService.sellCardService)
         },
         {
           key: 'sold-card-service',
