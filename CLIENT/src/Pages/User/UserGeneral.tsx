@@ -71,12 +71,12 @@ const UserGeneral = () => {
   })
 
   useEffect(() => {
-    if (data?.data.result) {
+    if (data) {
       const response = data.data.result as unknown as UserGeneralInterface[]
 
       setUsersGeneral(response)
     }
-  }, [data?.data.result])
+  }, [data])
 
   const handleDeleteUser = (id: string) => {
     deleteUser(id)
@@ -86,14 +86,12 @@ const UserGeneral = () => {
   const handleUpdateStatusUser = async (user: UserGeneralInterface) => {
     try {
       setLoadingStatus(user._id)
-      // Loại bỏ trường 'update_at" ra khỏi Object user
-      const userData = omit(user, ['updated_at'])
+      const valueUpdate = {
+        _id: user._id,
+        status: user.status == UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE
+      }
 
-      const response = await userApi.updateUser({
-        ...userData,
-        status: user.status == UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE,
-        branch: user.branch._id
-      })
+      const response = await userApi.updateUser(valueUpdate)
 
       if (response.data) {
         setLoadingStatus('')
@@ -144,7 +142,7 @@ const UserGeneral = () => {
     {
       title: 'Thông tin nhân viên',
       key: 'avatar-name',
-      width: 270,
+      width: 250,
       render: (_: unknown, record: UserGeneralInterface) => (
         <Flex align='center'>
           <InforUserComponent avatar={record.avatar} name={record.name} status={record.status} />
@@ -163,7 +161,7 @@ const UserGeneral = () => {
             disabled={record.status == UserStatus.BANNED}
             onChange={() => handleUpdateStatusUser(record)}
             loading={loadingStatus === record._id}
-            checked={status == UserStatus.ACTIVE ? true : false}
+            checked={status === UserStatus.ACTIVE}
           />
         </Flex>
       )
@@ -173,7 +171,7 @@ const UserGeneral = () => {
       dataIndex: 'email',
       key: 'email',
       align: 'center',
-      width: 220
+      width: 230
     },
     {
       title: 'Vai trò',
@@ -357,7 +355,7 @@ const UserGeneral = () => {
           <Table
             sticky
             style={{ width: '100%' }}
-            scroll={{ x: '1200px' }}
+            scroll={{ x: '1300px' }}
             loading={isLoading}
             dataSource={usersGeneral}
             bordered

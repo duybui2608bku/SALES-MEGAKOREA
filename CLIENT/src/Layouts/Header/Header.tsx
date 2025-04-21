@@ -11,7 +11,7 @@ import { pathRoutersUser } from 'src/Constants/path'
 import { useQuery } from '@tanstack/react-query'
 import userApi from 'src/Service/user/user.api'
 const HeaderMain = () => {
-  const { profile, reset } = useContext(AppContext)
+  const { reset } = useContext(AppContext)
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -44,15 +44,15 @@ const HeaderMain = () => {
         </Popconfirm>
       </div>
       <div className='header-container__user'>
-        <p className='header-container__user__name'>{profile?.name}</p>
-        {!dataMe?.data.result[0].avatar && (
+        <p className='header-container__user__name'>{dataMe?.data.result.name}</p>
+        {!dataMe?.data.result.avatar && (
           <Avatar onClick={() => navigate(pathRoutersUser.userInformation)} size={50} src={logo} />
         )}
-        {dataMe?.data.result[0].avatar && (
+        {dataMe?.data.result.avatar && (
           <Avatar
             onClick={() => navigate(pathRoutersUser.userInformation)}
             size={50}
-            src={dataMe?.data.result[0].avatar}
+            src={dataMe?.data.result.avatar}
           />
         )}
       </div>

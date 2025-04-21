@@ -235,6 +235,7 @@ export interface GetServicesCardSoldOfCustomer {
   employee_commision: any[]
   customers: Customer
   userInfo: UserGeneralInterface
+  created_at: string
   cards: {
     _id: string
     price: number | null
@@ -243,6 +244,15 @@ export interface GetServicesCardSoldOfCustomer {
       _id: string
       name: string
       lineTotal: number
-    }
+    }[]
   }[]
+}
+
+export interface CreateServicesCardSoldOfCustomerRequestBody {
+  branch: string[]
+  code?: string
+  customer_id: string
+  descriptions?: string
+  card_services_sold_id: string[]
+  user_id: string
 }

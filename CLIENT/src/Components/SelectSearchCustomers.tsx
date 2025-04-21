@@ -17,7 +17,8 @@ const SelectSearchCustomers: React.FC<{
   style?: CSSProperties
   clear?: boolean
   onHandleChange?: (value: Customer | null) => void
-}> = ({ placeholder = 'Nhập số điện thoại để tìm kiếm', style, clear = true, onHandleChange }) => {
+  resetSearchValue?: boolean
+}> = ({ placeholder = 'Nhập số điện thoại để tìm kiếm', style, clear = true, onHandleChange, resetSearchValue }) => {
   const [searchPhone, setSearchPhone] = useState<string>('') // Giá trị tìm kiếm hiện tại
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null) // Khách hàng được chọn
   const [customers, setCustomers] = useState<Customer[]>([]) // Danh sách khách hàng tìm được
@@ -67,6 +68,14 @@ const SelectSearchCustomers: React.FC<{
     value: JSON.stringify(customer), // Giá trị là chuỗi JSON của customer
     label: `${customer.name} - ${customer.phone}` // Hiển thị tên và số điện thoại
   }))
+
+  // Xử lí reset value của input search khi handle create card service thành công
+  useEffect(() => {
+    if (resetSearchValue) {
+      handleSearch('')
+      onHandleChange?.(null)
+    }
+  }, [resetSearchValue, onHandleChange])
 
   return (
     <Select

@@ -14,7 +14,7 @@ export type UploadAvatarResponse = SuccessArrayResponse<MediaType>
 
 export type DeleteUserResponse = SuccessResponse<void>
 
-export type GetUserResponse = SuccessArrayResponse<UserGeneralInterface>
+export type GetUserResponse = SuccessResponse<UserGeneralInterface>
 
 export type GetUsersResponse = SuccessResponse<UserGeneralInterface[]>
 

@@ -106,7 +106,13 @@ const MainLayout = ({ children }: Props) => {
 
   return (
     <Layout>
-      <Sider width={250} trigger={null} collapsible collapsed={collapsed}>
+      <Sider
+        style={{ zIndex: '999', position: 'fixed', left: '0', overflow: 'scroll' }}
+        width={250}
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+      >
         <div
           style={{
             height: 'auto',
@@ -136,14 +142,34 @@ const MainLayout = ({ children }: Props) => {
             type='text'
             icon={collapsed ? <BiSolidCaretRightSquare size={25} /> : <BiSolidCaretLeftSquare size={25} />}
             onClick={() => setCollapsed(!collapsed)}
-            style={{
-              width: 64,
-              height: 64
-            }}
+            style={
+              !collapsed
+                ? {
+                    transition: 'all .2s ease',
+                    marginLeft: '250px',
+                    width: 64,
+                    height: 64
+                  }
+                : {
+                    transition: 'all .2s ease',
+                    marginLeft: '80px',
+                    width: 64,
+                    height: 64
+                  }
+            }
           />
           <HeaderMain />
         </Header>
-        <Content className='main-layout-container__content'>{children}</Content>
+        <Content
+          style={
+            !collapsed
+              ? { transition: 'all .2s ease', marginLeft: '250px', width: 'calc(100vw - 250px)' }
+              : { transition: 'all .2s ease', marginLeft: '80px', width: 'calc(100vw - 80px)' }
+          }
+          className='main-layout-container__content'
+        >
+          {children}
+        </Content>
       </Layout>
     </Layout>
   )

@@ -37,11 +37,11 @@ export interface getProfileRequestBody {
 }
 
 export interface UpdateUserRequestBody {
-  _id: string
-  name: string
-  email: string
-  password: string
-  branch: string
+  _id?: string
+  name?: string
+  email?: string
+  password?: string
+  branch?: string
   created_at?: Date
   updated_at?: Date
   role?: UserRole
