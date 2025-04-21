@@ -153,6 +153,16 @@ const Service = () => {
       width: 150
     },
     {
+      title: 'Hoa hồng',
+      dataIndex: 'service_group',
+      key: 'service_groupe',
+      render: (service_group: ServicesCategoryType) =>
+        (service_group?.tour_price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+      sorter: (a: ServicesType, b: ServicesType) => a.price - b.price,
+      sortDirections: ['descend', 'ascend'],
+      width: 150
+    },
+    {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',

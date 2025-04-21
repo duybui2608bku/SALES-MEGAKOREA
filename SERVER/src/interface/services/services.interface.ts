@@ -5,6 +5,7 @@ export interface ServicesCategoryType {
   _id?: ObjectId
   name: string
   descriptions?: string
+  tour_price?: number
   branch?: ObjectId[]
 }
 
@@ -169,19 +170,23 @@ export interface EmployeeOfHistoryPaid {
 }
 
 export interface HistoryPaid {
-  code: string
-  date: Date
-  user_id: ObjectId | string
+  code?: string
+  services_card_sold_of_customer_id: ObjectId
   paid: number
   out_standing: number
   method: string
   descriptions?: string
+  user_id: ObjectId
+  date: Date
+  is_deleted?: boolean
+  created_at?: Date
+  updated_at?: Date
 }
 
 export interface HistoryUsed {
-  name_order: string
   name_service: string
-  user_id: ObjectId | string
+  user_name: string
+  count: number
   date: Date
   descriptions?: string
 }
@@ -208,9 +213,9 @@ export interface CardServicesSoldOfCustomerType {
   price?: number | null
   branch: ObjectId[]
   card_services_sold_id: ObjectId[]
-  history_paid?: HistoryPaid[]
+  history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
-  user_id: ObjectId | string
+  user_id: ObjectId
   employee_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date
@@ -229,20 +234,15 @@ export interface GetCommisionOfDateData {
   user_id: ObjectId | null
 }
 
-export interface UpdateHistoryPaidData {
-  history_paid: HistoryPaid
-  card_services_id: ObjectId
-  paid_initial: number
-}
-
-export interface CommisionCardServicesType {
-  _id?: ObjectId
-  card_services_sold_id: ObjectId
-  employee_id: ObjectId
-  commision: number
-  type_commision: TypeCommision
-  created_at?: Date
-  updated_at?: Date
+export interface UpdateHistoryPaidServicesCardOfCustomerData {
+  code?: string
+  services_card_sold_of_customer_id: ObjectId
+  paid: number
+  out_standing: number
+  method: string
+  descriptions?: string
+  user_id: ObjectId
+  date: Date
 }
 
 export interface CreateCommisionCardServicesData {

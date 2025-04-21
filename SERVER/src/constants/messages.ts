@@ -125,7 +125,18 @@ export const servicesMessages = {
   CREATE_SERVICES_CARD_SOLD_SUCCESS: 'Create services card sold success !',
   SERVICES_CARD_ID_MUST_BE_ARRAY: 'Services card id must be a array !',
   CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Create services card sold of customer success !',
-  GET_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Get services card sold of customer success !'
+  GET_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Get services card sold of customer success !',
+  SERVICES_CARD_SOLD_OF_CUSTOMER_NOT_FOUND: 'Services card sold of customer not found !',
+  UPDATE_HISTORY_PAID_FAILED: 'Update history paid failed !',
+  CARD_SERVICES_SOLD_ID_MUST_BE_ARRAY: 'Card services sold id must be a array !',
+  SEARCH_MUST_BE_STRING: 'Search must be a string !',
+  SEARCH_TYPE_MUST_BE_NUMBER: 'Search type must be a number !',
+  SERVICES_CARD_SOLD_OF_CUSTOMER_ID_MUST_BE_STRING: 'Services card sold of customer id must be a string !',
+  UPDATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS: 'Update services card sold of customer success !',
+  HISTORY_PAID_NOT_FOUND: 'History paid not found !',
+  HISTORY_PAID_ID_MUST_BE_STRING: 'History paid id must be a string !',
+  CARD_SERVICES_SOLD_ID_MUST_BE_STRING: 'Card services sold id must be a string !',
+  EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY: 'Employee commission id must be a array !'
 }
 
 export const productMessages = {
@@ -176,9 +187,15 @@ export const branchMessages = {
 }
 
 export const commisionMessages = {
-  CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !'
+  CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !',
+  CREATE_COMMISION_OF_SELLER_SUCCESS: 'Create commision of sale success !'
 }
 
 export const customerMessages = {
   CREATE_CUSTOMER_SUCCESS: 'Create customer success !'
+}
+
+export const paginationMessages = {
+  LIMIT_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Limit must be a number greater than zero !',
+  PAGE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Page must be a number greater than zero !'
 }

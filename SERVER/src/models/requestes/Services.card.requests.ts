@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { GetServicesCardSoldOfCustomerSearchType } from '~/constants/enum'
 import { EmployeeOfServices, HistoryPaid, HistoryUsed, ServicesOfCard } from '~/interface/services/services.interface'
 
 export interface CreateServicesCardRequestBody {
@@ -62,15 +63,14 @@ export interface GetCommisionOfDateRequestBody {
 }
 
 export interface UpdateHistoryPaidOfServicesCardRequestBody {
-  card_services_id: string
-  code: string
-  date: Date
-  paid_initial: number
-  user_id: string
+  code?: string
+  services_card_sold_of_customer_id: string
   paid: number
   out_standing: number
   method: string
   descriptions?: string
+  user_id: string
+  date: Date
 }
 
 export interface CreateServicesCardSoldOfCustomerRequestBody {
@@ -86,8 +86,27 @@ export interface GetServicesCardSoldOfCustomerRequestBody {
   limit?: number
   page?: number
   branch?: string[]
-  code?: string
   search?: string
-  search_type?: string
+  search_type?: GetServicesCardSoldOfCustomerSearchType
   date?: string
+}
+
+export interface UpdateServicesCardSoldOfCustomerRequestBody {
+  _id: string
+  card_services_sold_id?: string
+  history_paid_id?: string
+  history_used?: HistoryUsed
+  employee_commision_id?: string[]
+}
+
+export interface UpdateServicesCardSoldOfCustomerData {
+  _id: ObjectId
+  card_services_sold_id?: ObjectId | null
+  history_paid_id?: ObjectId | null
+  history_used?: HistoryUsed | null | any
+  employee_commision_id?: ObjectId[] | null
+}
+
+export interface DeleteHistoryPaidOfServicesCardRequestParams {
+  id: string
 }

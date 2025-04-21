@@ -1,4 +1,5 @@
 import { match } from 'assert'
+import { ObjectId } from 'mongodb'
 import databaseServiceSale from 'services/database.services.sale'
 import { TypeCommision } from '~/constants/enum'
 import {
@@ -7,12 +8,17 @@ import {
   GetCommisionOfDateData,
   GetServicesCardData,
   GetServicesCardSoldOfCustomerData,
-  UpdateHistoryPaidData,
+  UpdateHistoryPaidServicesCardOfCustomerData,
   UpdateServicesCardData
 } from '~/interface/services/services.interface'
+import {
+  UpdateServicesCardSoldOfCustomerData,
+  UpdateServicesCardSoldOfCustomerRequestBody
+} from '~/models/requestes/Services.card.requests'
 import { CardServices } from '~/models/schemas/services/cardServices.schema'
 import { CardServicesSold } from '~/models/schemas/services/cardServicesSold.schema'
 import { CardServicesSoldOfCustomer } from '~/models/schemas/services/cardServicesSoldOfCustomer.schema'
+import HistoryPaidServicesCardSoldOfCustomer from '~/models/schemas/services/HistoryPaidServicesCardSoldOfCustomer.schema'
 import { createProjectionField } from '~/utils/utils'
 
 class ServicesCardRepository {
@@ -688,22 +694,11 @@ class ServicesCardRepository {
     await databaseServiceSale.services_card.updateOne({ _id }, { $set: { ...updateData } })
   }
 
-  async updateHistoryOfCard(data: UpdateHistoryPaidData) {
-    await databaseServiceSale.services_card.updateOne(
-      {
-        _id: data.card_services_id
-      },
-      {
-        $set: {
-          price_paid: data.paid_initial
-        },
-        $push: {
-          history_paid: {
-            ...data.history_paid
-          }
-        }
-      }
+  async updateHistoryPaidServicesCardOfCustomer(data: UpdateHistoryPaidServicesCardOfCustomerData) {
+    const result = await databaseServiceSale.history_paid_services_card_of_customer.insertOne(
+      new HistoryPaidServicesCardSoldOfCustomer(data)
     )
+    return result.insertedId
   }
 
   async createServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerData) {
@@ -724,27 +719,24 @@ class ServicesCardRepository {
 
     const projectCardServicesDetails = createProjectionField('cards', [
       'branch',
-      'branch',
+      'products',
       'is_active',
       'code',
       'descriptions',
       'user_id',
-      'employee',
-      'service_group_id'
+      'employee'
     ])
 
     const projectionServices = createProjectionField('cards.services_of_card', [
       'services_id',
-      'quantity',
       'discount',
       'price',
       'branch',
       'descriptions',
-      'service_group_id',
       'user_id',
       'is_active',
       'code',
-      'product',
+      'products',
       'employee',
       'step_services'
     ])
@@ -915,6 +907,52 @@ class ServicesCardRepository {
       .toArray()
     const total = await databaseServiceSale.services_card_sold_of_customer.countDocuments(query)
     return { servicesCardSold, total, limit, page }
+  }
+
+  async updateServicesCardSoldOfCustomer(data: UpdateServicesCardSoldOfCustomerData) {
+    const { _id, card_services_sold_id, employee_commision_id, history_paid_id, history_used } = data
+
+    // Tạo payload update một cách có điều kiện
+    const pushData: Record<string, any> = {}
+
+    if (card_services_sold_id != null) {
+      pushData.card_services_sold_id = card_services_sold_id
+    }
+
+    if (history_paid_id != null) {
+      pushData.history_paid = history_paid_id
+    }
+
+    if (history_used != null) {
+      pushData.history_used = history_used
+    }
+
+    if (employee_commision_id != null && Array.isArray(employee_commision_id) && employee_commision_id.length > 0) {
+      pushData.employee_commision = { $each: employee_commision_id }
+    }
+
+    // Chỉ gọi update nếu có gì đó để push
+    if (Object.keys(pushData).length > 0) {
+      await databaseServiceSale.services_card_sold_of_customer.updateOne(
+        { _id },
+        {
+          $push: pushData
+        }
+      )
+    }
+  }
+
+  async deleteHistoryPaidOfServicesCardSoldOfCustomer(id: ObjectId) {
+    await databaseServiceSale.history_paid_services_card_of_customer.updateOne(
+      {
+        _id: id
+      },
+      {
+        $set: {
+          is_deleted: true
+        }
+      }
+    )
   }
 }
 

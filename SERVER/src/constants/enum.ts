@@ -107,3 +107,8 @@ export enum HttpStatusCode {
   NotExtended = 510,
   NetworkAuthenticationRequired = 511
 }
+
+export enum GetServicesCardSoldOfCustomerSearchType {
+  NAME_CUSTOMER = 1,
+  PHONE__CUSTOMER = 2
+}

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 import databaseServiceSale from './database.services.sale'
 import { ErrorWithStatusCode } from '../src/models/Errors'
-import { HttpStatusCode } from '../src/constants/enum'
+import { GetServicesCardSoldOfCustomerSearchType, HttpStatusCode } from '../src/constants/enum'
 import { servicesMessages } from '../src/constants/messages'
 import {
   CreateServicesCardRequestBody,
@@ -11,9 +11,10 @@ import {
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
   UpdateCardRequestBody,
-  UpdateHistoryPaidOfServicesCardRequestBody
+  UpdateHistoryPaidOfServicesCardRequestBody,
+  UpdateServicesCardSoldOfCustomerRequestBody
 } from '~/models/requestes/Services.card.requests'
-import { toObjectId } from '~/utils/utils'
+import { getObjectOrNul, toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
 import { CreateServicesCardData, UpdateServicesCardData } from '~/interface/services/services.interface'
 
@@ -52,6 +53,26 @@ class ServicesCardServices {
     if (!servicesCategory) {
       throw new ErrorWithStatusCode({
         message: servicesMessages.SERVICES_CARD_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+  }
+
+  private async checkServicesCardSoldOfCustomerExist(id: ObjectId) {
+    const servicesCardSoldOfCustomer = await databaseServiceSale.services_card_sold_of_customer.findOne({ _id: id })
+    if (!servicesCardSoldOfCustomer) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.SERVICES_CARD_SOLD_OF_CUSTOMER_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+  }
+
+  private async checkHistoryPaidExist(id: ObjectId) {
+    const historyPaid = await databaseServiceSale.history_paid_services_card_of_customer.findOne({ _id: id })
+    if (!historyPaid) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.HISTORY_PAID_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }
@@ -106,18 +127,22 @@ class ServicesCardServices {
   }
 
   async UpdateHistoryPaid(data: UpdateHistoryPaidOfServicesCardRequestBody) {
-    await this.checkServicesCardExist(new ObjectId(data.card_services_id || ''))
-    const { card_services_id, paid_initial, ...rest } = data
-    const cardServicesId = new ObjectId(card_services_id)
-    await servicesCardRepository.updateHistoryOfCard({
-      history_paid: {
-        ...rest,
-        date: new Date(rest.date),
-        user_id: new ObjectId(rest.user_id)
-      },
-      card_services_id: cardServicesId,
-      paid_initial
-    })
+    const _id = new ObjectId(data.services_card_sold_of_customer_id)
+    const userId = new ObjectId(data.user_id)
+    await this.checkServicesCardSoldOfCustomerExist(new ObjectId(_id))
+    const historyPaid = {
+      ...data,
+      user_id: userId,
+      services_card_sold_of_customer_id: _id
+    }
+    const result = await servicesCardRepository.updateHistoryPaidServicesCardOfCustomer(historyPaid)
+    if (!result) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.UPDATE_HISTORY_PAID_FAILED,
+        statusCode: HttpStatusCode.InternalServerError
+      })
+    }
+    return result
   }
 
   async CreateServicesCardSold(data: CreateServicesCardSoldRequestBody) {
@@ -153,20 +178,72 @@ class ServicesCardServices {
     await servicesCardRepository.createServicesCardSoldOfCustomer(cardServicesSoldData)
   }
 
-  async GetServicesCardSoldOfCustomer(data: GetServicesCardSoldOfCustomerRequestBody) {
-    const { page = 1, limit = 10, branch, code, search } = data
-    const query = {
-      ...(code && { code: { $regex: code, $options: 'i' } }),
-      ...(search && { name: { $regex: search, $options: 'i' } }),
-      ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } })
+  async GetServicesCardSoldOfCustomer(data: GetServicesCardSoldOfCustomerRequestBody): Promise<{
+    servicesCardSold: any[]
+    total: number
+  }> {
+    const { page = 1, limit = 10, branch, search, search_type, date } = data
+
+    let customerId: ObjectId | undefined
+
+    // Handle customer search based on search_type
+    if (search && search_type) {
+      const searchQuery = { $regex: search, $options: 'i' }
+      const customer = await databaseServiceSale.customers.findOne(
+        search_type === GetServicesCardSoldOfCustomerSearchType.NAME_CUSTOMER
+          ? { name: searchQuery }
+          : { phone: searchQuery }
+      )
+      customerId = customer?._id
     }
 
-    const servicesCardSold = await servicesCardRepository.getAllServicesCardSoldOfCustomer({
+    // Build query object
+    const query: Record<string, any> = {
+      ...(customerId ? { customer_id: customerId } : {}),
+      ...(date && { date: { $eq: new Date(date) } }),
+      ...(branch?.length && {
+        branch: { $in: branch.map((branchId: string) => new ObjectId(branchId)) }
+      })
+    }
+
+    // Fetch services card sold data
+    const { servicesCardSold, total } = await servicesCardRepository.getAllServicesCardSoldOfCustomer({
       page,
       limit,
       query
     })
-    return servicesCardSold
+
+    return {
+      servicesCardSold,
+      total
+    }
+  }
+
+  async UpdateServicesCardSoldOfCustomer(data: UpdateServicesCardSoldOfCustomerRequestBody) {
+    const { _id, card_services_sold_id, history_paid_id, history_used, employee_commision_id } = data
+    const id = new ObjectId(_id)
+    await this.checkServicesCardSoldOfCustomerExist(new ObjectId(id))
+    const cardServicesSoldId = card_services_sold_id !== undefined ? new ObjectId(card_services_sold_id) : null
+    const historyPaidId = history_paid_id !== undefined ? new ObjectId(history_paid_id) : null
+    const history_used_data = getObjectOrNul(history_used)
+    const employeeCommisionId =
+      employee_commision_id !== undefined ? employee_commision_id?.map((id) => new ObjectId(id)) : []
+
+    const cardServicesSoldData = {
+      card_services_sold_id: cardServicesSoldId,
+      history_paid: historyPaidId,
+      history_used: history_used_data,
+      employee_commision: employeeCommisionId,
+      _id: id
+    }
+
+    await servicesCardRepository.updateServicesCardSoldOfCustomer(cardServicesSoldData)
+  }
+
+  async DeleteHistoryPaidOfServicesCardSoldOfCustomer(id: string) {
+    const historyPaidId = new ObjectId(id)
+    await this.checkHistoryPaidExist(historyPaidId)
+    await servicesCardRepository.deleteHistoryPaidOfServicesCardSoldOfCustomer(historyPaidId)
   }
 }
 

@@ -71,6 +71,7 @@ export interface ServicesCategoryType {
   _id: string
   name: string
   descriptions: string
+  tour_price?: number
 }
 
 export interface CreateServicesCategoryRequestBody {

@@ -12,6 +12,23 @@ export const CreateServicesCategoryValidator = validate(
       name: {
         isString: true,
         notEmpty: true
+      },
+      descriptions: {
+        isString: true,
+        optional: true
+      },
+      branch: {
+        isArray: true,
+        optional: true,
+        errorMessage: servicesMessages.BRANCH_MUST_BE_ARRAY_STRING
+      },
+      tour_price: {
+        isNumeric: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
+        optional: true
       }
     },
     ['body']
@@ -50,6 +67,14 @@ export const UpDateCategoryValidator = validate(
       },
       descriptions: {
         isString: true,
+        optional: true
+      },
+      tour_price: {
+        isNumeric: true,
+        isInt: {
+          options: { min: 0 },
+          errorMessage: servicesMessages.TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        },
         optional: true
       }
     },
