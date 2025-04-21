@@ -4,11 +4,13 @@ import {
   CreateServicesCardRequestBody,
   CreateServicesCardSoldOfCustomerRequestBody,
   CreateServicesCardSoldRequestBody,
+  DeleteHistoryPaidOfServicesCardRequestParams,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
   UpdateCardRequestBody,
-  UpdateHistoryPaidOfServicesCardRequestBody
+  UpdateHistoryPaidOfServicesCardRequestBody,
+  UpdateServicesCardSoldOfCustomerRequestBody
 } from '~/models/requestes/Services.card.requests'
 import servicesCardServices from '../../services/services.card.services'
 import { ResponseError, ResponseSuccess } from '~/utils/handlers'
@@ -54,10 +56,24 @@ export const UpdateHistoryPaid = async (
   res: Response
 ) => {
   const data = req.body
-  await servicesCardServices.UpdateHistoryPaid(data)
+  const result = await servicesCardServices.UpdateHistoryPaid(data)
   ResponseSuccess({
     message: servicesMessages.UPDATE_HISTORY_PAID_SUCCESS,
-    res
+    res,
+    result
+  })
+}
+
+export const DeleteHistoryPaid = async (
+  req: Request<ParamsDictionary, DeleteHistoryPaidOfServicesCardRequestParams, any, any>,
+  res: Response
+) => {
+  const { id } = req.params
+  const result = await servicesCardServices.DeleteHistoryPaidOfServicesCardSoldOfCustomer(id)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_HISTORY_PAID_SUCCESS,
+    res,
+    result
   })
 }
 
@@ -111,6 +127,32 @@ export const getServicesCardSoldOfCustomer = async (
   const result = await servicesCardServices.GetServicesCardSoldOfCustomer(data)
   ResponseSuccess({
     message: servicesMessages.GET_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
+    result,
+    res
+  })
+}
+
+// export const createServicesCardSoldOfCustomerHistoryPaid = async (
+//   req: Request<ParamsDictionary, any, CreateServicesCardSoldOfCustomerRequestBody>,
+//   res: Response
+// ) => {
+//   const data = req.body
+//   const result = await servicesCardServices.CreateServicesCardSoldOfCustomer(data)
+//   ResponseSuccess({
+//     message: servicesMessages.CREATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
+//     result,
+//     res
+//   })
+// }
+
+export const updateServicesCardSoldOfCustomer = async (
+  req: Request<ParamsDictionary, any, UpdateServicesCardSoldOfCustomerRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await servicesCardServices.UpdateServicesCardSoldOfCustomer(data)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
     result,
     res
   })

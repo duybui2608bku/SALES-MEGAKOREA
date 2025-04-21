@@ -10,9 +10,9 @@ export class CardServicesSoldOfCustomer {
   price?: number | null
   branch: ObjectId[]
   card_services_sold_id: ObjectId[]
-  history_paid?: HistoryPaid[]
+  history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
-  user_id: ObjectId | string
+  user_id: ObjectId
   employee_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date

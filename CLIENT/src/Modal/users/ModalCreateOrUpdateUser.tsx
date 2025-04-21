@@ -304,7 +304,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                         options={[
                           { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
                           { value: RoleUser.MANAGER, label: 'Quản lý' },
-                          { value: RoleUser.SALE, label: 'Saler' },
+                          { value: RoleUser.SALE, label: 'Seller' },
                           { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
                           { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
                           { value: RoleUser.USER, label: 'Khách hàng' }
@@ -360,7 +360,7 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                         options={[
                           { value: RoleUser.ACCOUNTANT, label: 'Kế toán' },
                           { value: RoleUser.MANAGER, label: 'Quản lý' },
-                          { value: RoleUser.SALE, label: 'Saler' },
+                          { value: RoleUser.SALE, label: 'Seller' },
                           { value: RoleUser.TECHNICAN_MASTER, label: 'Kỹ sư' },
                           { value: RoleUser.TECHNICIAN, label: 'Kỹ thuật viên' },
                           { value: RoleUser.USER, label: 'Khách hàng' }

@@ -2,17 +2,18 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { commisionMessages } from '~/constants/messages'
 import { ResponseSuccess } from '~/utils/handlers'
-import { CreateCommisionCardServicesRequestType } from '~/models/requestes/Commision.request'
-import commisiomServicesOfCardRepository from 'repository/services/commision.services.card.repository'
+import { CreateCommisionOfSellerRequestType } from '~/models/requestes/Commision.request'
+import commisionServicesOfSale from 'services/commision.services'
 
-export const createCommisionServicesOfCard = async (
-  req: Request<ParamsDictionary, any, CreateCommisionCardServicesRequestType>,
+export const createCommisionOfSeller = async (
+  req: Request<ParamsDictionary, any, CreateCommisionOfSellerRequestType>,
   res: Response
 ) => {
   const data = req.body
-  await commisiomServicesOfCardRepository.createCommisionServicesOfCard(data)
+  const result = await commisionServicesOfSale.createCommisionOfSeller(data)
   return ResponseSuccess({
     res,
-    message: commisionMessages.CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS
+    message: commisionMessages.CREATE_COMMISION_OF_SELLER_SUCCESS,
+    result
   })
 }

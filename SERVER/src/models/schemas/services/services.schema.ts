@@ -13,9 +13,13 @@ export class ServicesCategory {
   _id?: ObjectId
   name: string
   descriptions: string
+  tour_price?: number
+  branch?: ObjectId[]
   constructor(servicesCategory: ServicesCategoryType) {
     this._id = servicesCategory._id || new ObjectId()
     this.name = servicesCategory.name || ''
+    this.tour_price = servicesCategory.tour_price || 0
+    this.branch = servicesCategory.branch || []
     this.descriptions = servicesCategory.descriptions || ''
   }
 }

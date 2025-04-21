@@ -1,12 +1,12 @@
 import databaseServiceSale from 'services/database.services.sale'
-import { CreateCommisionCardServicesRequestType } from '~/models/requestes/Commision.request'
-import { CommisionCardServices } from '~/models/schemas/commision/commision.cardservices.schema'
+import { CreateCommisionOfSellerData } from '~/interface/commision/commision.interface'
+import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.schema'
 
-class CommisionServicesOfCardRepository {
-  async createCommisionServicesOfCard(data: CreateCommisionCardServicesRequestType) {
-    return await databaseServiceSale.commission_services_of_card.insertOne(new CommisionCardServices(data))
+class CommisionSellerRepository {
+  async createCommisionOfSeller(data: CreateCommisionOfSellerData) {
+    return await databaseServiceSale.commission_seller.insertOne(new CommisionOfSeller(data))
   }
 }
 
-const commisiomServicesOfCardRepository = new CommisionServicesOfCardRepository()
-export default commisiomServicesOfCardRepository
+const commisionSellerRepository = new CommisionSellerRepository()
+export default commisionSellerRepository

@@ -29,3 +29,11 @@ export const createProjectionField = (fieldPath: string, fieldsToOmit: string[])
   })
   return projection
 }
+
+export const getObjectOrNul = (value: object | undefined) => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) ? value : null
+}
+
+export const removeNullOutOfObject = (obj: Record<string, any>) => {
+  return _.omitBy(obj, _.isNull)
+}

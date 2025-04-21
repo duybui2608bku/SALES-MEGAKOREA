@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import { createCommisionServicesOfCard } from '~/controllers/commision.controllers'
+import { createCommisionOfSeller } from '~/controllers/commision.controllers'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const CommisionRouter = Router()
 
-CommisionRouter.post('/card-services/create', accessTokenValidator, wrapRequestHandler(createCommisionServicesOfCard))
+CommisionRouter.post('/seller', accessTokenValidator, wrapRequestHandler(createCommisionOfSeller))
 
 export default CommisionRouter
