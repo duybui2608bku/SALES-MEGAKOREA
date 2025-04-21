@@ -1,4 +1,5 @@
 import { Button, Col, Empty, Input, message, Popconfirm, Row, Skeleton, Tag, Typography } from 'antd'
+import { CheckCircleOutlined } from '@ant-design/icons'
 import { useContext, useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { useQuery, useMutation } from '@tanstack/react-query'
@@ -17,7 +18,7 @@ import { servicesApi } from 'src/Service/services/services.api'
 
 const { Search } = Input
 
-const LIMIT = 8
+const LIMIT = 6
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
@@ -189,6 +190,11 @@ const SoldServicesCardService = () => {
                   }}
                 >
                   <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
+                  {serviceCardSelected.length !== 0 && (
+                    <Tag icon={<CheckCircleOutlined />} color='success' style={{ padding: '5px 10px 5px 10px' }}>
+                      Tổng thẻ dịch vụ: x{serviceCardSelected.length}
+                    </Tag>
+                  )}
                   <Popconfirm
                     okButtonProps={{ loading: isCreatingCustomer || isCreatingServiceCard }}
                     onConfirm={() => handleCreateServiceCardSoldOfCustomer()}
