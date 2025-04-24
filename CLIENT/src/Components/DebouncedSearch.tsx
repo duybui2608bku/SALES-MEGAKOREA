@@ -1,5 +1,5 @@
 import { Input } from 'antd'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 const { Search } = Input
 
@@ -7,10 +7,12 @@ interface DebouncedSearchProps {
   placeholder?: string
   onSearch: (value: string) => void
   debounceTime?: number
+  loading?: boolean
+  resetValue?: boolean
 }
 
 const DebouncedSearch = (props: DebouncedSearchProps) => {
-  const { placeholder, onSearch, debounceTime = 500 } = props
+  const { placeholder, onSearch, debounceTime = 500, loading, resetValue } = props
   const [value, setValue] = useState<string>('')
   const debounce = useCallback((fn: (val: string) => void, delay: number) => {
     let timeoutId: NodeJS.Timeout
@@ -28,6 +30,14 @@ const DebouncedSearch = (props: DebouncedSearchProps) => {
     debouncedSearch(newValue)
   }
 
+  // Xử lý reset value khi người dùng bấm btn "Quay về" trong <Empty />
+  useEffect(() => {
+    if (resetValue) {
+      setValue('')
+      onSearch('')
+    }
+  }, [resetValue, onSearch])
+
   const handleSearch = () => {
     onSearch(value)
   }
@@ -39,6 +49,7 @@ const DebouncedSearch = (props: DebouncedSearchProps) => {
       onChange={handleChange}
       onSearch={handleSearch}
       enterButton
+      loading={loading}
       allowClear
     />
   )

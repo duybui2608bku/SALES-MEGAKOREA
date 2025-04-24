@@ -8,6 +8,7 @@ import {
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
   UpdatePaidOfServicesCardRequestBody,
+  UpdateServicesCardSoldOfCustomerRequestBody,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from 'src/Interfaces/services/services.interfaces'
@@ -26,6 +27,7 @@ import {
   GetServicesResponse,
   UpdateCategoryServicesResponse,
   UpdateServicesCardResponse,
+  UpdateServicesCardSoldOfCustomerRespone,
   UpdateServicesResponse
 } from 'src/Types/services/services.type'
 
@@ -78,6 +80,12 @@ export const servicesApi = {
   async GetServicesCardSoldOfCustomer(body: GetServicesCardSoldOfCustomerRequestBody) {
     return axiosInstanceMain.post<GetServicesCardSoldOfCustomerResponse>(
       pathServices.getAllSoldServicesCardOfCustomer,
+      body
+    )
+  },
+  async updateServicesCardSoldOfCustomer(body: UpdateServicesCardSoldOfCustomerRequestBody) {
+    return axiosInstanceMain.patch<UpdateServicesCardSoldOfCustomerRespone>(
+      pathServices.updateServiceCardSoldOfCustomer,
       body
     )
   }

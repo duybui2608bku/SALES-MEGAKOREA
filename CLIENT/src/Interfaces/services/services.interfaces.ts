@@ -8,6 +8,14 @@ export interface ProductOfServices {
   quantity: number
 }
 
+export interface HistoryUsed {
+  name_service: string
+  user_name: string
+  count: number
+  date: Date
+  descriptions?: string
+}
+
 export interface StepServicesType {
   id_employee: string
   commision: number
@@ -255,4 +263,12 @@ export interface CreateServicesCardSoldOfCustomerRequestBody {
   descriptions?: string
   card_services_sold_id: string[]
   user_id: string
+}
+
+export interface UpdateServicesCardSoldOfCustomerRequestBody {
+  _id: string
+  card_services_sold_id?: string[]
+  history_paid_id?: string
+  history_used?: HistoryUsed
+  employee_commision_id?: string[]
 }

@@ -30,11 +30,9 @@ export type CreateServicesResponse = SuccessResponse<void>
 export type DeleteServicesResponse = SuccessResponse<void>
 export type UpdateServicesResponse = SuccessResponse<void>
 
-export type CreateServicesCardResponse = SuccessResponse<void>
+export type CreateServicesCardResponse = SuccessResponse<ServicesOfCardType[]>
 export type UpdateServicesCardResponse = SuccessResponse<void>
 export type DeleteServicesCardResponse = SuccessResponse<void>
-
-export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>
 
 export type GetServicesCardResponse = SuccessResponse<{
   servicesCard: ServicesOfCardType[]
@@ -49,3 +47,6 @@ export type GetServicesCardSoldOfCustomerResponse = SuccessResponse<{
   page: number
   total: number
 }>
+
+export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>
+export type UpdateServicesCardSoldOfCustomerRespone = SuccessResponse<void>

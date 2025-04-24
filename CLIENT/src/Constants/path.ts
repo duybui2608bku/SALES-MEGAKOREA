@@ -79,7 +79,8 @@ const pathServices = {
   updateCategoryService: 'services/category-update',
   deleteCategoryService: 'services/category-delete',
   getAllSoldServicesCardOfCustomer: '/services-card/sold-of-customer',
-  createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create'
+  createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create',
+  updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update'
 }
 
 const pathRoutesCustomers = {
