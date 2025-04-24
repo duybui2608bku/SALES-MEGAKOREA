@@ -93,7 +93,7 @@ export interface GetServicesCardSoldOfCustomerRequestBody {
 
 export interface UpdateServicesCardSoldOfCustomerRequestBody {
   _id: string
-  card_services_sold_id?: string
+  card_services_sold_id?: string[]
   history_paid_id?: string
   history_used?: HistoryUsed
   employee_commision_id?: string[]
@@ -101,7 +101,7 @@ export interface UpdateServicesCardSoldOfCustomerRequestBody {
 
 export interface UpdateServicesCardSoldOfCustomerData {
   _id: ObjectId
-  card_services_sold_id?: ObjectId | null
+  card_services_sold_id?: ObjectId[] | null
   history_paid_id?: ObjectId | null
   history_used?: HistoryUsed | null | any
   employee_commision_id?: ObjectId[] | null

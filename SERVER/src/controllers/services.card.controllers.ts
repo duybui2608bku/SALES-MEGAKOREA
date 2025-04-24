@@ -23,10 +23,13 @@ export const createServicesCard = async (
   res: Response
 ) => {
   const data = req.body
-  await servicesCardServices.CreateServicesCard(data)
+  const result = await servicesCardServices.CreateServicesCard(data)
+  console.log('Result BE: ', result)
+
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SUCCESS,
-    res
+    res,
+    result
   })
 }
 
