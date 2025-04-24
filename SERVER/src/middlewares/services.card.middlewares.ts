@@ -452,8 +452,8 @@ export const UpdateServicesCardSoldOfCustomerValidator = validate(
       }
     },
     card_services_sold_id: {
-      isString: {
-        errorMessage: servicesMessages.CARD_SERVICES_SOLD_ID_MUST_BE_STRING
+      isArray: {
+        errorMessage: servicesMessages.CARD_SERVICES_SOLD_ID_MUST_ARRAY_STRING
       },
       isMongoId: {
         errorMessage: servicesMessages.INVALID_ID

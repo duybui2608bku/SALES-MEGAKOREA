@@ -79,6 +79,7 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  CREATE_FAIL_OR_NOT_FOUND_SERVICE_CARD: 'Create service card fail or not found!',
   CREATE_SERVICES_CATEGORY_SUCCESS: 'Create services category success !',
   BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string of object Id !',
   SERVICES_CATEGORY_NOT_FOUND: 'Services category not found !',
@@ -138,7 +139,8 @@ export const servicesMessages = {
   HISTORY_PAID_ID_MUST_BE_STRING: 'History paid id must be a string !',
   CARD_SERVICES_SOLD_ID_MUST_BE_STRING: 'Card services sold id must be a string !',
   EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY: 'Employee commission id must be a array !',
-  DELETE_SERVICES_CARD_SUCCESS: 'Delete services card success !'
+  DELETE_SERVICES_CARD_SUCCESS: 'Delete services card success !',
+  CARD_SERVICES_SOLD_ID_MUST_ARRAY_STRING: 'Card services sold id must be a array string !'
 }
 
 export const productMessages = {

@@ -3,10 +3,7 @@ import databaseServiceSale from './database.services.sale'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { commisionMessages, servicesMessages, userMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
-import {
-  CreateCommisionOfSellerRequestType,
-  CreateCommisionOfTechnicanRequestType
-} from '~/models/requestes/Commision.request'
+import { CreateCommisionOfTechnicanRequestType } from '~/models/requestes/Commision.request'
 import commisionSellerRepository from 'repository/services/commision.services.card.repository'
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
 
