@@ -16,7 +16,11 @@ import {
 } from '~/models/requestes/Services.card.requests'
 import { getObjectOrNul, toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
-import { CreateServicesCardData, UpdateServicesCardData } from '~/interface/services/services.interface'
+import {
+  CreateServicesCardData,
+  CreateServicesCardSoldData,
+  UpdateServicesCardData
+} from '~/interface/services/services.interface'
 
 const getServicePriceFromDB = async (services_id: string): Promise<number> => {
   const service = await databaseServiceSale.services.findOne({ _id: new ObjectId(services_id) })
@@ -88,11 +92,7 @@ class ServicesCardServices {
     const { page = 1, limit = 10, branch, code, is_active, search, service_group_id, name } = data
     const query = {
       ...(name && { name: { $regex: name, $options: 'i' } }),
-      ...(code && { code: { $regex: code, $options: 'i' } }),
-      ...(is_active !== undefined && { is_active }),
-      ...(search && { name: { $regex: search, $options: 'i' } }),
-      ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } }),
-      ...(service_group_id && { service_group_id: new ObjectId(service_group_id) })
+      ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } })
     }
     const servicesCard = await servicesCardRepository.getAllServicesCard({
       query,
@@ -159,7 +159,7 @@ class ServicesCardServices {
         return servicesCard
       })
     )
-    await servicesCardRepository.createServicesCardSold(servicesCardData as CreateServicesCardData[])
+    await servicesCardRepository.createServicesCardSold(servicesCardData as CreateServicesCardSoldData[])
   }
 
   async CreateServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerRequestBody) {
@@ -244,6 +244,12 @@ class ServicesCardServices {
     const historyPaidId = new ObjectId(id)
     await this.checkHistoryPaidExist(historyPaidId)
     await servicesCardRepository.deleteHistoryPaidOfServicesCardSoldOfCustomer(historyPaidId)
+  }
+
+  async DeleteServicesCard(_id: string) {
+    const id = new ObjectId(_id)
+    await this.checkServicesCardExist(id)
+    await servicesCardRepository.deleteServicesCard(id)
   }
 }
 

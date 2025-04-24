@@ -4,6 +4,7 @@ import databaseServiceSale from 'services/database.services.sale'
 import { TypeCommision } from '~/constants/enum'
 import {
   CreateServicesCardData,
+  CreateServicesCardSoldData,
   CreateServicesCardSoldOfCustomerData,
   GetCommisionOfDateData,
   GetServicesCardData,
@@ -11,10 +12,7 @@ import {
   UpdateHistoryPaidServicesCardOfCustomerData,
   UpdateServicesCardData
 } from '~/interface/services/services.interface'
-import {
-  UpdateServicesCardSoldOfCustomerData,
-  UpdateServicesCardSoldOfCustomerRequestBody
-} from '~/models/requestes/Services.card.requests'
+import { UpdateServicesCardSoldOfCustomerData } from '~/models/requestes/Services.card.requests'
 import { CardServices } from '~/models/schemas/services/cardServices.schema'
 import { CardServicesSold } from '~/models/schemas/services/cardServicesSold.schema'
 import { CardServicesSoldOfCustomer } from '~/models/schemas/services/cardServicesSoldOfCustomer.schema'
@@ -26,7 +24,7 @@ class ServicesCardRepository {
     await databaseServiceSale.services_card.insertOne(new CardServices(data))
   }
 
-  async createServicesCardSold(data: CreateServicesCardData[]) {
+  async createServicesCardSold(data: CreateServicesCardSoldData[]) {
     await databaseServiceSale.services_card_sold.insertMany(data.map((item) => new CardServicesSold(item)))
   }
 
@@ -67,7 +65,8 @@ class ServicesCardRepository {
       // Bước 1: Lọc dữ liệu theo query
       {
         $match: {
-          ...query
+          ...query,
+          is_active: true
         }
       },
 
@@ -953,6 +952,12 @@ class ServicesCardRepository {
         }
       }
     )
+  }
+
+  async deleteServicesCard(id: ObjectId) {
+    await databaseServiceSale.services_card.deleteOne({
+      _id: id
+    })
   }
 }
 

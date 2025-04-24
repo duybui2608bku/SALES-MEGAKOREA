@@ -3,11 +3,14 @@ import databaseServiceSale from './database.services.sale'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { commisionMessages, servicesMessages, userMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
-import { CreateCommisionOfSellerRequestType } from '~/models/requestes/Commision.request'
+import {
+  CreateCommisionOfSellerRequestType,
+  CreateCommisionOfTechnicanRequestType
+} from '~/models/requestes/Commision.request'
 import commisionSellerRepository from 'repository/services/commision.services.card.repository'
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
 
-class CommisionServicesOfSeller {
+class CommisionServicesOfTechnican {
   private async checkUserExist(id: ObjectId) {
     const User = await databaseServiceSale.users.findOne({ _id: id })
     if (!User) {
@@ -28,7 +31,7 @@ class CommisionServicesOfSeller {
     }
   }
 
-  async createCommisionOfSeller(data: CreateCommisionOfSellerRequestType) {
+  async createCommisionOfTechnican(data: CreateCommisionOfTechnicanRequestType) {
     const { user_id, services_card_sold_of_customer_id } = data
     const userId = new ObjectId(user_id)
     const servicesCardSoldOfCustomerId = new ObjectId(services_card_sold_of_customer_id)
@@ -70,5 +73,5 @@ class CommisionServicesOfSeller {
   }
 }
 
-const commisionServicesOfSeller = new CommisionServicesOfSeller()
-export default commisionServicesOfSeller
+const commisionServicesOfTechnican = new CommisionServicesOfTechnican()
+export default commisionServicesOfTechnican
