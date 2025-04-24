@@ -162,3 +162,15 @@ iframe {
 .ant-tree {
   background-color: transparent !important;
 }
+
+.ant-empty-image img {
+  width: 200px !important;
+}
+
+
+.ant-card-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

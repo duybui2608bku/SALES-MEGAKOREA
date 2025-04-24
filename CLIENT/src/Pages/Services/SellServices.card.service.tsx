@@ -1,4 +1,4 @@
-import { Button, Col, Empty, Input, message, Popconfirm, Row, Skeleton, Tag, Typography } from 'antd'
+import { Button, Col, Empty, message, Popconfirm, Row, Skeleton, Tag, Typography } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
 import { useContext, useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
@@ -15,8 +15,9 @@ import { BranchDataHardCode } from 'src/Utils/util.utils'
 import { AppContext } from 'src/Context/AppContext'
 import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
 import { servicesApi } from 'src/Service/services/services.api'
+import DebouncedSearch from 'src/Components/DebouncedSearch'
 
-const { Search } = Input
+// const { Search } = Input
 
 const LIMIT = 6
 const PAGE = 1
@@ -27,18 +28,21 @@ const SoldServicesCardService = () => {
   const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<ServicesOfCardType[]>([])
   const [serviceCardSelected, setServiceCardSelected] = useState<string[]>([])
-  const [resetServiceCard, setResetServiceCard] = useState(false)
+  const [resetServiceCard, setResetServiceCard] = useState(0)
   const [resetValueSearchCustomer, setResetValueSearchCustomer] = useState(false)
+  const [resetValueSearchServiceCard, setResetValueSearchServiceCard] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const handleChangeCustomer = (value: Customer) => {
     setCustomer(value)
   }
 
   const { data, isLoading } = useQuery({
-    queryKey: ['services-card'],
-    queryFn: () => servicesApi.getServicesCard({ page: PAGE, limit: LIMIT }),
+    queryKey: ['services-card', searchQuery],
+    queryFn: () => servicesApi.getServicesCard({ page: PAGE, limit: LIMIT, name: searchQuery }),
     staleTime: STALETIME
   })
+  const checkData = data?.data.success
 
   useEffect(() => {
     if (data) {
@@ -58,6 +62,10 @@ const SoldServicesCardService = () => {
     setServiceCardSelected(serviceCardIds)
   }
 
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+  }
+
   // Create Customer
   const { mutateAsync: createCustomerService, isPending: isCreatingCustomer } = useMutation({
     mutationFn: customerApi.createCustomer,
@@ -75,8 +83,7 @@ const SoldServicesCardService = () => {
     onSuccess: () => {
       message.success('Bán thẻ dịch vụ thành công!')
       // Reset click service card
-      setResetServiceCard(true)
-      setTimeout(() => setResetServiceCard(false), 200)
+      setResetServiceCard((prev) => prev + 1)
       // Reset value search customer
       setResetValueSearchCustomer(true)
       setTimeout(() => setResetValueSearchCustomer(false), 200)
@@ -106,17 +113,17 @@ const SoldServicesCardService = () => {
 
     const response = await createCustomerService(createCustomer)
     const customerId = String(response.data.result)
-    const userId = String(profile._id)
-    const userBranchId = Array.isArray(profile.branch)
+    const userId = String(profile?._id)
+    const userBranchId = Array.isArray(profile?.branch)
       ? profile.branch.map((b: BranchType) => b._id)
-      : [profile.branch._id]
+      : [profile?.branch._id]
 
     try {
       const createServiceCard = {
         customer_id: customerId,
         card_services_sold_id: serviceCardSelected,
         user_id: userId,
-        branch: userBranchId
+        branch: userBranchId.filter((branchId) => branchId !== undefined) as string[]
       }
 
       createServiceCardSoldOfCustomer(createServiceCard)
@@ -224,18 +231,41 @@ const SoldServicesCardService = () => {
                   </Popconfirm>
                 </Col>
                 <Col span={24}>
-                  <Search placeholder='Tìm thẻ liệu trình' loading enterButton />
+                  <DebouncedSearch
+                    placeholder='Tìm thẻ dịch vụ'
+                    debounceTime={1000}
+                    onSearch={(value) => handleSearch(value)}
+                    loading={isLoading}
+                    resetValue={resetValueSearchServiceCard}
+                  />
                 </Col>
                 <Col span={24}>
-                  {isLoading || listServicesCard.length > 0 ? (
+                  {!isLoading && checkData ? (
                     <ServiceCardList
                       columnsGird={8}
                       onServiceClick={handleSelectServiceCard}
                       cards={listServicesCard}
                       resetCard={resetServiceCard}
                     />
-                  ) : (
+                  ) : !checkData && isLoading ? (
                     <Skeleton active />
+                  ) : (
+                    <Empty
+                      image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+                      styles={{ image: { width: '100%', height: '100px', margin: '50px 0' } }}
+                      description={<Typography.Text>No Data</Typography.Text>}
+                    >
+                      <Button
+                        type='primary'
+                        onClick={() => {
+                          handleSearch('')
+                          setResetValueSearchServiceCard(true)
+                          setTimeout(() => setResetValueSearchServiceCard(false), 200)
+                        }}
+                      >
+                        Quay về
+                      </Button>
+                    </Empty>
                   )}
                 </Col>
               </Row>

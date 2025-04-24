@@ -55,7 +55,7 @@ const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
               </Descriptions>
 
               {/* Các bước dịch vụ */}
-              <Card size='small' title='Các bước dịch vụ' style={{ marginTop: 16 }}>
+              {/* <Card size='small' title='Các bước dịch vụ' style={{ marginTop: 16 }}>
                 {service.service_details.step_services.map((step, stepIndex) => (
                   <Card
                     key={stepIndex}
@@ -83,7 +83,7 @@ const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
                     </Descriptions>
                   </Card>
                 ))}
-              </Card>
+              </Card> */}
             </Space>
           </Card>
         ))}
