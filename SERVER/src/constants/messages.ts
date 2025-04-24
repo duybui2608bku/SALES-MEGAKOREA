@@ -74,7 +74,8 @@ export const userMessages = {
   DELETE_USER_FROM_BRANCH_SUCCESS: 'Delete user from branch successfully',
   GET_ALL_USERS_SUCCESS: 'Get all users successfully',
   UPDATE_USER_SUCCESS: 'Update user successfully',
-  DELETE_USER_SUCCESS: 'Delete user successfully'
+  DELETE_USER_SUCCESS: 'Delete user successfully',
+  ID_MUST_BE_STRING: 'Id must be a string'
 } as const
 
 export const servicesMessages = {
@@ -136,7 +137,8 @@ export const servicesMessages = {
   HISTORY_PAID_NOT_FOUND: 'History paid not found !',
   HISTORY_PAID_ID_MUST_BE_STRING: 'History paid id must be a string !',
   CARD_SERVICES_SOLD_ID_MUST_BE_STRING: 'Card services sold id must be a string !',
-  EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY: 'Employee commission id must be a array !'
+  EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY: 'Employee commission id must be a array !',
+  DELETE_SERVICES_CARD_SUCCESS: 'Delete services card success !'
 }
 
 export const productMessages = {
@@ -188,7 +190,14 @@ export const branchMessages = {
 
 export const commisionMessages = {
   CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !',
-  CREATE_COMMISION_OF_SELLER_SUCCESS: 'Create commision of sale success !'
+  CREATE_COMMISION_OF_SELLER_SUCCESS: 'Create commision of sale success !',
+  COMMISION_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Commision must be a number greater than zero !',
+  DATE_MUST_BE_DATE: 'Date must be a date !',
+  COMMISION_OF_SELLER_NOT_FOUND: 'Commision of seller not found !',
+  GET_COMMISION_OF_SELLER_SUCCESS: 'Get commision of seller success !',
+  COMMISION_OF_SELLER_EMPTY: 'Commision of seller empty !',
+  END_DATE_CANNOT_BE_BEFORE_START_DATE: 'End date cannot be before start date !',
+  CREATE_COMMISION_OF_TECHNICAN_SUCCESS: 'Create commision of technican success !'
 }
 
 export const customerMessages = {
@@ -198,4 +207,12 @@ export const customerMessages = {
 export const paginationMessages = {
   LIMIT_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Limit must be a number greater than zero !',
   PAGE_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Page must be a number greater than zero !'
+}
+
+export const dateMessages = {
+  START_DATE_MUST_BE_DATE: 'Start date must be a date !',
+  START_DATE_CANNOT_BE_IN_FUTURE: 'Start date cannot be in future !',
+  END_DATE_MUST_BE_DATE: 'End date must be a date !',
+  END_DATE_CANNOT_BE_IN_FUTURE: 'End date cannot be in future !',
+  END_DATE_CANNOT_BE_BEFORE_START_DATE: 'End date cannot be before start date !'
 }

@@ -111,6 +111,14 @@ export interface ServicesOfCard {
   up_sale?: boolean
 }
 
+export interface ServicesOfCardSold {
+  services_id?: ObjectId | string
+  quantity?: number
+  discount?: number
+  used?: number
+  up_sale?: boolean
+}
+
 export interface CreateServicesCardData {
   code?: string
   is_active?: boolean
@@ -122,6 +130,20 @@ export interface CreateServicesCardData {
   user_id?: string
   service_group_id?: string
   services_of_card?: ServicesOfCard[]
+  employee?: EmployeeOfServices[]
+}
+
+export interface CreateServicesCardSoldData {
+  code?: string
+  is_active?: boolean
+  name: string
+  branch?: ObjectId[]
+  descriptions?: string
+  session_time?: number
+  price?: number
+  user_id?: ObjectId
+  service_group_id?: ObjectId
+  services_of_card?: ServicesOfCardSold[]
   employee?: EmployeeOfServices[]
 }
 
@@ -201,6 +223,20 @@ export interface CardServicesType {
   price?: number | null
   user_id?: ObjectId | string
   services_of_card?: ServicesOfCard[]
+  created_at?: Date
+  updated_at?: Date
+}
+
+export interface CardServicesSoldType {
+  _id?: ObjectId
+  code?: string
+  is_active?: boolean
+  name: string
+  branch?: ObjectId[]
+  descriptions?: string
+  price?: number | null
+  user_id?: ObjectId
+  services_of_card?: ServicesOfCardSold[]
   created_at?: Date
   updated_at?: Date
 }

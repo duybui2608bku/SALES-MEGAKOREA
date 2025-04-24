@@ -12,6 +12,7 @@ import databaseServiceSale from '../services/database.services.sale'
 import productRouters from './routes/product.routes'
 import servicesOfCardRouters from './routes/services.card.routes'
 import CustomersRouter from './routes/customers.routes'
+import CommisionRouter from './routes/commision.routes'
 config()
 
 const corsOptions = {
@@ -35,6 +36,7 @@ app.use('/services', ServicesRouters)
 app.use('/products', productRouters)
 app.use('/services-card', servicesOfCardRouters)
 app.use('/customers', CustomersRouter)
+app.use('/commision', CommisionRouter)
 app.use(defaultErrorHandler)
 
 app.listen(port, () => {

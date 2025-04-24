@@ -5,6 +5,7 @@ import {
   CreateServicesCardSoldOfCustomerRequestBody,
   CreateServicesCardSoldRequestBody,
   DeleteHistoryPaidOfServicesCardRequestParams,
+  DeleteServicesCardParams,
   GetCommisionOfDateRequestBody,
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
@@ -154,6 +155,18 @@ export const updateServicesCardSoldOfCustomer = async (
   ResponseSuccess({
     message: servicesMessages.UPDATE_SERVICES_CARD_SOLD_OF_CUSTOMER_SUCCESS,
     result,
+    res
+  })
+}
+
+export const DeleteServicesCard = async (
+  req: Request<ParamsDictionary, DeleteServicesCardParams, any, any>,
+  res: Response
+) => {
+  const { id } = req.params
+  await servicesCardServices.DeleteServicesCard(id)
+  ResponseSuccess({
+    message: servicesMessages.DELETE_SERVICES_CARD_SUCCESS,
     res
   })
 }

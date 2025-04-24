@@ -4,6 +4,7 @@ import {
   createServicesCardSold,
   createServicesCardSoldOfCustomer,
   DeleteHistoryPaid,
+  DeleteServicesCard,
   getServicesCard,
   getServicesCardSoldOfCustomer,
   UpdateHistoryPaid,
@@ -89,5 +90,7 @@ servicesOfCardRouters.patch(
   UpdateServicesCardSoldOfCustomerValidator,
   wrapRequestHandler(updateServicesCardSoldOfCustomer)
 )
+
+servicesOfCardRouters.delete('/delete/:id', accessTokenValidator, wrapRequestHandler(DeleteServicesCard))
 
 export default servicesOfCardRouters

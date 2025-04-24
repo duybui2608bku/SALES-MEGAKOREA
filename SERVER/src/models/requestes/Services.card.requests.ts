@@ -110,3 +110,7 @@ export interface UpdateServicesCardSoldOfCustomerData {
 export interface DeleteHistoryPaidOfServicesCardRequestParams {
   id: string
 }
+
+export interface DeleteServicesCardParams {
+  _id: string
+}
