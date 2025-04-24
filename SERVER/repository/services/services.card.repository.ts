@@ -1,7 +1,7 @@
-import { match } from 'assert'
 import { ObjectId } from 'mongodb'
 import databaseServiceSale from 'services/database.services.sale'
-import { TypeCommision } from '~/constants/enum'
+import { HttpStatusCode, TypeCommision } from '~/constants/enum'
+import { servicesMessages } from '~/constants/messages'
 import {
   CreateServicesCardData,
   CreateServicesCardSoldOfCustomerData,
@@ -11,6 +11,7 @@ import {
   UpdateHistoryPaidServicesCardOfCustomerData,
   UpdateServicesCardData
 } from '~/interface/services/services.interface'
+import { ErrorWithStatusCode } from '~/models/Errors'
 import {
   UpdateServicesCardSoldOfCustomerData,
   UpdateServicesCardSoldOfCustomerRequestBody
@@ -23,7 +24,360 @@ import { createProjectionField } from '~/utils/utils'
 
 class ServicesCardRepository {
   async createServicesCard(data: CreateServicesCardData) {
-    await databaseServiceSale.services_card.insertOne(new CardServices(data))
+    const result = await databaseServiceSale.services_card.insertOne(new CardServices(data))
+    // const serviceCardNew = await databaseServiceSale.services_card.findOne({
+    //   _id: result.insertedId
+    // })
+    const projectionEmployeeDetailsFull = createProjectionField('employee.employee_details', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient'
+    ])
+
+    const projectionServiceDetailsFull = createProjectionField('services_of_card.service_details.step_services', [
+      'employee_details.password',
+      'employee_details.status',
+      'employee_details.forgot_password_token',
+      'employee_details.role',
+      'employee_details.coefficient'
+    ])
+    const projectionHistoryPaidFull = createProjectionField('history_paid.user_details', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient'
+    ])
+
+    const finalProjection = {
+      ...projectionEmployeeDetailsFull,
+      ...projectionServiceDetailsFull,
+      ...projectionHistoryPaidFull
+    } as any
+
+    const pipeline = [
+      // Bước 1: Lọc dữ liệu theo query
+      {
+        $match: {
+          _id: new ObjectId(result.insertedId)
+        }
+      },
+
+      // Bước 2: Lookup thông tin branch
+      {
+        $lookup: {
+          from: 'branch',
+          localField: 'branch',
+          foreignField: '_id',
+          as: 'branch'
+        }
+      },
+
+      // Bước 3: Lookup thông tin service_group và lấy phần tử đầu tiên
+      {
+        $lookup: {
+          from: 'services_category',
+          localField: 'service_group_id',
+          foreignField: '_id',
+          as: 'service_group'
+        }
+      },
+      {
+        $set: {
+          service_group: { $arrayElemAt: ['$service_group', 0] }
+        }
+      },
+
+      // Bước 4: Lưu trữ giá trị gốc của services_of_card
+      {
+        $set: {
+          original_services_of_card: '$services_of_card'
+        }
+      },
+
+      // Bước 5: Unwind services_of_card để xử lý từng phần tử
+      {
+        $unwind: {
+          path: '$services_of_card',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      // Bước 6: Lookup thông tin chi tiết của services trong services_of_card
+      {
+        $lookup: {
+          from: 'services',
+          localField: 'services_of_card.services_id',
+          foreignField: '_id',
+          as: 'services_of_card.service_details'
+        }
+      },
+      {
+        $set: {
+          'services_of_card.service_details': { $arrayElemAt: ['$services_of_card.service_details', 0] }
+        }
+      },
+
+      // Bước 7: Lấy price từ service_details và tính total cho services_of_card
+      {
+        $set: {
+          'services_of_card.price': { $ifNull: ['$services_of_card.service_details.price', 0] },
+          'services_of_card.total': {
+            $subtract: [
+              {
+                $multiply: [{ $ifNull: ['$services_of_card.service_details.price', 0] }, '$services_of_card.quantity']
+              },
+              { $ifNull: ['$services_of_card.discount', 0] }
+            ]
+          }
+        }
+      },
+
+      // Bước 8: Unwind step_services trong service_details
+      {
+        $unwind: {
+          path: '$services_of_card.service_details.step_services',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      // Bước 9: Lookup thông tin employee trong step_services
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'services_of_card.service_details.step_services.id_employee',
+          foreignField: '_id',
+          as: 'services_of_card.service_details.step_services.employee_details'
+        }
+      },
+      {
+        $set: {
+          'services_of_card.service_details.step_services.employee_details': {
+            $arrayElemAt: ['$services_of_card.service_details.step_services.employee_details', 0]
+          }
+        }
+      },
+
+      // Bước 10: Group lại step_services thành mảng trong service_details
+      {
+        $group: {
+          _id: {
+            _id: '$_id',
+            services_of_card_id: '$services_of_card.services_id',
+            quantity: '$services_of_card.quantity',
+            discount: '$services_of_card.discount',
+            price: '$services_of_card.price',
+            total: '$services_of_card.total'
+          },
+          branch: { $first: '$branch' },
+          code: { $first: '$code' },
+          is_active: { $first: '$is_active' },
+          name: { $first: '$name' },
+          descriptions: { $first: '$descriptions' },
+          session_time: { $first: '$session_time' },
+          price_paid: { $first: '$price_paid' },
+          history_paid: { $first: '$history_paid' },
+          user_id: { $first: '$user_id' },
+          service_group: { $first: '$service_group' },
+          created_at: { $first: '$created_at' },
+          updated_at: { $first: '$updated_at' },
+          original_services_of_card: { $first: '$original_services_of_card' },
+          employee: { $first: '$employee' },
+          service_details: { $first: '$services_of_card.service_details' },
+          step_services: { $push: '$services_of_card.service_details.step_services' }
+        }
+      },
+
+      // Bước 11: Gộp lại services_of_card với thông tin đã xử lý
+      {
+        $set: {
+          services_of_card: {
+            services_id: '$_id.services_of_card_id',
+            quantity: '$_id.quantity',
+            discount: '$_id.discount',
+            price: '$_id.price',
+            total: '$_id.total',
+            service_details: {
+              $mergeObjects: ['$service_details', { step_services: '$step_services' }]
+            }
+          }
+        }
+      },
+
+      // Bước 12: Group lại services_of_card và tính tổng giá
+      {
+        $group: {
+          _id: '$_id._id',
+          branch: { $first: '$branch' },
+          code: { $first: '$code' },
+          is_active: { $first: '$is_active' },
+          name: { $first: '$name' },
+          descriptions: { $first: '$descriptions' },
+          session_time: { $first: '$session_time' },
+          price_paid: { $first: '$price_paid' },
+          history_paid: { $first: '$history_paid' },
+          user_id: { $first: '$user_id' },
+          service_group: { $first: '$service_group' },
+          created_at: { $first: '$created_at' },
+          updated_at: { $first: '$updated_at' },
+          services_of_card: {
+            $push: {
+              $cond: [{ $eq: ['$original_services_of_card', []] }, '$$REMOVE', '$services_of_card']
+            }
+          },
+          price: { $sum: '$services_of_card.total' },
+          employee: { $first: '$employee' },
+          original_services_of_card: { $first: '$original_services_of_card' }
+        }
+      },
+
+      // Bước 13: Đảm bảo services_of_card là mảng rỗng nếu không có dữ liệu
+      {
+        $set: {
+          services_of_card: {
+            $cond: [{ $eq: ['$original_services_of_card', []] }, [], '$services_of_card']
+          }
+        }
+      },
+
+      // Bước 14: Xử lý employee trước khi xử lý history_paid để tránh trùng lặp
+      {
+        $set: {
+          original_employee: '$employee'
+        }
+      },
+      {
+        $unwind: {
+          path: '$employee',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'employee.id_employee',
+          foreignField: '_id',
+          as: 'employee.employee_details'
+        }
+      },
+      {
+        $set: {
+          'employee.employee_details': { $arrayElemAt: ['$employee.employee_details', 0] }
+        }
+      },
+      // Group lại employee thành mảng hoàn chỉnh trước khi xử lý history_paid
+      {
+        $group: {
+          _id: '$_id',
+          branch: { $first: '$branch' },
+          code: { $first: '$code' },
+          is_active: { $first: '$is_active' },
+          name: { $first: '$name' },
+          descriptions: { $first: '$descriptions' },
+          session_time: { $first: '$session_time' },
+          price: { $first: '$price' },
+          price_paid: { $first: '$price_paid' },
+          history_paid: { $first: '$history_paid' },
+          user_id: { $first: '$user_id' },
+          service_group: { $first: '$service_group' },
+          created_at: { $first: '$created_at' },
+          updated_at: { $first: '$updated_at' },
+          services_of_card: { $first: '$services_of_card' },
+          employee: {
+            $push: {
+              $cond: [
+                { $or: [{ $eq: ['$original_employee', []] }, { $eq: ['$original_employee', [{}]] }] },
+                '$$REMOVE',
+                '$employee'
+              ]
+            }
+          },
+          original_employee: { $first: '$original_employee' }
+        }
+      },
+      {
+        $set: {
+          employee: {
+            $cond: [
+              { $or: [{ $eq: ['$original_employee', []] }, { $eq: ['$original_employee', [{}]] }] },
+              [],
+              '$employee'
+            ]
+          }
+        }
+      },
+
+      // Bước 15: Xử lý history_paid sau khi employee đã hoàn tất
+      {
+        $unwind: {
+          path: '$history_paid',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'history_paid.user_id',
+          foreignField: '_id',
+          as: 'history_paid.user_details'
+        }
+      },
+      {
+        $set: {
+          'history_paid.user_details': { $arrayElemAt: ['$history_paid.user_details', 0] }
+        }
+      },
+      // Group lại history_paid mà không ảnh hưởng đến employee
+      {
+        $group: {
+          _id: '$_id',
+          branch: { $first: '$branch' },
+          code: { $first: '$code' },
+          is_active: { $first: '$is_active' },
+          name: { $first: '$name' },
+          descriptions: { $first: '$descriptions' },
+          session_time: { $first: '$session_time' },
+          price: { $first: '$price' },
+          price_paid: { $first: '$price_paid' },
+          history_paid: { $push: '$history_paid' },
+          user_id: { $first: '$user_id' },
+          service_group: { $first: '$service_group' },
+          created_at: { $first: '$created_at' },
+          updated_at: { $first: '$updated_at' },
+          services_of_card: { $first: '$services_of_card' },
+          employee: { $first: '$employee' }
+        }
+      },
+
+      // Bước 16: Xóa các trường tạm thời
+      {
+        $unset: ['original_services_of_card', 'original_employee']
+      },
+
+      // Bước 17: Phân trang
+
+      // Bước 18: Sắp xếp theo _id giảm dần
+      { $sort: { _id: -1 } },
+
+      // Bước 19: Project để loại bỏ các trường không cần thiết
+      {
+        $project: {
+          'services_of_card.services_id': 0,
+          ...finalProjection
+        }
+      }
+    ]
+
+    const resultCardDataNew = await databaseServiceSale.services_card.aggregate(pipeline).toArray()
+    if (!resultCardDataNew) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.CREATE_FAIL_OR_NOT_FOUND_SERVICE_CARD,
+        statusCode: HttpStatusCode.BadRequest
+      })
+    }
+    return resultCardDataNew
   }
 
   async createServicesCardSold(data: CreateServicesCardData[]) {
@@ -915,8 +1269,8 @@ class ServicesCardRepository {
     // Tạo payload update một cách có điều kiện
     const pushData: Record<string, any> = {}
 
-    if (card_services_sold_id != null) {
-      pushData.card_services_sold_id = card_services_sold_id
+    if (card_services_sold_id != null && Array.isArray(card_services_sold_id) && card_services_sold_id.length > 0) {
+      pushData.card_services_sold_id = { $each: card_services_sold_id }
     }
 
     if (history_paid_id != null) {
@@ -933,12 +1287,13 @@ class ServicesCardRepository {
 
     // Chỉ gọi update nếu có gì đó để push
     if (Object.keys(pushData).length > 0) {
-      await databaseServiceSale.services_card_sold_of_customer.updateOne(
+      const result = await databaseServiceSale.services_card_sold_of_customer.updateOne(
         { _id },
         {
           $push: pushData
         }
       )
+      return result
     }
   }
 

@@ -81,7 +81,8 @@ class ServicesCardServices {
   //Services Card
   async CreateServicesCard(data: CreateServicesCardRequestBody) {
     const servicesCardData = (await convertServicesDataToObjectId(data)) as CreateServicesCardData
-    await servicesCardRepository.createServicesCard(servicesCardData)
+    const result = await servicesCardRepository.createServicesCard(servicesCardData)
+    return result
   }
 
   async GetServicesCard(data: GetServicesCardRequestBody) {
@@ -181,6 +182,8 @@ class ServicesCardServices {
   async GetServicesCardSoldOfCustomer(data: GetServicesCardSoldOfCustomerRequestBody): Promise<{
     servicesCardSold: any[]
     total: number
+    limit: number
+    page: number
   }> {
     const { page = 1, limit = 10, branch, search, search_type, date } = data
 
@@ -215,7 +218,9 @@ class ServicesCardServices {
 
     return {
       servicesCardSold,
-      total
+      total,
+      limit,
+      page
     }
   }
 
@@ -223,21 +228,23 @@ class ServicesCardServices {
     const { _id, card_services_sold_id, history_paid_id, history_used, employee_commision_id } = data
     const id = new ObjectId(_id)
     await this.checkServicesCardSoldOfCustomerExist(new ObjectId(id))
-    const cardServicesSoldId = card_services_sold_id !== undefined ? new ObjectId(card_services_sold_id) : null
+    const cardServicesSoldIds =
+      card_services_sold_id !== undefined ? card_services_sold_id?.map((id) => new ObjectId(id)) : []
     const historyPaidId = history_paid_id !== undefined ? new ObjectId(history_paid_id) : null
     const history_used_data = getObjectOrNul(history_used)
     const employeeCommisionId =
       employee_commision_id !== undefined ? employee_commision_id?.map((id) => new ObjectId(id)) : []
 
     const cardServicesSoldData = {
-      card_services_sold_id: cardServicesSoldId,
+      card_services_sold_id: cardServicesSoldIds,
       history_paid: historyPaidId,
       history_used: history_used_data,
       employee_commision: employeeCommisionId,
       _id: id
     }
 
-    await servicesCardRepository.updateServicesCardSoldOfCustomer(cardServicesSoldData)
+    const result = await servicesCardRepository.updateServicesCardSoldOfCustomer(cardServicesSoldData)
+    return result
   }
 
   async DeleteHistoryPaidOfServicesCardSoldOfCustomer(id: string) {

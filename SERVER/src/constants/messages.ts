@@ -78,6 +78,7 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  CREATE_FAIL_OR_NOT_FOUND_SERVICE_CARD: 'Create service card fail or not found!',
   CREATE_SERVICES_CATEGORY_SUCCESS: 'Create services category success !',
   BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string of object Id !',
   SERVICES_CATEGORY_NOT_FOUND: 'Services category not found !',

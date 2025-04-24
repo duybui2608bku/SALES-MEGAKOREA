@@ -86,7 +86,7 @@ servicesOfCardRouters.post(
 servicesOfCardRouters.patch(
   '/sold-of-customer/update',
   accessTokenValidator,
-  UpdateServicesCardSoldOfCustomerValidator,
+  // UpdateServicesCardSoldOfCustomerValidator,
   wrapRequestHandler(updateServicesCardSoldOfCustomer)
 )
 
