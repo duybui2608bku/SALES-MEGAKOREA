@@ -381,7 +381,10 @@ class ServicesCardRepository {
   }
 
   async createServicesCardSold(data: CreateServicesCardData[]) {
-    await databaseServiceSale.services_card_sold.insertMany(data.map((item) => new CardServicesSold(item)))
+    const result = await databaseServiceSale.services_card_sold.insertMany(
+      data.map((item) => new CardServicesSold(item))
+    )
+    return result
   }
 
   async getAllServicesCard(data: GetServicesCardData) {

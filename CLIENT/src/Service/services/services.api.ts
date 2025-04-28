@@ -3,6 +3,7 @@ import {
   CreateServicesCardSoldOfCustomerRequestBody,
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
+  CreateSoldServicesCardRequestBody,
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestQuery,
   GetServicesCardRequestBody,
@@ -60,7 +61,6 @@ export const servicesApi = {
   async createServicesCard(body: CreateServicesCardRequestBody) {
     return await axiosInstanceMain.post<CreateServicesCardResponse>(pathServices.createServicesCard, body)
   },
-
   async updateServicesCard(body: UpdatePaidOfServicesCardRequestBody) {
     return await axiosInstanceMain.patch<UpdateServicesCardResponse>(pathServices.updateServicesCard, body)
   },
@@ -69,6 +69,10 @@ export const servicesApi = {
   },
   async updateHistoryPaid(body: UpdatePaidOfServicesCardRequestBody) {
     return axiosInstanceMain.patch<UpdateServicesCardResponse>(pathServices.updateHistoryPaid, body)
+  },
+  //Sold services card
+  async createSoldServicesCard(body: CreateSoldServicesCardRequestBody) {
+    return axiosInstanceMain.post(pathServices.createSoldServicesCard, body)
   },
   //Services card sold of customer
   async createServicesCardSoldOfCustomer(body: CreateServicesCardSoldOfCustomerRequestBody) {

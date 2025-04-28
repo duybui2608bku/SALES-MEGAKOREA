@@ -272,3 +272,8 @@ export interface UpdateServicesCardSoldOfCustomerRequestBody {
   history_used?: HistoryUsed
   employee_commision_id?: string[]
 }
+
+// Sold Services Card
+export interface CreateSoldServicesCardRequestBody {
+  services_card_id: string[]
+}

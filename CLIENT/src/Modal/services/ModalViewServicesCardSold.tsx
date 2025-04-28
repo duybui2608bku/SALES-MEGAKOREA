@@ -68,7 +68,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
           flexWrap: 'wrap',
           gap: 24,
           justifyContent: listServicesCard.length <= 4 ? 'center' : 'flex-start',
-          alignItems: 'stretch'
+          alignItems: 'stretch',
+          height: listServicesCard.length <= 4 ? 'auto' : '660px',
+          overflowY: 'scroll',
+          overflowX: 'hidden'
         }}
       >
         {listServicesCard.map((card) => (

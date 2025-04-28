@@ -38,10 +38,13 @@ export const createServicesCardSold = async (
   res: Response
 ) => {
   const data = req.body
-  await servicesCardServices.CreateServicesCardSold(data)
+  const result = await servicesCardServices.CreateServicesCardSold(data)
+  console.log('Result CreateServicesCardSoldData: ', result)
+
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SOLD_SUCCESS,
-    res
+    res,
+    result
   })
 }
 

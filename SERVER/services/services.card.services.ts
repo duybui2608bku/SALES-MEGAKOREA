@@ -160,7 +160,8 @@ class ServicesCardServices {
         return servicesCard
       })
     )
-    await servicesCardRepository.createServicesCardSold(servicesCardData as CreateServicesCardData[])
+    const result = await servicesCardRepository.createServicesCardSold(servicesCardData as CreateServicesCardData[])
+    return result
   }
 
   async CreateServicesCardSoldOfCustomer(data: CreateServicesCardSoldOfCustomerRequestBody) {

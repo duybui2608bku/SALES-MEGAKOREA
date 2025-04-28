@@ -77,6 +77,17 @@ const SoldServicesCardService = () => {
     }
   })
 
+  // Create Sold Services Card
+  const { mutateAsync: cretateSoldServicesCard, isPending: isCreatingSoldServiesCard } = useMutation({
+    mutationFn: servicesApi.createSoldServicesCard,
+    onSuccess: () => {
+      message.success('Tạo thẻ dịch vụ đã bán thành công!')
+    },
+    onError: (error: Error) => {
+      message.error(`Lỗi khi tạo thẻ dịch vụ đã bán: ${error.message}`)
+    }
+  })
+
   // Create Service Card Sold Of Customer
   const { mutate: createServiceCardSoldOfCustomer, isPending: isCreatingServiceCard } = useMutation({
     mutationFn: servicesApi.createServicesCardSoldOfCustomer,
@@ -111,25 +122,30 @@ const SoldServicesCardService = () => {
       sex: customer?.sex
     }
 
-    const response = await createCustomerService(createCustomer)
-    const customerId = String(response.data.result)
+    const responseCustomerService = await createCustomerService(createCustomer)
+    const customerId = String(responseCustomerService.data.result)
+
+    const responseSoldServicesCard = await cretateSoldServicesCard({ services_card_id: serviceCardSelected })
+    const cardServicesSoldId = responseSoldServicesCard.data.result
+    console.log('Data responseSoldServicesCard: ', cardServicesSoldId)
+
     const userId = String(profile?._id)
     const userBranchId = Array.isArray(profile?.branch)
       ? profile.branch.map((b: BranchType) => b._id)
       : [profile?.branch._id]
 
-    try {
-      const createServiceCard = {
-        customer_id: customerId,
-        card_services_sold_id: serviceCardSelected,
-        user_id: userId,
-        branch: userBranchId.filter((branchId) => branchId !== undefined) as string[]
-      }
+    // try {
+    //   const createServiceCard = {
+    //     customer_id: customerId,
+    //     card_services_sold_id: serviceCardSelected,
+    //     user_id: userId,
+    //     branch: userBranchId.filter((branchId) => branchId !== undefined) as string[]
+    //   }
 
-      createServiceCardSoldOfCustomer(createServiceCard)
-    } catch (error) {
-      message.error('Lỗi trong quá trình tạo Service card sold of customer!')
-    }
+    //   createServiceCardSoldOfCustomer(createServiceCard)
+    // } catch (error) {
+    //   message.error('Lỗi trong quá trình tạo Service card sold of customer!')
+    // }
   }
 
   return (
