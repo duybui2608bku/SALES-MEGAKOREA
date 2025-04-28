@@ -50,3 +50,5 @@ export type GetServicesCardSoldOfCustomerResponse = SuccessResponse<{
 
 export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>
 export type UpdateServicesCardSoldOfCustomerRespone = SuccessResponse<void>
+
+export type UpdateUsedOfServicesRespone = SuccessResponse<void>

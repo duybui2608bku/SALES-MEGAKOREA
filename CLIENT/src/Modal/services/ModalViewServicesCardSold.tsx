@@ -1,6 +1,10 @@
 import { Button, Card, Col, Divider, Flex, message, Modal, Popconfirm, Space, Tag, Typography } from 'antd'
-import { useEffect, useState } from 'react'
-import { GetServicesCardSoldOfCustomer } from 'src/Interfaces/services/services.interfaces'
+import { useContext, useEffect, useState } from 'react'
+import {
+  GetServicesCardSoldOfCustomer,
+  UpdateUsedServicesData,
+  UpdateUsedServicesRequestBody
+} from 'src/Interfaces/services/services.interfaces'
 const { Title, Text } = Typography
 import { DollarOutlined, TagOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -9,13 +13,15 @@ import { RiErrorWarningLine } from 'react-icons/ri'
 import { GrSubtractCircle } from 'react-icons/gr'
 import { Row } from 'antd/lib'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
-import { RoleUser } from 'src/Constants/enum'
+import { RoleUser, TypeCommision } from 'src/Constants/enum'
 import { queryClient } from 'src/main'
 import { HttpStatusCode } from 'axios'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import { useMutation } from '@tanstack/react-query'
 import commisionTechnicanApi from 'src/Service/commision/commision.technican'
+import { AppContext } from 'src/Context/AppContext'
 
+import { servicesApi } from 'src/Service/services/services.api'
 enum StatusOpenModalServicesCard {
   VIEW,
   UPDATE,
@@ -40,14 +46,16 @@ interface CardOfServicesCardSoldOfCustomer {
     price: number
     quantity: number
     used: number
+    type_price: TypeCommision
   }[]
   create_at?: string
 }
 
 const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const { open, close, servicesCardSoldOfCustomerData } = props
+  const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<CardOfServicesCardSoldOfCustomer[]>([])
-  const [user_id, setUserId] = useState<string>('')
+  const [userId, setUserId] = useState<string>('')
 
   useEffect(() => {
     if (servicesCardSoldOfCustomerData) {
@@ -65,20 +73,95 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     close(StatusOpenModalServicesCard.NONE)
   }
 
-  const { mutate: createCommisionTechnican, isPending: isCreatingCommisionTechnican } = useMutation({
-    mutationFn: commisionTechnicanApi.createCommisionTechnican,
+  const handleCreateCommisionTechnican = async ({
+    commision,
+    type,
+    services_card_sold_of_customer_id,
+    user_id
+  }: {
+    commision: number
+    type: TypeCommision
+    services_card_sold_of_customer_id: string
+    user_id: string
+  }) => {
+    const data = {
+      user_id,
+      commision,
+      type,
+      services_card_sold_of_customer_id
+    }
+    try {
+      let commisionId = ''
+      const result = await commisionTechnicanApi.createCommisionTechnican(data)
+      if (result.data.success) {
+        commisionId = result.data.result
+      }
+      return commisionId
+    } catch (error: Error | any) {
+      const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
+        ? 'Dữ liệu không hợp lệ!'
+        : `Lỗi tạo khi hoa hồng : ${error.message}`
+      message.error(errorMsg)
+      return
+    }
+  }
+
+  const handleUpdateUsedOfServices = async (data: UpdateUsedServicesData) => {
+    if (!userId) {
+      message.error('Vui lòng chọn nhân viên kỹ thuật!')
+      return
+    }
+    const {
+      commision,
+      type,
+      services_card_sold_of_customer_id,
+      user_id,
+      count,
+      date,
+      name_service,
+      services_card_sold_id,
+      services_id,
+      user_name,
+      descriptions
+    } = data
+
+    const dataCommision = {
+      user_id,
+      commision,
+      type,
+      services_card_sold_of_customer_id
+    }
+    const commisionId = await handleCreateCommisionTechnican(dataCommision)
+    const dataUpdateUsedOfServices: UpdateUsedServicesRequestBody = {
+      id: services_card_sold_of_customer_id,
+      commision_of_technician_id: commisionId as string,
+      services_card_sold_id: services_card_sold_id,
+      services_id,
+      history_used: {
+        name_service,
+        user_name,
+        count,
+        date,
+        descriptions
+      }
+    }
+    updateUsedOfServices(dataUpdateUsedOfServices)
+  }
+
+  const { mutate: updateUsedOfServices, isPending: isUpdateUsedOfServices } = useMutation({
+    mutationFn: (data: UpdateUsedServicesRequestBody) => servicesApi.UpdateUsedOfServices(data),
     onMutate: async () => {
       return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
     },
     onSuccess: () => {
-      message.success('Tạo dịch vụ thành công!')
+      message.success('Sử dụng dịch vụ thành công!')
       queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
     },
     onError: (error: Error, _, context) => {
-      queryClient.setQueryData(['getAllServices'], context?.previousData)
+      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
       const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
         ? 'Dữ liệu không hợp lệ!'
-        : `Lỗi khi hoa ho: ${error.message}`
+        : `Lỗi khi sử dụng dịch vụ : ${error.message}`
       message.error(errorMsg)
     },
     onSettled: () => {
@@ -161,7 +244,23 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                       </Text>
                       <Popconfirm
                         title='Xác nhận sử dụng dịch vụ'
-                        onConfirm={() => console.log('Xác nhận sử dụng dịch vụ')}
+                        onConfirm={() =>
+                          handleUpdateUsedOfServices({
+                            commision: service.lineTotal,
+                            type: service.type_price,
+                            services_card_sold_of_customer_id: servicesCardSoldOfCustomerData?._id as string,
+                            user_id: userId,
+                            count: 1,
+                            date: new Date(),
+                            name_service: service.name,
+                            services_card_sold_id: card._id,
+                            services_id: service._id,
+                            user_name: profile?.name || 'Người dùng',
+                            descriptions: `Sử dụng dịch vụ ${service.name} của thẻ dịch vụ ${card.name} vào lúc ${dayjs().format(
+                              'DD/MM/YYYY HH:mm'
+                            )} `
+                          })
+                        }
                         okText='Xác nhận'
                         cancelText='Hủy'
                         description={
@@ -198,6 +297,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                         }
                       >
                         <Button
+                          disabled={isUpdateUsedOfServices || service.used >= service.quantity}
                           style={{ width: '40px', height: '40px' }}
                           icon={<GrSubtractCircle style={{ color: '#10B981', fontSize: '18px' }} />}
                         />

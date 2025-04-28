@@ -1,3 +1,5 @@
+import { update } from 'lodash'
+
 const pathAuth = {
   login: '/login',
   register: '/register'
@@ -80,7 +82,8 @@ const pathServices = {
   deleteCategoryService: 'services/category-delete',
   getAllSoldServicesCardOfCustomer: '/services-card/sold-of-customer',
   createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create',
-  updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update'
+  updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update',
+  updateUsedOfServices: '/services-card/sold/update-used'
 }
 
 const pathRoutesCustomers = {
