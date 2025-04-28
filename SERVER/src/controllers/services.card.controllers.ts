@@ -11,13 +11,13 @@ import {
   GetServicesCardSoldOfCustomerRequestBody,
   UpdateCardRequestBody,
   UpdateHistoryPaidOfServicesCardRequestBody,
-  UpdateServicesCardSoldOfCustomerRequestBody
+  UpdateServicesCardSoldOfCustomerRequestBody,
+  UpdateUsedServicesCardSoldRequestBody
 } from '~/models/requestes/Services.card.requests'
 import servicesCardServices from '../../services/services.card.services'
 import { ResponseError, ResponseSuccess } from '~/utils/handlers'
 import { servicesMessages } from '~/constants/messages'
-// import { TokenPayload } from '~/models/requestes/User.requests'
-import { HttpStatusCode, UserRole } from '~/constants/enum'
+import { HttpStatusCode } from '~/constants/enum'
 
 export const createServicesCard = async (
   req: Request<ParamsDictionary, any, CreateServicesCardRequestBody>,
@@ -25,8 +25,6 @@ export const createServicesCard = async (
 ) => {
   const data = req.body
   const result = await servicesCardServices.CreateServicesCard(data)
-  console.log('Result BE: ', result)
-
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SUCCESS,
     res,
@@ -39,10 +37,11 @@ export const createServicesCardSold = async (
   res: Response
 ) => {
   const data = req.body
-  await servicesCardServices.CreateServicesCardSold(data)
+  const result = await servicesCardServices.CreateServicesCardSold(data)
   ResponseSuccess({
     message: servicesMessages.CREATE_SERVICES_CARD_SOLD_SUCCESS,
-    res
+    res,
+    result
   })
 }
 
@@ -170,6 +169,18 @@ export const DeleteServicesCard = async (
   await servicesCardServices.DeleteServicesCard(id)
   ResponseSuccess({
     message: servicesMessages.DELETE_SERVICES_CARD_SUCCESS,
+    res
+  })
+}
+
+export const UpdateUsedServicesCardSold = async (
+  req: Request<ParamsDictionary, any, UpdateUsedServicesCardSoldRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  await servicesCardServices.UpdateUsedServicesCardSold(data)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_USED_SERVICES_CARD_SUCCESS,
     res
   })
 }

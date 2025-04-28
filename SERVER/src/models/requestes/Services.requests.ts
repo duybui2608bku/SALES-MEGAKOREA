@@ -19,7 +19,7 @@ export interface UpdateServicesCategoryRequestBody {
 }
 
 export interface CreateServicesRequestBody {
-  _id?: string | ObjectId
+  _id?: string
   code?: string
   is_active?: boolean
   name: string
@@ -27,7 +27,7 @@ export interface CreateServicesRequestBody {
   descriptions?: string
   user_id: ObjectId
   employee?: EmployeeOfServices[]
-  service_group_id?: string | ObjectId
+  service_group_id?: string
   price?: number
   step_services?: StepServicesType[]
   products?: ProductOfServices[]
@@ -42,7 +42,7 @@ export interface UpdateServicesRequestBody {
   descriptions?: string
   user_id: ObjectId
   employee?: EmployeeOfServices[]
-  service_group_id?: string | ObjectId
+  service_group_id?: string
   price?: number
   step_services?: StepServicesType[]
   products?: ProductOfServices[]

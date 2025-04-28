@@ -34,6 +34,7 @@ export interface CreateCommisionOfTechnicanData {
   _id?: ObjectId
   user_id: ObjectId
   commision: number
+  type: TypeCommision
   services_card_sold_of_customer_id: ObjectId
   created_at?: Date
   updated_at?: Date

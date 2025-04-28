@@ -114,3 +114,11 @@ export interface DeleteHistoryPaidOfServicesCardRequestParams {
 export interface DeleteServicesCardParams {
   _id: string
 }
+
+export interface UpdateUsedServicesCardSoldRequestBody {
+  id: string
+  commision_of_technician_id: string
+  services_id: string
+  services_card_sold_id: string
+  history_used: HistoryUsed
+}

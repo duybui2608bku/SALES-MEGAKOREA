@@ -1,6 +1,6 @@
 import { checkSchema } from 'express-validator'
 import { ObjectId } from 'mongodb'
-import { HttpStatusCode } from '~/constants/enum'
+import { HttpStatusCode, TypeCommision } from '~/constants/enum'
 import { productMessages, servicesMessages } from '~/constants/messages'
 import { EmployeeOfServices, ProductOfServices, StepServicesType } from '~/interface/services/services.interface'
 import { ErrorWithStatusCode } from '~/models/Errors'
@@ -29,6 +29,17 @@ export const CreateServicesCategoryValidator = validate(
           errorMessage: servicesMessages.TOUR_PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO
         },
         optional: true
+      },
+      type_price: {
+        optional: true,
+        custom: {
+          options: (value: number) => {
+            if (value !== TypeCommision.FIXED && value !== TypeCommision.PRECENT) {
+              throw new Error(servicesMessages.TYPE_PRICE_MUST_BE_NUMBER)
+            }
+            return true
+          }
+        }
       }
     },
     ['body']

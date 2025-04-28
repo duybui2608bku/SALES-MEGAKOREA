@@ -28,14 +28,14 @@ CommisionRouter.get(
 )
 
 CommisionRouter.post(
-  '/technician/create',
+  '/technican/create',
   accessTokenValidator,
   CreateCommisionOfSellerValidator,
   wrapRequestHandler(createCommisionOfTechnican)
 )
 
 CommisionRouter.get(
-  '/seller/get-commisions-of-technician/:user_id',
+  '/seller/get-commisions-of-technican/:user_id',
   accessTokenValidator,
   GetCommisionOfSellerByUserIdValidator,
   wrapRequestHandler(GetCommisionOfSellerByUserId)

@@ -485,3 +485,19 @@ export const UpdateServicesCardSoldOfCustomerValidator = validate(
     }
   })
 )
+
+export const DeleteSerivcesCardValidator = validate(
+  checkSchema(
+    {
+      id: {
+        isString: {
+          errorMessage: servicesMessages.SERVICES_CARD_ID_MUST_BE_STRING
+        },
+        isMongoId: {
+          errorMessage: servicesMessages.INVALID_ID
+        }
+      }
+    },
+    ['params']
+  )
+)

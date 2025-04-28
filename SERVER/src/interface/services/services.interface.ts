@@ -6,6 +6,7 @@ export interface ServicesCategoryType {
   name: string
   descriptions?: string
   tour_price?: number
+  type_price?: TypeCommision
   branch?: ObjectId[]
 }
 
@@ -49,10 +50,11 @@ export interface ServicesType {
   name: string
   branch: ObjectId[]
   price?: number
-  user_id?: ObjectId | string
+  user_id: ObjectId
+  type_price?: TypeCommision
   descriptions?: string
   employee?: EmployeeOfServices[]
-  service_group_id?: ObjectId | string
+  service_group_id?: ObjectId | null
   step_services?: StepServicesType[]
   products?: ProductOfServices[]
   created_at?: Date
@@ -66,10 +68,10 @@ export interface CreateServicesData {
   name: string
   branch: ObjectId[]
   price?: number
-  user_id?: ObjectId | string
+  user_id: ObjectId
   descriptions?: string
   employee?: EmployeeOfServices[]
-  service_group_id?: ObjectId | string
+  service_group_id?: ObjectId | null
   step_services?: StepServicesType[]
   products?: ProductOfServices[]
   created_at?: Date
@@ -83,10 +85,10 @@ export interface UpdateServicesData {
   name?: string
   branch?: ObjectId[]
   price?: number
-  user_id?: ObjectId | string
+  user_id?: ObjectId
   descriptions?: string
   employee?: EmployeeOfServices[]
-  service_group_id?: ObjectId | string
+  service_group_id?: ObjectId | null
   step_services?: StepServicesType[]
   products?: ProductOfServices[]
   created_at?: Date
@@ -99,23 +101,24 @@ export interface EmployeeOfServices {
     date: Date
     commision: number
   }[]
-  id_employee: string | ObjectId
+  id_employee: ObjectId
   type_price: TypeCommision
   descriptions?: string
 }
 
 export interface ServicesOfCard {
-  services_id?: ObjectId | string
+  services_id?: ObjectId
   quantity?: number
+  used?: number
   discount?: number
   up_sale?: boolean
 }
 
 export interface ServicesOfCardSold {
-  services_id?: ObjectId | string
-  quantity?: number
-  discount?: number
-  used?: number
+  services_id: ObjectId
+  quantity: number
+  discount: number
+  used: number
   up_sale?: boolean
 }
 
@@ -304,4 +307,12 @@ export interface GetServicesCardSoldOfCustomerData {
   limit: number
   page: number
   query: any
+}
+
+export interface UpdateUsedServicesCardSoldOfCustomerData {
+  services_card_sold_id: ObjectId
+  commision_of_technician_id: ObjectId
+  services_card_sold_of_customer_id: ObjectId
+  services_id: ObjectId
+  history_used: HistoryUsed
 }

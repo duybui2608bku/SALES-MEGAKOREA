@@ -1,3 +1,5 @@
+import { TypeCommision } from '~/constants/enum'
+
 export interface CreateCommisionOfSellerRequestType {
   user_id: string
   commision: number
@@ -18,6 +20,7 @@ export interface CreateCommisionOfTechnicanRequestType {
   user_id: string
   commision: number
   date: Date
+  type: TypeCommision
   services_card_sold_of_customer_id: string
 }
 

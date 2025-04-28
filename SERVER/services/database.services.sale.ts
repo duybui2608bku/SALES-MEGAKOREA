@@ -4,10 +4,15 @@ import User from '../src/models/schemas/User.schema'
 import Bracnh from '../src/models/schemas/branch/branch.schema'
 import { Services, ServicesCategory } from '../src/models/schemas/services/Services.schema'
 import Product from '../src/models/schemas/product/Product.schema'
-import { CardServicesSoldOfCustomerType, CardServicesType } from '~/interface/services/services.interface'
+import {
+  CardServicesSoldOfCustomerType,
+  CardServicesSoldType,
+  CardServicesType
+} from '~/interface/services/services.interface'
 import Customer from '~/models/schemas/customer/Customer.shema'
 import HistoryPaidServicesCardSoldOfCustomer from '~/models/schemas/services/HistoryPaidServicesCardSoldOfCustomer.schema'
 import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.schema'
+import { CommisionOfTechnican } from '~/models/schemas/commision/commisionOfTechnican.schema'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@megakorae-call.rrq1b.mongodb.net/${process.env.DB_NAME_SALE_MEGA}?retryWrites=true&w=majority&appName=MEGAKORAE-CALL&tls=true`
@@ -57,7 +62,7 @@ class DatabaseServiceSale {
     return this.db.collection(process.env.SERVICES_CARD_COLLECTION as string)
   }
 
-  get services_card_sold(): Collection<CardServicesType> {
+  get services_card_sold(): Collection<CardServicesSoldType> {
     return this.db.collection(process.env.SERVICES_CARD_SOLD_COLLECTION as string)
   }
 
@@ -67,6 +72,10 @@ class DatabaseServiceSale {
 
   get commission_seller(): Collection<CommisionOfSeller> {
     return this.db.collection(process.env.COMMISSION_OF_Seller_COLLECTION as string)
+  }
+
+  get commission_technican(): Collection<CommisionOfTechnican> {
+    return this.db.collection(process.env.COMMISSION_OF_TECHNICAN_COLLECTION as string)
   }
 
   get customers(): Collection<Customer> {

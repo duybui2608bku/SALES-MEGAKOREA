@@ -79,6 +79,12 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  TYPE_PRICE_MUST_BE_NUMBER: 'Type price must be a number !',
+  TYPE_PRICE_INVALID: 'Type price invalid !',
+  SERVICE_CARD_QUANTITY_NOT_ENOUGH: 'Service card quantity not enough !',
+  SERVICES_CARD_SOLD_NOT_FOUND: 'Services card sold not found !',
+  UPDATE_USED_SERVICES_CARD_SUCCESS: 'Update used services card success !',
+  SERVICES_CARD_ID_MUST_BE_STRING: 'Services card id must be a string !',
   CREATE_FAIL_OR_NOT_FOUND_SERVICE_CARD: 'Create service card fail or not found!',
   CREATE_SERVICES_CATEGORY_SUCCESS: 'Create services category success !',
   BRANCH_MUST_BE_ARRAY_STRING: 'Branch must be a array string of object Id !',

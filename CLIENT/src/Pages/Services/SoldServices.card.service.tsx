@@ -1,15 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { Button, Col, DatePicker, Flex, Row, Space, Table, TableColumnType, Tag, Tree, Typography } from 'antd'
-import {
-  DeleteOutlined,
-  DownOutlined,
-  EditOutlined,
-  PlusOutlined,
-  PrinterOutlined,
-  TagsOutlined
-} from '@ant-design/icons'
+import { Button, Col, DatePicker, Flex, Row, Space, Table, TableColumnType, Tag, Tooltip, Tree, Typography } from 'antd'
+import { DownOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons'
 import { MdDelete } from 'react-icons/md'
 import { IoPencilOutline, IoPrintSharp } from 'react-icons/io5'
+import { IoIosAddCircleOutline } from 'react-icons/io'
+import { FaRegEye } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
@@ -19,6 +14,9 @@ import { GetServicesCardSoldOfCustomer } from 'src/Interfaces/services/services.
 import { servicesApi } from 'src/Service/services/services.api'
 import { useNavigate } from 'react-router'
 import { pathRoutersService } from 'src/Constants/path'
+import { motion, AnimatePresence } from 'framer-motion'
+import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
+import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
 
 const { Text, Paragraph } = Typography
 
@@ -26,28 +24,11 @@ const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
-// interface ColumnsServicesCardSoldOfCustomerType {
-//   code: string
-//   descriptions: string
-//   price: number
-//   branch: BranchType
-//   history_paid: HistoryPaid[]
-//   history_used: unknown[]
-//   employee_commision: unknown[]
-//   created_at: Date
-//   customers: Customer
-//   userInfo: UserGeneralInterface
-//   cards: {
-//     _id: string
-//     price: number | null
-//     name: string
-//     services_of_card: {
-//       _id: string
-//       name: string
-//       lineTotal: number
-//     }
-//   }[]
-// }
+enum StatusOpenModalServicesCard {
+  VIEW,
+  UPDATE,
+  NONE
+}
 
 type ColumnsServicesCardSoldOfCustomerType = GetServicesCardSoldOfCustomer
 
@@ -59,8 +40,14 @@ const SoldServicesCard = () => {
     limit: LIMIT,
     total: 0
   })
+  const [expandedServicesCard, setExpandedServicesCard] = useState<Record<string, boolean>>({})
+  const [openModalViewOrUpdateServicesCardSold, setOpenModalViewOrUpdateServicesCardSold] = useState(
+    StatusOpenModalServicesCard.NONE
+  )
+  const [servicesCardSoldOfCustomerData, setServicesCardSoldOfCustomerData] =
+    useState<GetServicesCardSoldOfCustomer | null>(null)
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['services-card-sold-customer', pagination.page],
     queryFn: () =>
       servicesApi.GetServicesCardSoldOfCustomer({
@@ -91,6 +78,14 @@ const SoldServicesCard = () => {
 
   const handleTableChange = async (page: number) => {
     goToNextPage(page)
+  }
+
+  const handleOpenModalViewOrUpdateServicesCardSold = (
+    servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
+    statusOpenModalServicesCard: StatusOpenModalServicesCard
+  ) => {
+    setOpenModalViewOrUpdateServicesCardSold(statusOpenModalServicesCard)
+    setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
   }
 
   const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
@@ -146,9 +141,10 @@ const SoldServicesCard = () => {
       title: 'Dịch vụ',
       dataIndex: 'cards',
       key: 'cards',
-      width: 150,
+      width: 180,
       render: (_, record) => {
-        const treeData = record.cards.map((card) => ({
+        const isExpanded = expandedServicesCard[record._id] || false
+        const treeFullData = record.cards.map((card) => ({
           title: (
             <Tag icon={<TagsOutlined />} style={{ fontSize: '13px' }} color='purple' bordered={false}>
               {card.name}
@@ -168,7 +164,77 @@ const SoldServicesCard = () => {
           }))
         }))
 
-        return <Tree switcherIcon={<DownOutlined />} showLine treeData={treeData} />
+        // Nếu không mở rộng -> chỉ lấy 3 thẻ đầu và 1 thẻ "Xem thêm"
+        const visibleCards = isExpanded
+          ? [
+              ...treeFullData,
+              {
+                key: `${record._id}-heheeee`,
+                title: (
+                  <Tag
+                    color='geekblue'
+                    onClick={() => setExpandedServicesCard({ ...expandedServicesCard, [record._id]: false })}
+                  >
+                    Thu gọn
+                  </Tag>
+                ),
+                children: []
+              }
+            ]
+          : [
+              ...treeFullData.slice(0, 3),
+              ...(treeFullData.length > 3
+                ? [
+                    {
+                      key: `${record._id}-heheeee`,
+                      title: (
+                        <Tag
+                          color='geekblue'
+                          onClick={() => setExpandedServicesCard({ ...expandedServicesCard, [record._id]: true })}
+                        >
+                          Xem thêm
+                        </Tag>
+                      ),
+                      children: []
+                    }
+                  ]
+                : [])
+            ]
+
+        return (
+          <Flex align='center' justify='space-between'>
+            <Space style={{ width: '100%', overflowX: 'hidden' }}>
+              <AnimatePresence>
+                <motion.div
+                  key={isExpanded ? 'expanded' : 'collapsed'}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <Tree switcherIcon={<DownOutlined />} showLine treeData={visibleCards} />
+                </motion.div>
+              </AnimatePresence>
+            </Space>
+            <Space>
+              <Tooltip title='Xem chi tiết'>
+                <Button
+                  onClick={() => handleOpenModalViewOrUpdateServicesCardSold(record, StatusOpenModalServicesCard.VIEW)}
+                  icon={<FaRegEye style={{ color: '#6366F1' }} />}
+                />
+              </Tooltip>
+              <Tooltip title='Thêm thẻ dịch vụ'>
+                <Button
+                  onClick={() =>
+                    handleOpenModalViewOrUpdateServicesCardSold(record, StatusOpenModalServicesCard.UPDATE)
+                  }
+                  icon={<IoIosAddCircleOutline style={{ color: '#10B981' }} />}
+                />
+              </Tooltip>
+            </Space>
+          </Flex>
+        )
       }
     },
     {
@@ -205,12 +271,9 @@ const SoldServicesCard = () => {
       render: () => {
         return (
           <Flex justify='center' gap={10}>
-            {/* <Button icon={<PrinterOutlined style={{ color: '#1677ff' }} />}></Button> */}
-            <Button icon={<IoPrintSharp color='#000' />}></Button>
-            {/* <Button icon={<EditOutlined style={{ color: '#1677ff' }} />}></Button> */}
-            <Button icon={<IoPencilOutline color='#1677ff' />}></Button>
-            {/* <Button icon={<DeleteOutlined style={{ color: '#1677ff' }} />}></Button> */}
-            <Button icon={<MdDelete color='red' />}></Button>
+            <Button icon={<IoPencilOutline color='#3B82F6' />}></Button>
+            <Button icon={<MdDelete color='#EF4444' />}></Button>
+            <Button icon={<IoPrintSharp color='#4B5563' />}></Button>
           </Flex>
         )
       }
@@ -264,6 +327,17 @@ const SoldServicesCard = () => {
           />
         </Col>
       </Row>
+      <ModalViewServicesCardSold
+        open={openModalViewOrUpdateServicesCardSold}
+        close={setOpenModalViewOrUpdateServicesCardSold}
+        servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
+      />
+      <ModalUpdateServicesCardSold
+        open={openModalViewOrUpdateServicesCardSold}
+        close={setOpenModalViewOrUpdateServicesCardSold}
+        servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
+        refetchData={refetch}
+      />
     </Fragment>
   )
 }

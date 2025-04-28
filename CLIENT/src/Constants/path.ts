@@ -79,7 +79,8 @@ const pathServices = {
   updateCategoryService: 'services/category-update',
   deleteCategoryService: 'services/category-delete',
   getAllSoldServicesCardOfCustomer: '/services-card/sold-of-customer',
-  createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create'
+  createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create',
+  updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update'
 }
 
 const pathRoutesCustomers = {
@@ -91,6 +92,10 @@ const pathApiCustomer = {
   getCustomersSchedule: '/customers/schedule-telesales-success',
   searchCustomerschedule: '/search/by-phone-success-schedule',
   createCustomer: '/customers/create'
+}
+
+const pathCommision = {
+  createCommisionTechnician: '/commision/technican/create'
 }
 
 export {
@@ -107,5 +112,6 @@ export {
   pathRoutersUser,
   pathRoutesCustomers,
   pathApiUploadAvatarUser,
-  pathApiCustomer
+  pathApiCustomer,
+  pathCommision
 }

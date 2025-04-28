@@ -6,6 +6,7 @@ import { HttpStatusCode } from '~/constants/enum'
 import { CreateCommisionOfTechnicanRequestType } from '~/models/requestes/Commision.request'
 import commisionSellerRepository from 'repository/services/commision.services.card.repository'
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
+import commisionTechnicanRepository from 'repository/services/commision.technican.services.card.repository'
 
 class CommisionServicesOfTechnican {
   private async checkUserExist(id: ObjectId) {
@@ -41,7 +42,7 @@ class CommisionServicesOfTechnican {
       user_id: userId,
       services_card_sold_of_customer_id: servicesCardSoldOfCustomerId
     }
-    return await commisionSellerRepository.createCommisionOfSeller(commision)
+    return await commisionTechnicanRepository.CreateCommisionOfTechnican(commision)
   }
 
   async getCommisionOfSellerByUserId(data: GetCommisionOfSellerRequests) {
@@ -55,7 +56,7 @@ class CommisionServicesOfTechnican {
     }
     const userId = new ObjectId(user_id)
     await this.checkUserExist(userId)
-    const commisions = await commisionSellerRepository.getCommisionOfSellerByUserId({
+    const commisions = await commisionTechnicanRepository.getCommisionOfTechnicanByUserId({
       user_id: userId,
       query: query
     })

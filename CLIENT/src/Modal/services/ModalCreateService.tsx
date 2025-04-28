@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Switch } from 'antd'
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Switch, Select } from 'antd'
 import { HttpStatusCode } from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
@@ -139,7 +139,8 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     }
     const user_id = profile._id
     const branch = getBranchList(values.branch || [])
-    const service = { ...values, user_id, branch, descriptions: values.descriptions || '' }
+    const service = { ...values, user_id, branch }
+    console.log('service', service)
     createService(service)
   }
 
@@ -284,14 +285,22 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   />
                 </Form.Item>
               </Col>
+              {/* <Col span={4}>
+                <Form.Item<FieldsType> name='is_active' label='ACTIVE' valuePropName='checked' initialValue={true}>
+                  <Switch />
+                </Form.Item>
+              </Col> */}
               <Col span={8}>
                 <Form.Item<FieldsType>
-                  name='is_active'
-                  label='Trạng thái hoạt động'
-                  valuePropName='checked'
-                  initialValue={true}
+                  label='Loại hoa hồng'
+                  name='type_price'
+                  initialValue={TypeCommision.FIXED}
+                  rules={[{ required: true, message: 'Vui lòng chọn loại hoa hồng!' }]}
                 >
-                  <Switch />
+                  <Select>
+                    <Select.Option value={TypeCommision.FIXED}>Cố định</Select.Option>
+                    <Select.Option value={TypeCommision.PRECENT}>Phần trăm</Select.Option>
+                  </Select>
                 </Form.Item>
               </Col>
             </Row>

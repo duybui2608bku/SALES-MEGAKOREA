@@ -6,14 +6,15 @@ import useQueryUsersWithRole from 'src/hook/query/useQueryUsersWithRole'
 interface UsersOptionsType {
   mode?: 'multiple' | 'tags'
   placeholder?: string
-  search: boolean
+  search?: boolean
   onchange?: (value: string) => void
   initialValue?: string
   role: RoleUser
+  style?: React.CSSProperties
 }
 
 const OptionsGetUsersWithRole = (props: UsersOptionsType) => {
-  const { mode, search, onchange, placeholder, initialValue, role } = props
+  const { mode, search, onchange, placeholder, initialValue, role, style } = props
   const { userSWithRole, isLoading } = useQueryUsersWithRole(role)
   const [selectedValue, setSelectedValue] = useState<string>()
 
@@ -36,7 +37,10 @@ const OptionsGetUsersWithRole = (props: UsersOptionsType) => {
     <Select
       onChange={handleChange}
       value={selectedValue}
-      style={{ width: '100%' }}
+      style={{
+        width: '100%',
+        ...style
+      }}
       mode={mode || undefined}
       allowClear
       placeholder={placeholder || 'Chọn người dùng'}

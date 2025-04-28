@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { TypeCommision } from '~/constants/enum'
 
 import {
   EmployeeOfServices,
@@ -15,10 +16,12 @@ export class ServicesCategory {
   descriptions: string
   tour_price?: number
   branch?: ObjectId[]
+  type_price?: TypeCommision
   constructor(servicesCategory: ServicesCategoryType) {
     this._id = servicesCategory._id || new ObjectId()
     this.name = servicesCategory.name || ''
     this.tour_price = servicesCategory.tour_price || 0
+    this.type_price = servicesCategory.type_price || TypeCommision.FIXED
     this.branch = servicesCategory.branch || []
     this.descriptions = servicesCategory.descriptions || ''
   }
@@ -32,8 +35,9 @@ export class Services {
   branch: ObjectId[]
   descriptions?: string
   price?: number
-  user_id?: ObjectId | string
-  service_group_id?: ObjectId | string
+  type_price?: TypeCommision
+  user_id: ObjectId
+  service_group_id?: ObjectId | null
   step_services?: StepServicesType[]
   products?: ProductOfServices[]
   employee?: EmployeeOfServices[]
@@ -46,10 +50,11 @@ export class Services {
     this.name = servicesCategory.name
     this.user_id = servicesCategory.user_id || new ObjectId()
     this.price = servicesCategory.price || 0
+    this.type_price = servicesCategory.type_price || TypeCommision.FIXED
     this.employee = servicesCategory.employee || []
     this.branch = (servicesCategory.branch || []).map((branch) => new ObjectId(branch))
     this.descriptions = servicesCategory.descriptions || ''
-    this.service_group_id = servicesCategory.service_group_id || ''
+    this.service_group_id = servicesCategory.service_group_id || null
     this.step_services = servicesCategory.step_services || []
     this.products = servicesCategory.products || []
     this.created_at = servicesCategory.created_at || new Date()

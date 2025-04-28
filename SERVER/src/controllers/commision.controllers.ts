@@ -12,7 +12,7 @@ import {
 } from '~/models/requestes/Commision.request'
 import commisionServicesOfSale from 'services/commision.services'
 import { HttpStatusCode } from '~/constants/enum'
-import commisionServicesOfTechnican from 'services/commisionoftechnican'
+import commisionServicesOfTechnican from 'services/commisionOfTechnican'
 
 // SELLER COMMISION
 export const createCommisionOfSeller = async (
@@ -66,7 +66,7 @@ export const createCommisionOfTechnican = async (
   return ResponseSuccess({
     res,
     message: commisionMessages.CREATE_COMMISION_OF_TECHNICAN_SUCCESS,
-    result
+    result: result.insertedId
   })
 }
 
