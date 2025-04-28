@@ -1134,7 +1134,7 @@ class ServicesCardRepository {
         // 3. Lookup các thẻ dịch vụ đã bán
         {
           $lookup: {
-            from: 'services_card',
+            from: 'services_card_sold',
             localField: 'card_services_sold_id',
             foreignField: '_id',
             as: 'cards'
@@ -1370,7 +1370,13 @@ class ServicesCardRepository {
   }
 
   async updateUsedServicesCardSold(data: UpdateUsedServicesCardSoldOfCustomerData) {
-    const { commision_of_technician_id, history_used, services_card_sold_id, services_id } = data
+    const {
+      commision_of_technician_id,
+      history_used,
+      services_card_sold_id,
+      services_id,
+      services_card_sold_of_customer_id
+    } = data
     // Kiểm tra quantity trước khi update
     const cardSold = await databaseServiceSale.services_card_sold.findOne(
       {
@@ -1408,7 +1414,6 @@ class ServicesCardRepository {
         },
         {
           $inc: {
-            'services_of_card.$[elem].quantity': -1,
             'services_of_card.$[elem].used': 1
           },
           $set: {
@@ -1421,7 +1426,7 @@ class ServicesCardRepository {
       ),
       databaseServiceSale.services_card_sold_of_customer.updateOne(
         {
-          _id: services_card_sold_id
+          _id: services_card_sold_of_customer_id
         },
         {
           $push: {
