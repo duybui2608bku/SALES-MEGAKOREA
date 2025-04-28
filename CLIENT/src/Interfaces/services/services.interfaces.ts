@@ -254,6 +254,9 @@ export interface GetServicesCardSoldOfCustomer {
       name: string
       lineTotal: number
       price: number
+      type_price: TypeCommision
+      quantity: number
+      used: number
     }[]
   }[]
 }
@@ -273,6 +276,34 @@ export interface UpdateServicesCardSoldOfCustomerRequestBody {
   history_paid_id?: string
   history_used?: HistoryUsed
   employee_commision_id?: string[]
+}
+
+export interface UpdateUsedServicesRequestBody {
+  id: string
+  commision_of_technician_id: string
+  services_card_sold_id: string
+  services_id: string
+  history_used: {
+    name_service: string
+    user_name: string
+    count: number
+    date: Date
+    descriptions?: string
+  }
+}
+
+export interface UpdateUsedServicesData {
+  commision: number
+  type: TypeCommision
+  services_card_sold_of_customer_id: string
+  user_id: string
+  services_card_sold_id: string
+  services_id: string
+  name_service: string
+  user_name: string
+  count: number
+  date: Date
+  descriptions?: string
 }
 
 // Sold Services Card

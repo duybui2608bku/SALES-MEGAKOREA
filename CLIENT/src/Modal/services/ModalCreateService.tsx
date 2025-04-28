@@ -140,7 +140,6 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     const user_id = profile._id
     const branch = getBranchList(values.branch || [])
     const service = { ...values, user_id, branch }
-    console.log('service', service)
     createService(service)
   }
 
