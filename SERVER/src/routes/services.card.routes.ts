@@ -4,17 +4,20 @@ import {
   createServicesCardSold,
   createServicesCardSoldOfCustomer,
   DeleteHistoryPaid,
+  DeleteServicesCard,
   getServicesCard,
   getServicesCardSoldOfCustomer,
   UpdateHistoryPaid,
   UpdateServicesCard,
-  updateServicesCardSoldOfCustomer
+  updateServicesCardSoldOfCustomer,
+  UpdateUsedServicesCardSold
 } from '~/controllers/services.card.controllers'
 import {
   CreateServicesCardSoldOfCustomerValidator,
   CreateServicesCardSoldValidator,
   CreateServicesCardValidator,
   DeleteHistoryPaidOfServicesCardValidator,
+  DeleteSerivcesCardValidator,
   GetServicesCardSoldOfCustomerValidator,
   UpdateHistoryPaidOfCardValidator,
   UpdateHistoryPaidOfServicesCardValidator,
@@ -86,8 +89,17 @@ servicesOfCardRouters.post(
 servicesOfCardRouters.patch(
   '/sold-of-customer/update',
   accessTokenValidator,
-  // UpdateServicesCardSoldOfCustomerValidator,
+  UpdateServicesCardSoldOfCustomerValidator,
   wrapRequestHandler(updateServicesCardSoldOfCustomer)
 )
+
+servicesOfCardRouters.delete(
+  '/delete/:id',
+  accessTokenValidator,
+  DeleteSerivcesCardValidator,
+  wrapRequestHandler(DeleteServicesCard)
+)
+
+servicesOfCardRouters.patch('/sold/update-used', accessTokenValidator, wrapRequestHandler(UpdateUsedServicesCardSold))
 
 export default servicesOfCardRouters

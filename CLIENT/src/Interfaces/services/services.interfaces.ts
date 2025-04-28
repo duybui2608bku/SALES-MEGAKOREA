@@ -80,6 +80,7 @@ export interface ServicesCategoryType {
   name: string
   descriptions: string
   tour_price?: number
+  type_price?: TypeCommision
 }
 
 export interface CreateServicesCategoryRequestBody {
@@ -252,6 +253,7 @@ export interface GetServicesCardSoldOfCustomer {
       _id: string
       name: string
       lineTotal: number
+      price: number
     }[]
   }[]
 }

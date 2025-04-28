@@ -3,11 +3,12 @@ import databaseServiceSale from './database.services.sale'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { commisionMessages, servicesMessages, userMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
-import { CreateCommisionOfSellerRequestType } from '~/models/requestes/Commision.request'
+import { CreateCommisionOfTechnicanRequestType } from '~/models/requestes/Commision.request'
 import commisionSellerRepository from 'repository/services/commision.services.card.repository'
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
+import commisionTechnicanRepository from 'repository/services/commision.technican.services.card.repository'
 
-class CommisionServicesOfSeller {
+class CommisionServicesOfTechnican {
   private async checkUserExist(id: ObjectId) {
     const User = await databaseServiceSale.users.findOne({ _id: id })
     if (!User) {
@@ -28,7 +29,7 @@ class CommisionServicesOfSeller {
     }
   }
 
-  async createCommisionOfSeller(data: CreateCommisionOfSellerRequestType) {
+  async createCommisionOfTechnican(data: CreateCommisionOfTechnicanRequestType) {
     const { user_id, services_card_sold_of_customer_id } = data
     const userId = new ObjectId(user_id)
     const servicesCardSoldOfCustomerId = new ObjectId(services_card_sold_of_customer_id)
@@ -41,7 +42,7 @@ class CommisionServicesOfSeller {
       user_id: userId,
       services_card_sold_of_customer_id: servicesCardSoldOfCustomerId
     }
-    return await commisionSellerRepository.createCommisionOfSeller(commision)
+    return await commisionTechnicanRepository.CreateCommisionOfTechnican(commision)
   }
 
   async getCommisionOfSellerByUserId(data: GetCommisionOfSellerRequests) {
@@ -55,7 +56,7 @@ class CommisionServicesOfSeller {
     }
     const userId = new ObjectId(user_id)
     await this.checkUserExist(userId)
-    const commisions = await commisionSellerRepository.getCommisionOfSellerByUserId({
+    const commisions = await commisionTechnicanRepository.getCommisionOfTechnicanByUserId({
       user_id: userId,
       query: query
     })
@@ -70,5 +71,5 @@ class CommisionServicesOfSeller {
   }
 }
 
-const commisionServicesOfSeller = new CommisionServicesOfSeller()
-export default commisionServicesOfSeller
+const commisionServicesOfTechnican = new CommisionServicesOfTechnican()
+export default commisionServicesOfTechnican

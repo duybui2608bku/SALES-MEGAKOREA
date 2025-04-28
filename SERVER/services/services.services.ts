@@ -26,7 +26,7 @@ const convertServicesDataToObjectId = (servicesData: CreateServicesRequestBody) 
   const { service_group_id, step_services, products, ...data } = servicesData
   const servicesDataWithObjectId = {
     ...data,
-    service_group_id: service_group_id !== undefined ? toObjectId(service_group_id) : '',
+    service_group_id: service_group_id !== undefined ? toObjectId(service_group_id) : null,
     step_services:
       step_services !== undefined
         ? step_services.map((step) => ({
@@ -46,7 +46,7 @@ const convertServicesDataToObjectId = (servicesData: CreateServicesRequestBody) 
         ...product,
         product_id: toObjectId(product.product_id)
       })) || [],
-    user_id: (data.user_id !== undefined && toObjectId(data.user_id)) || '',
+    user_id: toObjectId(data.user_id),
     branch: data.branch?.map((branchId) => toObjectId(branchId)) || [],
     employee:
       (data?.employee !== undefined &&

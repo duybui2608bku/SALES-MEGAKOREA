@@ -12,16 +12,17 @@ import {
   GetServicesCardSoldOfCustomerRequestBody,
   UpdateCardRequestBody,
   UpdateHistoryPaidOfServicesCardRequestBody,
-  UpdateServicesCardSoldOfCustomerRequestBody
+  UpdateServicesCardSoldOfCustomerRequestBody,
+  UpdateUsedServicesCardSoldRequestBody
 } from '~/models/requestes/Services.card.requests'
 import { getObjectOrNul, toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
-import { CreateServicesCardData, UpdateServicesCardData } from '~/interface/services/services.interface'
-
-const getServicePriceFromDB = async (services_id: string): Promise<number> => {
-  const service = await databaseServiceSale.services.findOne({ _id: new ObjectId(services_id) })
-  return service?.price || 0
-}
+import {
+  CreateServicesCardData,
+  CreateServicesCardSoldData,
+  UpdateServicesCardData
+} from '~/interface/services/services.interface'
+import _ from 'lodash'
 
 const convertServicesDataToObjectId = async (servicesCardData: CreateServicesCardRequestBody) => {
   const { service_group_id, services_of_card, employee, branch, user_id, ...data } = servicesCardData
@@ -40,6 +41,7 @@ const convertServicesDataToObjectId = async (servicesCardData: CreateServicesCar
     services_of_card:
       services_of_card?.map((service) => ({
         ...service,
+        used: 0,
         services_id: toObjectId(service.services_id || '')
       })) || []
   }
@@ -53,6 +55,16 @@ class ServicesCardServices {
     if (!servicesCategory) {
       throw new ErrorWithStatusCode({
         message: servicesMessages.SERVICES_CARD_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+  }
+
+  private async checkServicesCardSoldExist(id: ObjectId) {
+    const servicesCategory = await databaseServiceSale.services_card_sold.findOne({ _id: id })
+    if (!servicesCategory) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.SERVICES_CARD_SOLD_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }
@@ -78,6 +90,16 @@ class ServicesCardServices {
     }
   }
 
+  private async checkServicesExist(id: ObjectId) {
+    const services = await databaseServiceSale.services.findOne({ _id: id })
+    if (!services) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.SERVICES_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+  }
+
   //Services Card
   async CreateServicesCard(data: CreateServicesCardRequestBody) {
     const servicesCardData = (await convertServicesDataToObjectId(data)) as CreateServicesCardData
@@ -89,11 +111,7 @@ class ServicesCardServices {
     const { page = 1, limit = 10, branch, code, is_active, search, service_group_id, name } = data
     const query = {
       ...(name && { name: { $regex: name, $options: 'i' } }),
-      ...(code && { code: { $regex: code, $options: 'i' } }),
-      ...(is_active !== undefined && { is_active }),
-      ...(search && { name: { $regex: search, $options: 'i' } }),
-      ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } }),
-      ...(service_group_id && { service_group_id: new ObjectId(service_group_id) })
+      ...(branch && branch.length > 0 && { branch: { $in: branch.map((branchId) => new ObjectId(branchId)) } })
     }
     const servicesCard = await servicesCardRepository.getAllServicesCard({
       query,
@@ -160,7 +178,10 @@ class ServicesCardServices {
         return servicesCard
       })
     )
-    const result = await servicesCardRepository.createServicesCardSold(servicesCardData as CreateServicesCardData[])
+    const servicesCardDataWithObjectId = _.map(servicesCardData, (obj) => _.omit(obj, ['_id']))
+    const result = await servicesCardRepository.createServicesCardSold(
+      servicesCardDataWithObjectId as CreateServicesCardSoldData[]
+    )
     return result
   }
 
@@ -252,6 +273,33 @@ class ServicesCardServices {
     const historyPaidId = new ObjectId(id)
     await this.checkHistoryPaidExist(historyPaidId)
     await servicesCardRepository.deleteHistoryPaidOfServicesCardSoldOfCustomer(historyPaidId)
+  }
+
+  async DeleteServicesCard(_id: string) {
+    const id = new ObjectId(_id)
+    await this.checkServicesCardExist(id)
+    await servicesCardRepository.deleteServicesCard(id)
+  }
+
+  async UpdateUsedServicesCardSold(data: UpdateUsedServicesCardSoldRequestBody) {
+    const { id, history_used, commision_of_technician_id, services_id, services_card_sold_id } = data
+    const servicesCardSoldOfCustomerId = new ObjectId(id)
+    const servicesCardSoldId = new ObjectId(services_card_sold_id)
+    const commandOfTechnicianId = new ObjectId(commision_of_technician_id)
+    const servicesId = new ObjectId(services_id)
+    await Promise.all([
+      this.checkServicesCardSoldOfCustomerExist(servicesCardSoldOfCustomerId),
+      this.checkServicesExist(servicesId),
+      this.checkServicesCardSoldExist(servicesCardSoldId)
+    ])
+    const dataUpdate = {
+      services_card_sold_id: servicesCardSoldId,
+      services_card_sold_of_customer_id: servicesCardSoldOfCustomerId,
+      commision_of_technician_id: commandOfTechnicianId,
+      services_id: servicesId,
+      history_used
+    }
+    await servicesCardRepository.updateUsedServicesCardSold(dataUpdate)
   }
 }
 

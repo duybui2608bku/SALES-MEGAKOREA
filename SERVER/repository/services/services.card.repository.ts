@@ -4,18 +4,17 @@ import { HttpStatusCode, TypeCommision } from '~/constants/enum'
 import { servicesMessages } from '~/constants/messages'
 import {
   CreateServicesCardData,
+  CreateServicesCardSoldData,
   CreateServicesCardSoldOfCustomerData,
   GetCommisionOfDateData,
   GetServicesCardData,
   GetServicesCardSoldOfCustomerData,
   UpdateHistoryPaidServicesCardOfCustomerData,
-  UpdateServicesCardData
+  UpdateServicesCardData,
+  UpdateUsedServicesCardSoldOfCustomerData
 } from '~/interface/services/services.interface'
 import { ErrorWithStatusCode } from '~/models/Errors'
-import {
-  UpdateServicesCardSoldOfCustomerData,
-  UpdateServicesCardSoldOfCustomerRequestBody
-} from '~/models/requestes/Services.card.requests'
+import { UpdateServicesCardSoldOfCustomerData } from '~/models/requestes/Services.card.requests'
 import { CardServices } from '~/models/schemas/services/cardServices.schema'
 import { CardServicesSold } from '~/models/schemas/services/cardServicesSold.schema'
 import { CardServicesSoldOfCustomer } from '~/models/schemas/services/cardServicesSoldOfCustomer.schema'
@@ -380,11 +379,12 @@ class ServicesCardRepository {
     return resultCardDataNew
   }
 
-  async createServicesCardSold(data: CreateServicesCardData[]) {
+  async createServicesCardSold(data: CreateServicesCardSoldData[]) {
     const result = await databaseServiceSale.services_card_sold.insertMany(
       data.map((item) => new CardServicesSold(item))
     )
-    return result
+    console.log(Object.values(result.insertedIds))
+    return Object.values(result.insertedIds) as ObjectId[]
   }
 
   async getAllServicesCard(data: GetServicesCardData) {
@@ -424,7 +424,8 @@ class ServicesCardRepository {
       // Bước 1: Lọc dữ liệu theo query
       {
         $match: {
-          ...query
+          ...query,
+          is_active: true
         }
       },
 
@@ -1087,7 +1088,6 @@ class ServicesCardRepository {
     const projectionServices = createProjectionField('cards.services_of_card', [
       'services_id',
       'discount',
-      'price',
       'branch',
       'descriptions',
       'user_id',
@@ -1199,7 +1199,56 @@ class ServicesCardRepository {
             }
           }
         },
-        // 7. Group lại, giữ nguyên toàn bộ document gốc và gom mảng cards
+        // 7. Lookup services_category cho mỗi dịch vụ sau khi đã có chi tiết
+        {
+          $lookup: {
+            from: 'services_category',
+            let: {
+              serviceIds: {
+                $reduce: {
+                  input: '$cards.services_of_card',
+                  initialValue: [],
+                  in: {
+                    $concatArrays: ['$$value', ['$$this.service_group_id']]
+                  }
+                }
+              }
+            },
+            pipeline: [{ $match: { $expr: { $in: ['$_id', '$$serviceIds'] } } }],
+            as: 'serviceCategories'
+          }
+        },
+        // 8. Thêm thông tin category vào mỗi dịch vụ
+        {
+          $addFields: {
+            'cards.services_of_card': {
+              $map: {
+                input: '$cards.services_of_card',
+                as: 'so',
+                in: {
+                  $mergeObjects: [
+                    '$$so',
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$serviceCategories',
+                              as: 'sc',
+                              cond: { $eq: ['$$sc._id', '$$so.service_group_id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        // 9. Group lại, giữ nguyên toàn bộ document gốc và gom mảng cards
         {
           $group: {
             _id: '$_id',
@@ -1207,7 +1256,7 @@ class ServicesCardRepository {
             cards: { $push: '$cards' }
           }
         },
-        // 8. Merge root với cards array, thay document mới
+        // 10. Merge root với cards array, thay document mới
         {
           $replaceRoot: {
             newRoot: {
@@ -1225,7 +1274,7 @@ class ServicesCardRepository {
             customers: { $arrayElemAt: ['$customers', 0] }
           }
         },
-        // 9. Tính totalPrice là tổng tất cả lineTotal của mọi services trong mọi card
+        // 11. Tính totalPrice là tổng tất cả lineTotal của mọi services trong mọi card
         {
           $addFields: {
             price: {
@@ -1247,11 +1296,12 @@ class ServicesCardRepository {
             }
           }
         },
-        // 10. Project trường đầu ra
+        // 12. Project trường đầu ra
         {
           $project: {
             user_id: 0,
             serviceDetails: 0,
+            serviceCategories: 0,
             customer_id: 0,
             ...projectionUserDetail,
             ...projectCardServicesDetails,
@@ -1311,6 +1361,76 @@ class ServicesCardRepository {
         }
       }
     )
+  }
+
+  async deleteServicesCard(id: ObjectId) {
+    await databaseServiceSale.services_card.deleteOne({
+      _id: id
+    })
+  }
+
+  async updateUsedServicesCardSold(data: UpdateUsedServicesCardSoldOfCustomerData) {
+    const { commision_of_technician_id, history_used, services_card_sold_id, services_id } = data
+    // Kiểm tra quantity trước khi update
+    const cardSold = await databaseServiceSale.services_card_sold.findOne(
+      {
+        _id: services_card_sold_id,
+        'services_of_card.services_id': services_id
+      },
+      {
+        projection: {
+          'services_of_card.$': 1
+        }
+      }
+    )
+
+    // Kiểm tra xem có tìm thấy card và service không
+    if (!cardSold || !cardSold.services_of_card || cardSold.services_of_card.length === 0) {
+      throw new Error('Không tìm thấy dịch vụ trong thẻ dịch vụ')
+    }
+
+    // Lấy thông tin service cần update
+    const service = cardSold.services_of_card[0]
+
+    // Kiểm tra quantity
+    if (service.quantity <= 0) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.SERVICE_CARD_QUANTITY_NOT_ENOUGH,
+        statusCode: HttpStatusCode.BadRequest
+      })
+    }
+
+    // Nếu quantity > 0 thì mới thực hiện update
+    await Promise.all([
+      databaseServiceSale.services_card_sold.updateOne(
+        {
+          _id: services_card_sold_id
+        },
+        {
+          $inc: {
+            'services_of_card.$[elem].quantity': -1,
+            'services_of_card.$[elem].used': 1
+          },
+          $set: {
+            updated_at: new Date()
+          }
+        },
+        {
+          arrayFilters: [{ 'elem.services_id': services_id }]
+        }
+      ),
+      databaseServiceSale.services_card_sold_of_customer.updateOne(
+        {
+          _id: services_card_sold_id
+        },
+        {
+          $push: {
+            history_used: history_used,
+            employee_commision: commision_of_technician_id
+          }
+        }
+      )
+    ])
   }
 }
 

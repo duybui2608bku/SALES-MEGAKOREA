@@ -95,6 +95,10 @@ const pathApiCustomer = {
   createCustomer: '/customers/create'
 }
 
+const pathCommision = {
+  createCommisionTechnician: '/commision/technican/create'
+}
+
 export {
   pathAuth,
   pathUtil,
@@ -109,5 +113,6 @@ export {
   pathRoutersUser,
   pathRoutesCustomers,
   pathApiUploadAvatarUser,
-  pathApiCustomer
+  pathApiCustomer,
+  pathCommision
 }

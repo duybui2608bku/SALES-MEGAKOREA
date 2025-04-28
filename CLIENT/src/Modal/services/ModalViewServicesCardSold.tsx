@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Flex, Modal, Popconfirm, Space, Tag, Typography } from 'antd'
+import { Button, Card, Col, Divider, Flex, message, Modal, Popconfirm, Space, Tag, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { GetServicesCardSoldOfCustomer } from 'src/Interfaces/services/services.interfaces'
 const { Title, Text } = Typography
@@ -7,6 +7,14 @@ import dayjs from 'dayjs'
 import { IoPrintOutline } from 'react-icons/io5'
 import { RiErrorWarningLine } from 'react-icons/ri'
 import { GrSubtractCircle } from 'react-icons/gr'
+import { Row } from 'antd/lib'
+import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
+import { RoleUser } from 'src/Constants/enum'
+import { queryClient } from 'src/main'
+import { HttpStatusCode } from 'axios'
+import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
+import { useMutation } from '@tanstack/react-query'
+import commisionTechnicanApi from 'src/Service/commision/commision.technican'
 
 enum StatusOpenModalServicesCard {
   VIEW,
@@ -24,11 +32,14 @@ interface CardOfServicesCardSoldOfCustomer {
   _id: string
   price: number | null
   name: string
+  parentId: string
   services_of_card: {
     _id: string
     name: string
     lineTotal: number
-    quantity?: number
+    price: number
+    quantity: number
+    used: number
   }[]
   create_at?: string
 }
@@ -36,10 +47,16 @@ interface CardOfServicesCardSoldOfCustomer {
 const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const { open, close, servicesCardSoldOfCustomerData } = props
   const [listServicesCard, setListServicesCard] = useState<CardOfServicesCardSoldOfCustomer[]>([])
+  const [user_id, setUserId] = useState<string>('')
 
   useEffect(() => {
     if (servicesCardSoldOfCustomerData) {
-      setListServicesCard(servicesCardSoldOfCustomerData.cards)
+      // Thêm parentId vào mỗi card
+      const cardsWithParentId = servicesCardSoldOfCustomerData.cards.map((card) => ({
+        ...card,
+        parentId: servicesCardSoldOfCustomerData._id
+      }))
+      setListServicesCard(cardsWithParentId)
     }
   }, [servicesCardSoldOfCustomerData])
 
@@ -47,6 +64,28 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const handleCancelModal = () => {
     close(StatusOpenModalServicesCard.NONE)
   }
+
+  const { mutate: createCommisionTechnican, isPending: isCreatingCommisionTechnican } = useMutation({
+    mutationFn: commisionTechnicanApi.createCommisionTechnican,
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
+    },
+    onSuccess: () => {
+      message.success('Tạo dịch vụ thành công!')
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+    },
+    onError: (error: Error, _, context) => {
+      queryClient.setQueryData(['getAllServices'], context?.previousData)
+      const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
+        ? 'Dữ liệu không hợp lệ!'
+        : `Lỗi khi hoa ho: ${error.message}`
+      message.error(errorMsg)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+    },
+    retry: 2
+  })
 
   return (
     <Modal
@@ -120,9 +159,52 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                       >
                         {service.name}
                       </Tag>
-                      <Text type='secondary' style={{ fontSize: '10px' }}>
-                        x{service.quantity}
+                      <Text type='danger' style={{ fontSize: '12px' }}>
+                        {service.used} / {service.quantity}
                       </Text>
+                      <Popconfirm
+                        title='Xác nhận sử dụng dịch vụ'
+                        onConfirm={() => console.log('Xác nhận sử dụng dịch vụ')}
+                        okText='Xác nhận'
+                        cancelText='Hủy'
+                        description={
+                          <Row style={{ width: '500px' }}>
+                            <Col span={12}>
+                              <Text>Thực hiện</Text>
+                              <OptionsGetUsersWithRole
+                                onchange={(value) => setUserId(value)}
+                                style={{
+                                  marginTop: '8px',
+                                  marginBottom: '8px'
+                                }}
+                                search
+                                role={RoleUser.TECHNICIAN}
+                              />
+                            </Col>
+                            <Col span={12}>
+                              <Flex
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'column'
+                                }}
+                              >
+                                <Text>Hoa hồng</Text>
+                                <Text>
+                                  {new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                  }).format(service.price)}
+                                </Text>
+                              </Flex>
+                            </Col>
+                          </Row>
+                        }
+                      >
+                        <Button
+                          style={{ width: '40px', height: '40px' }}
+                          icon={<GrSubtractCircle style={{ color: '#10B981', fontSize: '18px' }} />}
+                        />
+                      </Popconfirm>
                     </Space>
                   ))}
                 </Space>
@@ -142,12 +224,6 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                 style={{ width: '40px', height: '40px' }}
                 icon={<RiErrorWarningLine style={{ color: '#F59E0B', fontSize: '18px' }} />}
               />
-              <Popconfirm title='Xác nhận sử dụng dịch vụ'>
-                <Button
-                  style={{ width: '40px', height: '40px' }}
-                  icon={<GrSubtractCircle style={{ color: '#10B981', fontSize: '18px' }} />}
-                />
-              </Popconfirm>
             </Flex>
           </Card>
         ))}

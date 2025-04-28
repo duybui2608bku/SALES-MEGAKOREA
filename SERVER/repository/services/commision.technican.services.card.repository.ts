@@ -1,13 +1,13 @@
 import databaseServiceSale from 'services/database.services.sale'
-import { CreateCommisionOfSellerData, GetCommisionOfSellerData } from '~/interface/commision/commision.interface'
-import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.schema'
+import { CreateCommisionOfTechnicanData, GetCommisionOfTechnicanData } from '~/interface/commision/commision.interface'
+import { CommisionOfTechnican } from '~/models/schemas/commision/commisionOfTechnican.schema'
 
-class CommisionSellerRepository {
-  async createCommisionOfSeller(data: CreateCommisionOfSellerData) {
-    return await databaseServiceSale.commission_seller.insertOne(new CommisionOfSeller(data))
+class CommisionTechnicanRepository {
+  async CreateCommisionOfTechnican(data: CreateCommisionOfTechnicanData) {
+    return await databaseServiceSale.commission_technican.insertOne(new CommisionOfTechnican(data))
   }
 
-  async getCommisionOfSellerByUserId(data: GetCommisionOfSellerData) {
+  async getCommisionOfTechnicanByUserId(data: GetCommisionOfTechnicanData) {
     const { user_id, query } = data
     const result = await databaseServiceSale.commission_seller
       .aggregate([
@@ -64,5 +64,5 @@ class CommisionSellerRepository {
   }
 }
 
-const commisionSellerRepository = new CommisionSellerRepository()
-export default commisionSellerRepository
+const commisionTechnicanRepository = new CommisionTechnicanRepository()
+export default commisionTechnicanRepository
