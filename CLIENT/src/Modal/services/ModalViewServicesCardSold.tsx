@@ -78,7 +78,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       queryClient.setQueryData(['getAllServices'], context?.previousData)
       const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
         ? 'Dữ liệu không hợp lệ!'
-        : `Lỗi khi hoa ho: ${error.message}`
+        : `Lỗi khi hoa hồng: ${error.message}`
       message.error(errorMsg)
     },
     onSettled: () => {
@@ -95,7 +95,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       okText={'Đóng'}
       footer={null}
       style={{ padding: 0 }}
-      // Tính chiều rộng động của Modal (giới hạn tối đa là 1100p)
+      // Tính chiều rộng động của Modal (giới hạn tối đa là 1100px)
       width={Math.min(listServicesCard.length * 260 + 48, 1100)}
     >
       <Title className='center-div' level={2} style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -168,28 +168,28 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                         okText='Xác nhận'
                         cancelText='Hủy'
                         description={
-                          <Row style={{ width: '500px' }}>
-                            <Col span={12}>
+                          <Row style={{ width: '500px', gap: '18px', marginTop: '20px' }}>
+                            <Col span={11}>
                               <Text>Thực hiện</Text>
                               <OptionsGetUsersWithRole
                                 onchange={(value) => setUserId(value)}
                                 style={{
-                                  marginTop: '8px',
-                                  marginBottom: '8px'
+                                  marginTop: '8px'
                                 }}
                                 search
                                 role={RoleUser.TECHNICIAN}
                               />
                             </Col>
-                            <Col span={12}>
+                            <Col span={11}>
                               <Flex
                                 style={{
                                   display: 'flex',
-                                  flexDirection: 'column'
+                                  flexDirection: 'column',
+                                  gap: '10px'
                                 }}
                               >
                                 <Text>Hoa hồng</Text>
-                                <Text>
+                                <Text style={{ color: '#ff4d4f', fontSize: '15px' }}>
                                   {new Intl.NumberFormat('vi-VN', {
                                     style: 'currency',
                                     currency: 'VND'

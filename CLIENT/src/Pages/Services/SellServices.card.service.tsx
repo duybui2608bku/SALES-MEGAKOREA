@@ -127,25 +127,24 @@ const SoldServicesCardService = () => {
 
     const responseSoldServicesCard = await cretateSoldServicesCard({ services_card_id: serviceCardSelected })
     const cardServicesSoldId = responseSoldServicesCard.data.result
-    console.log('Data responseSoldServicesCard: ', cardServicesSoldId)
 
     const userId = String(profile?._id)
     const userBranchId = Array.isArray(profile?.branch)
       ? profile.branch.map((b: BranchType) => b._id)
       : [profile?.branch._id]
 
-    // try {
-    //   const createServiceCard = {
-    //     customer_id: customerId,
-    //     card_services_sold_id: serviceCardSelected,
-    //     user_id: userId,
-    //     branch: userBranchId.filter((branchId) => branchId !== undefined) as string[]
-    //   }
+    try {
+      const createServiceCard = {
+        customer_id: customerId,
+        card_services_sold_id: cardServicesSoldId,
+        user_id: userId,
+        branch: userBranchId.filter((branchId) => branchId !== undefined) as string[]
+      }
 
-    //   createServiceCardSoldOfCustomer(createServiceCard)
-    // } catch (error) {
-    //   message.error('Lỗi trong quá trình tạo Service card sold of customer!')
-    // }
+      createServiceCardSoldOfCustomer(createServiceCard)
+    } catch (error) {
+      message.error('Lỗi trong quá trình tạo Service card sold of customer!')
+    }
   }
 
   return (
@@ -219,7 +218,9 @@ const SoldServicesCardService = () => {
                     </Tag>
                   )}
                   <Popconfirm
-                    okButtonProps={{ loading: isCreatingCustomer || isCreatingServiceCard }}
+                    okButtonProps={{
+                      loading: isCreatingCustomer || isCreatingServiceCard || isCreatingSoldServiesCard
+                    }}
                     onConfirm={() => handleCreateServiceCardSoldOfCustomer()}
                     title={
                       <Typography>

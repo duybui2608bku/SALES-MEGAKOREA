@@ -119,12 +119,12 @@ const SoldServicesCard = () => {
           <Space direction='vertical' size={2}>
             <Text strong style={{ fontSize: '15px' }}>
               {record.customers?.name} |{' '}
-              <Text type='secondary' style={{ fontSize: '12px' }}>
+              <Text type='secondary' style={{ fontSize: '13px' }}>
                 {record.customers?.sex}
               </Text>
             </Text>
 
-            <Paragraph copyable style={{ fontSize: '13px', color: '#1677ff' }}>
+            <Paragraph copyable style={{ fontSize: '13px', color: '#1677ff', margin: 0 }}>
               {record.customers?.phone}
             </Paragraph>
           </Space>
@@ -238,16 +238,6 @@ const SoldServicesCard = () => {
       }
     },
     {
-      title: 'Liệu trình',
-      dataIndex: 'treatment',
-      key: 'treatment',
-      width: 50,
-      align: 'center',
-      render: () => {
-        return <Text>0/5</Text>
-      }
-    },
-    {
       title: 'Tổng tiền',
       dataIndex: 'price',
       key: 'price',
@@ -260,6 +250,11 @@ const SoldServicesCard = () => {
           </Text>
         )
       }
+    },
+    {
+      title: 'Công nợ',
+      align: 'center',
+      width: 100
     },
     {
       title: 'Hành động',
@@ -306,7 +301,7 @@ const SoldServicesCard = () => {
         </Col>
       </Row>
 
-      {/* Talbe Service Card */}
+      {/* Table Service Card */}
       <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table

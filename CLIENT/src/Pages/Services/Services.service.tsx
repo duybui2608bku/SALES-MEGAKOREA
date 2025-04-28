@@ -21,7 +21,8 @@ import { GoPlus } from 'react-icons/go'
 import ModalCreateService from 'src/Modal/services/ModalCreateService'
 import { FcCancel } from 'react-icons/fc'
 import { queryClient } from 'src/main'
-const { Paragraph } = Typography
+import Title from 'src/Components/Title'
+const { Paragraph, Text } = Typography
 
 const LIMIT = 9
 const PAGE = 1
@@ -91,7 +92,7 @@ const Service = () => {
         total: total
       })
     }
-  }, [data])
+  }, [data, pagination])
 
   const columns: TableColumnType<ColumnsServicesType>[] = [
     {
@@ -99,7 +100,8 @@ const Service = () => {
       dataIndex: 'code',
       key: 'code',
       width: 130,
-      align: 'center'
+      align: 'center',
+      fixed: 'left'
     },
     {
       title: 'Trạng thái',
@@ -117,12 +119,14 @@ const Service = () => {
     {
       title: 'Tên dịch vụ',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      width: 130
     },
     {
       title: 'Danh mục',
       dataIndex: 'service_group',
       key: 'service_group',
+      width: 130,
       render: (service_group: ServicesCategoryType) => {
         return (
           <Typography.Text
@@ -140,14 +144,21 @@ const Service = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (created_at: string) => new Date(created_at).toLocaleDateString('vi-VN'),
-      width: 130,
+      width: 120,
       align: 'center'
     },
     {
       title: 'Giá',
       dataIndex: 'price',
       key: 'price',
-      render: (price: number) => price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+      align: 'center',
+      render: (price: number) => {
+        return (
+          <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
+            {price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+          </Text>
+        )
+      },
       sorter: (a: ServicesType, b: ServicesType) => a.price - b.price,
       sortDirections: ['descend', 'ascend'],
       width: 150
@@ -156,8 +167,14 @@ const Service = () => {
       title: 'Hoa hồng',
       dataIndex: 'service_group',
       key: 'service_groupe',
-      render: (service_group: ServicesCategoryType) =>
-        (service_group?.tour_price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+      align: 'center',
+      render: (service_group: ServicesCategoryType) => {
+        return (
+          <Text style={{ color: '#FF3399', fontSize: '15px' }} strong>
+            {(service_group?.tour_price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+          </Text>
+        )
+      },
       sorter: (a: ServicesType, b: ServicesType) => a.price - b.price,
       sortDirections: ['descend', 'ascend'],
       width: 150
@@ -166,6 +183,7 @@ const Service = () => {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',
+      width: 140,
       render: (branch: BranchType[]) => (
         <Paragraph
           ellipsis={{
@@ -181,6 +199,7 @@ const Service = () => {
       title: 'Mô tả',
       dataIndex: 'descriptions',
       key: 'descriptions',
+      width: 140,
       render: (text: string) => <Typography.Text ellipsis={{ tooltip: true }}>{text}</Typography.Text>
     },
     {
@@ -201,15 +220,17 @@ const Service = () => {
         ) : (
           <FcCancel size={30} />
         ),
-      width: 130,
+      width: 120,
       align: 'center'
     },
     {
       title: 'Hành động',
       dataIndex: '_id',
       key: '_id',
+      align: 'center',
+      fixed: 'right',
       render: (_id: string, record: ServicesType) => (
-        <Flex gap={10}>
+        <Flex gap={10} justify='center'>
           <Button
             onClick={() => {
               setModalType(ModalType.MODAL_CREATE_SERVICE)
@@ -276,51 +297,41 @@ const Service = () => {
 
   return (
     <Fragment>
-      <Row
-        style={{
-          padding: 20
-        }}
-      >
-        <Col span={24}>
-          <Flex justify='center' style={{ margin: 20 }}>
-            <Typography.Title level={2}>Danh sách dịch vụ</Typography.Title>
-          </Flex>
+      {/* Title List Service */}
+      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
+        <Col xs={24}>{Title({ title: 'Danh sách dịch vụ', level: 2 })}</Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <Button
+            onClick={() => {
+              setModalType(ModalType.MODAL_CREATE_SERVICE)
+            }}
+            type='primary'
+            style={{ width: '100%' }}
+            icon={<GoPlus size={20} />}
+            title='Thêm dịch vụ'
+          >
+            Thêm dịch vụ
+          </Button>
         </Col>
-        <Col
-          span={24}
-          style={{
-            display: 'flex',
-            gap: 10,
-            marginBottom: 20,
-            marginTop: 20
-          }}
-        >
-          <Col sm={24} md={3}>
-            <Button
-              onClick={() => {
-                setModalType(ModalType.MODAL_CREATE_SERVICE)
-              }}
-              type='primary'
-              style={{ width: '100%' }}
-              icon={<GoPlus size={20} />}
-              title='Thêm dịch vụ'
-            >
-              Thêm dịch vụ
-            </Button>
-          </Col>
-          <Col sm={24} md={3}>
-            <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
-          </Col>
-          <Col sm={24} md={4}>
-            <DebouncedSearch
-              placeholder='Tìm kiếm dich vụ'
-              onSearch={(value) => handleSearch(value)}
-              debounceTime={1000}
-            />
-          </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
         </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <DebouncedSearch
+            placeholder='Tìm kiếm dich vụ'
+            onSearch={(value) => handleSearch(value)}
+            debounceTime={1000}
+          />
+        </Col>
+      </Row>
+
+      {/* Table List Service */}
+      <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
+            sticky
+            style={{ width: '100%' }}
+            scroll={{ x: '1200px' }}
             bordered
             columns={columns}
             dataSource={services}

@@ -1134,7 +1134,7 @@ class ServicesCardRepository {
         // 3. Lookup các thẻ dịch vụ đã bán
         {
           $lookup: {
-            from: 'services_card',
+            from: 'services_card_sold',
             localField: 'card_services_sold_id',
             foreignField: '_id',
             as: 'cards'
