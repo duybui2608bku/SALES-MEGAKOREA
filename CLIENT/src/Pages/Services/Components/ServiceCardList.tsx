@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Card, Row, Col, Typography, Tag, Space, Divider } from 'antd'
-import { DollarOutlined, TagOutlined } from '@ant-design/icons'
+import { DollarOutlined, DownOutlined, TagOutlined, UpOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
 const { Title, Text } = Typography
@@ -25,6 +25,7 @@ const ServiceCardList = ({
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([])
   const [totalPriceCards, setTotalPriceCards] = useState(0)
   const [prevResetCard, setPrevResetCard] = useState<number>(resetCard ?? 0)
+  const [expandedCardIds, setExpandedCardIds] = useState(new Set())
 
   // Giới hạn tối đa 10 thẻ dịch vụ
   const limitedCards = cards.slice(0, 10)
@@ -57,9 +58,20 @@ const ServiceCardList = ({
     onServiceClick?.(selectedCardIds, total)
   }, [selectedCardIds, cards, onServiceClick])
 
+  // Xử lý Mở rộng/Thu gọn của service_of_card nếu số lượng service_of_card lớn hơn 2
+  const toggleServicesList = (cardId: string) => {
+    const newExpandedIds = new Set(expandedCardIds)
+    if (newExpandedIds.has(cardId)) {
+      newExpandedIds.delete(cardId)
+    } else {
+      newExpandedIds.add(cardId)
+    }
+    setExpandedCardIds(newExpandedIds)
+  }
+
   return (
     <div>
-      <Row gutter={[24, 24]} justify={!customCss ? 'center' : 'start'}>
+      <Row gutter={[24, 24]} justify={'start'}>
         {limitedCards.map((card) => (
           <Col xs={24} sm={12} md={columnsGird} lg={4.8} key={card._id}>
             <Card
@@ -159,42 +171,71 @@ const ServiceCardList = ({
                   >
                     Dịch vụ:
                   </Text>
-                  {card.services_of_card.map((service, index) => (
-                    <Space key={index} align='center' style={{ width: '100%' }}>
-                      <Tag
-                        color='cyan'
-                        icon={<TagOutlined />}
-                        style={
-                          !customCss
-                            ? {
-                                fontSize: 'clamp(8px, 4vw, 12px)',
-                                padding: '4px 10px',
-                                borderRadius: '10px',
-                                background: '#e6f7ff',
-                                border: 'none',
-                                cursor: 'pointer',
-                                whiteSpace: 'normal',
-                                wordBreak: 'break-word'
-                              }
-                            : {
-                                fontSize: '10px',
-                                padding: '4px 10px',
-                                borderRadius: '10px',
-                                background: '#e6f7ff',
-                                border: 'none'
-                              }
-                        }
-                        onClick={(e) => {
-                          e.stopPropagation() // Ngăn sự kiện click card khi nhấn Tag
-                        }}
-                      >
-                        {service.service_details.name}
-                      </Tag>
-                      <Text type='secondary' style={{ fontSize: '12px', wordBreak: 'unset' }}>
-                        x{service.quantity}
-                      </Text>
-                    </Space>
-                  ))}
+
+                  {(expandedCardIds.has(card._id) ? card.services_of_card : card.services_of_card.slice(0, 1)).map(
+                    (service, index) => (
+                      <Space key={index} align='center' style={{ width: '100%' }}>
+                        <Tag
+                          color='cyan'
+                          icon={<TagOutlined />}
+                          style={
+                            !customCss
+                              ? {
+                                  fontSize: 'clamp(8px, 4vw, 12px)',
+                                  padding: '4px 10px',
+                                  borderRadius: '10px',
+                                  background: '#e6f7ff',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  whiteSpace: 'normal',
+                                  wordBreak: 'break-word'
+                                }
+                              : {
+                                  fontSize: '10px',
+                                  padding: '4px 10px',
+                                  borderRadius: '10px',
+                                  background: '#e6f7ff',
+                                  border: 'none'
+                                }
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation() // Ngăn sự kiện click card khi nhấn Tag
+                          }}
+                        >
+                          {service.service_details.name}
+                        </Tag>
+                        <Text type='secondary' style={{ fontSize: '12px', wordBreak: 'unset' }}>
+                          x{service.quantity}
+                        </Text>
+                      </Space>
+                    )
+                  )}
+
+                  {card.services_of_card.length > 1 && (
+                    <Tag
+                      color='geekblue'
+                      style={{
+                        outline: 'none',
+                        fontSize: '10px'
+                      }}
+                      onClick={(e) => {
+                        toggleServicesList(card._id)
+                        e.stopPropagation() // Ngăn sự kiện click card khi nhấn Tag"Xem thêm/Thu gọn"
+                      }}
+                    >
+                      {expandedCardIds.has(card._id) ? (
+                        <>
+                          <UpOutlined style={{ fontSize: '9px', marginRight: '4px' }} /> Thu gọn
+                        </>
+                      ) : (
+                        <>
+                          {' '}
+                          <DownOutlined style={{ fontSize: '9px', marginRight: '4px' }} /> Xem thêm (
+                          {card.services_of_card.length - 1})
+                        </>
+                      )}
+                    </Tag>
+                  )}
                 </Space>
 
                 {/* Ngày tạo */}

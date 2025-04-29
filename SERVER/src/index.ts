@@ -39,6 +39,7 @@ app.use('/customers', CustomersRouter)
 app.use('/commision', CommisionRouter)
 app.use(defaultErrorHandler)
 
+console.log(new Date('2025-04-21T17:00:00.000Z'))
 app.listen(port, () => {
   console.log(`Server is running on http://localhost: ${port}`)
 })

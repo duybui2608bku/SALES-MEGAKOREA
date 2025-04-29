@@ -3,6 +3,7 @@ import { Button, Col, Flex, Popconfirm, Row, Table, TableColumnType, Typography 
 import { Fragment, useEffect, useState } from 'react'
 import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
+import Title from 'src/Components/Title'
 import { ServicesCategoryType } from 'src/Interfaces/services/services.interfaces'
 import ModalCreateServicesCategory from 'src/Modal/services/ModalCreateServicesCategory'
 import { servicesApi } from 'src/Service/services/services.api'
@@ -64,7 +65,7 @@ const CategoryService = () => {
       dataIndex: 'action',
       key: 'action',
       render: (_: unknown, record: ServicesCategoryType) => (
-        <Flex gap={10}>
+        <Flex gap={10} justify='center'>
           <Button
             onClick={() => {
               setCategoryServicesToEdit(record)
@@ -103,24 +104,22 @@ const CategoryService = () => {
 
   return (
     <Fragment>
-      <Row
-        gutter={[16, 16]}
-        style={{
-          padding: 20
-        }}
-      >
-        <Col span={24}>
-          <Flex justify='center' style={{ margin: 20 }}>
-            <Typography.Title level={2}>Danh mục dịch vụ</Typography.Title>
-          </Flex>
-        </Col>
-        <Col span={24}>
+      {/* Title Categories Service */}
+      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
+        <Col xs={24}>{Title({ title: 'Danh mục dịch vụ', level: 2 })}</Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
           <Button type='primary' onClick={() => setOpenModal(true)}>
             Thêm danh mục
           </Button>
         </Col>
-        <Col span={24} className='table_cus'>
+      </Row>
+
+      {/* Table Categories Service */}
+      <Row gutter={16} style={{ padding: '20px' }}>
+        <Col span={24}>
           <Table
+            bordered
+            sticky
             loading={isLoading}
             columns={columnsCategoryServices}
             dataSource={categoryServices}

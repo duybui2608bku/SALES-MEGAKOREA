@@ -16,6 +16,7 @@ import { AppContext } from 'src/Context/AppContext'
 import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
 import { servicesApi } from 'src/Service/services/services.api'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
+import { queryClient } from 'src/main'
 
 // const { Search } = Input
 
@@ -77,6 +78,17 @@ const SoldServicesCardService = () => {
     }
   })
 
+  // Create Sold Services Card
+  const { mutateAsync: cretateSoldServicesCard, isPending: isCreatingSoldServiesCard } = useMutation({
+    mutationFn: servicesApi.createSoldServicesCard,
+    onSuccess: () => {
+      message.success('Tạo thẻ dịch vụ đã bán thành công!')
+    },
+    onError: (error: Error) => {
+      message.error(`Lỗi khi tạo thẻ dịch vụ đã bán: ${error.message}`)
+    }
+  })
+
   // Create Service Card Sold Of Customer
   const { mutate: createServiceCardSoldOfCustomer, isPending: isCreatingServiceCard } = useMutation({
     mutationFn: servicesApi.createServicesCardSoldOfCustomer,
@@ -87,6 +99,7 @@ const SoldServicesCardService = () => {
       // Reset value search customer
       setResetValueSearchCustomer(true)
       setTimeout(() => setResetValueSearchCustomer(false), 200)
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
     },
     onError: (error: Error) => {
       message.error(`Lỗi khi tạo thẻ dịch vụ: ${error.message}`)
@@ -111,8 +124,12 @@ const SoldServicesCardService = () => {
       sex: customer?.sex
     }
 
-    const response = await createCustomerService(createCustomer)
-    const customerId = String(response.data.result)
+    const responseCustomerService = await createCustomerService(createCustomer)
+    const customerId = String(responseCustomerService.data.result)
+
+    const responseSoldServicesCard = await cretateSoldServicesCard({ services_card_id: serviceCardSelected })
+    const cardServicesSoldId = responseSoldServicesCard.data.result
+
     const userId = String(profile?._id)
     const userBranchId = Array.isArray(profile?.branch)
       ? profile.branch.map((b: BranchType) => b._id)
@@ -121,7 +138,7 @@ const SoldServicesCardService = () => {
     try {
       const createServiceCard = {
         customer_id: customerId,
-        card_services_sold_id: serviceCardSelected,
+        card_services_sold_id: cardServicesSoldId,
         user_id: userId,
         branch: userBranchId.filter((branchId) => branchId !== undefined) as string[]
       }
@@ -203,7 +220,9 @@ const SoldServicesCardService = () => {
                     </Tag>
                   )}
                   <Popconfirm
-                    okButtonProps={{ loading: isCreatingCustomer || isCreatingServiceCard }}
+                    okButtonProps={{
+                      loading: isCreatingCustomer || isCreatingServiceCard || isCreatingSoldServiesCard
+                    }}
                     onConfirm={() => handleCreateServiceCardSoldOfCustomer()}
                     title={
                       <Typography>

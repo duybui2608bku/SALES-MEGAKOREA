@@ -14,7 +14,7 @@ import {
 } from 'antd'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
-const { Title } = Typography
+// const { Title } = Typography
 import { optionsBranch } from 'src/Constants/option'
 import ModalCreateProduct from 'src/Modal/ModalCreateProduct'
 import { ProductGeneralInterface } from 'src/Interfaces/product/product.interface'
@@ -32,7 +32,10 @@ import { PiMicrosoftExcelLogoLight } from 'react-icons/pi'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import { BranchType } from 'src/Interfaces/branch/branch.interface'
 import UpdateStockComponent from './Components/UpdateStockComponent'
-const { Paragraph } = Typography
+import Title from 'src/Components/Title'
+import ExpandableParagraph from 'src/Components/ExpandableParagraph'
+import { MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp } from 'react-icons/md'
+const { Paragraph, Text } = Typography
 
 type ColumnsProductGeneralType = ProductGeneralInterface
 
@@ -173,7 +176,8 @@ const ProductGeneral = () => {
       title: 'Mã sản phẩm',
       dataIndex: 'code',
       key: 'code',
-      width: 150
+      width: 130,
+      fixed: 'left'
     },
     {
       title: 'Trạng thái',
@@ -193,61 +197,81 @@ const ProductGeneral = () => {
     {
       title: 'Tên sản phẩm',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      width: 180,
+      fixed: 'left'
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
+      align: 'center',
+      width: 140,
       render: (created_at: string) => new Date(created_at).toLocaleDateString('vi-VN')
     },
     {
       title: 'Danh mục',
       dataIndex: 'category',
       key: 'category',
-      width: 150
+      align: 'center',
+      width: 120
     },
     {
       title: 'Giá',
       dataIndex: 'price',
       key: 'price',
-      render: (price: number) => price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+      width: 120,
+      align: 'center',
+      render: (price: number) => {
+        return (
+          <Text style={{ color: '#ff4d4f' }} strong>
+            {price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+          </Text>
+        )
+      }
     },
     {
       title: 'Đơn vị',
       dataIndex: 'unit',
       key: 'unit',
-      width: 150
+      align: 'center',
+      width: 140
     },
 
     {
       title: 'Kho',
       dataIndex: 'inStock',
       key: 'inStock',
-      width: 110,
+      width: 100,
       align: 'center'
     },
     {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',
-      render: (branch: BranchType[]) => (
-        <Paragraph
-          ellipsis={{
-            expandable: true,
-            rows: 1
-          }}
-        >
-          {branch?.length === optionsBranch.length + 1 ? 'Toàn bộ' : branch.map((b) => b.name).join(', ')}
-        </Paragraph>
-      )
+      width: 180,
+      render: (branch: BranchType[]) =>
+        branch.length !== 0 && branch.length !== optionsBranch.length + 1 ? (
+          <ExpandableParagraph
+            text={branch.map((b) => b.name).join(', ')}
+            rows={1}
+            moreText={<MdKeyboardDoubleArrowDown />}
+            lessText={<MdKeyboardDoubleArrowUp />}
+          />
+        ) : branch.length === optionsBranch.length + 1 ? (
+          <Paragraph style={{ margin: 0 }}>Toàn bộ</Paragraph>
+        ) : (
+          ''
+        )
     },
     {
       title: 'Hành động',
       dataIndex: 'action',
       key: 'action',
+      fixed: 'right',
+      align: 'center',
       render: (_: unknown, record: ProductGeneralInterface) => (
-        <Flex gap={10}>
+        <Flex gap={10} justify='center'>
           <Button onClick={() => handleUpdateProduct(record)} title='Sửa' icon={<IoPencil color='blue' />} />
           <Popconfirm
             okButtonProps={{ loading: isPending }}
@@ -266,7 +290,7 @@ const ProductGeneral = () => {
           <UpdateStockComponent product={record} />
         </Flex>
       ),
-      width: 130
+      width: 160
     }
   ]
 
@@ -348,24 +372,10 @@ const ProductGeneral = () => {
 
   return (
     <Fragment>
-      <Row
-        style={{
-          padding: '20px'
-        }}
-        gutter={[16, 16]}
-      >
-        <Col span={24}>
-          <Title
-            style={{
-              margin: '16px 0'
-            }}
-            className='center-div'
-            level={2}
-          >
-            Danh Sách Sản Phẩm
-          </Title>
-        </Col>
-        <Col sm={24} md={3}>
+      {/* Title Product General */}
+      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
+        <Col xs={24}>{Title({ title: 'Danh sách sản phẩm', level: 2 })}</Col>
+        <Col xs={24} sm={12} md={4} lg={4}>
           <Button
             onClick={() => setOpenModalCreateProduct(true)}
             type='primary'
@@ -376,17 +386,17 @@ const ProductGeneral = () => {
             Thêm sản phẩm
           </Button>
         </Col>
-        <Col sm={24} md={3}>
+        <Col xs={24} sm={12} md={4} lg={4}>
           <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
         </Col>
-        <Col sm={24} md={4}>
+        <Col xs={24} sm={12} md={4} lg={4}>
           <DebouncedSearch
             placeholder='Tìm kiếm sản phẩm'
             onSearch={(value) => handleSearch(value)}
             debounceTime={1000}
           />
         </Col>
-        <Col md={4}>
+        <Col xs={24} sm={12} md={6} lg={6}>
           <Radio.Group
             defaultValue={`${ProductType.NON_CONSUMABLE}`}
             options={optionsProductType}
@@ -395,8 +405,8 @@ const ProductGeneral = () => {
             onChange={(e) => handleChangProductType(e.target.value)}
           />
         </Col>
-        <Col md={10}>
-          <Flex gap={20} justify='end'>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <Flex gap={10} justify='end'>
             <Button
               icon={<PiMicrosoftExcelLogoLight size={20} />}
               onClick={exportProductsToExcel}
@@ -418,14 +428,14 @@ const ProductGeneral = () => {
           </Flex>
         </Col>
       </Row>
-      <Row
-        style={{
-          padding: '20px'
-        }}
-        gutter={16}
-      >
+
+      {/* Table Product General */}
+      <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
+            sticky
+            style={{ width: '100%' }}
+            scroll={{ x: '1200px' }}
             loading={isLoading || isLoadingSearch}
             bordered
             dataSource={searchQuery.length > 0 ? productsSearch : productsGeneral}

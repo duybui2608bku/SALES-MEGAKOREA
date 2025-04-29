@@ -174,3 +174,41 @@ iframe {
   flex-direction: column;
   justify-content: space-between;
 }
+
+.pulse-border-card {
+  position: relative;
+}
+
+.pulse-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    #0d9488, 
+    #06b5d477, 
+    #0d9488 
+  );
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+  animation: border-pulse 2s ease infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes border-pulse {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}

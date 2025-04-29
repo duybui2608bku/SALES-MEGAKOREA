@@ -27,10 +27,12 @@ const { Title, Text } = Typography
 import {
   CheckCircleOutlined,
   DollarOutlined,
+  DownOutlined,
   MinusCircleOutlined,
   PlusOutlined,
   SyncOutlined,
-  TagOutlined
+  TagOutlined,
+  UpOutlined
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { GoPlusCircle } from 'react-icons/go'
@@ -48,12 +50,6 @@ import HttpStatusCode from 'src/Constants/httpCode'
 import { AppContext } from 'src/Context/AppContext'
 import useQueryBranch from 'src/hook/query/useQueryBranch'
 import PreviewServiceCardCreated from 'src/Pages/Services/Components/PreviewServiceCardCreated'
-
-enum StatusOpenModalServicesCard {
-  VIEW,
-  UPDATE,
-  NONE
-}
 
 const LIMIT = 20
 const MAX_PREVIEW = 6
@@ -74,8 +70,8 @@ interface CardOfServicesCardSoldOfCustomer {
 }
 
 interface ModalUpdateServicesCardSoldProps {
-  open: StatusOpenModalServicesCard
-  close: (value: StatusOpenModalServicesCard) => void
+  open: boolean
+  close: (value: boolean) => void
   servicesCardSoldOfCustomerData?: GetServicesCardSoldOfCustomer | null
   refetchData: () => void
 }
@@ -96,6 +92,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
   const { profile } = useContext(AppContext)
   const { branchList } = useQueryBranch()
   const [newServiceCardData, setNewServiceCardData] = useState<ServicesOfCardType>()
+  const [expandedCardIds, setExpandedCardIds] = useState(new Set())
 
   // Set list Service card sold (thẻ dịch vụ đang dùng)
   useEffect(() => {
@@ -107,7 +104,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
   // Func đóng Madal Update
   const handleCancelModal = () => {
     setResetServicesCardSelected((prev) => prev + 1)
-    close(StatusOpenModalServicesCard.NONE)
+    close(false)
   }
 
   // Fetch data Services card
@@ -184,7 +181,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
 
   // Reset về tab mặc định mỗi khi mở tab lại (thẻ <Tab/> của AntD)
   useEffect(() => {
-    if (open === StatusOpenModalServicesCard.UPDATE) {
+    if (open) {
       setActiveTabKey('123')
     }
   }, [open])
@@ -228,12 +225,48 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
       return
     }
 
-    const user_id = profile._id
-    const branch = getBranchList(value.branch || [])
-    const serviceCard = { ...value, user_id, branch }
-    const response = await createServiceCard(serviceCard)
-    const newServiceCard = response.data.result[0]
-    setNewServiceCardData(newServiceCard)
+    // Check có thẻ dịch vụ không
+    if (value.services_of_card === undefined || value.services_of_card.length === 0) {
+      message.error('Không thể tạo thẻ dịch vụ: Không tồn tại dịch vụ trong thẻ dịch vụ!')
+      return
+    }
+
+    // Check discount vs price
+    const hasInvalidDiscount = value.services_of_card.some((sof) => {
+      if (sof.discount > sof.price * sof.quantity) {
+        message.error('Giảm giá phải nhỏ hơn hoặc bằng giá!')
+        return true
+      }
+      return false
+    })
+
+    // Check trùng dịch vụ
+    const serviceIds = new Set()
+    const hasInvalidServiceCardIds = value.services_of_card.some((sof) => {
+      const currentId = sof.services_id
+      if (serviceIds.has(currentId)) {
+        message.error('Không được chọn các dịch vụ trùng lặp!')
+        return true
+      }
+
+      serviceIds.add(currentId)
+      return false
+    })
+
+    if (hasInvalidDiscount || hasInvalidServiceCardIds) {
+      return
+    }
+
+    try {
+      const user_id = profile._id
+      const branch = getBranchList(value.branch || [])
+      const serviceCard = { ...value, user_id, branch }
+      const response = await createServiceCard(serviceCard)
+      const newServiceCard = response.data.result[0]
+      setNewServiceCardData(newServiceCard)
+    } catch {
+      message.error(`Lỗi khi tạo thẻ dịch vụ!`)
+    }
   }
 
   // Hàm xử lí việc UPDATE Service Card Sold Of Customer
@@ -271,10 +304,21 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
     }
   }
 
+  // Xử lý Mở rộng/Thu gọn của service_of_card nếu số lượng service_of_card lớn hơn 2
+  const toggleServicesList = (cardId: string) => {
+    const newExpandedIds = new Set(expandedCardIds)
+    if (newExpandedIds.has(cardId)) {
+      newExpandedIds.delete(cardId)
+    } else {
+      newExpandedIds.add(cardId)
+    }
+    setExpandedCardIds(newExpandedIds)
+  }
+
   return (
     <Fragment>
       <Modal
-        open={open === StatusOpenModalServicesCard.UPDATE}
+        open={open}
         onCancel={handleCancelModal}
         centered
         okText={'Đóng'}
@@ -296,7 +340,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
             >
               Các thẻ dịch vụ đang dùng
             </Tag>
-            <Col span={24} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '55vh' }}>
+            <Col span={24} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '62vh' }}>
               <div
                 style={{
                   display: 'flex',
@@ -310,11 +354,13 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                   <Card
                     key={card._id}
                     hoverable
+                    className='pulse-border-card'
                     style={{
+                      position: 'relative',
                       width: '210px',
                       borderRadius: '16px',
                       overflow: 'hidden',
-                      border: '1px solid lightgray',
+                      border: 'none', //#91caff
                       background: 'linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%)'
                     }}
                   >
@@ -338,7 +384,11 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                           <Text strong style={{ fontSize: '11px', color: '#2d3436' }}>
                             Dịch vụ:
                           </Text>
-                          {card.services_of_card.map((service, index) => (
+
+                          {(expandedCardIds.has(card._id)
+                            ? card.services_of_card
+                            : card.services_of_card.slice(0, 1)
+                          ).map((service, index) => (
                             <Space key={index} align='center' style={{ width: '100%' }}>
                               <Tag
                                 color='cyan'
@@ -358,6 +408,29 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                               </Text>
                             </Space>
                           ))}
+
+                          {card.services_of_card.length > 1 && (
+                            <Tag
+                              color='geekblue'
+                              style={{
+                                outline: 'none',
+                                fontSize: '10px'
+                              }}
+                              onClick={() => toggleServicesList(card._id)}
+                            >
+                              {expandedCardIds.has(card._id) ? (
+                                <>
+                                  <UpOutlined style={{ fontSize: '9px', marginRight: '4px' }} /> Thu gọn
+                                </>
+                              ) : (
+                                <>
+                                  {' '}
+                                  <DownOutlined style={{ fontSize: '9px', marginRight: '4px' }} /> Xem thêm (
+                                  {card.services_of_card.length - 1})
+                                </>
+                              )}
+                            </Tag>
+                          )}
                         </Space>
 
                         <Divider style={{ margin: '0px 0', borderColor: '#e8ecef' }} />
@@ -375,7 +448,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
             <Tabs
               activeKey={activeTabKey}
               onChange={(key) => setActiveTabKey(key)}
-              style={{ width: '100%' }}
+              style={{ width: '100%', height: '70vh' }}
               animated
               type='card'
               items={[
@@ -388,19 +461,22 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                     <Fragment>
                       <Col
                         span={24}
-                        style={{
-                          marginBottom: '10px'
-                        }}
+                        style={{ marginTop: 20, overflowY: 'scroll', overflowX: 'hidden', height: '55vh' }}
                       >
-                        <DebouncedSearch
-                          placeholder='Tìm thẻ dịch vụ'
-                          debounceTime={1000}
-                          onSearch={(value) => handleSearch(value)}
-                          loading={isLoading}
-                          resetValue={resetValueSearchServiceCard}
-                        />
-                      </Col>
-                      <Col span={24} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '50vh' }}>
+                        <Col
+                          span={24}
+                          style={{
+                            marginBottom: '10px'
+                          }}
+                        >
+                          <DebouncedSearch
+                            placeholder='Tìm thẻ dịch vụ'
+                            debounceTime={1000}
+                            onSearch={(value) => handleSearch(value)}
+                            loading={isLoading}
+                            resetValue={resetValueSearchServiceCard}
+                          />
+                        </Col>
                         {isLoading ? (
                           <Skeleton active />
                         ) : listServicesCard.length === 0 ? (
@@ -515,7 +591,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                       </Col>
                       <Col
                         span={24}
-                        style={{ marginTop: 20, overflowY: 'scroll', overflowX: 'hidden', height: '50vh' }}
+                        style={{ marginTop: 20, overflowY: 'scroll', overflowX: 'hidden', height: '55vh' }}
                       >
                         <Form
                           onFinish={onFinish}
@@ -675,7 +751,6 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                           </Row>
                         )}
                       </Col>
-
                       {!newServiceCardData ? (
                         <Row justify={'end'} style={{ width: '100%' }}>
                           <Popconfirm

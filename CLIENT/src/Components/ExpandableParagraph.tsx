@@ -15,10 +15,13 @@ const ExpandableParagraph = ({ text, rows, moreText, lessText }: ExpandableParag
 
   return (
     <Row style={{ position: 'relative', paddingRight: '20px' }}>
-      <Paragraph ellipsis={!expanded ? { rows: rows, expandable: false } : false}>{text}</Paragraph>
+      <Paragraph style={{ margin: 0 }} ellipsis={!expanded ? { rows: rows, expandable: false } : false}>
+        {text}
+      </Paragraph>
       <Tooltip title={expanded ? 'Thu gọn' : 'Xem thêm'}>
         <Button
           style={{
+            cursor: 'pointer',
             color: '#1677ff',
             position: 'absolute',
             top: '-5px',

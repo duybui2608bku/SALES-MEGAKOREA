@@ -26,6 +26,7 @@ import { GiPayMoney } from 'react-icons/gi'
 import { TbPigMoney } from 'react-icons/tb'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
+import Title from 'src/Components/Title'
 const { Paragraph } = Typography
 
 enum ModalType {
@@ -323,54 +324,41 @@ const ServicesCard = () => {
 
   return (
     <Fragment>
-      <Row
-        style={{
-          padding: 20
-        }}
-      >
-        <Col span={24}>
-          <Flex justify='center' style={{ margin: 20 }}>
-            <Typography.Title level={2}>Danh sách thẻ dịch vụ</Typography.Title>
-          </Flex>
+      {/* Title Services Card Service */}
+      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
+        <Col xs={24}>{Title({ title: 'Danh sách thẻ dịch vụ', level: 2 })}</Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <Button
+            onClick={() => {
+              setModalType(ModalType.MODAL_CREATE_SERVICE_CARD)
+            }}
+            type='primary'
+            style={{ width: '100%' }}
+            icon={<GoPlus size={20} />}
+            title='Thêm dịch vụ'
+          >
+            Thêm thẻ dịch vụ
+          </Button>
         </Col>
-        <Col
-          span={24}
-          style={{
-            display: 'flex',
-            gap: 10,
-            marginBottom: 20,
-            marginTop: 20
-          }}
-        >
-          <Col sm={24} md={3}>
-            <Button
-              onClick={() => {
-                setModalType(ModalType.MODAL_CREATE_SERVICE_CARD)
-              }}
-              type='primary'
-              style={{ width: '100%' }}
-              icon={<GoPlus size={20} />}
-              title='Thêm dịch vụ'
-            >
-              Thêm thẻ dịch vụ
-            </Button>
-          </Col>
-          <Col sm={24} md={3}>
-            <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
-          </Col>
-          <Col sm={24} md={4}>
-            <DebouncedSearch
-              placeholder='Tìm thẻ kiếm dich vụ'
-              onSearch={(value) => {
-                handleSearch({
-                  value,
-                  typeSearch: SearchType.NAME
-                })
-              }}
-              debounceTime={1000}
-            />
-          </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
         </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <DebouncedSearch
+            placeholder='Tìm thẻ kiếm dich vụ'
+            onSearch={(value) => {
+              handleSearch({
+                value,
+                typeSearch: SearchType.NAME
+              })
+            }}
+            debounceTime={1000}
+          />
+        </Col>
+      </Row>
+
+      {/* Table Services Card Service */}
+      <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
             columns={columns}
