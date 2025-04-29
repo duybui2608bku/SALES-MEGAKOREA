@@ -83,6 +83,8 @@ const Service = () => {
   })
 
   useEffect(() => {
+    console.log('pagnation: ', pagination)
+
     if (data) {
       const services = data.data.result.services
       const total = data.data.result.total
@@ -92,7 +94,7 @@ const Service = () => {
         total: total
       })
     }
-  }, [data, pagination])
+  }, [data])
 
   const columns: TableColumnType<ColumnsServicesType>[] = [
     {
@@ -120,7 +122,8 @@ const Service = () => {
       title: 'Tên dịch vụ',
       dataIndex: 'name',
       key: 'name',
-      width: 130
+      width: 130,
+      fixed: 'left'
     },
     {
       title: 'Danh mục',

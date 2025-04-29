@@ -71,7 +71,7 @@ const ServiceCardList = ({
 
   return (
     <div>
-      <Row gutter={[24, 24]} justify={!customCss ? 'center' : 'start'}>
+      <Row gutter={[24, 24]} justify={'start'}>
         {limitedCards.map((card) => (
           <Col xs={24} sm={12} md={columnsGird} lg={4.8} key={card._id}>
             <Card

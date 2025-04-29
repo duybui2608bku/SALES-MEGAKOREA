@@ -27,3 +27,8 @@ export enum UserStatus {
 export enum Branch {
   BMT = 'Buôn Ma Thuột'
 }
+
+export enum GetServicesCardSoldOfCustomerSearchType {
+  NAME_CUSTOMER = 1,
+  PHONE__CUSTOMER = 2
+}

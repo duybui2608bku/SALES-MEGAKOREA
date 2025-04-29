@@ -1,5 +1,5 @@
 import { Button, Card, Col, Divider, Flex, message, Modal, Popconfirm, Space, Tag, Typography } from 'antd'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import {
   GetServicesCardSoldOfCustomer,
   UpdateUsedServicesData,
@@ -17,21 +17,18 @@ import { RoleUser, TypeCommision } from 'src/Constants/enum'
 import { queryClient } from 'src/main'
 import { HttpStatusCode } from 'axios'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import commisionTechnicanApi from 'src/Service/commision/commision.technican'
 import { AppContext } from 'src/Context/AppContext'
 
 import { servicesApi } from 'src/Service/services/services.api'
-enum StatusOpenModalServicesCard {
-  VIEW,
-  UPDATE,
-  NONE
-}
 
 interface ModalViewServicesCardProps {
-  open: StatusOpenModalServicesCard
-  close: (value: StatusOpenModalServicesCard) => void
+  open: boolean
+  close: (value: boolean) => void
   servicesCardSoldOfCustomerData?: GetServicesCardSoldOfCustomer | null
+  refetchData: () => void
+  queryKey: any
 }
 
 interface CardOfServicesCardSoldOfCustomer {
@@ -52,10 +49,17 @@ interface CardOfServicesCardSoldOfCustomer {
 }
 
 const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
-  const { open, close, servicesCardSoldOfCustomerData } = props
+  const { open, close, servicesCardSoldOfCustomerData, refetchData, queryKey } = props
   const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<CardOfServicesCardSoldOfCustomer[]>([])
   const [userId, setUserId] = useState<string>('')
+  const queryClientHook = useQueryClient()
+
+  // Ref lưu thông tin dịch vụ đang được cập nhật
+  const updatingServiceRef = useRef<{
+    cardId: string
+    serviceId: string
+  } | null>(null)
 
   useEffect(() => {
     if (servicesCardSoldOfCustomerData) {
@@ -68,9 +72,48 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     }
   }, [servicesCardSoldOfCustomerData])
 
+  // Theo dõi cập nhật từ query cache
+  useEffect(() => {
+    if (!open || !servicesCardSoldOfCustomerData) return
+
+    // Đăng ký listener để theo dõi khi query thành công
+    const unsubscribe = queryClientHook.getQueryCache().subscribe((event) => {
+      // Chỉ xử lý cho sự kiện thành công
+      if (event.type === 'updated') {
+        const queryKey = event.query.queryKey
+
+        // Kiểm tra xem đây có phải là query chính không
+        if (Array.isArray(queryKey) && queryKey[0] === 'services-card-sold-customer') {
+          // Tìm dữ liệu mới trong cache
+          const newData = event.query.state.data?.data?.result?.servicesCardSold
+
+          if (Array.isArray(newData)) {
+            // Tìm card đang hiển thị trong modal
+            const updatedServiceCard = newData.find((card) => card._id === servicesCardSoldOfCustomerData._id)
+
+            if (updatedServiceCard) {
+              // Cập nhật danh sách dịch vụ trong modal
+              const cardsWithParentId = updatedServiceCard.cards.map((card: any) => ({
+                ...card,
+                parentId: updatedServiceCard._id
+              }))
+
+              setListServicesCard(cardsWithParentId)
+            }
+          }
+        }
+      }
+    })
+
+    // Cleanup khi component unmount hoặc modal đóng
+    return () => {
+      unsubscribe()
+    }
+  }, [open, servicesCardSoldOfCustomerData, queryClientHook])
+
   // Func đóng Modal view
   const handleCancelModal = () => {
-    close(StatusOpenModalServicesCard.NONE)
+    close(false)
   }
 
   const handleCreateCommisionTechnican = async ({
@@ -100,7 +143,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     } catch (error: Error | any) {
       const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
         ? 'Dữ liệu không hợp lệ!'
-        : `Lỗi tạo khi hoa hồng : ${error.message}`
+        : `Lỗi khi tạo hoa hồng : ${error.message}`
       message.error(errorMsg)
       return
     }
@@ -111,6 +154,13 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       message.error('Vui lòng chọn nhân viên kỹ thuật!')
       return
     }
+
+    // Lưu thông tin dịch vụ đang cập nhật
+    updatingServiceRef.current = {
+      cardId: data.services_card_sold_id,
+      serviceId: data.services_id
+    }
+
     const {
       commision,
       type,
@@ -145,6 +195,28 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
         descriptions
       }
     }
+
+    // Cập nhật local trước khi gọi API
+    setListServicesCard((prevCards) => {
+      return prevCards.map((card) => {
+        if (card._id === services_card_sold_id) {
+          return {
+            ...card,
+            services_of_card: card.services_of_card.map((service) => {
+              if (service._id === services_id) {
+                return {
+                  ...service,
+                  used: service.used + 1 // Tăng số lượng đã sử dụng
+                }
+              }
+              return service
+            })
+          }
+        }
+        return card
+      })
+    })
+
     updateUsedOfServices(dataUpdateUsedOfServices)
   }
 
@@ -155,30 +227,62 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     },
     onSuccess: () => {
       message.success('Sử dụng dịch vụ thành công!')
-      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+
+      // Chỉ cần invalidate để cập nhật data chính xác - UI đã được cập nhật trước đó
+      queryClient.invalidateQueries({ queryKey: queryKey })
+
+      // Vẫn gọi refetch để đảm bảo dữ liệu hiển thị ở component cha được cập nhật
+      refetchData()
+
+      // Reset ref
+      updatingServiceRef.current = null
     },
-    onError: (error: Error, _, context) => {
+    onError: (error: Error, variables, context) => {
+      message.error(`Lỗi khi sử dụng dịch vụ: ${error.message}`)
+
+      // Khôi phục dữ liệu cache nếu có lỗi
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
-      const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
-        ? 'Dữ liệu không hợp lệ!'
-        : `Lỗi khi sử dụng dịch vụ : ${error.message}`
-      message.error(errorMsg)
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+
+      // Khôi phục UI về trạng thái trước khi cập nhật
+      if (updatingServiceRef.current) {
+        const { cardId, serviceId } = updatingServiceRef.current
+
+        setListServicesCard((prevCards) => {
+          return prevCards.map((card) => {
+            if (card._id === cardId) {
+              return {
+                ...card,
+                services_of_card: card.services_of_card.map((service) => {
+                  if (service._id === serviceId) {
+                    // Giảm lại giá trị used đã tăng trước đó
+                    return {
+                      ...service,
+                      used: service.used - 1
+                    }
+                  }
+                  return service
+                })
+              }
+            }
+            return card
+          })
+        })
+      }
+
+      // Reset ref
+      updatingServiceRef.current = null
     },
     retry: 2
   })
 
   return (
     <Modal
-      open={open === StatusOpenModalServicesCard.VIEW}
+      open={open}
       onCancel={handleCancelModal}
       centered
       okText={'Đóng'}
       footer={null}
       style={{ padding: 0 }}
-      // Tính chiều rộng động của Modal (giới hạn tối đa là 1100px)
       width={Math.min(listServicesCard.length * 260 + 48, 1100)}
     >
       <Title className='center-div' level={2} style={{ textAlign: 'center', marginBottom: 32 }}>

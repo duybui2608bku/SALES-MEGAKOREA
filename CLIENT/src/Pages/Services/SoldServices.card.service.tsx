@@ -1,5 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
-import { Button, Col, DatePicker, Flex, Row, Space, Table, TableColumnType, Tag, Tooltip, Tree, Typography } from 'antd'
+import {
+  Button,
+  Col,
+  DatePicker,
+  Flex,
+  message,
+  Row,
+  Space,
+  Table,
+  TableColumnType,
+  Tag,
+  Tooltip,
+  Tree,
+  Typography
+} from 'antd'
 import { DownOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons'
 import { MdDelete } from 'react-icons/md'
 import { IoPencilOutline, IoPrintSharp } from 'react-icons/io5'
@@ -10,13 +24,17 @@ import { Fragment } from 'react/jsx-runtime'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import Title from 'src/Components/Title'
-import { GetServicesCardSoldOfCustomer } from 'src/Interfaces/services/services.interfaces'
+import { GetServicesCardSoldOfCustomer, HistoryUsed } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { useNavigate } from 'react-router'
 import { pathRoutersService } from 'src/Constants/path'
 import { motion, AnimatePresence } from 'framer-motion'
 import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
+import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
+import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
+import { DatePickerProps } from 'antd/lib'
+import dayjs from 'dayjs'
 
 const { Text, Paragraph } = Typography
 
@@ -25,9 +43,10 @@ const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
 enum StatusOpenModalServicesCard {
-  VIEW,
-  UPDATE,
-  NONE
+  VIEW = 1,
+  UPDATE = 2,
+  HISTORY = 3,
+  NONE = 0
 }
 
 type ColumnsServicesCardSoldOfCustomerType = GetServicesCardSoldOfCustomer
@@ -41,19 +60,46 @@ const SoldServicesCard = () => {
     total: 0
   })
   const [expandedServicesCard, setExpandedServicesCard] = useState<Record<string, boolean>>({})
-  const [openModalViewOrUpdateServicesCardSold, setOpenModalViewOrUpdateServicesCardSold] = useState(
-    StatusOpenModalServicesCard.NONE
-  )
+  const [openModalServicesCardSold, setOpenModalServicesCardSold] = useState(StatusOpenModalServicesCard.NONE)
   const [servicesCardSoldOfCustomerData, setServicesCardSoldOfCustomerData] =
     useState<GetServicesCardSoldOfCustomer | null>(null)
+  const [historyUsedData, setHistoryUsedData] = useState<HistoryUsed[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [datePickerQuery, setDatePickerQuery] = useState('')
 
+  // Hàm check searchQuery là Number hay là String
+  const checkValueSearchQuery = (value: string) => {
+    if (!value || value.length === 0) return
+
+    const firstChar = value.charAt(0)
+
+    // Check kí tự đầu tiên là chữ
+    if (/[a-zA-Z]/.test(firstChar)) {
+      return GetServicesCardSoldOfCustomerSearchType.NAME_CUSTOMER
+    }
+
+    // Check kí tự đầu tiên là số
+    if (/[0-9]/.test(firstChar)) {
+      return GetServicesCardSoldOfCustomerSearchType.PHONE__CUSTOMER
+    }
+
+    return
+  }
+
+  const queryKey = ['services-card-sold-customer', pagination.page, searchQuery, datePickerQuery]
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['services-card-sold-customer', pagination.page],
-    queryFn: () =>
-      servicesApi.GetServicesCardSoldOfCustomer({
+    queryKey: queryKey,
+    queryFn: async () => {
+      const searchType = checkValueSearchQuery(searchQuery)
+      const response = await servicesApi.GetServicesCardSoldOfCustomer({
         page: pagination.page,
-        limit: pagination.limit
-      }),
+        limit: pagination.limit,
+        search: searchQuery,
+        search_type: searchType,
+        date: datePickerQuery
+      })
+      return response
+    },
     staleTime: STALETIME
   })
 
@@ -84,8 +130,25 @@ const SoldServicesCard = () => {
     servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
     statusOpenModalServicesCard: StatusOpenModalServicesCard
   ) => {
-    setOpenModalViewOrUpdateServicesCardSold(statusOpenModalServicesCard)
+    setOpenModalServicesCardSold(statusOpenModalServicesCard)
     setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
+  }
+
+  const handleOpenModalViewHistoryUsed = (historyUsedData: HistoryUsed[]) => {
+    setHistoryUsedData(historyUsedData)
+    setOpenModalServicesCardSold(StatusOpenModalServicesCard.HISTORY)
+  }
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    setPagination((prev) => ({ ...prev, page: PAGE, total: 1 }))
+  }
+
+  const onChange: DatePickerProps['onChange'] = (dateString) => {
+    // Convert value DatePicker -> ISOString
+    const isoDateString = dayjs(dateString).toISOString()
+
+    setDatePickerQuery(isoDateString)
   }
 
   const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
@@ -94,7 +157,6 @@ const SoldServicesCard = () => {
       dataIndex: 'code/created_at',
       key: 'code/created_at',
       width: 100,
-      fixed: 'left',
       render: (_, record) => {
         return (
           <Space direction='vertical' size={2}>
@@ -114,6 +176,7 @@ const SoldServicesCard = () => {
       dataIndex: 'customers',
       key: 'customers',
       width: 100,
+      fixed: 'left',
       render: (_, record) => {
         return (
           <Space direction='vertical' size={2}>
@@ -135,13 +198,13 @@ const SoldServicesCard = () => {
       title: 'Hoa hồng',
       dataIndex: 'commission',
       key: 'commission',
-      width: 50
+      width: 60
     },
     {
       title: 'Dịch vụ',
       dataIndex: 'cards',
       key: 'cards',
-      width: 180,
+      width: 150,
       render: (_, record) => {
         const isExpanded = expandedServicesCard[record._id] || false
         const treeFullData = record.cards.map((card) => ({
@@ -242,7 +305,7 @@ const SoldServicesCard = () => {
       dataIndex: 'price',
       key: 'price',
       align: 'center',
-      width: 100,
+      width: 80,
       render: (price: number) => {
         return (
           <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
@@ -254,7 +317,31 @@ const SoldServicesCard = () => {
     {
       title: 'Công nợ',
       align: 'center',
-      width: 100
+      width: 80
+    },
+    {
+      title: 'L.sử dùng thẻ',
+      key: 'history_used',
+      dataIndex: 'history_used',
+      align: 'center',
+      width: 60,
+      render: (history_used: HistoryUsed[]) => {
+        return (
+          <Flex justify='center' gap='12px' align='center'>
+            <Text>{history_used.length} lần | </Text>
+            <Tooltip title='Xem chi tiết'>
+              <Button
+                onClick={() =>
+                  history_used.length === 0
+                    ? message.error('Chưa có lịch sử dùng thẻ!')
+                    : handleOpenModalViewHistoryUsed(history_used)
+                }
+                icon={<FaRegEye style={{ color: '#6366F1' }} />}
+              />
+            </Tooltip>
+          </Flex>
+        )
+      }
     },
     {
       title: 'Hành động',
@@ -291,10 +378,14 @@ const SoldServicesCard = () => {
           </Button>
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => console.log(value)} />
+          <DebouncedSearch
+            placeholder='Tìm kiếm thẻ dịch vụ'
+            onSearch={(value) => handleSearch(value)}
+            debounceTime={1000}
+          />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <DatePicker style={{ width: '100%' }}></DatePicker>
+          <DatePicker style={{ width: '100%' }} onChange={onChange} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <OptionsBranch />
@@ -307,7 +398,7 @@ const SoldServicesCard = () => {
           <Table
             sticky
             style={{ width: '100%' }}
-            scroll={{ x: '1500px' }}
+            scroll={{ x: '1800px' }}
             loading={isLoading}
             dataSource={servicesCardSoldOfCustomer}
             bordered
@@ -323,15 +414,22 @@ const SoldServicesCard = () => {
         </Col>
       </Row>
       <ModalViewServicesCardSold
-        open={openModalViewOrUpdateServicesCardSold}
-        close={setOpenModalViewOrUpdateServicesCardSold}
-        servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
-      />
-      <ModalUpdateServicesCardSold
-        open={openModalViewOrUpdateServicesCardSold}
-        close={setOpenModalViewOrUpdateServicesCardSold}
+        open={openModalServicesCardSold === StatusOpenModalServicesCard.VIEW}
+        close={() => setOpenModalServicesCardSold(StatusOpenModalServicesCard.NONE)}
         servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
         refetchData={refetch}
+        queryKey={queryKey}
+      />
+      <ModalUpdateServicesCardSold
+        open={openModalServicesCardSold === StatusOpenModalServicesCard.UPDATE}
+        close={() => setOpenModalServicesCardSold(StatusOpenModalServicesCard.NONE)}
+        servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
+        refetchData={refetch}
+      />
+      <ModalViewHistoryUsed
+        open={openModalServicesCardSold === StatusOpenModalServicesCard.HISTORY}
+        close={() => setOpenModalServicesCardSold(StatusOpenModalServicesCard.NONE)}
+        historyUsedData={historyUsedData}
       />
     </Fragment>
   )

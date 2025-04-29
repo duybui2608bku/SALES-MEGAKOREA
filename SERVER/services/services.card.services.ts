@@ -225,7 +225,7 @@ class ServicesCardServices {
     // Build query object
     const query: Record<string, any> = {
       ...(customerId ? { customer_id: customerId } : {}),
-      ...(date && { date: { $eq: new Date(date) } }),
+      ...(date && { created_at: { $eq: new Date(date) } }),
       ...(branch?.length && {
         branch: { $in: branch.map((branchId: string) => new ObjectId(branchId)) }
       })

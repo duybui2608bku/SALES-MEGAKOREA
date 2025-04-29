@@ -51,12 +51,6 @@ import { AppContext } from 'src/Context/AppContext'
 import useQueryBranch from 'src/hook/query/useQueryBranch'
 import PreviewServiceCardCreated from 'src/Pages/Services/Components/PreviewServiceCardCreated'
 
-enum StatusOpenModalServicesCard {
-  VIEW,
-  UPDATE,
-  NONE
-}
-
 const LIMIT = 20
 const MAX_PREVIEW = 6
 const PAGE = 1
@@ -76,8 +70,8 @@ interface CardOfServicesCardSoldOfCustomer {
 }
 
 interface ModalUpdateServicesCardSoldProps {
-  open: StatusOpenModalServicesCard
-  close: (value: StatusOpenModalServicesCard) => void
+  open: boolean
+  close: (value: boolean) => void
   servicesCardSoldOfCustomerData?: GetServicesCardSoldOfCustomer | null
   refetchData: () => void
 }
@@ -110,7 +104,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
   // Func đóng Madal Update
   const handleCancelModal = () => {
     setResetServicesCardSelected((prev) => prev + 1)
-    close(StatusOpenModalServicesCard.NONE)
+    close(false)
   }
 
   // Fetch data Services card
@@ -187,7 +181,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
 
   // Reset về tab mặc định mỗi khi mở tab lại (thẻ <Tab/> của AntD)
   useEffect(() => {
-    if (open === StatusOpenModalServicesCard.UPDATE) {
+    if (open) {
       setActiveTabKey('123')
     }
   }, [open])
@@ -324,7 +318,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
   return (
     <Fragment>
       <Modal
-        open={open === StatusOpenModalServicesCard.UPDATE}
+        open={open}
         onCancel={handleCancelModal}
         centered
         okText={'Đóng'}

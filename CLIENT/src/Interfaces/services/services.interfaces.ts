@@ -1,4 +1,4 @@
-import { TypeCommision } from 'src/Constants/enum'
+import { GetServicesCardSoldOfCustomerSearchType, TypeCommision } from 'src/Constants/enum'
 import { BranchType } from '../branch/branch.interface'
 import { UserGeneralInterface } from '../user/user.interface'
 import { Customer } from '../customers/customers.interfaces'
@@ -229,7 +229,7 @@ export interface GetServicesCardSoldOfCustomerRequestBody {
   branch?: string[]
   code?: string
   search?: string
-  search_type?: string
+  search_type?: GetServicesCardSoldOfCustomerSearchType
   date?: string
 }
 
@@ -240,7 +240,7 @@ export interface GetServicesCardSoldOfCustomer {
   price: number | null
   branch: BranchType[]
   history_paid: HistoryPaid[]
-  history_used: any[]
+  history_used: HistoryUsed[]
   employee_commision: any[]
   customers: Customer
   userInfo: UserGeneralInterface

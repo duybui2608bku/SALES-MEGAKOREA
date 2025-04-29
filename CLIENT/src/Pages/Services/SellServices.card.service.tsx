@@ -16,6 +16,7 @@ import { AppContext } from 'src/Context/AppContext'
 import SelectSearchCustomers from 'src/Components/SelectSearchCustomers'
 import { servicesApi } from 'src/Service/services/services.api'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
+import { queryClient } from 'src/main'
 
 // const { Search } = Input
 
@@ -98,6 +99,7 @@ const SoldServicesCardService = () => {
       // Reset value search customer
       setResetValueSearchCustomer(true)
       setTimeout(() => setResetValueSearchCustomer(false), 200)
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
     },
     onError: (error: Error) => {
       message.error(`Lỗi khi tạo thẻ dịch vụ: ${error.message}`)

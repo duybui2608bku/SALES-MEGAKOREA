@@ -102,6 +102,7 @@ const ModalCreateServicesCategory = ({
 
   return (
     <Modal
+      centered
       title={isEditMode ? 'Chỉnh sửa danh mục dịch vụ' : 'Tạo mới danh mục dịch vụ'}
       open={visible}
       onCancel={handleCloseModal}
