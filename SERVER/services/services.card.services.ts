@@ -15,7 +15,7 @@ import {
   UpdateServicesCardSoldOfCustomerRequestBody,
   UpdateUsedServicesCardSoldRequestBody
 } from '~/models/requestes/Services.card.requests'
-import { getObjectOrNul, toObjectId } from '~/utils/utils'
+import { createDateRangeQuery, getObjectOrNul, toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
 import {
   CreateServicesCardData,
@@ -225,7 +225,7 @@ class ServicesCardServices {
     // Build query object
     const query: Record<string, any> = {
       ...(customerId ? { customer_id: customerId } : {}),
-      ...(date && { date: { $eq: new Date(date) } }),
+      ...createDateRangeQuery(date),
       ...(branch?.length && {
         branch: { $in: branch.map((branchId: string) => new ObjectId(branchId)) }
       })

@@ -8,12 +8,14 @@ export class CardServicesSoldOfCustomer {
   customer_id: ObjectId
   descriptions?: string
   price?: number | null
+  price_paid?: number
   branch: ObjectId[]
   card_services_sold_id: ObjectId[]
   history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
   user_id: ObjectId
   employee_commision?: ObjectId[]
+  seller_commission?: ObjectId[]
   created_at?: Date
   updated_at?: Date
   constructor(cardServices: CardServicesSoldOfCustomerType) {
@@ -21,11 +23,13 @@ export class CardServicesSoldOfCustomer {
     this.code = cardServices.code || generateCode()
     this.user_id = cardServices.user_id
     this.price = cardServices.price || null
+    this.price_paid = cardServices.price_paid || 0
     this.branch = cardServices.branch || []
     this.history_paid = cardServices.history_paid || []
     this.history_used = cardServices.history_used || []
     this.card_services_sold_id = cardServices.card_services_sold_id
     this.employee_commision = cardServices.employee_commision || []
+    this.seller_commission = cardServices.seller_commission || []
     this.customer_id = cardServices.customer_id
     this.descriptions = cardServices.descriptions || ''
     this.created_at = cardServices.created_at || new Date()

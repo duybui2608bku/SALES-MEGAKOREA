@@ -73,7 +73,7 @@ export const servicesApi = {
     return axiosInstanceMain.post<GetServicesCardResponse>(pathServices.getAllServicesCard, body)
   },
   async updateHistoryPaid(body: UpdatePaidOfServicesCardRequestBody) {
-    return axiosInstanceMain.patch<UpdateServicesCardResponse>(pathServices.updateHistoryPaid, body)
+    return axiosInstanceMain.post<UpdateServicesCardResponse>(pathServices.updateHistoryPaid, body)
   },
   //Services card sold of customer
   async createServicesCardSoldOfCustomer(body: CreateServicesCardSoldOfCustomerRequestBody) {

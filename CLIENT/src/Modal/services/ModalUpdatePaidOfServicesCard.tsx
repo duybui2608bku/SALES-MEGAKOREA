@@ -6,15 +6,18 @@ import { Fragment } from 'react/jsx-runtime'
 import { optionsMethodPayment } from 'src/Constants/option'
 import { AppContext } from 'src/Context/AppContext'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
-import { ServicesOfCardType, UpdatePaidOfServicesCardRequestBody } from 'src/Interfaces/services/services.interfaces'
+import {
+  GetServicesCardSoldOfCustomer,
+  UpdatePaidOfServicesCardRequestBody
+} from 'src/Interfaces/services/services.interfaces'
 import { queryClient } from 'src/main'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
 
 interface ModalUpdatePaidOfServicesCardProps {
-  visible: boolean
+  open: boolean
   onClose: () => void
-  servicesCard: ServicesOfCardType
+  servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer | null
 }
 
 interface FieldsUpdatePaidOfServicesCard {
@@ -24,22 +27,22 @@ interface FieldsUpdatePaidOfServicesCard {
 }
 
 const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps) => {
-  const { visible, onClose, servicesCard } = props
+  const { open, onClose, servicesCardSoldOfCustomerData } = props
   const [form] = Form.useForm<FieldsUpdatePaidOfServicesCard>()
   const { profile } = useContext(AppContext)
   const updateMutation = useMutation({
     mutationFn: (body: UpdatePaidOfServicesCardRequestBody) => servicesApi.updateHistoryPaid(body),
     onMutate: async () => {
-      return createOptimisticUpdateHandler(queryClient, ['getAllServicesCard'])()
+      return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
     },
     onSuccess: () => {
       message.success('Cập nhật thanh toán thành công!')
-      queryClient.invalidateQueries({ queryKey: ['getAllServicesCard'] })
-      onClose()
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
       form.resetFields()
+      onClose()
     },
     onError: (error: any, _, context) => {
-      queryClient.setQueryData(['getAllServicesCategory'], context?.previousData)
+      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
       const errorMsg =
         error.response?.status === HttpStatusCode.BadRequest
           ? 'Dữ liệu không hợp lệ!'
@@ -51,21 +54,22 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
   })
 
   // Di chuyển logic early return xuống dưới hooks
-  if (!servicesCard) return null
+  if (!servicesCardSoldOfCustomerData) return null
 
   const onFinish = (values: FieldsUpdatePaidOfServicesCard) => {
-    const _id = servicesCard._id
-    const out_standing = servicesCard.price - servicesCard.price_paid - values.paid // Số tiền còn lại
+    const _id = servicesCardSoldOfCustomerData._id
+    const out_standing =
+      (servicesCardSoldOfCustomerData.price ?? 0) - (servicesCardSoldOfCustomerData.price_paid ?? 0) - values.paid // Số tiền còn lại
     const user_id = profile?._id as string // Lấy id của người dùng hiện tại
-    const paid = servicesCard.price_paid + values.paid // Tổng số tiền đã thanh toán
+    const paid = (servicesCardSoldOfCustomerData.price_paid ?? 0) + values.paid // Tổng số tiền đã thanh toán
     const data = {
       ...values,
       code: generateCode(),
-      card_services_id: _id,
-      date: new Date(),
-      paid_initial: paid,
       user_id,
-      out_standing
+      paid,
+      out_standing,
+      services_card_sold_of_customer_id: _id,
+      date: new Date()
     }
 
     updateMutation.mutate(data)
@@ -80,7 +84,7 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
     <Fragment>
       <Modal
         onCancel={handleCancelModal}
-        open={visible}
+        open={open}
         centered
         width={600}
         okText='Xác nhận'
@@ -125,7 +129,7 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
                     <InputNumber
                       suffix='đ'
                       disabled
-                      value={servicesCard.price_paid}
+                      value={servicesCardSoldOfCustomerData.price_paid ?? 0}
                       style={{ width: '100%' }}
                       formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     />

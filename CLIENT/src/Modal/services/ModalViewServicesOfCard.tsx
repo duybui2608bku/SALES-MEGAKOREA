@@ -1,7 +1,5 @@
 import { Modal, Card, Descriptions, Tag, Typography, Space } from 'antd'
-import { TypeCommision } from 'src/Constants/enum'
 import { ServicesOfCard } from 'src/Interfaces/services/services.interfaces'
-import { getRoleUser } from 'src/Utils/util.utils'
 
 const { Title, Text } = Typography
 

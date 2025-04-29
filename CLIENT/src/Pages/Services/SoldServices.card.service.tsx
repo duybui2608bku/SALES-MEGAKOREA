@@ -17,6 +17,10 @@ import { pathRoutersService } from 'src/Constants/path'
 import { motion, AnimatePresence } from 'framer-motion'
 import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
+import { GiReceiveMoney } from 'react-icons/gi'
+import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
+import { TbMoneybag } from 'react-icons/tb'
+import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
 
 const { Text, Paragraph } = Typography
 
@@ -28,6 +32,12 @@ enum StatusOpenModalServicesCard {
   VIEW,
   UPDATE,
   NONE
+}
+
+enum StatusOpenModalPayyment {
+  NONE,
+  VIEW_HISTORY,
+  UPDATE
 }
 
 type ColumnsServicesCardSoldOfCustomerType = GetServicesCardSoldOfCustomer
@@ -44,6 +54,7 @@ const SoldServicesCard = () => {
   const [openModalViewOrUpdateServicesCardSold, setOpenModalViewOrUpdateServicesCardSold] = useState(
     StatusOpenModalServicesCard.NONE
   )
+  const [openModalPayment, setOpenModalPayment] = useState(StatusOpenModalPayyment.NONE)
   const [servicesCardSoldOfCustomerData, setServicesCardSoldOfCustomerData] =
     useState<GetServicesCardSoldOfCustomer | null>(null)
 
@@ -85,6 +96,14 @@ const SoldServicesCard = () => {
     statusOpenModalServicesCard: StatusOpenModalServicesCard
   ) => {
     setOpenModalViewOrUpdateServicesCardSold(statusOpenModalServicesCard)
+    setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
+  }
+
+  const handleOpenModalPayment = (
+    servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
+    statusOpenModalPayment: StatusOpenModalPayyment
+  ) => {
+    setOpenModalPayment(statusOpenModalPayment)
     setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
   }
 
@@ -262,6 +281,30 @@ const SoldServicesCard = () => {
       }
     },
     {
+      title: 'Thanh toán',
+      dataIndex: 'paid',
+      key: 'paid',
+      width: 75,
+      align: 'center',
+      render: (_, record) => {
+        return (
+          <Flex justify='center' gap={10}>
+            <Button
+              onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.UPDATE)}
+              title='Thanh toán'
+              icon={<GiReceiveMoney color='green' />}
+            ></Button>
+            <Button
+              disabled={record.history_paid.length === 0}
+              onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.VIEW_HISTORY)}
+              icon={<TbMoneybag />}
+            ></Button>
+            <Button icon={<MdDelete color='#EF4444' />}></Button>
+          </Flex>
+        )
+      }
+    },
+    {
       title: 'Hành động',
       dataIndex: 'action',
       key: 'action',
@@ -337,6 +380,16 @@ const SoldServicesCard = () => {
         close={setOpenModalViewOrUpdateServicesCardSold}
         servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
         refetchData={refetch}
+      />
+      <ModalUpdatePaidOfServicesCard
+        open={openModalPayment === StatusOpenModalPayyment.UPDATE}
+        onClose={() => setOpenModalPayment(StatusOpenModalPayyment.NONE)}
+        servicesCardSoldOfCustomerData={servicesCardSoldOfCustomerData as GetServicesCardSoldOfCustomer | null}
+      />
+      <ModalViewHistoryPaid
+        open={openModalPayment === StatusOpenModalPayyment.VIEW_HISTORY}
+        onCancel={() => setOpenModalPayment(StatusOpenModalPayyment.NONE)}
+        data={servicesCardSoldOfCustomerData?.history_paid || []}
       />
     </Fragment>
   )
