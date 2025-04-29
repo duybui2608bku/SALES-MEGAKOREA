@@ -42,7 +42,7 @@ import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
 
 const { Text, Paragraph } = Typography
 
-const LIMIT = 8
+const LIMIT = 5
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
@@ -137,7 +137,7 @@ const SoldServicesCard = () => {
     goToNextPage(page)
   }
 
-  const handleOpenModalViewOrUpdateServicesCardSold = (
+  const handleOpenModalServicesCardSold = (
     servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
     statusOpenModalServicesCard: StatusOpenModalServicesCard
   ) => {
@@ -223,7 +223,7 @@ const SoldServicesCard = () => {
       title: 'Dịch vụ',
       dataIndex: 'cards',
       key: 'cards',
-      width: 130,
+      width: 150,
       render: (_, record) => {
         const isExpanded = expandedServicesCard[record._id] || false
         const treeFullData = record.cards.map((card) => ({
@@ -302,15 +302,13 @@ const SoldServicesCard = () => {
             <Space>
               <Tooltip title='Xem chi tiết'>
                 <Button
-                  onClick={() => handleOpenModalViewOrUpdateServicesCardSold(record, StatusOpenModalServicesCard.VIEW)}
+                  onClick={() => handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.VIEW)}
                   icon={<FaRegEye style={{ color: '#6366F1' }} />}
                 />
               </Tooltip>
               <Tooltip title='Thêm thẻ dịch vụ'>
                 <Button
-                  onClick={() =>
-                    handleOpenModalViewOrUpdateServicesCardSold(record, StatusOpenModalServicesCard.UPDATE)
-                  }
+                  onClick={() => handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.UPDATE)}
                   icon={<IoIosAddCircleOutline style={{ color: '#10B981' }} />}
                 />
               </Tooltip>
@@ -320,21 +318,11 @@ const SoldServicesCard = () => {
       }
     },
     {
-      title: 'Liệu trình',
-      dataIndex: 'treatment',
-      key: 'treatment',
-      width: 50,
-      align: 'center',
-      render: () => {
-        return <Text>0/5</Text>
-      }
-    },
-    {
       title: 'Tổng tiền',
       dataIndex: 'price',
       key: 'price',
       align: 'center',
-      width: 80,
+      width: 70,
       render: (price: number) => {
         return (
           <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
@@ -348,10 +336,10 @@ const SoldServicesCard = () => {
       dataIndex: 'price_paid',
       key: 'price_paid',
       align: 'center',
-      width: 80,
+      width: 70,
       render: (_, record) => {
         return (
-          <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
+          <Text style={{ color: '#FF9900', fontSize: '15px' }} strong>
             {!record.price || !record.price_paid
               ? ''
               : (record.price - record.price_paid).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
@@ -458,7 +446,7 @@ const SoldServicesCard = () => {
           <Table
             sticky
             style={{ width: '100%' }}
-            scroll={{ x: '1900px' }}
+            scroll={{ x: '1800px' }}
             loading={isLoading}
             dataSource={servicesCardSoldOfCustomer}
             bordered
