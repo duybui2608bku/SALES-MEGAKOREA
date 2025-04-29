@@ -44,16 +44,20 @@ export interface ServicesType {
 }
 
 export interface HistoryPaid {
+  _id: string
   code: string
-  date: Date
-  user_id: string
+  services_card_sold_of_customer_id: string
   paid: number
   out_standing: number
   method: string
-  descriptions?: string
-  user_details?: UserGeneralInterface
+  descriptions: string
+  user_id: string
+  date: string
+  is_deleted: boolean
+  created_at: Date
+  updated_at: Date
+  user_details: UserGeneralInterface
 }
-
 export interface ServicesOfCardType {
   _id: string
   customer_id: string | null
@@ -64,6 +68,7 @@ export interface ServicesOfCardType {
   descriptions: string
   user_id: string | string
   price: number
+  price_paid: number
   services_of_card: ServicesOfCard[]
   employee: EmployeeOfServices[]
   created_at: Date
@@ -212,15 +217,14 @@ export interface GetServicesCardRequestBody {
 }
 
 export interface UpdatePaidOfServicesCardRequestBody {
-  card_services_id: string
   code: string
-  date: Date
-  paid_initial: number
-  user_id: string
+  services_card_sold_of_customer_id: string
   paid: number
   out_standing: number
   method: string
   descriptions?: string
+  user_id: string
+  date: Date
 }
 
 export interface GetServicesCardSoldOfCustomerRequestBody {
@@ -238,6 +242,7 @@ export interface GetServicesCardSoldOfCustomer {
   code: string
   descriptions: string
   price: number | null
+  price_paid: number | null
   branch: BranchType[]
   history_paid: HistoryPaid[]
   history_used: HistoryUsed[]

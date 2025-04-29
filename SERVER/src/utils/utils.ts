@@ -1,7 +1,12 @@
+import dayjs from 'dayjs'
 import _ from 'lodash'
 import { ObjectId } from 'mongodb'
 import { HttpStatusCode } from '~/constants/enum'
 import { ErrorWithStatusCode } from '~/models/Errors'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export const toObjectId = (id: string | ObjectId): ObjectId => {
   if (_.isString(id) && ObjectId.isValid(id)) {
@@ -36,4 +41,20 @@ export const getObjectOrNul = (value: object | undefined) => {
 
 export const removeNullOutOfObject = (obj: Record<string, any>) => {
   return _.omitBy(obj, _.isNull)
+}
+
+export const createDateRangeQuery = (dateString: string | null | undefined, fieldName = 'created_at') => {
+  if (!dateString) return {}
+  // Phân tích ngày đầu vào bằng dayjs
+  const date = dayjs(dateString).utc()
+  // Tạo ngày bắt đầu (00:00:00) và kết thúc (23:59:59) ở UTC
+  const startOfDay = date.startOf('day').toDate()
+  const endOfDay = date.endOf('day').toDate()
+  // Trả về điều kiện truy vấn MongoDB
+  return {
+    [fieldName]: {
+      $gte: startOfDay,
+      $lt: endOfDay
+    }
+  }
 }

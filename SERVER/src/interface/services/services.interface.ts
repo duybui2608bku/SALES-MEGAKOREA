@@ -250,12 +250,14 @@ export interface CardServicesSoldOfCustomerType {
   customer_id: ObjectId
   descriptions?: string
   price?: number | null
+  price_paid?: number
   branch: ObjectId[]
   card_services_sold_id: ObjectId[]
   history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
   user_id: ObjectId
   employee_commision?: ObjectId[]
+  seller_commission?: ObjectId[]
   created_at?: Date
   updated_at?: Date
 }

@@ -1,10 +1,12 @@
 import React from 'react'
 import { Modal, Card, Descriptions, Tag, Typography, Space } from 'antd'
-import { HistoryPaid } from 'src/Interfaces/services/services.interfaces' // Giả sử đây là interface của bạn
+import { HistoryPaid } from 'src/Interfaces/services/services.interfaces'
+
+// Interface mới dựa trên dữ liệu mẫu
 
 // Props interface cho component
 interface ModalViewHistoryPaidProps {
-  open: boolean // Thay visible bằng open để đồng bộ với AntD
+  open: boolean
   onCancel: () => void
   data: HistoryPaid[]
 }
@@ -12,9 +14,13 @@ interface ModalViewHistoryPaidProps {
 const { Title, Text } = Typography
 
 const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCancel, data }) => {
-  if (!data || data.length === 0) return
+  if (!data || data.length === 0) return null // Trả về null thay vì undefined
+
   // Tính tổng số tiền thanh toán
   const totalPaid = data.reduce((sum, item) => sum + item.paid, 0)
+
+  // Lấy giá trị outstanding từ giao dịch mới nhất
+  const latestOutstanding = data.length > 0 ? data[data.length - 1].out_standing : 0
 
   return (
     <Modal
@@ -34,18 +40,18 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
           {' ---- '}
           <Text strong>Còn nợ: </Text>
           <Text type='danger' strong>
-            {data[data.length - 1].out_standing.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+            {latestOutstanding.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
           </Text>
         </div>
       }
       width={900}
-      centered // Căn giữa modal
-      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }} // Giới hạn chiều cao và thêm scroll
+      centered
+      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
     >
       <Space direction='vertical' style={{ width: '100%' }} size='middle'>
         {data.map((history, index) => (
           <Card
-            key={index}
+            key={history._id || index} // Ưu tiên sử dụng _id nếu có
             title={`Giao dịch: ${history.code}`}
             hoverable
             style={{
@@ -79,7 +85,7 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
                 </Text>
               </Descriptions.Item>
               <Descriptions.Item label='Người thực hiện'>
-                <Text style={{ color: '#595959' }}>{history.user_details?.name}</Text>
+                <Text style={{ color: '#595959' }}>{history.user_details?.name || 'Không xác định'}</Text>
               </Descriptions.Item>
               <Descriptions.Item label='Còn nợ'>
                 <Text strong style={{ color: '#f5222d' }}>

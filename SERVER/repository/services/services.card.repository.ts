@@ -1056,6 +1056,32 @@ class ServicesCardRepository {
     const result = await databaseServiceSale.history_paid_services_card_of_customer.insertOne(
       new HistoryPaidServicesCardSoldOfCustomer(data)
     )
+    console.log(data)
+    await Promise.all([
+      databaseServiceSale.services_card_sold_of_customer.updateOne(
+        {
+          _id: data.services_card_sold_of_customer_id
+        },
+        {
+          $push: {
+            history_paid: result.insertedId
+          }
+        },
+        { upsert: true }
+      ),
+      databaseServiceSale.services_card_sold_of_customer.updateOne(
+        {
+          _id: data.services_card_sold_of_customer_id
+        },
+        {
+          $inc: {
+            price_paid: data.paid
+          }
+        },
+        { upsert: true }
+      )
+    ])
+
     return result.insertedId
   }
 
@@ -1072,7 +1098,8 @@ class ServicesCardRepository {
       'status',
       'forgot_password_token',
       'role',
-      'coefficient'
+      'coefficient',
+      'branch'
     ])
 
     const projectCardServicesDetails = createProjectionField('cards', [
@@ -1096,6 +1123,24 @@ class ServicesCardRepository {
       'products',
       'employee',
       'step_services'
+    ])
+
+    const projectionEmployeeCommissionDetails = createProjectionField('employee_commision.user_details', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient',
+      'branch'
+    ])
+
+    const projectionHistoryPaidDetails = createProjectionField('history_paid.user_details', [
+      'password',
+      'status',
+      'forgot_password_token',
+      'role',
+      'coefficient',
+      'branch'
     ])
 
     const servicesCardSold = await databaseServiceSale.services_card_sold_of_customer
@@ -1122,7 +1167,132 @@ class ServicesCardRepository {
             as: 'branch'
           }
         },
-        // 2. Lookup thông tin user
+        {
+          $lookup: {
+            from: 'history_paid',
+            localField: 'history_paid',
+            foreignField: '_id',
+            as: 'history_paid'
+          }
+        },
+        // Lấy tất cả user_id từ history_paid
+        {
+          $addFields: {
+            history_paid_user_ids: {
+              $map: {
+                input: '$history_paid',
+                as: 'hp',
+                in: '$$hp.user_id'
+              }
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'commission_technician',
+            localField: 'employee_commision',
+            foreignField: '_id',
+            as: 'employee_commision'
+          }
+        },
+        // Lấy tất cả user_id từ employee_commision
+        {
+          $addFields: {
+            employee_commision_user_ids: {
+              $map: {
+                input: '$employee_commision',
+                as: 'ec',
+                in: '$$ec.user_id'
+              }
+            }
+          }
+        },
+        // Lookup tất cả users liên quan
+        {
+          $lookup: {
+            from: 'users',
+            let: {
+              hp_user_ids: '$history_paid_user_ids',
+              ec_user_ids: '$employee_commision_user_ids',
+              main_user_id: '$user_id'
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $in: ['$_id', '$$hp_user_ids'] },
+                      { $in: ['$_id', '$$ec_user_ids'] },
+                      { $eq: ['$_id', '$$main_user_id'] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'all_users'
+          }
+        },
+        // Map user details vào history_paid
+        {
+          $addFields: {
+            history_paid: {
+              $map: {
+                input: '$history_paid',
+                as: 'hp',
+                in: {
+                  $mergeObjects: [
+                    '$$hp',
+                    {
+                      user_details: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$all_users',
+                              as: 'u',
+                              cond: { $eq: ['$$u._id', '$$hp.user_id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        // Map user details vào employee_commision
+        {
+          $addFields: {
+            employee_commision: {
+              $map: {
+                input: '$employee_commision',
+                as: 'ec',
+                in: {
+                  $mergeObjects: [
+                    '$$ec',
+                    {
+                      user_details: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$all_users',
+                              as: 'u',
+                              cond: { $eq: ['$$u._id', '$$ec.user_id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        // 2. Lookup thông tin user chính
         {
           $lookup: {
             from: 'users',
@@ -1303,12 +1473,18 @@ class ServicesCardRepository {
             serviceDetails: 0,
             serviceCategories: 0,
             customer_id: 0,
+            history_paid_user_ids: 0,
+            employee_commision_user_ids: 0,
+            all_users: 0,
             ...projectionUserDetail,
             ...projectCardServicesDetails,
-            ...projectionServices
+            ...projectionServices,
+            ...projectionEmployeeCommissionDetails,
+            ...projectionHistoryPaidDetails
           }
         }
       ])
+      .sort({ created_at: -1 })
       .skip(skip)
       .limit(limit)
       .toArray()
