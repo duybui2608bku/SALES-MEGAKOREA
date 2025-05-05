@@ -1,6 +1,8 @@
-import React from 'react'
-import { Modal, Card, Descriptions, Tag, Typography, Space } from 'antd'
+import React, { useState } from 'react'
+import { Modal, Card, Descriptions, Tag, Typography, Space, Flex } from 'antd'
 import { HistoryPaid } from 'src/Interfaces/services/services.interfaces'
+import { HiOutlinePrinter } from 'react-icons/hi2'
+import InvoicePrintPreview from './InvoicePrintPreview'
 
 // Interface mới dựa trên dữ liệu mẫu
 
@@ -14,6 +16,7 @@ interface ModalViewHistoryPaidProps {
 const { Title, Text } = Typography
 
 const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCancel, data }) => {
+  const [opentPrinter, setOpenPrinter] = useState(false)
   if (!data || data.length === 0) return null // Trả về null thay vì undefined
 
   // Tính tổng số tiền thanh toán
@@ -32,17 +35,22 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
       open={open}
       onCancel={onCancel}
       footer={
-        <div style={{ textAlign: 'right' }}>
-          <Text strong>Tổng thanh toán: </Text>
-          <Text type='success' strong>
-            {totalPaid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-          </Text>
-          {' ---- '}
-          <Text strong>Còn nợ: </Text>
-          <Text type='danger' strong>
-            {latestOutstanding.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-          </Text>
-        </div>
+        <Flex style={{ justifyContent: 'space-between', padding: '0 16px' }}>
+          <Flex>
+            <HiOutlinePrinter onClick={() => setOpenPrinter(true)} size={25} cursor='pointer' />
+          </Flex>
+          <Flex>
+            <Text strong>Tổng thanh toán: </Text>
+            <Text type='success' strong>
+              {totalPaid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+            </Text>
+            {' ---- '}
+            <Text strong>Còn nợ: </Text>
+            <Text type='danger' strong>
+              {latestOutstanding.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+            </Text>
+          </Flex>
+        </Flex>
       }
       width={900}
       centered
@@ -99,6 +107,7 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
           </Card>
         ))}
       </Space>
+      <InvoicePrintPreview onCancel={() => setOpenPrinter(false)} data={data as any} open={opentPrinter} />
     </Modal>
   )
 }

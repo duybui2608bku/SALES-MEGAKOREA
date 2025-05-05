@@ -39,6 +39,7 @@ import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
 import { DatePickerProps } from 'antd/lib'
 import dayjs from 'dayjs'
 import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
+import { RiRefund2Fill } from 'react-icons/ri'
 
 const { Text, Paragraph } = Typography
 
@@ -390,7 +391,7 @@ const SoldServicesCard = () => {
               onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.VIEW_HISTORY)}
               icon={<TbMoneybag />}
             ></Button>
-            <Button icon={<MdDelete color='#EF4444' />}></Button>
+            <Button title='Hoàn tiền' icon={<RiRefund2Fill />}></Button>
           </Flex>
         )
       }

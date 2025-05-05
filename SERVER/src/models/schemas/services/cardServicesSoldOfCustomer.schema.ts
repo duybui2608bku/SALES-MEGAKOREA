@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongodb'
-import { CardServicesSoldOfCustomerType, HistoryPaid, HistoryUsed } from '~/interface/services/services.interface'
+import {
+  CardServicesSoldOfCustomerType,
+  HistoryPaid,
+  HistoryUsed,
+  RefundType
+} from '~/interface/services/services.interface'
 import { generateCode } from '~/utils/utils'
 
 export class CardServicesSoldOfCustomer {
@@ -16,6 +21,7 @@ export class CardServicesSoldOfCustomer {
   user_id: ObjectId
   employee_commision?: ObjectId[]
   seller_commission?: ObjectId[]
+  refund: RefundType | null
   created_at?: Date
   updated_at?: Date
   constructor(cardServices: CardServicesSoldOfCustomerType) {
@@ -31,6 +37,7 @@ export class CardServicesSoldOfCustomer {
     this.employee_commision = cardServices.employee_commision || []
     this.seller_commission = cardServices.seller_commission || []
     this.customer_id = cardServices.customer_id
+    this.refund = cardServices.refund || null
     this.descriptions = cardServices.descriptions || ''
     this.created_at = cardServices.created_at || new Date()
     this.updated_at = cardServices.updated_at || new Date()
