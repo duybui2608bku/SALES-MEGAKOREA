@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { Col, Form, Input, InputNumber, message, Modal, Row, Select, Typography } from 'antd'
 import { HttpStatusCode } from 'axios'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { optionsMethodPayment } from 'src/Constants/option'
 import { AppContext } from 'src/Context/AppContext'
@@ -30,6 +30,17 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
   const { open, onClose, servicesCardSoldOfCustomerData } = props
   const [form] = Form.useForm<FieldsUpdatePaidOfServicesCard>()
   const { profile } = useContext(AppContext)
+  const [oweMoney, setOweMoney] = useState(0)
+
+  useEffect(() => {
+    if (servicesCardSoldOfCustomerData) {
+      const price = servicesCardSoldOfCustomerData.price ?? 0
+      const pricePaid = servicesCardSoldOfCustomerData.price_paid ?? 0
+      const remaining = price - pricePaid
+      setOweMoney(remaining)
+    }
+  }, [servicesCardSoldOfCustomerData])
+
   const updateMutation = useMutation({
     mutationFn: (body: UpdatePaidOfServicesCardRequestBody) => servicesApi.updateHistoryPaid(body),
     onMutate: async () => {
@@ -80,6 +91,13 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
     form.resetFields()
   }
 
+  // Validator số tiền thanh toán
+  const validatePaymentAmount = (_: any, value: number) => {
+    if (value > oweMoney) {
+      message.error(`Số tiền thanh toán không được lớn hơn số tiền còn nợ (${oweMoney.toLocaleString('vi-VN')} VNĐ)`)
+    }
+  }
+
   return (
     <Fragment>
       <Modal
@@ -113,7 +131,12 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
                   <Form.Item<FieldsUpdatePaidOfServicesCard>
                     name='paid'
                     label='Số tiền thanh toán'
-                    rules={[{ required: true, message: 'Vui lòng nhập số tiền thanh toán!' }]}
+                    rules={[
+                      { required: true, message: 'Vui lòng nhập số tiền thanh toán!' },
+                      { validator: validatePaymentAmount }
+                      // { type: 'number', min: 1, message: ' Số tiền thanh toán phải lớn hơn 0!' }
+                    ]}
+                    validateTrigger={['onChange', 'onBlur']}
                   >
                     <InputNumber
                       suffix='đ'
@@ -121,6 +144,7 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
                       formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value) => (value ? Number(value.replace(/\$\s?|(,*)/g, '')) : 0)}
                       step={100000}
+                      max={oweMoney}
                     />
                   </Form.Item>
                 </Col>
