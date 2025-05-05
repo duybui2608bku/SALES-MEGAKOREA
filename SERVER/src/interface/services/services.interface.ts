@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { TypeCommision } from '~/constants/enum'
+import { RefundEnum, TypeCommision } from '~/constants/enum'
 
 export interface ServicesCategoryType {
   _id?: ObjectId
@@ -244,6 +244,11 @@ export interface CardServicesSoldType {
   updated_at?: Date
 }
 
+export interface RefundType {
+  type: RefundEnum
+  price: number
+}
+
 export interface CardServicesSoldOfCustomerType {
   _id?: ObjectId
   code?: string
@@ -255,6 +260,7 @@ export interface CardServicesSoldOfCustomerType {
   card_services_sold_id: ObjectId[]
   history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
+  refund?: RefundType | null
   user_id: ObjectId
   employee_commision?: ObjectId[]
   seller_commission?: ObjectId[]

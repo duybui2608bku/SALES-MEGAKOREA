@@ -59,9 +59,9 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
   const onFinish = (values: FieldsUpdatePaidOfServicesCard) => {
     const _id = servicesCardSoldOfCustomerData._id
     const out_standing =
-      (servicesCardSoldOfCustomerData.price ?? 0) - (servicesCardSoldOfCustomerData.price_paid ?? 0) - values.paid // Số tiền còn lại
+      (servicesCardSoldOfCustomerData.price ?? 0) - (servicesCardSoldOfCustomerData.price_paid ?? 0) - values.paid
     const user_id = profile?._id as string // Lấy id của người dùng hiện tại
-    const paid = (servicesCardSoldOfCustomerData.price_paid ?? 0) + values.paid // Tổng số tiền đã thanh toán
+    const paid = values.paid // Tổng số tiền đã thanh toán
     const data = {
       ...values,
       code: generateCode(),
@@ -71,7 +71,10 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
       services_card_sold_of_customer_id: _id,
       date: new Date()
     }
-
+    if (out_standing < 0) {
+      message.error('Số tiền thanh toán không được lớn hơn số tiền còn lại!')
+      return
+    }
     updateMutation.mutate(data)
   }
 
