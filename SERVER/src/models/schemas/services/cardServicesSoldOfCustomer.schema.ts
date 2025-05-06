@@ -1,10 +1,5 @@
 import { ObjectId } from 'mongodb'
-import {
-  CardServicesSoldOfCustomerType,
-  HistoryPaid,
-  HistoryUsed,
-  RefundType
-} from '~/interface/services/services.interface'
+import { CardServicesSoldOfCustomerType, HistoryUsed, RefundType } from '~/interface/services/services.interface'
 import { generateCode } from '~/utils/utils'
 
 export class CardServicesSoldOfCustomer {

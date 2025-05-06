@@ -116,6 +116,6 @@ export enum GetServicesCardSoldOfCustomerSearchType {
 export enum RefundEnum {
   NONE = 0,
   PARTIAL_FULL_TREATMENT = 1,
-  PARTIAL_HALF_REATMENT = 2,
+  PARTIAL_HALF_TREATMENT = 2,
   FULL = 3
 }

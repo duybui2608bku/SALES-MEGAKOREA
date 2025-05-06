@@ -60,3 +60,15 @@ export interface GetCommisionOfTechnicanData {
   user_id: ObjectId
   query: any
 }
+
+export interface GetCommisionOfTechnicanReportData {
+  query: any
+  page: number
+  limit: number
+}
+
+export interface GetCommisionOfSellerReportData {
+  query: any
+  page: number
+  limit: number
+}

@@ -3,10 +3,13 @@ import databaseServiceSale from './database.services.sale'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { commisionMessages, servicesMessages, userMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
-import { CreateCommisionOfTechnicanRequestType } from '~/models/requestes/Commision.request'
-import commisionSellerRepository from 'repository/services/commision.services.card.repository'
+import {
+  CreateCommisionOfTechnicanRequestType,
+  GetCommisionOfTechnicanReportRequestType
+} from '~/models/requestes/Commision.request'
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
 import commisionTechnicanRepository from 'repository/services/commision.technican.services.card.repository'
+import { createDateRangeQuery, toObjectId } from '~/utils/utils'
 
 class CommisionServicesOfTechnican {
   private async checkUserExist(id: ObjectId) {
@@ -64,6 +67,53 @@ class CommisionServicesOfTechnican {
     if (!commisions) {
       throw new ErrorWithStatusCode({
         message: commisionMessages.COMMISION_OF_SELLER_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+    return commisions
+  }
+
+  async getAllCommisionOfTechnicanReport(data: GetCommisionOfTechnicanReportRequestType) {
+    const { user_id, branch_id, date, search, page = 1, limit = 10 } = data
+
+    const dataQuery = {
+      ...(user_id ? { user_id: new ObjectId(user_id) } : null),
+      ...(branch_id ? { branch_id: new ObjectId(branch_id) } : null),
+      ...createDateRangeQuery(date)
+    }
+
+    const commisions = await commisionTechnicanRepository.getAllCommisionOfTechnicanReport({
+      query: dataQuery,
+      page: Number(page),
+      limit: Number(limit)
+    })
+    if (!commisions) {
+      throw new ErrorWithStatusCode({
+        message: commisionMessages.COMMISION_OF_SELLER_REPORT_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+    return commisions
+  }
+
+  async getAllCommisionOfSellerReport(data: GetCommisionOfTechnicanReportRequestType) {
+    const { user_id, branch_id, date, page = 1, limit = 10 } = data
+
+    const dataQuery = {
+      ...(user_id ? { user_id: new ObjectId(user_id as string) } : null),
+      ...(branch_id ? { branch_id: new ObjectId(branch_id as string) } : null),
+      ...createDateRangeQuery(date)
+    }
+
+    const commisions = await commisionTechnicanRepository.getAllCommisionOfSellerReport({
+      query: dataQuery,
+      page: Number(page),
+      limit: Number(limit)
+    })
+
+    if (!commisions) {
+      throw new ErrorWithStatusCode({
+        message: commisionMessages.COMMISION_OF_SELLER_REPORT_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }
