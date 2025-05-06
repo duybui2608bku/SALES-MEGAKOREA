@@ -2,13 +2,18 @@ import { Router } from 'express'
 import {
   createCommisionOfSeller,
   createCommisionOfTechnican,
+  GetAllCommisionOfSellerReport,
+  GetAllCommisionOfTechnicanReport,
   GetCommisionOfSellerByUserId
 } from '~/controllers/commision.controllers'
 import {
   CreateCommisionOfSellerValidator,
-  GetCommisionOfSellerByUserIdValidator
+  GetCommisionOfSellerByUserIdValidator,
+  GetCommisionOfSellerValidator,
+  GetCommisionOfTechnicanByUserIdValidator
 } from '~/middlewares/commision.middlewares'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
+import { paginatonValidator } from '~/middlewares/utils.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const CommisionRouter = Router()
@@ -39,6 +44,20 @@ CommisionRouter.get(
   accessTokenValidator,
   GetCommisionOfSellerByUserIdValidator,
   wrapRequestHandler(GetCommisionOfSellerByUserId)
+)
+
+CommisionRouter.post(
+  '/technican/report',
+  accessTokenValidator,
+  GetCommisionOfTechnicanByUserIdValidator,
+  wrapRequestHandler(GetAllCommisionOfTechnicanReport)
+)
+
+CommisionRouter.post(
+  '/seller/report',
+  accessTokenValidator,
+  GetCommisionOfSellerValidator,
+  wrapRequestHandler(GetAllCommisionOfSellerReport)
 )
 
 export default CommisionRouter

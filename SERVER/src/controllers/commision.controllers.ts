@@ -7,8 +7,9 @@ import {
   CreateCommisionOfTechnicanRequestType,
   GetCommisionOfSellerByUserIdParams,
   GetCommisionOfSellerByUserIdQueryType,
-  GetCommisionOfTechnicanByUserIdParams,
-  GetCommisionOfTechnicanByUserIdQueryType
+  GetCommisionOfSellerRequestType,
+  GetCommisionOfTechnicanByUserIdQueryType,
+  GetCommisionOfTechnicanReportRequestType
 } from '~/models/requestes/Commision.request'
 import commisionServicesOfSale from 'services/commision.services'
 import { HttpStatusCode } from '~/constants/enum'
@@ -93,6 +94,48 @@ export const GetCommisionOfTechnicanByUserId = async (
       res,
       message: commisionMessages.GET_COMMISION_OF_SELLER_SUCCESS,
       result
+    })
+  }
+}
+
+export const GetAllCommisionOfTechnicanReport = async (
+  req: Request<ParamsDictionary, any, GetCommisionOfTechnicanReportRequestType>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await commisionServicesOfTechnican.getAllCommisionOfTechnicanReport(data)
+  if (result.data.length === 0) {
+    return ResponseError({
+      res,
+      message: commisionMessages.COMMISION_OF_TECHNICAN_EMPTY,
+      statusCode: HttpStatusCode.NotFound
+    })
+  } else {
+    return ResponseSuccess({
+      res,
+      message: commisionMessages.GET_COMMISION_OF_TECHNICAN_SUCCESS,
+      result: result
+    })
+  }
+}
+
+export const GetAllCommisionOfSellerReport = async (
+  req: Request<ParamsDictionary, any, GetCommisionOfSellerRequestType>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await commisionServicesOfTechnican.getAllCommisionOfSellerReport(data)
+  if (result.data.length === 0) {
+    return ResponseError({
+      res,
+      message: commisionMessages.COMMISION_OF_SELLER_EMPTY,
+      statusCode: HttpStatusCode.NotFound
+    })
+  } else {
+    return ResponseSuccess({
+      res,
+      message: commisionMessages.GET_COMMISION_OF_SELLER_SUCCESS,
+      result: result
     })
   }
 }

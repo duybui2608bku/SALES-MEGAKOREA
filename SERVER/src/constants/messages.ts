@@ -193,7 +193,8 @@ export const branchMessages = {
   DELETE_BRANCH_SUCCESS: 'Delete branch success !',
   INVALID_ID: 'Invalid id !',
   UPDATE_BRANCH_SUCCESS: 'Update branch success !',
-  GET_ALL_BRANCH_SUCCESS: 'Get all branch success !'
+  GET_ALL_BRANCH_SUCCESS: 'Get all branch success !',
+  BRANCH_ID_MUST_BE_STRING: 'Branch id must be a string !'
 }
 
 export const commisionMessages = {
@@ -205,7 +206,10 @@ export const commisionMessages = {
   GET_COMMISION_OF_SELLER_SUCCESS: 'Get commision of seller success !',
   COMMISION_OF_SELLER_EMPTY: 'Commision of seller empty !',
   END_DATE_CANNOT_BE_BEFORE_START_DATE: 'End date cannot be before start date !',
-  CREATE_COMMISION_OF_TECHNICAN_SUCCESS: 'Create commision of technican success !'
+  CREATE_COMMISION_OF_TECHNICAN_SUCCESS: 'Create commision of technican success !',
+  COMMISION_OF_SELLER_REPORT_NOT_FOUND: 'Commision of seller report not found !',
+  GET_COMMISION_OF_TECHNICAN_SUCCESS: 'Get commision of technican success !',
+  COMMISION_OF_TECHNICAN_EMPTY: 'Commision of technican empty !'
 }
 
 export const customerMessages = {

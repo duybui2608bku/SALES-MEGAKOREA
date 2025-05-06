@@ -32,3 +32,21 @@ export interface GetCommisionOfTechnicanByUserIdQueryType {
   start_date?: Date
   end_date?: Date
 }
+
+export interface GetCommisionOfSellerRequestType {
+  limit?: string
+  page?: string
+  date?: string
+  user_id?: string
+  branch_id?: string
+  search?: string
+}
+
+export interface GetCommisionOfTechnicanReportRequestType {
+  limit?: string
+  page?: string
+  date?: string
+  user_id?: string
+  branch_id?: string
+  search?: string
+}
