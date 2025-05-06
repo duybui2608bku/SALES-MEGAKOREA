@@ -31,7 +31,17 @@ const ModalViewHistoryUsed = (props: ModalViewHistoryUsedProps) => {
     >
       <Space direction='vertical' style={{ width: '100%', maxHeight: '80vh', overflowY: 'auto' }} size='large'>
         {historyUsedData?.map((history, index) => (
-          <Card key={index} title={history.name_service} style={{ marginBottom: 16 }}>
+          <Card
+            key={index}
+            title={history.name_service}
+            style={{
+              marginBottom: 16,
+              borderRadius: 8,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              background: '#fafafa'
+            }}
+            headStyle={{ background: '#e6f7ff', borderBottom: 'none' }}
+          >
             <Space direction='vertical' style={{ width: '100%' }}>
               <Descriptions column={2} bordered size='small'>
                 <Descriptions.Item label='Tên dịch vụ'>{history.name_service}</Descriptions.Item>

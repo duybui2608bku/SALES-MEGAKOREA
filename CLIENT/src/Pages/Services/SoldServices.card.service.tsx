@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import {
+  Badge,
   Button,
   Col,
-  DatePicker,
   Flex,
   message,
+  Popover,
   Row,
   Space,
   Table,
@@ -14,11 +15,10 @@ import {
   Tree,
   Typography
 } from 'antd'
-import { DownOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons'
-import { MdDelete } from 'react-icons/md'
+import { DownOutlined, PlusOutlined, ReloadOutlined, SyncOutlined, TagsOutlined } from '@ant-design/icons'
 import { IoPencilOutline, IoPrintSharp } from 'react-icons/io5'
 import { IoIosAddCircleOutline } from 'react-icons/io'
-import { FaRegEye } from 'react-icons/fa'
+import { FaRegEye, FaCheckCircle } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
@@ -31,19 +31,19 @@ import { pathRoutersService } from 'src/Constants/path'
 import { motion, AnimatePresence } from 'framer-motion'
 import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
-import { GiReceiveMoney } from 'react-icons/gi'
+import { GiReceiveMoney, GiTakeMyMoney, GiPayMoney } from 'react-icons/gi'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import { TbMoneybag } from 'react-icons/tb'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
-import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
-import { DatePickerProps } from 'antd/lib'
-import dayjs from 'dayjs'
+import { GetServicesCardSoldOfCustomerSearchType, RefundEnum } from 'src/Constants/enum'
 import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
-import { RiRefund2Fill } from 'react-icons/ri'
+import { RiRefund2Fill, RiMoneyDollarCircleLine } from 'react-icons/ri'
+import DatePickerComponent from 'src/Components/DatePicker'
+import { queryClient } from 'src/main'
 
 const { Text, Paragraph } = Typography
 
-const LIMIT = 5
+const LIMIT = 7
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
@@ -78,6 +78,9 @@ const SoldServicesCard = () => {
   const [historyUsedData, setHistoryUsedData] = useState<HistoryUsed[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [datePickerQuery, setDatePickerQuery] = useState('')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [openPopOver, setOpenPopOver] = useState(false)
+  const [openModalRefundMoney, setOpenModalRefundMoney] = useState(RefundEnum.NONE)
 
   // Hàm check searchQuery là Number hay là String
   const checkValueSearchQuery = (value: string) => {
@@ -164,14 +167,43 @@ const SoldServicesCard = () => {
     setPagination((prev) => ({ ...prev, page: PAGE, total: 1 }))
   }
 
-  const onChange: DatePickerProps['onChange'] = (dateString) => {
-    // Convert value DatePicker -> ISOString
-    const isoDateString = dayjs(dateString).toISOString()
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpenPopOver(newOpen)
+  }
 
-    setDatePickerQuery(isoDateString)
+  const handleReloadPage = () => {
+    queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+    // window.location.reload()
+  }
+
+  const handleRefundMoney = (refundType: RefundEnum) => {
+    setOpenModalRefundMoney(refundType)
   }
 
   const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
+    {
+      title: 'TT',
+      width: 25,
+      key: 'paid',
+      dataIndex: 'paid',
+      align: 'center',
+      fixed: 'left',
+      render: (_, record) => {
+        return (
+          <Fragment>
+            {(record.price ?? 0) - (record.price_paid ?? 0) !== 0 ? (
+              <Tooltip title='Đang thanh toán'>
+                <SyncOutlined spin style={{ color: '#1677ff', fontSize: '18px' }} />
+              </Tooltip>
+            ) : (
+              <Tooltip title='Đã thanh toán hoàn tất!'>
+                <FaCheckCircle color='#10B981' style={{ fontSize: '18px' }} />
+              </Tooltip>
+            )}
+          </Fragment>
+        )
+      }
+    },
     {
       title: 'Mã thẻ / Ngày tạo',
       dataIndex: 'code/created_at',
@@ -207,7 +239,7 @@ const SoldServicesCard = () => {
               </Text>
             </Text>
 
-            <Paragraph copyable style={{ fontSize: '13px', color: '#1677ff' }}>
+            <Paragraph copyable style={{ fontSize: '13px', color: '#1677ff', margin: 0, padding: 0 }}>
               {record.customers?.phone}
             </Paragraph>
           </Space>
@@ -326,7 +358,7 @@ const SoldServicesCard = () => {
       width: 70,
       render: (price: number) => {
         return (
-          <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
+          <Text style={{ color: '#000', fontSize: '15px' }} strong>
             {price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
           </Text>
         )
@@ -340,7 +372,7 @@ const SoldServicesCard = () => {
       width: 70,
       render: (_, record) => {
         return (
-          <Text style={{ color: '#FF9900', fontSize: '15px' }} strong>
+          <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
             {!record.price || !record.price_paid
               ? ''
               : (record.price - record.price_paid).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
@@ -357,16 +389,17 @@ const SoldServicesCard = () => {
       render: (history_used: HistoryUsed[]) => {
         return (
           <Flex justify='center' gap='12px' align='center'>
-            <Text>{history_used.length} lần | </Text>
             <Tooltip title='Xem chi tiết'>
-              <Button
-                onClick={() =>
-                  history_used.length === 0
-                    ? message.warning('Chưa có lịch sử dùng thẻ!')
-                    : handleOpenModalViewHistoryUsed(history_used)
-                }
-                icon={<FaRegEye style={{ color: '#6366F1' }} />}
-              />
+              <Badge count={history_used.length || 0} style={{ fontSize: '11px' }} color='#A6D7C4'>
+                <Button
+                  onClick={() =>
+                    history_used.length === 0
+                      ? message.warning('Chưa có lịch sử dùng thẻ!')
+                      : handleOpenModalViewHistoryUsed(history_used)
+                  }
+                  icon={<FaRegEye style={{ color: '#6366F1' }} />}
+                />
+              </Badge>
             </Tooltip>
           </Flex>
         )
@@ -380,18 +413,59 @@ const SoldServicesCard = () => {
       align: 'center',
       render: (_, record) => {
         return (
-          <Flex justify='center' gap={10}>
-            <Button
-              onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.UPDATE)}
-              title='Thanh toán'
-              icon={<GiReceiveMoney color='green' />}
-            ></Button>
-            <Button
-              disabled={record.history_paid.length === 0}
-              onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.VIEW_HISTORY)}
-              icon={<TbMoneybag />}
-            ></Button>
-            <Button title='Hoàn tiền' icon={<RiRefund2Fill />}></Button>
+          <Flex justify='center' gap={15}>
+            {(record.price ?? 0) - (record.price_paid ?? 0) === 0 ? (
+              <Tooltip title='Đã thanh toán hoàn tất!'>
+                <Button disabled icon={<FaCheckCircle color='#10B981' />} />
+              </Tooltip>
+            ) : (
+              <Button
+                onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.UPDATE)}
+                title='Thanh toán'
+                icon={<GiReceiveMoney color='#10B981' />}
+              ></Button>
+            )}
+
+            <Badge count={record.history_paid.length || 0} style={{ fontSize: '10px' }} color='#A6D7C4'>
+              <Button
+                title='Lịch sử thanh toán'
+                disabled={record.history_paid.length === 0}
+                onClick={() => handleOpenModalPayment(record, StatusOpenModalPayyment.VIEW_HISTORY)}
+                icon={<TbMoneybag />}
+              ></Button>
+            </Badge>
+
+            <Popover
+              trigger='click'
+              onOpenChange={handleOpenChange}
+              content={
+                <Flex style={{ flexDirection: 'column', gap: '10px' }}>
+                  <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <Button
+                      onClick={() => handleRefundMoney(RefundEnum.FULL)}
+                      icon={<GiTakeMyMoney style={{ color: '#FF9900' }} />}
+                    />{' '}
+                    Hoàn tiền 100%
+                  </Row>
+                  <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <Button
+                      onClick={() => handleRefundMoney(RefundEnum.PARTIAL_FULL_TREATMENT)}
+                      icon={<GiPayMoney style={{ color: '#FF9900' }} />}
+                    />{' '}
+                    Hoàn tiền theo số buổi
+                  </Row>
+                  <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <Button
+                      onClick={() => handleRefundMoney(RefundEnum.PARTIAL_HALF_REATMENT)}
+                      icon={<RiMoneyDollarCircleLine style={{ color: '#FF9900' }} />}
+                    />{' '}
+                    Hoàn tiền theo số tiền
+                  </Row>
+                </Flex>
+              }
+            >
+              <Button title='Hoàn tiền' icon={<RiRefund2Fill color='#FF9900' />}></Button>
+            </Popover>
           </Flex>
         )
       }
@@ -401,13 +475,13 @@ const SoldServicesCard = () => {
       dataIndex: 'action',
       key: 'action',
       fixed: 'right',
-      width: 75,
+      width: 60,
       align: 'center',
       render: () => {
         return (
           <Flex justify='center' gap={10}>
             <Button icon={<IoPencilOutline color='#3B82F6' />}></Button>
-            <Button icon={<MdDelete color='#EF4444' />}></Button>
+            {/* <Button icon={<MdDelete color='#EF4444' />}></Button> */}
             <Button icon={<IoPrintSharp color='#4B5563' />}></Button>
           </Flex>
         )
@@ -420,7 +494,10 @@ const SoldServicesCard = () => {
       {/* Title Service Card */}
       <Row style={{ padding: '20px' }} gutter={[16, 16]}>
         <Col xs={24}>{Title({ title: 'Thẻ dịch vụ đã bán', level: 2 })}</Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
+        <Col md={1} lg={1}>
+          <Button onClick={handleReloadPage} icon={<ReloadOutlined />} />
+        </Col>
+        <Col xs={24} sm={12} md={5} lg={5}>
           <Button
             onClick={() => navigate(pathRoutersService.sellCardService)}
             block
@@ -434,7 +511,7 @@ const SoldServicesCard = () => {
           <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => handleSearch(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <DatePicker style={{ width: '100%' }} onChange={onChange} />
+          <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <OptionsBranch />

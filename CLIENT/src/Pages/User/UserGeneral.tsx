@@ -1,17 +1,4 @@
-import {
-  Button,
-  Col,
-  Flex,
-  message,
-  Popconfirm,
-  Row,
-  Switch,
-  Table,
-  TableColumnType,
-  Typography,
-  Tag,
-  Select
-} from 'antd'
+import { Button, Col, Flex, message, Popconfirm, Row, Switch, Table, TableColumnType, Typography, Tag } from 'antd'
 import Title from 'antd/es/typography/Title'
 import { Fragment } from 'react/jsx-runtime'
 import { CheckCircleOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons'
@@ -30,6 +17,7 @@ import ModalCreateOrUpdateUser from 'src/Modal/users/ModalCreateOrUpdateUser'
 import TagRoleUserComponent from './Components/tagRoleUserComponent'
 import { omit } from 'lodash'
 import { BranchType } from 'src/Interfaces/branch/branch.interface'
+import OptionsBranch from 'src/Components/OptionsBranch'
 const { Paragraph } = Typography
 
 type ColumsUserGeneralType = UserGeneralInterface
@@ -143,6 +131,7 @@ const UserGeneral = () => {
       title: 'Thông tin nhân viên',
       key: 'avatar-name',
       width: 250,
+      fixed: 'left',
       render: (_: unknown, record: UserGeneralInterface) => (
         <Flex align='center'>
           <InforUserComponent avatar={record.avatar} name={record.name} status={record.status} />
@@ -186,6 +175,13 @@ const UserGeneral = () => {
           </Flex>
         )
       }
+    },
+    {
+      title: 'Hệ số lương',
+      dataIndex: 'coefficient',
+      key: 'coefficient',
+      align: 'center',
+      width: 140
     },
     {
       title: 'Chi nhánh',
@@ -320,25 +316,7 @@ const UserGeneral = () => {
           </Button>
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <Select
-            style={{ width: '100%' }}
-            showSearch
-            // onChange={handleFilterBranch}
-            placeholder='Chọn chi nhánh'
-            defaultValue={'all'}
-            options={[
-              { value: 'all', label: 'Tất cả' },
-              { value: 'Quảng Bình', label: 'Quảng Bình' },
-              { value: 'Huế', label: 'Huế' },
-              { value: 'Quảng Trị', label: 'Quảng Trị' },
-              { value: 'Buôn Ma Thuột', label: 'Buôn Ma Thuột' },
-              { value: 'Cà Mau', label: 'Cà Mau' },
-              { value: 'Phan Thiết', label: 'Phan Thiết' },
-              { value: 'Nha Trang', label: 'Nha Trang' },
-              { value: 'Medicare NT', label: 'Medicare NT' },
-              { value: 'Đà Nẵng', label: 'Đà Nẵng' }
-            ]}
-          />
+          <OptionsBranch />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <DebouncedSearch

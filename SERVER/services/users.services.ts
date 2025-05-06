@@ -51,6 +51,7 @@ class UsersService {
     const result = await databaseServiceSale.users.insertOne(
       new User({
         ...payload,
+        branch: new ObjectId(payload.branch),
         password: hashPassword(payload.password)
       })
     )

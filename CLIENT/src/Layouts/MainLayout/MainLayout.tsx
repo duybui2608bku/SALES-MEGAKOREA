@@ -1,14 +1,16 @@
 import { Menu, MenuProps, Layout, Button } from 'antd'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
-import { FcEngineering, FcAssistant, FcKindle, FcSettings, FcButtingIn } from 'react-icons/fc'
+import { FcEngineering, FcAssistant, FcKindle, FcButtingIn } from 'react-icons/fc'
+import { IoMdLogOut } from 'react-icons/io'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useNavigate } from 'react-router'
 import { pathRoutersProduct, pathRoutersService, pathRoutersUser, pathRoutesCustomers } from 'src/Constants/path'
+import ModalLogout from 'src/Modal/ModalLogout'
 
 interface Props {
   children?: React.ReactNode
@@ -16,6 +18,7 @@ interface Props {
 
 const MainLayout = ({ children }: Props) => {
   const [collapsed, setCollapsed] = useState(false)
+  const [openModalLogout, setOpenModalLogout] = useState(false)
   const navigate = useNavigate()
 
   type MenuItem = Required<MenuProps>['items'][number]
@@ -74,12 +77,6 @@ const MainLayout = ({ children }: Props) => {
             { key: '4', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) }
           ]
         }
-        // {
-        //   key: 'users',
-        //   label: 'Tài khoản',
-        //   type: 'group',
-        //   children: [{ key: '7', label: 'Danh sách tài khoản', onClick: () => navigate(pathRoutersUser.userGeneral) }]
-        // }
       ]
     },
     {
@@ -92,86 +89,84 @@ const MainLayout = ({ children }: Props) => {
       type: 'divider'
     },
     {
-      key: 'sub4',
-      label: 'Navigation Three',
-      icon: <FcSettings size={20} />,
-      children: [
-        { key: '9', label: 'Option 9' },
-        { key: '10', label: 'Option 10' },
-        { key: '11', label: 'Option 11' },
-        { key: '12', label: 'Option 12' }
-      ]
+      key: 'logout',
+      label: 'Đăng xuất',
+      icon: <IoMdLogOut size={20} />,
+      onClick: () => setOpenModalLogout(true)
     }
   ]
 
   return (
-    <Layout>
-      <Sider
-        style={{ zIndex: '999', position: 'fixed', left: '0', overflow: 'scroll' }}
-        width={250}
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-      >
-        <div
-          style={{
-            height: 'auto',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '10px 0',
-            background: 'white'
-          }}
-        >
-          <img
-            src={collapsed ? logoMobile : logo}
-            alt='Logo'
-            style={{
-              height: '100%',
-              width: '80%',
-              transition: 'all 0.3s',
-              transform: collapsed ? 'scale(0.8)' : 'scale(1)'
-            }}
-          />
-        </div>
-        <Menu style={{ height: '100vh' }} theme='light' mode='inline' defaultSelectedKeys={['1']} items={items} />
-      </Sider>
+    <Fragment>
       <Layout>
-        <Header className='main-layout-container__header'>
-          <Button
-            type='text'
-            icon={collapsed ? <BiSolidCaretRightSquare size={25} /> : <BiSolidCaretLeftSquare size={25} />}
-            onClick={() => setCollapsed(!collapsed)}
+        <Sider
+          style={{ zIndex: '999', position: 'fixed', left: '0', overflow: 'scroll' }}
+          width={250}
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+        >
+          <div
+            style={{
+              height: 'auto',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '10px 0',
+              background: 'white'
+            }}
+          >
+            <img
+              src={collapsed ? logoMobile : logo}
+              alt='Logo'
+              style={{
+                height: '100%',
+                width: '62%',
+                transition: 'all 0.3s',
+                transform: collapsed ? 'scale(0.8)' : 'scale(1)'
+              }}
+            />
+          </div>
+          <Menu style={{ height: '100vh' }} theme='light' mode='inline' defaultSelectedKeys={['1']} items={items} />
+        </Sider>
+        <Layout>
+          <Header className='main-layout-container__header'>
+            <Button
+              type='text'
+              icon={collapsed ? <BiSolidCaretRightSquare size={25} /> : <BiSolidCaretLeftSquare size={25} />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={
+                !collapsed
+                  ? {
+                      transition: 'all .2s ease',
+                      marginLeft: '250px',
+                      width: 64,
+                      height: 64
+                    }
+                  : {
+                      transition: 'all .2s ease',
+                      marginLeft: '80px',
+                      width: 64,
+                      height: 64
+                    }
+              }
+            />
+            <HeaderMain />
+          </Header>
+          <Content
             style={
               !collapsed
-                ? {
-                    transition: 'all .2s ease',
-                    marginLeft: '250px',
-                    width: 64,
-                    height: 64
-                  }
-                : {
-                    transition: 'all .2s ease',
-                    marginLeft: '80px',
-                    width: 64,
-                    height: 64
-                  }
+                ? { transition: 'all .2s ease', marginLeft: '250px', width: 'calc(100vw - 250px)' }
+                : { transition: 'all .2s ease', marginLeft: '80px', width: 'calc(100vw - 80px)' }
             }
-          />
-          <HeaderMain />
-        </Header>
-        <Content
-          style={
-            !collapsed
-              ? { transition: 'all .2s ease', marginLeft: '250px', width: 'calc(100vw - 250px)' }
-              : { transition: 'all .2s ease', marginLeft: '80px', width: 'calc(100vw - 80px)' }
-          }
-          className='main-layout-container__content'
-        >
-          {children}
-        </Content>
+            className='main-layout-container__content'
+          >
+            {children}
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+      <ModalLogout open={openModalLogout} onClose={setOpenModalLogout} />
+    </Fragment>
   )
 }
 

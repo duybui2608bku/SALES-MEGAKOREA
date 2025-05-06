@@ -32,3 +32,10 @@ export enum GetServicesCardSoldOfCustomerSearchType {
   NAME_CUSTOMER = 1,
   PHONE__CUSTOMER = 2
 }
+
+export enum RefundEnum {
+  NONE = 0,
+  PARTIAL_FULL_TREATMENT = 1,
+  PARTIAL_HALF_REATMENT = 2,
+  FULL = 3
+}

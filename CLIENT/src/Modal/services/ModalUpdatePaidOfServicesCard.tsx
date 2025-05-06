@@ -68,6 +68,11 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
   if (!servicesCardSoldOfCustomerData) return null
 
   const onFinish = (values: FieldsUpdatePaidOfServicesCard) => {
+    if (values.paid > oweMoney) {
+      message.error(`Số tiền thanh toán không được lớn hơn số tiền còn nợ (${oweMoney.toLocaleString('vi-VN')} VNĐ)`)
+      return
+    }
+
     const _id = servicesCardSoldOfCustomerData._id
     const out_standing =
       (servicesCardSoldOfCustomerData.price ?? 0) - (servicesCardSoldOfCustomerData.price_paid ?? 0) - values.paid
@@ -97,8 +102,11 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
   // Validator số tiền thanh toán
   const validatePaymentAmount = (_: any, value: number) => {
     if (value > oweMoney) {
-      message.error(`Số tiền thanh toán không được lớn hơn số tiền còn nợ (${oweMoney.toLocaleString('vi-VN')} VNĐ)`)
+      return Promise.reject(
+        new Error(`Số tiền thanh toán không được lớn hơn số tiền còn nợ (${oweMoney.toLocaleString('vi-VN')} VNĐ)`)
+      )
     }
+    return Promise.resolve()
   }
 
   return (
@@ -136,8 +144,8 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
                     label='Số tiền thanh toán'
                     rules={[
                       { required: true, message: 'Vui lòng nhập số tiền thanh toán!' },
-                      { validator: validatePaymentAmount }
-                      // { type: 'number', min: 1, message: ' Số tiền thanh toán phải lớn hơn 0!' }
+                      { validator: validatePaymentAmount },
+                      { type: 'number', min: 1, message: ' Số tiền thanh toán phải lớn hơn 0!' }
                     ]}
                     validateTrigger={['onChange', 'onBlur']}
                   >
@@ -147,7 +155,6 @@ const ModalUpdatePaidOfServicesCard = (props: ModalUpdatePaidOfServicesCardProps
                       formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value) => (value ? Number(value.replace(/\$\s?|(,*)/g, '')) : 0)}
                       step={100000}
-                      max={oweMoney}
                     />
                   </Form.Item>
                 </Col>

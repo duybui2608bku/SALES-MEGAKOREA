@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Modal, Card, Descriptions, Tag, Typography, Space, Flex } from 'antd'
 import { HistoryPaid } from 'src/Interfaces/services/services.interfaces'
 import { HiOutlinePrinter } from 'react-icons/hi2'
 import InvoicePrintPreview from './InvoicePrintPreview'
+import { orderBy } from 'lodash'
 
 // Interface mới dựa trên dữ liệu mẫu
 
@@ -17,13 +18,19 @@ const { Title, Text } = Typography
 
 const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCancel, data }) => {
   const [opentPrinter, setOpenPrinter] = useState(false)
+
+  // Sắp xếp dữ liệu theo ngày thanh toán
+  const sortedData = useMemo(() => {
+    return orderBy(data, [(item) => new Date(item.date).getTime()], ['desc'])
+  }, [data])
+
   if (!data || data.length === 0) return null // Trả về null thay vì undefined
 
   // Tính tổng số tiền thanh toán
-  const totalPaid = data.reduce((sum, item) => sum + item.paid, 0)
+  const totalPaid = sortedData.reduce((sum, item) => sum + item.paid, 0)
 
   // Lấy giá trị outstanding từ giao dịch mới nhất
-  const latestOutstanding = data.length > 0 ? data[data.length - 1].out_standing : 0
+  const latestOutstanding = sortedData.length > 0 ? sortedData[0].out_standing : 0
 
   return (
     <Modal
@@ -39,12 +46,12 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
           <Flex>
             <HiOutlinePrinter onClick={() => setOpenPrinter(true)} size={25} cursor='pointer' />
           </Flex>
-          <Flex>
+          <Flex gap={10}>
             <Text strong>Tổng thanh toán: </Text>
             <Text type='success' strong>
               {totalPaid.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
             </Text>
-            {' ---- '}
+            {' | '}
             <Text strong>Còn nợ: </Text>
             <Text type='danger' strong>
               {latestOutstanding.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
@@ -57,7 +64,7 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
       bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
     >
       <Space direction='vertical' style={{ width: '100%' }} size='middle'>
-        {data.map((history, index) => (
+        {sortedData.map((history, index) => (
           <Card
             key={history._id || index} // Ưu tiên sử dụng _id nếu có
             title={`Giao dịch: ${history.code}`}
@@ -95,19 +102,19 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
               <Descriptions.Item label='Người thực hiện'>
                 <Text style={{ color: '#595959' }}>{history.user_details?.name || 'Không xác định'}</Text>
               </Descriptions.Item>
-              <Descriptions.Item label='Còn nợ'>
+              <Descriptions.Item label='Còn nợ' span={2}>
                 <Text strong style={{ color: '#f5222d' }}>
                   {history.out_standing.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                 </Text>
               </Descriptions.Item>
-              <Descriptions.Item label='Ghi chú'>
+              <Descriptions.Item label='Ghi chú' span={2}>
                 <Text type='secondary'>{history.descriptions || 'Không có'}</Text>
               </Descriptions.Item>
             </Descriptions>
           </Card>
         ))}
       </Space>
-      <InvoicePrintPreview onCancel={() => setOpenPrinter(false)} data={data as any} open={opentPrinter} />
+      <InvoicePrintPreview onCancel={() => setOpenPrinter(false)} data={sortedData as any} open={opentPrinter} />
     </Modal>
   )
 }
