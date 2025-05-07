@@ -1,4 +1,4 @@
-import { Image, Col, Form, Input, message, Modal, Radio, Row, Select, Tooltip, Typography } from 'antd'
+import { Image, Col, Form, Input, message, Modal, Radio, Row, Select, Tooltip, Typography, InputNumber } from 'antd'
 import { CreateUserRequestBody, UpdateUserRequestBody, UserGeneralInterface } from 'src/Interfaces/user/user.interface'
 import {
   CheckCircleOutlined,
@@ -321,12 +321,12 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                   </Col>
                 </Row>
                 <Row gutter={16}>
-                  <Col xs={24} md={12}>
+                  <Col xs={24} md={8}>
                     <Form.Item style={{ width: '100%' }} name='avatar' label='Avatar'>
                       <UploadAvatar setImageUrl={setImageUrl} setIsPendingUploadAvatar={setIsPendingAvatar} />
                     </Form.Item>
                   </Col>
-                  <Col xs={24} md={12}>
+                  <Col xs={24} md={8}>
                     <Form.Item name='status' label='Trạng thái' initialValue={UserStatus.ACTIVE}>
                       <Radio.Group
                         options={[
@@ -350,6 +350,18 @@ const ModalCreateOrUpdateUser = (props: ModalCreateOrUpdateUserProps) => {
                         block
                         optionType='button'
                         buttonStyle='solid'
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item name='coefficient' label='Hệ số lương'>
+                      <InputNumber
+                        defaultValue={0}
+                        style={{ width: '100%' }}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        precision={2}
                       />
                     </Form.Item>
                   </Col>

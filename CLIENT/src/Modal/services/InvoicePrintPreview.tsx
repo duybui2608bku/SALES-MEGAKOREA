@@ -85,7 +85,68 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
 
   // Xử lý in ấn
   const handlePrint = () => {
-    window.print()
+    // Tạo một cửa sổ mới để in
+    const printWindow = window.open('', '_blank', 'width=800,height=600')
+
+    if (!printWindow) {
+      alert('Vui lòng cho phép cửa sổ pop-up để in hóa đơn')
+      return
+    }
+
+    // Sao chép CSS
+    let styles = ''
+    document.querySelectorAll('style, link[rel="stylesheet"]').forEach((node) => {
+      if (node.tagName === 'STYLE') {
+        styles += node.innerHTML
+      } else if (node.tagName === 'LINK' && node.getAttribute('rel') === 'stylesheet') {
+        styles += `@import url('${node.getAttribute('href')}');`
+      }
+    })
+
+    // Lấy nội dung HTML của hóa đơn
+    const invoiceContent = document.querySelector('.invoice-container')
+
+    // Viết nội dung vào cửa sổ mới
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Hóa đơn bán hàng</title>
+          <style>
+            ${styles}
+            body { 
+              background-color: white !important;
+              margin: 0;
+              padding: 20px;
+            }
+            .ant-table-thead > tr > th,
+            .ant-table-tbody > tr > td,
+            .ant-table-summary > tr > td {
+              padding: 6px !important;
+              font-size: 10px !important;
+              color: black !important;
+              background-color: white !important;
+              border-color: #000 !important;
+            }
+            .ant-modal, .ant-modal-mask { display: none !important; }
+            .print-button, .no-print { display: none !important; }
+          </style>
+        </head>
+        <body>
+          ${invoiceContent ? invoiceContent.innerHTML : 'Không tìm thấy nội dung hóa đơn'}
+        </body>
+      </html>
+    `)
+
+    printWindow.document.close()
+
+    // Đợi tài nguyên tải xong và in
+    setTimeout(() => {
+      printWindow.focus()
+      printWindow.print()
+      // Đóng cửa sổ sau khi in (tùy chọn)
+      // printWindow.close();
+    }, 1000)
   }
 
   // Cấu hình cột cho bảng thanh toán
@@ -126,10 +187,10 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
     <div
       className='invoice-container'
       style={{
-        maxWidth: '800px',
+        maxWidth: '600px',
         margin: '0 auto',
         padding: '20px',
-        maxHeight: '70vh',
+        maxHeight: '90vh',
         overflowY: 'auto'
       }}
     >
@@ -139,37 +200,35 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
           type='primary'
           icon={<PrinterOutlined />}
           onClick={handlePrint}
-          style={{ display: 'block' }}
+          style={{ display: 'block', fontSize: '12px' }}
           className='no-print'
-        >
-          In hóa đơn
-        </Button>
+        />
       </div>
 
       <Card bordered={false} className='invoice-card'>
         {/* Header */}
-        <Row align='middle' justify='space-between' style={{ marginBottom: '20px' }}>
-          <Col>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Row align='middle' justify='space-between' style={{ marginBottom: '20px', flexDirection: 'column' }}>
+          <Col style={{ marginBottom: '20px', marginTop: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               <div className='logo' style={{ marginRight: '15px' }}>
-                <Image src={logo} />
+                <Image style={{ width: '70px' }} src={logo} />
               </div>
               <div>
-                <Title level={4} style={{ margin: 0, color: '#F98C14' }}>
+                <Title level={5} style={{ margin: 0, color: '#F98C14', textAlign: 'center' }}>
                   {shopInfo.name}
                 </Title>
-                <Text style={{ fontSize: '12px', display: 'block' }}>{shopInfo.address}</Text>
-                <Text style={{ fontSize: '12px', display: 'block' }}>{shopInfo.phone}</Text>
+                <Text style={{ fontSize: '10px', display: 'block', textAlign: 'center' }}>{shopInfo.address}</Text>
+                <Text style={{ fontSize: '10px', display: 'block', textAlign: 'center' }}>{shopInfo.phone}</Text>
               </div>
             </div>
           </Col>
 
           <Col>
-            <Title level={3} style={{ margin: 0, textAlign: 'right' }}>
+            <Title level={4} style={{ margin: 0, textAlign: 'right' }}>
               HÓA ĐƠN BÁN HÀNG
             </Title>
-            <Text style={{ display: 'block', textAlign: 'right' }}>Mã ĐH: {invoiceNumber}</Text>
-            <Text style={{ display: 'block', textAlign: 'right' }}>
+            <Text style={{ display: 'block', textAlign: 'center', fontSize: '10px' }}>Mã ĐH: {invoiceNumber}</Text>
+            <Text style={{ display: 'block', textAlign: 'center', fontSize: '10px' }}>
               Ngày in: {dayjs().format('DD/MM/YYYY HH:mm:ss')}
             </Text>
           </Col>
@@ -182,16 +241,20 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
           <Row>
             <Col span={12}>
               <Space direction='vertical' size={2}>
-                <Text strong>Khách hàng:</Text>
-                <Text>
+                <Text style={{ fontSize: '11px' }} strong>
+                  Khách hàng:
+                </Text>
+                <Text style={{ fontSize: '11px' }}>
                   {customerInfo.name} ({customerInfo.phone})
                 </Text>
               </Space>
             </Col>
             <Col span={12}>
               <Space direction='vertical' size={2}>
-                <Text strong>NV thực hiện:</Text>
-                <Text>{latestPayment?.user_details.name || 'Admin'}</Text>
+                <Text style={{ fontSize: '11px' }} strong>
+                  NV thực hiện:
+                </Text>
+                <Text style={{ fontSize: '11px' }}>{latestPayment?.user_details.name || 'Admin'}</Text>
               </Space>
             </Col>
           </Row>
@@ -199,13 +262,14 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
 
         {/* Bảng thanh toán */}
         <Table
+          className='table-bill'
           dataSource={payments}
           columns={columns}
           pagination={false}
           rowKey='_id'
           bordered
           size='middle'
-          style={{ marginBottom: '20px' }}
+          style={{ marginBottom: '8px' }}
           summary={() => (
             <Table.Summary fixed>
               <Table.Summary.Row>
@@ -226,10 +290,14 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
             <div style={{ border: '1px solid #f0f0f0', padding: '10px' }}>
               <Row justify='space-between' style={{ marginBottom: '10px' }}>
                 <Col>
-                  <Text strong>Thành tiền:</Text>
+                  <Text style={{ fontSize: '12px' }} strong>
+                    Thành tiền:
+                  </Text>
                 </Col>
                 <Col>
-                  <Text>{formatCurrency(totalPaid)}</Text>
+                  <Text strong style={{ fontSize: '12px' }}>
+                    {formatCurrency(totalPaid)}
+                  </Text>
                 </Col>
               </Row>
 
@@ -237,19 +305,27 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
 
               <Row justify='space-between' style={{ marginBottom: '10px' }}>
                 <Col>
-                  <Text strong>Tổng thanh toán:</Text>
+                  <Text style={{ fontSize: '12px' }} strong>
+                    Tổng thanh toán:
+                  </Text>
                 </Col>
                 <Col>
-                  <Text strong>{formatCurrency(totalPaid)}</Text>
+                  <Text style={{ fontSize: '12px' }} strong>
+                    {formatCurrency(totalPaid)}
+                  </Text>
                 </Col>
               </Row>
 
               <Row justify='space-between'>
                 <Col>
-                  <Text strong>Đã thanh toán:</Text>
+                  <Text style={{ fontSize: '12px' }} strong>
+                    Đã thanh toán:
+                  </Text>
                 </Col>
                 <Col>
-                  <Text strong>{formatCurrency(totalPaid)}</Text>
+                  <Text style={{ fontSize: '12px' }} strong>
+                    {formatCurrency(totalPaid)}
+                  </Text>
                 </Col>
               </Row>
             </div>
@@ -259,17 +335,23 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
         {/* Chữ ký */}
         <Row justify='space-between' style={{ marginTop: '40px', textAlign: 'center' }}>
           <Col span={8}>
-            <Text strong>Chữ ký KH</Text>
+            <Text style={{ fontSize: '12px' }} strong>
+              Chữ ký KH
+            </Text>
           </Col>
           <Col span={8}>
-            <Text strong>Nhân viên</Text>
+            <Text style={{ fontSize: '12px' }} strong>
+              Nhân viên
+            </Text>
           </Col>
           <Col span={8}>
-            <Text strong>Tư vấn</Text>
+            <Text style={{ fontSize: '12px' }} strong>
+              Tư vấn
+            </Text>
             <div style={{ marginTop: '60px' }}>
-              <Text>Nguyễn Diễm</Text>
+              <Text style={{ fontSize: '12px' }}>Nguyễn Diễm</Text>
               <br />
-              <Text>Trịnh KTCN</Text>
+              <Text style={{ fontSize: '12px' }}>Trịnh KTCN</Text>
             </div>
           </Col>
         </Row>
@@ -282,13 +364,61 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
           }
           
           body {
-            background-color: white;
+            background-color: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           
           .invoice-card {
-            box-shadow: none;
-            border: none;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
           }
+          
+          .invoice-container {
+            padding: 0 !important;
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          
+          .ant-table-wrapper, .ant-table, .ant-table-container, 
+          .ant-table-content, .ant-table-body {
+            display: block !important;
+            visibility: visible !important;
+          }
+          
+          .ant-table-thead > tr > th,
+          .ant-table-tbody > tr > td,
+          .ant-table-summary > tr > td {
+            padding: 6px !important;
+            font-size: 10px !important;
+            color: black !important;
+            background-color: white !important;
+            border-color: #000 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          * {
+            color-adjust: exact !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          img, .ant-image {
+            display: block !important;
+            visibility: visible !important;
+          }
+        }
+
+        /* CSS cho bảng */
+        .table-bill .ant-table-thead > tr > th,
+        .table-bill .ant-table-tbody > tr > td,
+        .table-bill .ant-table-summary > tr > td {
+          font-size: 11px !important;
+          padding: 4px 8px !important;
         }
       `}</style>
     </div>
@@ -301,7 +431,7 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
         <Modal
           open={open}
           onCancel={onCancel}
-          width={850}
+          width={600}
           footer={null}
           bodyStyle={{ padding: 0 }}
           centered

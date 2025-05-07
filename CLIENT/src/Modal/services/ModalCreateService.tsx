@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
-import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Switch, Select } from 'antd'
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Switch, Select, Card, Space, Button } from 'antd'
 import { HttpStatusCode } from 'axios'
-import { useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import { AppContext } from 'src/Context/AppContext'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
@@ -16,8 +16,9 @@ import {
 } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
-import { TypeCommision } from 'src/Constants/enum'
+import { RoleUser, TypeCommision } from 'src/Constants/enum'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
+import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
 
 interface ModalCreateServiceProps {
   visible: boolean
@@ -310,7 +311,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                 </Form.Item>
               </Col>
             </Row>
-            {/* <Row gutter={16}>
+            <Row gutter={16}>
               <Col span={24}>
                 <Form.List name='step_services'>
                   {(fields, { add, remove }) => (
@@ -323,7 +324,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                           size='small'
                           extra={
                             <Space>
-                              <MinusCircleOutlined onClick={() => remove(name)} />
+                              <Button onClick={() => remove(name)} />
                             </Space>
                           }
                           bordered
@@ -395,7 +396,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                         </Card>
                       ))}
                       <Form.Item>
-                        <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
+                        <Button type='dashed' onClick={() => add()} block>
                           Thêm bước dịch vụ
                         </Button>
                       </Form.Item>
@@ -403,7 +404,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   )}
                 </Form.List>
               </Col>
-            </Row> */}
+            </Row>
           </Form>
         </Col>
       </Row>

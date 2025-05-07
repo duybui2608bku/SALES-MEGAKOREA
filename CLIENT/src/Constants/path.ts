@@ -32,7 +32,9 @@ const pathRoutersService = {
 
 const pathRoutersUser = {
   userGeneral: '/user-general',
-  userInformation: '/user-information'
+  userInformation: '/user-information',
+  userCommisionTechnican: '/user-commision-technican',
+  userCommisionSale: '/user-commision-sale'
 }
 
 const pathApiProduct = {
@@ -97,7 +99,9 @@ const pathApiCustomer = {
 }
 
 const pathCommision = {
-  createCommisionTechnician: '/commision/technican/create'
+  createCommisionTechnician: '/commision/technican/create',
+  getCommisionTechnican: '/commision/technican/report',
+  getCommisionSale: '/commision/seller/report'
 }
 
 export {
