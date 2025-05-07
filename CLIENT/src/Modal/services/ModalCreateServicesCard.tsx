@@ -95,10 +95,47 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
       message.error('Không thể tạo thẻ dịch vụ: User ID không hợp lệ!')
       return
     }
-    const user_id = profile._id
-    const branch = getBranchList(values.branch || [])
-    const serviceCard = { ...values, user_id, branch }
-    createServiceCard(serviceCard)
+
+    // Check có thẻ dịch vụ không
+    if (values.services_of_card === undefined || values.services_of_card.length === 0) {
+      message.error('Không thể tạo thẻ dịch vụ: Không tồn tại dịch vụ trong thẻ dịch vụ!')
+      return
+    }
+
+    // Check discount vs price
+    const hasInvalidDiscount = values.services_of_card.some((sof) => {
+      if (sof.discount > sof.price * sof.quantity) {
+        message.error('Giảm giá phải nhỏ hơn hoặc bằng giá!')
+        return true
+      }
+      return false
+    })
+
+    // Check trùng dịch vụ
+    const serviceIds = new Set()
+    const hasInvalidServiceCardIds = values.services_of_card.some((sof) => {
+      const currentId = sof.services_id
+      if (serviceIds.has(currentId)) {
+        message.error('Không đuộc chọn các dịch vụ trùng lặp!')
+        return true
+      }
+
+      serviceIds.add(currentId)
+      return false
+    })
+
+    if (hasInvalidDiscount || hasInvalidServiceCardIds) {
+      return
+    }
+
+    try {
+      const user_id = profile._id
+      const branch = getBranchList(values.branch || [])
+      const serviceCard = { ...values, user_id, branch }
+      createServiceCard(serviceCard)
+    } catch {
+      message.error('Lỗi khi tạo thẻ dịch vụ!')
+    }
   }
 
   const { mutate: updateServiceCard, isPending: isUpdating } = useMutation({
@@ -130,6 +167,7 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
       message.error('Không thể cập nhật dịch vụ: Service ID không hợp lệ!')
       return
     }
+
     const branch = getBranchList(values.branch || [])
     console.log('values', values.branch)
     updateServiceCard({ ...values, _id: serviceCardToEdit._id, branch: branch })

@@ -83,7 +83,11 @@ const MainLayout = ({ children }: Props) => {
       key: 'users',
       label: 'Nhân viên',
       icon: <FcAssistant size={20} />,
-      children: [{ key: '5', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) }]
+      children: [
+        { key: '5', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) },
+        { key: '6', label: 'Hoa hồng K.Thuật viên', onClick: () => navigate(pathRoutersUser.userCommisionTechnican) },
+        { key: '7', label: 'Hoa hồng N.viên Sale', onClick: () => navigate(pathRoutersUser.userCommisionSale) }
+      ]
     },
     {
       type: 'divider'

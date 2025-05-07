@@ -35,7 +35,7 @@ import { GiReceiveMoney, GiTakeMyMoney, GiPayMoney } from 'react-icons/gi'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import { TbMoneybag } from 'react-icons/tb'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
-import { GetServicesCardSoldOfCustomerSearchType, RefundEnum } from 'src/Constants/enum'
+import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
 import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
 import { RiRefund2Fill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import DatePickerComponent from 'src/Components/DatePicker'
@@ -80,7 +80,7 @@ const SoldServicesCard = () => {
   const [datePickerQuery, setDatePickerQuery] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [openPopOver, setOpenPopOver] = useState(false)
-  const [openModalRefundMoney, setOpenModalRefundMoney] = useState(RefundEnum.NONE)
+  // const [openModalRefundMoney, setOpenModalRefundMoney] = useState(RefundEnum.NONE)
 
   // Hàm check searchQuery là Number hay là String
   const checkValueSearchQuery = (value: string) => {
@@ -176,9 +176,9 @@ const SoldServicesCard = () => {
     // window.location.reload()
   }
 
-  const handleRefundMoney = (refundType: RefundEnum) => {
-    setOpenModalRefundMoney(refundType)
-  }
+  // const handleRefundMoney = (refundType: RefundEnum) => {
+  //   setOpenModalRefundMoney(refundType)
+  // }
 
   const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
     {
@@ -256,7 +256,7 @@ const SoldServicesCard = () => {
       title: 'Dịch vụ',
       dataIndex: 'cards',
       key: 'cards',
-      width: 150,
+      width: 180,
       render: (_, record) => {
         const isExpanded = expandedServicesCard[record._id] || false
         const treeFullData = record.cards.map((card) => ({
@@ -442,21 +442,21 @@ const SoldServicesCard = () => {
                 <Flex style={{ flexDirection: 'column', gap: '10px' }}>
                   <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <Button
-                      onClick={() => handleRefundMoney(RefundEnum.FULL)}
+                      // onClick={() => handleRefundMoney(RefundEnum.FULL)}
                       icon={<GiTakeMyMoney style={{ color: '#FF9900' }} />}
                     />{' '}
                     Hoàn tiền 100%
                   </Row>
                   <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <Button
-                      onClick={() => handleRefundMoney(RefundEnum.PARTIAL_FULL_TREATMENT)}
+                      // onClick={() => handleRefundMoney(RefundEnum.PARTIAL_FULL_TREATMENT)}
                       icon={<GiPayMoney style={{ color: '#FF9900' }} />}
                     />{' '}
                     Hoàn tiền theo số buổi
                   </Row>
                   <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <Button
-                      onClick={() => handleRefundMoney(RefundEnum.PARTIAL_HALF_REATMENT)}
+                      // onClick={() => handleRefundMoney(RefundEnum.PARTIAL_HALF_REATMENT)}
                       icon={<RiMoneyDollarCircleLine style={{ color: '#FF9900' }} />}
                     />{' '}
                     Hoàn tiền theo số tiền
@@ -514,7 +514,7 @@ const SoldServicesCard = () => {
           <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch />
+          <OptionsBranch mode='multiple' />
         </Col>
       </Row>
 
@@ -524,7 +524,7 @@ const SoldServicesCard = () => {
           <Table
             sticky
             style={{ width: '100%' }}
-            scroll={{ x: '1800px' }}
+            scroll={{ x: '2000px' }}
             loading={isLoading}
             dataSource={servicesCardSoldOfCustomer}
             bordered
