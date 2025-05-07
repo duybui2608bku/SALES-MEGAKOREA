@@ -237,7 +237,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       // Reset ref
       updatingServiceRef.current = null
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, _, context) => {
       message.error(`Lỗi khi sử dụng dịch vụ: ${error.message}`)
 
       // Khôi phục dữ liệu cache nếu có lỗi
@@ -283,7 +283,11 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       okText={'Đóng'}
       footer={null}
       style={{ padding: 0 }}
-      width={Math.min(listServicesCard.length * 260 + 48, 1100)}
+      width={
+        listServicesCard.length === 1
+          ? Math.min(listServicesCard.length * 260 + 150, 1100)
+          : Math.min(listServicesCard.length * 260 + 48, 1100)
+      }
     >
       <Title className='center-div' level={2} style={{ textAlign: 'center', marginBottom: 32 }}>
         Thẻ dịch vụ đã bán

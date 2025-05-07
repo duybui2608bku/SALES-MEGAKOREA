@@ -1,5 +1,5 @@
 import { Menu, MenuProps, Layout, Button } from 'antd'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
@@ -8,7 +8,7 @@ import { FcEngineering, FcAssistant, FcKindle, FcButtingIn } from 'react-icons/f
 import { IoMdLogOut } from 'react-icons/io'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { pathRoutersProduct, pathRoutersService, pathRoutersUser, pathRoutesCustomers } from 'src/Constants/path'
 import ModalLogout from 'src/Modal/ModalLogout'
 
@@ -20,6 +20,58 @@ const MainLayout = ({ children }: Props) => {
   const [collapsed, setCollapsed] = useState(false)
   const [openModalLogout, setOpenModalLogout] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const [selectedKey, setSelectedKey] = useState<string[]>(['customers'])
+  const [openKeys, setOpenKeys] = useState<string[]>([])
+
+  useEffect(() => {
+    // Xác định khóa menu và menu con mở dựa trên đường dẫn hiện tại
+    const path = location.pathname
+    let newSelectedKey: string[] = ['customers']
+    let newOpenKeys: string[] = []
+
+    // Map đường dẫn tới khóa menu tương ứng
+    if (path.includes(pathRoutesCustomers.customers)) {
+      newSelectedKey = ['customers']
+    } else if (path.includes(pathRoutersService.cardService)) {
+      newSelectedKey = ['card-service']
+      newOpenKeys = ['card-service']
+    } else if (path.includes(pathRoutersService.sellCardService)) {
+      newSelectedKey = ['sell-card-service']
+      newOpenKeys = ['card-service']
+    } else if (path.includes(pathRoutersService.soldCardService)) {
+      newSelectedKey = ['sold-card-service']
+      newOpenKeys = ['card-service']
+    } else if (path.includes(pathRoutersProduct.productGeneral)) {
+      newSelectedKey = ['product-general']
+      newOpenKeys = ['setting']
+    } else if (path.includes(pathRoutersService.service)) {
+      newSelectedKey = ['service']
+      newOpenKeys = ['setting']
+    } else if (path.includes(pathRoutersService.categoryService)) {
+      newSelectedKey = ['category-service']
+      newOpenKeys = ['setting']
+    } else if (path.includes(pathRoutersService.stepService)) {
+      newSelectedKey = ['step-service']
+      newOpenKeys = ['setting']
+    } else if (path.includes(pathRoutersUser.userGeneral)) {
+      newSelectedKey = ['user-general']
+      newOpenKeys = ['users']
+    } else if (path.includes(pathRoutersUser.userCommisionTechnican)) {
+      newSelectedKey = ['user-commision-technican']
+      newOpenKeys = ['users']
+    } else if (path.includes(pathRoutersUser.userCommisionSale)) {
+      newSelectedKey = ['user-commision-sale']
+      newOpenKeys = ['users']
+    }
+
+    setSelectedKey(newSelectedKey)
+    setOpenKeys(newOpenKeys)
+  }, [location])
+
+  const onOpenChange = (keys: string[]) => {
+    setOpenKeys(keys)
+  }
 
   type MenuItem = Required<MenuProps>['items'][number]
 
@@ -64,7 +116,11 @@ const MainLayout = ({ children }: Props) => {
           label: 'Sản phẩm',
           type: 'group',
           children: [
-            { key: '1', label: 'Vật tư chung', onClick: () => navigate(pathRoutersProduct.productGeneral) },
+            {
+              key: 'product-general',
+              label: 'Vật tư chung',
+              onClick: () => navigate(pathRoutersProduct.productGeneral)
+            },
             { key: '2', label: 'Vật tư tiêu hao' }
           ]
         },
@@ -73,8 +129,17 @@ const MainLayout = ({ children }: Props) => {
           label: 'Dịch vụ',
           type: 'group',
           children: [
-            { key: '3', label: 'Dịch Vụ', onClick: () => navigate(pathRoutersService.service) },
-            { key: '4', label: 'Danh Mục Dịch Vụ', onClick: () => navigate(pathRoutersService.categoryService) }
+            { key: 'service', label: 'Dịch Vụ', onClick: () => navigate(pathRoutersService.service) },
+            {
+              key: 'category-service',
+              label: 'Danh Mục Dịch Vụ',
+              onClick: () => navigate(pathRoutersService.categoryService)
+            },
+            {
+              key: 'step-service',
+              label: 'Bước Dịch Vụ',
+              onClick: () => navigate(pathRoutersService.stepService)
+            }
           ]
         }
       ]
@@ -84,9 +149,17 @@ const MainLayout = ({ children }: Props) => {
       label: 'Nhân viên',
       icon: <FcAssistant size={20} />,
       children: [
-        { key: '5', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) },
-        { key: '6', label: 'Hoa hồng K.Thuật viên', onClick: () => navigate(pathRoutersUser.userCommisionTechnican) },
-        { key: '7', label: 'Hoa hồng N.viên Sale', onClick: () => navigate(pathRoutersUser.userCommisionSale) }
+        { key: 'user-general', label: 'Danh sách nhân viên', onClick: () => navigate(pathRoutersUser.userGeneral) },
+        {
+          key: 'user-commision-technican',
+          label: 'Hoa hồng K.Thuật viên',
+          onClick: () => navigate(pathRoutersUser.userCommisionTechnican)
+        },
+        {
+          key: 'user-commision-sale',
+          label: 'Hoa hồng N.viên Sale',
+          onClick: () => navigate(pathRoutersUser.userCommisionSale)
+        }
       ]
     },
     {
@@ -131,7 +204,15 @@ const MainLayout = ({ children }: Props) => {
               }}
             />
           </div>
-          <Menu style={{ height: '100vh' }} theme='light' mode='inline' defaultSelectedKeys={['1']} items={items} />
+          <Menu
+            style={{ height: '100vh' }}
+            theme='light'
+            mode='inline'
+            selectedKeys={selectedKey}
+            openKeys={openKeys}
+            onOpenChange={onOpenChange}
+            items={items}
+          />
         </Sider>
         <Layout>
           <Header className='main-layout-container__header'>

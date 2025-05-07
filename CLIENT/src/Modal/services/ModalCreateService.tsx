@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Switch, Select, Card, Space, Button } from 'antd'
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Card, Space, Button } from 'antd'
 import { HttpStatusCode } from 'axios'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
@@ -16,9 +16,10 @@ import {
 } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
-import { RoleUser, TypeCommision } from 'src/Constants/enum'
+import { TypeCommision } from 'src/Constants/enum'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
-import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
+import SelectSearchStepServices from 'src/Components/SelectSearchStepServices'
+import { MinusCircleOutlined } from '@ant-design/icons'
 
 interface ModalCreateServiceProps {
   visible: boolean
@@ -207,7 +208,6 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     setBranchId([])
     form.resetFields()
   }
-
   return (
     <Modal
       onCancel={handleCancelModal}
@@ -218,8 +218,11 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
       cancelText='Hủy'
       open={visible}
       width={700}
+      style={{
+        overflowY: 'scroll'
+      }}
     >
-      <Row style={{ height: 'auto', overflowY: 'auto' }}>
+      <Row style={{ height: '500px', overflowY: 'scroll' }}>
         <Col span={24}>
           <Typography.Title className='center-div' level={4}>
             {serviceToEdit ? 'Chỉnh sửa dịch vụ' : 'Tạo Dịch Vụ Mới'}
@@ -297,7 +300,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   initialValue={TypeCommision.FIXED}
                   rules={[{ required: true, message: 'Vui lòng chọn loại hoa hồng!' }]}
                 >
-                  <Select>
+                  <Select disabled>
                     <Select.Option value={TypeCommision.FIXED}>Cố định</Select.Option>
                     <Select.Option value={TypeCommision.PRECENT}>Phần trăm</Select.Option>
                   </Select>
@@ -322,11 +325,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                           style={{ marginBottom: 16 }}
                           title={`Bước ${name + 1}` || 'Bước 1'}
                           size='small'
-                          extra={
-                            <Space>
-                              <Button onClick={() => remove(name)} />
-                            </Space>
-                          }
+                          extra={<MinusCircleOutlined onClick={() => remove(name)} />}
                           bordered
                           className='card-step'
                           hoverable
@@ -336,57 +335,31 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                             <Col span={12}>
                               <Form.Item
                                 {...restField}
-                                name={[name, 'descriptions']}
+                                name={[name, 'step_services']}
                                 label='Mô tả bước'
-                                rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
+                                rules={[{ required: true, message: 'Vui lòng chọn bước dịch vụ!' }]}
                               >
-                                <Input placeholder='Nhập mô tả bước' />
-                              </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                              <Form.Item {...restField} name={[name, 'id_employee']} label='Nhân viên'>
-                                <OptionsGetUsersWithRole
-                                  role={RoleUser.TECHNICIAN}
-                                  initialValue={serviceToEdit?.step_services?.[name]?.id_employee}
-                                  placeholder='Chọn nhân viên'
-                                  search
-                                  onchange={(value) =>
-                                    form.setFieldsValue({
-                                      step_services: {
-                                        [name]: {
-                                          ...form.getFieldValue('step_services')?.[name],
-                                          id_employee: value
+                                <SelectSearchStepServices
+                                  onHandleChange={(value) => {
+                                    if (value) {
+                                      // Cập nhật giá trị hoa hồng trực tiếp trong form
+                                      form.setFields([
+                                        {
+                                          name: ['step_services', name, 'commision'],
+                                          value: value.commision
                                         }
-                                      }
-                                    })
-                                  }
+                                      ])
+                                    }
+                                  }}
                                 />
                               </Form.Item>
                             </Col>
                             <Col span={12}>
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'type_step_price']}
-                                label='Loại giá'
-                                rules={[{ required: true, message: 'Vui lòng chọn loại giá!' }]}
-                                initialValue={TypeCommision.FIXED}
-                              >
-                                <Select>
-                                  <Select.Option value={TypeCommision.FIXED}>Cố định</Select.Option>
-                                  <Select.Option value={TypeCommision.PRECENT}>Phần trăm</Select.Option>
-                                </Select>
-                              </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'commision']}
-                                label='Giá'
-                                rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}
-                              >
+                              <Form.Item {...restField} name={[name, 'commision']} label='Giá'>
                                 <InputNumber
+                                  disabled
                                   suffix='đ'
-                                  style={{ width: '100%' }}
+                                  style={{ width: '100%', color: '#ff4d4f' }}
                                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                   parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                                 />

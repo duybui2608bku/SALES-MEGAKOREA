@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { RoleUser } from 'src/Constants/enum'
+import { RoleUser, TypeCommision } from 'src/Constants/enum'
 
 export const generateCode = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -12,6 +12,17 @@ export const encodeURI = (uri: string) => {
 }
 
 export const comparePrice = (a: number, b: number) => a - b
+
+export const getTypeCommision = (type: TypeCommision) => {
+  switch (type) {
+    case TypeCommision.FIXED:
+      return 'Cố định'
+    case TypeCommision.PRECENT:
+      return 'Phần trăm'
+    default:
+      return 'Cố định'
+  }
+}
 
 export const getRoleUser = (role: RoleUser) => {
   switch (role) {

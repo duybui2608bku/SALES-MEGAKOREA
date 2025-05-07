@@ -311,6 +311,13 @@ export interface UpdateUsedServicesData {
   descriptions?: string
 }
 
+export interface GetStepService {
+  services_category_id?: string
+  name: string
+  type: TypeCommision
+  commission: number
+}
+
 // Sold Services Card
 export interface CreateSoldServicesCardRequestBody {
   services_card_id: string[]

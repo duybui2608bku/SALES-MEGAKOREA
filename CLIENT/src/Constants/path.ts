@@ -27,7 +27,8 @@ const pathRoutersService = {
   service: '/service',
   cardService: '/card-service',
   sellCardService: '/card-service/sell',
-  soldCardService: '/card-service/sold'
+  soldCardService: '/card-service/sold',
+  stepService: '/step-service'
 }
 
 const pathRoutersUser = {

@@ -184,7 +184,7 @@ const Customers = () => {
       dataIndex: 'name',
       key: 'name',
       fixed: isMobile ? undefined : 'left',
-      width: 150,
+      width: 200,
       render: (name, record) => {
         return (
           <Flex align='center'>

@@ -129,7 +129,7 @@ const Service = () => {
       title: 'Danh mục',
       dataIndex: 'service_group',
       key: 'service_group',
-      width: 130,
+      width: 180,
       render: (service_group: ServicesCategoryType) => {
         return (
           <Typography.Text
@@ -187,6 +187,7 @@ const Service = () => {
       dataIndex: 'branch',
       key: 'branch',
       width: 140,
+      align: 'center',
       render: (branch: BranchType[]) => (
         <Paragraph
           ellipsis={{

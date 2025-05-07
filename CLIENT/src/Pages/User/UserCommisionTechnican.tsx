@@ -146,6 +146,9 @@ const UserCommisionTechnican = () => {
       key: 'totalPercentCommission',
       align: 'center',
       width: 200,
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
+        a.totalPercentCommission - b.totalPercentCommission,
+      sortDirections: ['descend', 'ascend'],
       render: (totalPercentCommission) => <Text strong>{totalPercentCommission.toLocaleString('vi-VN')} VNĐ</Text>
     },
     {
@@ -153,7 +156,10 @@ const UserCommisionTechnican = () => {
       dataIndex: 'totalFixedCommission',
       key: 'totalFixedCommission',
       align: 'center',
-      width: 220,
+      width: 230,
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
+        a.totalFixedCommission - b.totalFixedCommission,
+      sortDirections: ['descend', 'ascend'],
       render: (totalFixedCommission) => <Text strong>{totalFixedCommission.toLocaleString('vi-VN')} VNĐ</Text>
     },
     {
@@ -162,14 +168,19 @@ const UserCommisionTechnican = () => {
       key: 'totalCommission',
       align: 'center',
       width: 200,
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
+        a.totalCommission - b.totalCommission,
+      sortDirections: ['descend', 'ascend'],
       render: (totalCommission) => <Text strong>{totalCommission.toLocaleString('vi-VN')} VNĐ</Text>
     },
     {
       title: 'Số lượng dịch vụ đã bán',
       dataIndex: 'count',
       key: 'count',
-      width: 230,
+      width: 250,
       align: 'center',
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) => a.count - b.count,
+      sortDirections: ['descend', 'ascend'],
       render: (count) => <span>{count}</span>
     }
   ]
@@ -279,7 +290,7 @@ const UserCommisionTechnican = () => {
             loading={isLoading}
             sticky
             style={{ width: '100%' }}
-            scroll={{ x: '1200px' }}
+            scroll={{ x: '1400px' }}
             bordered
             columns={columns}
             dataSource={commisionTechnican}
