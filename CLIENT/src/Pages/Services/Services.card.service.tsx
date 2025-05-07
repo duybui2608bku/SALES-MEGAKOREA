@@ -370,7 +370,8 @@ const ServicesCard = () => {
             pagination={{
               pageSize: LIMIT,
               showSizeChanger: false,
-              current: PAGE
+              current: PAGE,
+              position: ['bottomCenter']
             }}
           />
         </Col>

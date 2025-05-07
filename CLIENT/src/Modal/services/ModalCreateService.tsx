@@ -1,5 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
-import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Button, Card, Space } from 'antd'
+
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Card, Space, Button } from 'antd'
+
 import { HttpStatusCode } from 'axios'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
@@ -19,8 +21,6 @@ import { generateCode } from 'src/Utils/util.utils'
 import { RoleUser, TypeCommision } from 'src/Constants/enum'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
-
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 
 interface ModalCreateServiceProps {
   visible: boolean
@@ -327,7 +327,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                           size='small'
                           extra={
                             <Space>
-                              <MinusCircleOutlined onClick={() => remove(name)} />
+                              <Button onClick={() => remove(name)} />
                             </Space>
                           }
                           className='card-step'
@@ -398,7 +398,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                         </Card>
                       ))}
                       <Form.Item>
-                        <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
+                        <Button type='dashed' onClick={() => add()} block>
                           Thêm bước dịch vụ
                         </Button>
                       </Form.Item>

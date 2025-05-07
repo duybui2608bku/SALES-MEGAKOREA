@@ -185,12 +185,7 @@ iframe {
   inset: 0;
   padding: 2px;
   border-radius: 16px;
-  background: linear-gradient(
-    90deg,
-    #0d9488, 
-    #06b5d477, 
-    #0d9488 
-  );
+  background: linear-gradient(90deg, #0d9488, #06b5d477, #0d9488);
   background-size: 200% 100%;
   background-position: 0% 0%;
   animation: border-pulse 2s ease infinite;
@@ -211,4 +206,21 @@ iframe {
   100% {
     background-position: 200% 0%;
   }
+}
+
+.modal-logout .ant-modal-footer {
+  text-align: center !important;
+}
+
+.optionPayment {
+  transition: all 0.3s ease-in-out !important;
+}
+
+.optionPayment:hover {
+  transform: translateX(-4px) !important;
+  color: #1677ff !important;
+}
+
+.table-bill .ant-table-container {
+  font-size: 11px !important;
 }

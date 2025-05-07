@@ -158,32 +158,32 @@ export const CreateServicesValidator = validate(
         },
         optional: { options: { nullable: true, checkFalsy: true } }
       },
-      step_services: {
-        isArray: {
-          errorMessage: servicesMessages.STEP_PRICE_MUST_BE_ARRAY
-        },
-        optional: true,
-        custom: {
-          options: (value: StepServicesType[]) => {
-            if (!value) return true
-            value.forEach((step) => {
-              if (step.commision !== undefined && typeof step.commision !== 'number') {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.STEP_PRICE_MUST_NUMBER,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-              if (step.id_employee && !ObjectId.isValid(step.id_employee)) {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.INVALID_ID,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-            })
-            return true
-          }
-        }
-      },
+      // step_services: {
+      //   isArray: {
+      //     errorMessage: servicesMessages.STEP_PRICE_MUST_BE_ARRAY
+      //   },
+      //   optional: true,
+      //   custom: {
+      //     options: (value: StepServicesType[]) => {
+      //       if (!value) return true
+      //       value.forEach((step) => {
+      //         if (step.commision !== undefined && typeof step.commision !== 'number') {
+      //           throw new ErrorWithStatusCode({
+      //             message: servicesMessages.STEP_PRICE_MUST_NUMBER,
+      //             statusCode: HttpStatusCode.BadRequest
+      //           })
+      //         }
+      //         if (step.id_employee && !ObjectId.isValid(step.id_employee)) {
+      //           throw new ErrorWithStatusCode({
+      //             message: servicesMessages.INVALID_ID,
+      //             statusCode: HttpStatusCode.BadRequest
+      //           })
+      //         }
+      //       })
+      //       return true
+      //     }
+      //   }
+      // },
       employee: {
         isArray: {
           errorMessage: servicesMessages.EMPLOYEE_MUST_BE_ARRAY
@@ -325,32 +325,32 @@ export const updateServicesValidator = validate(
         },
         optional: { options: { nullable: true, checkFalsy: true } }
       },
-      step_services: {
-        isArray: {
-          errorMessage: servicesMessages.STEP_PRICE_MUST_BE_ARRAY
-        },
-        optional: true,
-        custom: {
-          options: (value: StepServicesType[]) => {
-            if (!value) return true
-            value.forEach((step) => {
-              if (step.commision !== undefined && typeof step.commision !== 'number') {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.STEP_PRICE_MUST_NUMBER,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-              if (step.id_employee && !ObjectId.isValid(step.id_employee)) {
-                throw new ErrorWithStatusCode({
-                  message: servicesMessages.INVALID_ID,
-                  statusCode: HttpStatusCode.BadRequest
-                })
-              }
-            })
-            return true
-          }
-        }
-      },
+      // step_services: {
+      //   isArray: {
+      //     errorMessage: servicesMessages.STEP_PRICE_MUST_BE_ARRAY
+      //   },
+      //   optional: true,
+      //   custom: {
+      //     options: (value: StepServicesType[]) => {
+      //       if (!value) return true
+      //       value.forEach((step) => {
+      //         if (step.commision !== undefined && typeof step.commision !== 'number') {
+      //           throw new ErrorWithStatusCode({
+      //             message: servicesMessages.STEP_PRICE_MUST_NUMBER,
+      //             statusCode: HttpStatusCode.BadRequest
+      //           })
+      //         }
+      //         if (step.id_employee && !ObjectId.isValid(step.id_employee)) {
+      //           throw new ErrorWithStatusCode({
+      //             message: servicesMessages.INVALID_ID,
+      //             statusCode: HttpStatusCode.BadRequest
+      //           })
+      //         }
+      //       })
+      //       return true
+      //     }
+      //   }
+      // },
       employee: {
         isArray: {
           errorMessage: servicesMessages.EMPLOYEE_MUST_BE_ARRAY

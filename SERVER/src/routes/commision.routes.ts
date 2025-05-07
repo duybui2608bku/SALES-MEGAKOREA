@@ -49,14 +49,14 @@ CommisionRouter.get(
 CommisionRouter.post(
   '/technican/report',
   accessTokenValidator,
-  GetCommisionOfTechnicanByUserIdValidator,
+  // GetCommisionOfTechnicanByUserIdValidator,
   wrapRequestHandler(GetAllCommisionOfTechnicanReport)
 )
 
 CommisionRouter.post(
   '/seller/report',
   accessTokenValidator,
-  GetCommisionOfSellerValidator,
+  // GetCommisionOfSellerValidator,
   wrapRequestHandler(GetAllCommisionOfSellerReport)
 )
 

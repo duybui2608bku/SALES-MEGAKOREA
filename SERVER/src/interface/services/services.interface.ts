@@ -30,14 +30,8 @@ export interface ProductOfServices {
 
 export interface StepServicesType {
   commision: number
-  commision_other_month?: {
-    date: Date
-    commision: number
-  }[]
-  id_employee: string | ObjectId
-  type_step_price: TypeCommision
-  descriptions?: string
-  type_step?: any
+  name: string
+  type: TypeCommision
   products: ProductOfServices[]
 }
 

@@ -18,7 +18,7 @@ import { queryClient } from 'src/main'
 import { HttpStatusCode } from 'axios'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import commisionTechnicanApi from 'src/Service/commision/commision.technican'
+import commisionTechnicanApi from 'src/Service/commision/commision.technican.api'
 import { AppContext } from 'src/Context/AppContext'
 
 import { servicesApi } from 'src/Service/services/services.api'

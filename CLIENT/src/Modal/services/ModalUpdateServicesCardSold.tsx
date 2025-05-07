@@ -159,18 +159,32 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
     }
   })
 
+  // Create Sold Service Card
+  const { mutateAsync: createSoldServicesCard, isPending: isCreatingSoldServicesCard } = useMutation({
+    mutationFn: servicesApi.createSoldServicesCard,
+    onSuccess: () => {
+      message.success('Tạo thẻ dịch vụ đã bán thành công!')
+    },
+    onError: (error: Error) => {
+      message.error(`Lỗi khi tạo thẻ dịch vụ đã bán: ${error.message}`)
+    }
+  })
+
   // Hàm xử lí việc UPDATE Service card sold of customer
   // "Hàm này dùng cho việc UPDATE các thẻ Service card được chọn (Selected)"
-  const handleUpdateServicesCardSoldOfCustomer = () => {
+  const handleUpdateServicesCardSoldOfCustomer = async () => {
     try {
       if (!servicesCardSoldOfCustomerData?._id) {
         message.error('Dữ liệu không hợp lệ: thiếu ID của thẻ dịch vụ.')
         return
       }
 
+      const responseSoldServicesCard = await createSoldServicesCard({ services_card_id: serviceCardSelected })
+      const cardServicesSoldId = responseSoldServicesCard.data.result
+
       const updateServicesCardSoldOfCustomerData = {
         _id: servicesCardSoldOfCustomerData._id,
-        card_services_sold_id: serviceCardSelected
+        card_services_sold_id: cardServicesSoldId
       }
 
       updateServicesCardSoldOfCustomer(updateServicesCardSoldOfCustomerData)
@@ -271,16 +285,19 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
 
   // Hàm xử lí việc UPDATE Service Card Sold Of Customer
   // "Hàm này dùng cho việc UPDATE MỘT thẻ được tạo riêng và UPDATE vào Service Card Sold Of Customer"
-  const handleUpdateServiceCardSoldOfCutomerCreated = () => {
+  const handleUpdateServiceCardSoldOfCutomerCreated = async () => {
     try {
       if (!servicesCardSoldOfCustomerData?._id || !newServiceCardData?._id) {
         message.error('Dữ liệu không hợp lệ: thiếu ID của thẻ!')
         return
       }
 
+      const responseSoldServicesCard = await createSoldServicesCard({ services_card_id: [newServiceCardData._id] })
+      const cardServicesSoldId = responseSoldServicesCard.data.result
+
       const updateServicesCardSoldOfCustomerCreatedData = {
         _id: servicesCardSoldOfCustomerData._id,
-        card_services_sold_id: [newServiceCardData?._id]
+        card_services_sold_id: cardServicesSoldId
       }
       updateServicesCardSoldOfCustomer(updateServicesCardSoldOfCustomerCreatedData)
     } catch (error) {
@@ -545,7 +562,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                         )}
                         <Col>
                           <Popconfirm
-                            okButtonProps={{ loading: isUpdatingServicesCard }}
+                            okButtonProps={{ loading: isUpdatingServicesCard || isCreatingSoldServicesCard }}
                             onConfirm={() => handleUpdateServicesCardSoldOfCustomer()}
                             title={
                               <Typography>
@@ -754,7 +771,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                       {!newServiceCardData ? (
                         <Row justify={'end'} style={{ width: '100%' }}>
                           <Popconfirm
-                            okButtonProps={{ loading: isCreatingServiceCard }}
+                            okButtonProps={{ loading: isCreatingServiceCard || isCreatingSoldServicesCard }}
                             onConfirm={() => form.submit()}
                             okText='Tạo'
                             cancelText='Huỷ'

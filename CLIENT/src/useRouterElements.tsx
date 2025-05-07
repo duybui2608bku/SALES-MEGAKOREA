@@ -24,6 +24,8 @@ import UserInformation from './Pages/User/UserInformation'
 import SellServicesCardService from './Pages/Services/SellServices.card.service'
 import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
 import Page404 from './Pages/404/404'
+import UserCommisionTechnican from './Pages/User/UserCommisionTechnican'
+import UserCommisionSale from './Pages/User/UserCommisionSale'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -148,6 +150,22 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <UserGeneral />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersUser.userCommisionTechnican,
+          element: (
+            <MainLayout>
+              <UserCommisionTechnican />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersUser.userCommisionSale,
+          element: (
+            <MainLayout>
+              <UserCommisionSale />
             </MainLayout>
           )
         }
