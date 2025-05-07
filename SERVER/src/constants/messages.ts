@@ -228,3 +228,9 @@ export const dateMessages = {
   END_DATE_CANNOT_BE_IN_FUTURE: 'End date cannot be in future !',
   END_DATE_CANNOT_BE_BEFORE_START_DATE: 'End date cannot be before start date !'
 }
+
+export const dashboardMessages = {
+  GET_DASHBOARD_SUCCESS: 'Get dashboard success !',
+  GET_DASHBOARD_FAIL: 'Get dashboard fail !',
+  GET_DASHBOARD_NOT_FOUND: 'Get dashboard not found !'
+}
