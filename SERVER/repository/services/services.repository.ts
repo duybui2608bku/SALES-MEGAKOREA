@@ -2,6 +2,8 @@ import { ObjectId } from 'mongodb'
 import {
   CreateServicesCategoryData,
   CreateServicesData,
+  CreateServicesStepData,
+  GetAllServicesStepData,
   UpdateServicesData
 } from '../../src/interface/services/services.interface'
 import { Services, ServicesCategory } from '../../src/models/schemas/services/Services.schema'
@@ -72,6 +74,7 @@ class ServicesRepository {
 
   async updateServices(data: UpdateServicesData) {
     const { _id, branch, ...body } = data
+
     await databaseServiceSale.services.updateOne(
       { _id: _id },
       {
@@ -252,6 +255,26 @@ class ServicesRepository {
     const total = totalResult.length > 0 ? totalResult[0].total : 0
 
     return { services, limit, page, total }
+  }
+
+  async createStepServices(data: CreateServicesStepData) {
+    await databaseServiceSale.step_services.insertOne(data)
+  }
+
+  async getStepServices(data: GetAllServicesStepData) {
+    const { page, limit, query } = data
+    const skip = (page - 1) * limit
+    const result = await databaseServiceSale.step_services
+      .aggregate([
+        {
+          $match: query
+        }
+      ])
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray()
+    return result
   }
 }
 

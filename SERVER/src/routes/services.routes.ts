@@ -2,10 +2,12 @@ import { Router } from 'express'
 import {
   createServices,
   createServicesCategory,
+  createStepService,
   deleteServices,
   deleteServicesCategory,
   getAllServices,
   getAllServicesCategory,
+  getStepService,
   updateServices,
   updateServicesCategory
 } from '~/controllers/services.controllers'
@@ -32,7 +34,7 @@ Body:{name: string, descriptions: string, branch: string[]}
 ServicesRouters.post(
   '/category-create',
   accessTokenValidator,
-  isAdminValidator,
+  // isAdminValidator,
   CreateServicesCategoryValidator,
   wrapRequestHandler(createServicesCategory)
 )
@@ -44,7 +46,7 @@ method: GET
 Query: { page: string, limit: string,  }
 */
 
-ServicesRouters.get('/category-all', accessTokenValidator, isAdminValidator, wrapRequestHandler(getAllServicesCategory))
+ServicesRouters.get('/category-all', accessTokenValidator, wrapRequestHandler(getAllServicesCategory))
 
 /*
 Description: Delete Service Category
@@ -56,7 +58,7 @@ Params: id
 ServicesRouters.delete(
   '/category-delete/:id',
   accessTokenValidator,
-  isAdminValidator,
+  // isAdminValidator,
   DeleteServicesCategoryValidator,
   wrapRequestHandler(deleteServicesCategory)
 )
@@ -71,7 +73,7 @@ Body:{id ?:string ,name?: string, descriptions?: string, branch?: string[]}
 ServicesRouters.patch(
   '/category-update',
   accessTokenValidator,
-  isAdminValidator,
+  // isAdminValidator,
   UpDateCategoryValidator,
   wrapRequestHandler(updateServicesCategory)
 )
@@ -86,7 +88,7 @@ Body:{any}
 ServicesRouters.post(
   '/detail-create',
   accessTokenValidator,
-  isAdminValidator,
+  // isAdminValidator,
   CreateServicesValidator,
   wrapRequestHandler(createServices)
 )
@@ -101,7 +103,7 @@ Params: id
 ServicesRouters.delete(
   '/detail-delete/:id',
   accessTokenValidator,
-  isAdminValidator,
+  // isAdminValidator,
   DeleteServicesValidator,
   wrapRequestHandler(deleteServices)
 )
@@ -126,7 +128,7 @@ id_Product?: string}
 ServicesRouters.patch(
   '/detail-update',
   accessTokenValidator,
-  isAdminValidator,
+  // isAdminValidator,
   updateServicesValidator,
   wrapRequestHandler(updateServices)
 )
@@ -138,6 +140,10 @@ method: GET
 Query: { page: string, limit: string,branch?:string[]  }
 */
 
-ServicesRouters.get('/all', accessTokenValidator, isAdminValidator, wrapRequestHandler(getAllServices))
+ServicesRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllServices))
+
+ServicesRouters.post('/step/create', accessTokenValidator, wrapRequestHandler(createStepService))
+
+ServicesRouters.get('/step/all', accessTokenValidator, wrapRequestHandler(getStepService))
 
 export default ServicesRouters

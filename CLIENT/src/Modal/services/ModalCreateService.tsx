@@ -142,7 +142,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     const user_id = profile._id
     const branch = getBranchList(values.branch || [])
     const service = { ...values, user_id, branch }
-    createService(service)
+    createService(service as any)
   }
 
   const handleUpdateService = (values: FieldsType) => {
@@ -268,6 +268,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   rules={[{ required: true, message: 'Vui lòng chi nhánh!' }]}
                   name='branch'
                   label='Chi nhánh'
+                  initialValue={[profile?.branch._id]}
                 >
                   <OptionsBranch
                     initialValue={branchId}

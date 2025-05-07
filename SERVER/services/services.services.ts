@@ -1,8 +1,10 @@
 import {
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
+  CreateServicesStepRequestBody,
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestData,
+  GetServicesStepRequestQuery,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from '../src/models/requestes/Services.requests'
@@ -23,38 +25,18 @@ const convertServicesDataToObjectId = (servicesData: CreateServicesRequestBody) 
   // nếu trường tồn tại thì chuyển đổi những trường có kiểu dữ liệu là ObjectId từ string sang ObjectId
   // nếu trường là mảng thì sử dụng map để chuyển đổi từng phần tử trong mảng
   // nếu trường là mảng thì gán giá trị rỗng
-  const { service_group_id, step_services, products, ...data } = servicesData
+  const { service_group_id, step_services, products, branch, user_id, ...data } = servicesData
   const servicesDataWithObjectId = {
     ...data,
-    service_group_id: service_group_id !== undefined ? toObjectId(service_group_id) : null,
-    step_services:
-      step_services !== undefined
-        ? step_services.map((step) => ({
-            ...step,
-            id_employee: step.id_employee !== undefined ? toObjectId(step.id_employee) : '',
-            products:
-              step?.products !== undefined
-                ? step?.products?.map((product) => ({
-                    ...product,
-                    product_id: toObjectId(product.product_id)
-                  }))
-                : []
-          })) || []
-        : [],
-    products:
-      products?.map((product) => ({
-        ...product,
-        product_id: toObjectId(product.product_id)
-      })) || [],
-    user_id: toObjectId(data.user_id),
-    branch: data.branch?.map((branchId) => toObjectId(branchId)) || [],
-    employee:
-      (data?.employee !== undefined &&
-        data?.employee?.map((employee) => ({
-          ...employee,
-          id_employee: toObjectId(employee.id_employee)
-        }))) ||
-      []
+    service_group_id: service_group_id !== undefined ? toObjectId(service_group_id) : undefined,
+    step_services: step_services !== undefined ? step_services.map((step) => new ObjectId(step)) : undefined,
+    // products:
+    //   products?.map((product) => ({
+    //     ...product,
+    //     product_id: toObjectId(product.product_id)
+    //   })) || undefined,
+    user_id: user_id !== undefined ? toObjectId(user_id) : undefined,
+    branch: branch !== undefined ? branch.map((branchId) => toObjectId(branchId)) || undefined : undefined
   }
   return servicesDataWithObjectId
 }
@@ -116,7 +98,6 @@ class ServicesServices {
   async UpdateServices(data: UpdateServicesRequestBody) {
     await this.checkServicesExist(new ObjectId(data._id as string))
     const servicesDataWithObjectId = convertServicesDataToObjectId(data)
-
     const { _id, ...body } = servicesDataWithObjectId
     await serverRepository.updateServices({
       _id: new ObjectId(_id as string),
@@ -132,6 +113,36 @@ class ServicesServices {
       branch: branchObjectId
     }
     return await serverRepository.getAllServices(queryData)
+  }
+
+  async CreateServicesStep(stepServices: CreateServicesStepRequestBody) {
+    const { services_category_id } = stepServices
+    const servicesCategoryId = services_category_id ? new ObjectId(services_category_id) : null
+    if (servicesCategoryId) {
+      await this.checkServicesCategoryExist(new ObjectId(servicesCategoryId))
+    }
+    const stepServicesWithObjectId = {
+      ...stepServices,
+      services_category_id: servicesCategoryId
+    }
+    await serverRepository.createStepServices(stepServicesWithObjectId)
+  }
+
+  async getStepServices(data: GetServicesStepRequestQuery) {
+    const query = {
+      services_category_id: data.services_category_id ? new ObjectId(data.services_category_id) : null,
+      name: {
+        $regex: data.search ? data.search : null,
+        $options: 'i'
+      }
+    }
+    console.log('query', query)
+    const result = await serverRepository.getStepServices({
+      query,
+      page: 1,
+      limit: 100
+    })
+    return result
   }
 }
 

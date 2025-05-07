@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { TypeCommision } from '~/constants/enum'
 import { EmployeeOfServices, ProductOfServices, StepServicesType } from '~/interface/services/services.interface'
 
 export interface CreateServicesCategoryRequestBody {
@@ -23,13 +24,13 @@ export interface CreateServicesRequestBody {
   code?: string
   is_active?: boolean
   name: string
-  branch: string[]
+  branch?: string[]
   descriptions?: string
-  user_id: ObjectId
+  user_id?: ObjectId
   employee?: EmployeeOfServices[]
   service_group_id?: string
   price?: number
-  step_services?: StepServicesType[]
+  step_services?: string[]
   products?: ProductOfServices[]
 }
 
@@ -44,7 +45,7 @@ export interface UpdateServicesRequestBody {
   employee?: EmployeeOfServices[]
   service_group_id?: string
   price?: number
-  step_services?: StepServicesType[]
+  step_services?: string[]
   products?: ProductOfServices[]
 }
 
@@ -63,4 +64,16 @@ export interface GetAllServicesRequestData {
   page: number
   limit: number
   branch?: string[] | ObjectId[]
+}
+
+export interface CreateServicesStepRequestBody {
+  services_category_id?: string
+  name: string
+  type: TypeCommision
+  commission: number
+}
+
+export interface GetServicesStepRequestQuery {
+  services_category_id?: string
+  search?: string
 }

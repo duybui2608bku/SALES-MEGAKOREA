@@ -79,6 +79,8 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  GET_STEP_SERVICES_SUCCESS: 'Get step services success !',
+  CREATE_STEP_SERVICES_SUCCESS: 'Create step services success !',
   TYPE_PRICE_MUST_BE_NUMBER: 'Type price must be a number !',
   TYPE_PRICE_INVALID: 'Type price invalid !',
   SERVICE_CARD_QUANTITY_NOT_ENOUGH: 'Service card quantity not enough !',
@@ -227,4 +229,10 @@ export const dateMessages = {
   END_DATE_MUST_BE_DATE: 'End date must be a date !',
   END_DATE_CANNOT_BE_IN_FUTURE: 'End date cannot be in future !',
   END_DATE_CANNOT_BE_BEFORE_START_DATE: 'End date cannot be before start date !'
+}
+
+export const dashboardMessages = {
+  GET_DASHBOARD_SUCCESS: 'Get dashboard success !',
+  GET_DASHBOARD_FAIL: 'Get dashboard fail !',
+  GET_DASHBOARD_NOT_FOUND: 'Get dashboard not found !'
 }

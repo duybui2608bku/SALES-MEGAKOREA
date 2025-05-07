@@ -17,6 +17,8 @@ export class ServicesCategory {
   tour_price?: number
   branch?: ObjectId[]
   type_price?: TypeCommision
+  created_at?: Date
+  updated_at?: Date
   constructor(servicesCategory: ServicesCategoryType) {
     this._id = servicesCategory._id || new ObjectId()
     this.name = servicesCategory.name || ''
@@ -24,6 +26,8 @@ export class ServicesCategory {
     this.type_price = servicesCategory.type_price || TypeCommision.FIXED
     this.branch = servicesCategory.branch || []
     this.descriptions = servicesCategory.descriptions || ''
+    this.created_at = servicesCategory.created_at || new Date()
+    this.updated_at = servicesCategory.updated_at || new Date()
   }
 }
 
@@ -32,13 +36,13 @@ export class Services {
   code?: string
   is_active?: boolean
   name: string
-  branch: ObjectId[]
+  branch?: ObjectId[]
   descriptions?: string
   price?: number
   type_price?: TypeCommision
-  user_id: ObjectId
+  user_id?: ObjectId
   service_group_id?: ObjectId | null
-  step_services?: StepServicesType[]
+  step_services?: ObjectId[]
   products?: ProductOfServices[]
   employee?: EmployeeOfServices[]
   created_at?: Date
@@ -48,7 +52,7 @@ export class Services {
     this._id = servicesCategory._id || new ObjectId()
     this.is_active = servicesCategory.is_active || true
     this.name = servicesCategory.name
-    this.user_id = servicesCategory.user_id || new ObjectId()
+    this.user_id = servicesCategory.user_id
     this.price = servicesCategory.price || 0
     this.type_price = servicesCategory.type_price || TypeCommision.FIXED
     this.employee = servicesCategory.employee || []
