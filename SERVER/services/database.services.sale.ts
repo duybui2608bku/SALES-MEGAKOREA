@@ -13,6 +13,7 @@ import Customer from '~/models/schemas/customer/Customer.shema'
 import HistoryPaidServicesCardSoldOfCustomer from '~/models/schemas/services/HistoryPaidServicesCardSoldOfCustomer.schema'
 import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.schema'
 import { CommisionOfTechnican } from '~/models/schemas/commision/commisionOfTechnican.schema'
+import { ServicesStep } from '~/models/schemas/services/stepServices.schema'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@megakorae-call.rrq1b.mongodb.net/${process.env.DB_NAME_SALE_MEGA}?retryWrites=true&w=majority&appName=MEGAKORAE-CALL&tls=true`
@@ -84,6 +85,10 @@ class DatabaseServiceSale {
 
   get history_paid_services_card_of_customer(): Collection<HistoryPaidServicesCardSoldOfCustomer> {
     return this.db.collection(process.env.HISTORY_PAID_SERVICES_CARD_OF_CUSTOMER_COLLECTION as string)
+  }
+
+  get step_services(): Collection<ServicesStep> {
+    return this.db.collection(process.env.SERVICES_STEP_COLLECTION as string)
   }
 }
 

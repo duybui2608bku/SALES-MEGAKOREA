@@ -283,7 +283,8 @@ export const updateServicesValidator = validate(
         notEmpty: {
           errorMessage: 'name cannot be empty'
         },
-        trim: true
+        trim: true,
+        optional: true
       },
       branch: {
         isArray: {

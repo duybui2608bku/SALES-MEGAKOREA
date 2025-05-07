@@ -79,6 +79,8 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  GET_STEP_SERVICES_SUCCESS: 'Get step services success !',
+  CREATE_STEP_SERVICES_SUCCESS: 'Create step services success !',
   TYPE_PRICE_MUST_BE_NUMBER: 'Type price must be a number !',
   TYPE_PRICE_INVALID: 'Type price invalid !',
   SERVICE_CARD_QUANTITY_NOT_ENOUGH: 'Service card quantity not enough !',

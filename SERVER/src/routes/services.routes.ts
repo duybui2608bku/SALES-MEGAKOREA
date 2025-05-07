@@ -2,10 +2,12 @@ import { Router } from 'express'
 import {
   createServices,
   createServicesCategory,
+  createStepService,
   deleteServices,
   deleteServicesCategory,
   getAllServices,
   getAllServicesCategory,
+  getStepService,
   updateServices,
   updateServicesCategory
 } from '~/controllers/services.controllers'
@@ -139,5 +141,9 @@ Query: { page: string, limit: string,branch?:string[]  }
 */
 
 ServicesRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllServices))
+
+ServicesRouters.post('/step/create', accessTokenValidator, wrapRequestHandler(createStepService))
+
+ServicesRouters.get('/step/all', accessTokenValidator, wrapRequestHandler(getStepService))
 
 export default ServicesRouters

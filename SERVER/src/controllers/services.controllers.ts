@@ -3,9 +3,11 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
+  CreateServicesStepRequestBody,
   DeleteServicesCategoryRequestParams,
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestQuery,
+  GetServicesStepRequestQuery,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody
 } from '~/models/requestes/Services.requests'
@@ -115,6 +117,32 @@ export const getAllServices = async (
   const result = await servicesServices.GetAllServices(query)
   ResponseSuccess({
     message: servicesMessages.GET_ALL_SERVICES_SUCCESS,
+    res,
+    result
+  })
+}
+
+export const createStepService = async (
+  req: Request<ParamsDictionary, any, CreateServicesStepRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await servicesServices.CreateServicesStep(data)
+  ResponseSuccess({
+    message: servicesMessages.CREATE_STEP_SERVICES_SUCCESS,
+    res,
+    result
+  })
+}
+
+export const getStepService = async (
+  req: Request<ParamsDictionary, any, any, GetServicesStepRequestQuery>,
+  res: Response
+) => {
+  const data = req.query
+  const result = await servicesServices.getStepServices(data)
+  ResponseSuccess({
+    message: servicesMessages.GET_STEP_SERVICES_SUCCESS,
     res,
     result
   })

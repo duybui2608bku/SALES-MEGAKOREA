@@ -8,6 +8,8 @@ export interface ServicesCategoryType {
   tour_price?: number
   type_price?: TypeCommision
   branch?: ObjectId[]
+  created_at?: Date
+  updated_at?: Date
 }
 
 export interface CreateServicesCategoryData {
@@ -32,7 +34,10 @@ export interface StepServicesType {
   commision: number
   name: string
   type: TypeCommision
-  products: ProductOfServices[]
+  products?: ProductOfServices[]
+  descriptions?: string
+  created_at?: Date
+  updated_at?: Date
 }
 
 export interface ServicesType {
@@ -42,14 +47,14 @@ export interface ServicesType {
   code?: string
   is_active?: boolean
   name: string
-  branch: ObjectId[]
+  branch?: ObjectId[]
   price?: number
-  user_id: ObjectId
+  user_id?: ObjectId
   type_price?: TypeCommision
   descriptions?: string
   employee?: EmployeeOfServices[]
   service_group_id?: ObjectId | null
-  step_services?: StepServicesType[]
+  step_services?: ObjectId[] | null
   products?: ProductOfServices[]
   created_at?: Date
   updated_at?: Date
@@ -60,13 +65,13 @@ export interface CreateServicesData {
   code?: string
   is_active?: boolean
   name: string
-  branch: ObjectId[]
+  branch?: ObjectId[]
   price?: number
-  user_id: ObjectId
+  user_id?: ObjectId
   descriptions?: string
   employee?: EmployeeOfServices[]
-  service_group_id?: ObjectId | null
-  step_services?: StepServicesType[]
+  service_group_id?: ObjectId
+  step_services?: ObjectId[]
   products?: ProductOfServices[]
   created_at?: Date
   updated_at?: Date
@@ -83,7 +88,7 @@ export interface UpdateServicesData {
   descriptions?: string
   employee?: EmployeeOfServices[]
   service_group_id?: ObjectId | null
-  step_services?: StepServicesType[]
+  step_services?: ObjectId[]
   products?: ProductOfServices[]
   created_at?: Date
   updated_at?: Date
@@ -317,4 +322,26 @@ export interface UpdateUsedServicesCardSoldOfCustomerData {
   services_card_sold_of_customer_id: ObjectId
   services_id: ObjectId
   history_used: HistoryUsed
+}
+
+export interface StepServicesType {
+  _id?: ObjectId
+  services_category_id: ObjectId | null
+  name: string
+  type: TypeCommision
+  commission: number
+}
+
+export interface CreateServicesStepData {
+  services_category_id: ObjectId | null
+  name: string
+  type: TypeCommision
+  commission: number
+  discriptions?: string
+}
+
+export interface GetAllServicesStepData {
+  page: number
+  limit: number
+  query: any
 }
