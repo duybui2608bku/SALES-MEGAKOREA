@@ -146,15 +146,29 @@ const UserCommisionTechnican = () => {
       key: 'totalPercentCommission',
       align: 'center',
       width: 200,
-      render: (totalPercentCommission) => <Text strong>{totalPercentCommission.toLocaleString('vi-VN')} VNĐ</Text>
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
+        a.totalPercentCommission - b.totalPercentCommission,
+      sortDirections: ['descend', 'ascend'],
+      render: (totalPercentCommission) => (
+        <Text style={{ color: '#fa8c16' }} strong>
+          {totalPercentCommission.toLocaleString('vi-VN')} VNĐ
+        </Text>
+      )
     },
     {
       title: 'Tổng hoa hồng cố định',
       dataIndex: 'totalFixedCommission',
       key: 'totalFixedCommission',
       align: 'center',
-      width: 220,
-      render: (totalFixedCommission) => <Text strong>{totalFixedCommission.toLocaleString('vi-VN')} VNĐ</Text>
+      width: 230,
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
+        a.totalFixedCommission - b.totalFixedCommission,
+      sortDirections: ['descend', 'ascend'],
+      render: (totalFixedCommission) => (
+        <Text style={{ color: '#A8A8FF' }} strong>
+          {totalFixedCommission.toLocaleString('vi-VN')} VNĐ
+        </Text>
+      )
     },
     {
       title: 'Tổng hoa hồng',
@@ -162,14 +176,23 @@ const UserCommisionTechnican = () => {
       key: 'totalCommission',
       align: 'center',
       width: 200,
-      render: (totalCommission) => <Text strong>{totalCommission.toLocaleString('vi-VN')} VNĐ</Text>
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
+        a.totalCommission - b.totalCommission,
+      sortDirections: ['descend', 'ascend'],
+      render: (totalCommission) => (
+        <Text style={{ color: '#ff4d4f' }} strong>
+          {totalCommission.toLocaleString('vi-VN')} VNĐ
+        </Text>
+      )
     },
     {
       title: 'Số lượng dịch vụ đã bán',
       dataIndex: 'count',
       key: 'count',
-      width: 230,
+      width: 250,
       align: 'center',
+      sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) => a.count - b.count,
+      sortDirections: ['descend', 'ascend'],
       render: (count) => <span>{count}</span>
     }
   ]
@@ -196,7 +219,7 @@ const UserCommisionTechnican = () => {
             {/* Card 1: Tổng Hoa Hồng */}
             <Col xs={24} sm={6}>
               <Card loading={isLoading} style={cardStyles[0]} hoverable bodyStyle={{ padding: '24px' }}>
-                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Tổng Hoa Hồng</Text>
+                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Tổng Hoa Hồng</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
                   {formatCurrency(summary.totalCommission)}
                 </div>
@@ -215,7 +238,7 @@ const UserCommisionTechnican = () => {
             {/* Card 2: Hoa Hồng % */}
             <Col xs={24} sm={6}>
               <Card loading={isLoading} style={cardStyles[1]} hoverable bodyStyle={{ padding: '24px' }}>
-                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Hoa Hồng %</Text>
+                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Hoa Hồng %</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
                   {formatCurrency(summary.totalPercentCommission)}
                 </div>
@@ -234,7 +257,7 @@ const UserCommisionTechnican = () => {
             {/* Card 3: Hoa Hồng Cố Định */}
             <Col xs={24} sm={6}>
               <Card loading={isLoading} style={cardStyles[2]} hoverable bodyStyle={{ padding: '24px' }}>
-                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Hoa Hồng Cố Định</Text>
+                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Hoa Hồng Cố Định</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
                   {formatCurrency(summary.totalFixedCommission)}
                 </div>
@@ -253,7 +276,7 @@ const UserCommisionTechnican = () => {
             {/* Card 4: Tổng kỹ thuật viên */}
             <Col xs={24} sm={6}>
               <Card loading={isLoading} style={cardStyles[3]} hoverable bodyStyle={{ padding: '24px' }}>
-                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Tổng Kỹ Thuật Viên</Text>
+                <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Tổng Kỹ Thuật Viên</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
                   {summary.totalUser}
                 </div>
@@ -279,7 +302,7 @@ const UserCommisionTechnican = () => {
             loading={isLoading}
             sticky
             style={{ width: '100%' }}
-            scroll={{ x: '1200px' }}
+            scroll={{ x: '1400px' }}
             bordered
             columns={columns}
             dataSource={commisionTechnican}

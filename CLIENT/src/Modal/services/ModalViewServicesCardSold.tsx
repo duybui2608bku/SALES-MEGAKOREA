@@ -384,7 +384,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       // Reset ref
       updatingServiceRef.current = null
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, _, context) => {
       message.error(`Lỗi khi sử dụng dịch vụ: ${error.message}`)
 
       // Khôi phục dữ liệu cache nếu có lỗi

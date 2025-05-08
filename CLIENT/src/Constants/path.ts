@@ -26,8 +26,9 @@ const pathRoutersService = {
   categoryService: '/category-service',
   service: '/service',
   cardService: '/card-service',
-  sellCardService: '/card-service/sell',
-  soldCardService: '/card-service/sold'
+  sellCardService: '/card-service-sell',
+  soldCardService: '/card-service-sold',
+  stepService: '/step-service'
 }
 
 const pathRoutersUser = {
@@ -72,6 +73,8 @@ const pathServices = {
   createServices: '/services/detail-create',
   deleteServices: '/services/detail-delete',
   updateServices: '/services/detail-update',
+  getAllStepService: '/services/step/all',
+  createStepService: 'services/step/create',
   getAllServicesCard: '/services-card/all',
   updateServicesCard: '/services-card/update',
   createServicesCard: '/services-card/create',

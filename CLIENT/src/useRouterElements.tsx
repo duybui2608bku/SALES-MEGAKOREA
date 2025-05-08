@@ -26,6 +26,7 @@ import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
 import Page404 from './Pages/404/404'
 import UserCommisionTechnican from './Pages/User/UserCommisionTechnican'
 import UserCommisionSale from './Pages/User/UserCommisionSale'
+import StepService from './Pages/Services/Step.service'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -112,6 +113,14 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <Service />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.stepService,
+          element: (
+            <MainLayout>
+              <StepService />
             </MainLayout>
           )
         },
