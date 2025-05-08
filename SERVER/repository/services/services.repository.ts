@@ -264,17 +264,39 @@ class ServicesRepository {
   async getStepServices(data: GetAllServicesStepData) {
     const { page, limit, query } = data
     const skip = (page - 1) * limit
-    const result = await databaseServiceSale.step_services
-      .aggregate([
-        {
-          $match: query
+
+    const pipeline = [
+      {
+        $match: query
+      },
+      {
+        $lookup: {
+          from: 'services_category',
+          localField: 'services_category_id',
+          foreignField: '_id',
+          as: 'category'
         }
-      ])
-      .sort({ _id: -1 })
-      .skip(skip)
-      .limit(limit)
-      .toArray()
-    return result
+      },
+      {
+        $addFields: {
+          category: { $arrayElemAt: ['$category', 0] }
+        }
+      }
+    ]
+
+    const [result, totalResult] = await Promise.all([
+      databaseServiceSale.step_services
+        .aggregate([...pipeline])
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
+      databaseServiceSale.step_services.aggregate([{ $match: query }, { $count: 'total' }]).toArray()
+    ])
+
+    const total = totalResult.length > 0 ? totalResult[0].total : 0
+
+    return { result, total, page, limit }
   }
 
   async updateStepService(id: ObjectId, data: any) {
