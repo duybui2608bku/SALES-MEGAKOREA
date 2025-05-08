@@ -501,3 +501,66 @@ export const DeleteSerivcesCardValidator = validate(
     ['params']
   )
 )
+
+export const UpdateQuantityServicesCardSoldValidator = validate(
+  checkSchema(
+    {
+      id: {
+        isString: {
+          errorMessage: servicesMessages.SERVICES_CARD_SOLD_OF_CUSTOMER_ID_MUST_BE_STRING
+        },
+        isMongoId: {
+          errorMessage: servicesMessages.INVALID_ID
+        }
+      },
+      services_id: {
+        isString: {
+          errorMessage: servicesMessages.SERVICES_CARD_ID_MUST_BE_STRING
+        },
+        isMongoId: {
+          errorMessage: servicesMessages.INVALID_ID
+        }
+      },
+      services_card_sold_id: {
+        isString: {
+          errorMessage: servicesMessages.CARD_SERVICES_SOLD_ID_MUST_BE_STRING
+        },
+        isMongoId: {
+          errorMessage: servicesMessages.INVALID_ID
+        }
+      },
+      media: {
+        isArray: true,
+        optional: true
+      },
+      'history_increase_quantity.name_service': {
+        isString: {
+          errorMessage: servicesMessages.NAME_MUST_BE_STRING
+        }
+      },
+      'history_increase_quantity.user_name': {
+        isString: {
+          errorMessage: servicesMessages.NAME_MUST_BE_STRING
+        }
+      },
+      'history_increase_quantity.count': {
+        isInt: {
+          options: { min: 1 },
+          errorMessage: servicesMessages.QUANTITY_MUST_BE_NUMBER_GREATER_THAN_ZERO
+        }
+      },
+      'history_increase_quantity.date': {
+        isString: {
+          errorMessage: servicesMessages.DATE_MUST_BE_STRING
+        }
+      },
+      'history_increase_quantity.descriptions': {
+        isString: {
+          errorMessage: servicesMessages.DESCRIPTIONS_MUST_BE_STRING
+        },
+        optional: true
+      }
+    },
+    ['body']
+  )
+)

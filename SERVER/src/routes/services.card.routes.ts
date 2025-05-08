@@ -10,7 +10,8 @@ import {
   UpdateHistoryPaid,
   UpdateServicesCard,
   updateServicesCardSoldOfCustomer,
-  UpdateUsedServicesCardSold
+  UpdateUsedServicesCardSold,
+  UpdateQuantityServicesCardSold
 } from '~/controllers/services.card.controllers'
 import {
   CreateServicesCardSoldOfCustomerValidator,
@@ -21,7 +22,8 @@ import {
   GetServicesCardSoldOfCustomerValidator,
   UpdateHistoryPaidOfCardValidator,
   UpdateHistoryPaidOfServicesCardValidator,
-  UpdateServicesCardSoldOfCustomerValidator
+  UpdateServicesCardSoldOfCustomerValidator,
+  UpdateQuantityServicesCardSoldValidator
 } from '~/middlewares/services.card.middlewares'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -101,5 +103,12 @@ servicesOfCardRouters.delete(
 )
 
 servicesOfCardRouters.patch('/sold/update-used', accessTokenValidator, wrapRequestHandler(UpdateUsedServicesCardSold))
+
+servicesOfCardRouters.patch(
+  '/sold/update-quantity',
+  accessTokenValidator,
+  UpdateQuantityServicesCardSoldValidator,
+  wrapRequestHandler(UpdateQuantityServicesCardSold)
+)
 
 export default servicesOfCardRouters

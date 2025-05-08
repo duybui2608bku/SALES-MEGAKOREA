@@ -76,4 +76,18 @@ export interface CreateServicesStepRequestBody {
 export interface GetServicesStepRequestQuery {
   services_category_id?: string
   search?: string
+  page?: string
+  limit?: string
+}
+
+export interface UpdateStepServiceRequestBody {
+  id: string
+  name?: string
+  services_category_id?: string
+  type?: TypeCommision
+  commission?: number
+}
+
+export interface DeleteStepServiceRequestParams {
+  id: string
 }

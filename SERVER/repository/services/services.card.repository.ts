@@ -1547,71 +1547,88 @@ class ServicesCardRepository {
 
   async updateUsedServicesCardSold(data: UpdateUsedServicesCardSoldOfCustomerData) {
     const {
-      commision_of_technician_id,
-      history_used,
       services_card_sold_id,
+      services_card_sold_of_customer_id,
+      commision_of_technician_id,
       services_id,
-      services_card_sold_of_customer_id
+      history_used
     } = data
-    // Kiểm tra quantity trước khi update
-    const cardSold = await databaseServiceSale.services_card_sold.findOne(
+
+    // Update the used count in services_card_sold
+    await databaseServiceSale.services_card_sold.updateOne(
       {
         _id: services_card_sold_id,
         'services_of_card.services_id': services_id
       },
       {
-        projection: {
-          'services_of_card.$': 1
+        $inc: {
+          'services_of_card.$.used': 1
         }
       }
     )
 
-    // Kiểm tra xem có tìm thấy card và service không
-    if (!cardSold || !cardSold.services_of_card || cardSold.services_of_card.length === 0) {
-      throw new Error('Không tìm thấy dịch vụ trong thẻ dịch vụ')
-    }
-
-    // Lấy thông tin service cần update
-    const service = cardSold.services_of_card[0]
-
-    // Kiểm tra quantity
-    if (service.quantity <= 0) {
-      throw new ErrorWithStatusCode({
-        message: servicesMessages.SERVICE_CARD_QUANTITY_NOT_ENOUGH,
-        statusCode: HttpStatusCode.BadRequest
-      })
-    }
-
-    // Nếu quantity > 0 thì mới thực hiện update
-    await Promise.all([
-      databaseServiceSale.services_card_sold.updateOne(
-        {
-          _id: services_card_sold_id
+    // Add history used record to services_card_sold_of_customer
+    await databaseServiceSale.services_card_sold_of_customer.updateOne(
+      {
+        _id: services_card_sold_of_customer_id
+      },
+      {
+        $push: {
+          history_used: history_used
         },
-        {
-          $inc: {
-            'services_of_card.$[elem].used': 1
-          },
-          $set: {
-            updated_at: new Date()
-          }
-        },
-        {
-          arrayFilters: [{ 'elem.services_id': services_id }]
+        $addToSet: {
+          employee_commision: commision_of_technician_id
         }
-      ),
-      databaseServiceSale.services_card_sold_of_customer.updateOne(
-        {
-          _id: services_card_sold_of_customer_id
-        },
-        {
-          $push: {
-            history_used: history_used,
-            employee_commision: commision_of_technician_id
+      }
+    )
+  }
+
+  async updateQuantityServicesCardSold(data: {
+    services_card_sold_id: ObjectId
+    services_card_sold_of_customer_id: ObjectId
+    services_id: ObjectId
+    history_increase_quantity: {
+      name_service: string
+      user_name: string
+      count: number
+      date: string
+      descriptions?: string
+    }
+    media?: string[]
+  }) {
+    const { services_card_sold_id, services_card_sold_of_customer_id, services_id, history_increase_quantity, media } =
+      data
+
+    const increaseAmount = history_increase_quantity.count || 1
+
+    // Increase the quantity in services_card_sold
+    await databaseServiceSale.services_card_sold.updateOne(
+      {
+        _id: services_card_sold_id,
+        'services_of_card.services_id': services_id
+      },
+      {
+        $inc: {
+          'services_of_card.$.quantity': increaseAmount
+        }
+      }
+    )
+
+    // Add history record to services_card_sold_of_customer
+    await databaseServiceSale.services_card_sold_of_customer.updateOne(
+      {
+        _id: services_card_sold_of_customer_id
+      },
+      {
+        $push: {
+          history_increase_quantity: {
+            ...history_increase_quantity,
+            date: new Date(history_increase_quantity.date),
+            media: media || []
           }
         }
-      )
-    ])
+      }
+    )
   }
 }
 

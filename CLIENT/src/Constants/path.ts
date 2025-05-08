@@ -87,7 +87,8 @@ const pathServices = {
   getAllSoldServicesCardOfCustomer: 'services-card/sold-of-customer',
   createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create',
   updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update',
-  updateUsedOfServices: '/services-card/sold/update-used'
+  updateUsedOfServices: '/services-card/sold/update-used',
+  updateQuantityOfServices: '/services-card/sold/update-quantity'
 }
 
 const pathRoutesCustomers = {

@@ -408,3 +408,98 @@ export const updateServicesValidator = validate(
     ['body']
   )
 )
+
+export const UpdateStepServiceValidator = validate(
+  checkSchema(
+    {
+      id: {
+        isString: {
+          errorMessage: servicesMessages.INVALID_ID
+        },
+        custom: {
+          options: (value: string) => {
+            if (!ObjectId.isValid(value)) {
+              throw new ErrorWithStatusCode({
+                message: servicesMessages.INVALID_ID,
+                statusCode: HttpStatusCode.BadRequest
+              })
+            }
+            return true
+          }
+        }
+      },
+      name: {
+        optional: true,
+        isString: {
+          errorMessage: servicesMessages.NAME_MUST_BE_STRING
+        }
+      },
+      services_category_id: {
+        optional: true,
+        isString: {
+          errorMessage: servicesMessages.INVALID_ID
+        },
+        custom: {
+          options: (value: string) => {
+            if (value && !ObjectId.isValid(value)) {
+              throw new ErrorWithStatusCode({
+                message: servicesMessages.INVALID_ID,
+                statusCode: HttpStatusCode.BadRequest
+              })
+            }
+            return true
+          }
+        }
+      },
+      type: {
+        optional: true,
+        isIn: {
+          options: [[TypeCommision.FIXED, TypeCommision.PRECENT]],
+          errorMessage: servicesMessages.TYPE_PRICE_MUST_BE_FIXED_OR_PERCENT
+        }
+      },
+      commission: {
+        optional: true,
+        isNumeric: {
+          errorMessage: servicesMessages.TYPE_PRICE_MUST_BE_NUMBER
+        },
+        custom: {
+          options: (value: number) => {
+            if (value < 0) {
+              throw new ErrorWithStatusCode({
+                message: servicesMessages.PRICE_MUST_BE_NUMBER_GREATER_THAN_ZERO,
+                statusCode: HttpStatusCode.BadRequest
+              })
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const DeleteStepServiceValidator = validate(
+  checkSchema(
+    {
+      id: {
+        isString: {
+          errorMessage: servicesMessages.INVALID_ID
+        },
+        custom: {
+          options: (value: string) => {
+            if (!ObjectId.isValid(value)) {
+              throw new ErrorWithStatusCode({
+                message: servicesMessages.INVALID_ID,
+                statusCode: HttpStatusCode.BadRequest
+              })
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['params']
+  )
+)
