@@ -28,7 +28,17 @@ const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
     >
       <Space direction='vertical' style={{ width: '100%', maxHeight: '80vh', overflowY: 'auto' }} size='large'>
         {data.map((service, index) => (
-          <Card key={index} title={service.service_details.name} style={{ marginBottom: 16 }}>
+          <Card
+            key={index}
+            title={service.service_details.name}
+            style={{
+              marginBottom: 16,
+              borderRadius: 8,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              background: '#fafafa'
+            }}
+            headStyle={{ background: '#e6f7ff', borderBottom: 'none' }}
+          >
             <Space direction='vertical' style={{ width: '100%' }}>
               {/* Thông tin cơ bản */}
               <Descriptions column={2} bordered size='small'>

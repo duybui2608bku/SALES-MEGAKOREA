@@ -4,8 +4,10 @@ import {
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
   CreateSoldServicesCardRequestBody,
+  CreateStepServiceRequestBody,
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestQuery,
+  GetAllStepServiceRequestBody,
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
   UpdatePaidOfServicesCardRequestBody,
@@ -21,8 +23,10 @@ import {
   CreateServicesCardResponse,
   CreateServicesCardSoldOfCustomerResponse,
   CreateServicesResponse,
+  CreateStepServiceResponse,
   DeleteCategoryServicesResponse,
   DeleteServicesResponse,
+  GetAllStepServiceResponse,
   GetCategoryServicesResponse,
   GetServicesCardResponse,
   GetServicesCardSoldOfCustomerResponse,
@@ -61,6 +65,13 @@ export const servicesApi = {
   },
   async UpdateUsedOfServices(body: UpdateUsedServicesRequestBody) {
     return axiosInstanceMain.patch<UpdateUsedOfServicesRespone>(pathServices.updateUsedOfServices, body)
+  },
+  // Step service
+  async getAllStepService(query: GetAllStepServiceRequestBody) {
+    return axiosInstanceMain.get<GetAllStepServiceResponse>(pathServices.getAllStepService, { params: query })
+  },
+  async createStepService(body: CreateStepServiceRequestBody) {
+    return axiosInstanceMain.post<CreateStepServiceResponse>(pathServices.createStepService, body)
   },
   //Services card
   async createServicesCard(body: CreateServicesCardRequestBody) {

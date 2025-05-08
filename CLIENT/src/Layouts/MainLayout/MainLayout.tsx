@@ -35,13 +35,13 @@ const MainLayout = ({ children }: Props) => {
       newSelectedKey = ['customers']
     } else if (path.includes(pathRoutersService.cardService)) {
       newSelectedKey = ['card-service']
-      newOpenKeys = ['card-service']
+      newOpenKeys = ['card-service-main']
     } else if (path.includes(pathRoutersService.sellCardService)) {
-      newSelectedKey = ['sell-card-service']
-      newOpenKeys = ['card-service']
+      newSelectedKey = ['card-service-sell']
+      newOpenKeys = ['card-service-main']
     } else if (path.includes(pathRoutersService.soldCardService)) {
-      newSelectedKey = ['sold-card-service']
-      newOpenKeys = ['card-service']
+      newSelectedKey = ['card-service-sold']
+      newOpenKeys = ['card-service-main']
     } else if (path.includes(pathRoutersProduct.productGeneral)) {
       newSelectedKey = ['product-general']
       newOpenKeys = ['setting']
@@ -84,10 +84,9 @@ const MainLayout = ({ children }: Props) => {
       onClick: () => navigate(pathRoutesCustomers.customers)
     },
     {
-      key: 'card-service',
+      key: 'card-service-main',
       label: 'Thẻ dịch vụ',
       icon: <FcKindle size={20} />,
-
       children: [
         {
           key: 'card-service',
@@ -95,12 +94,12 @@ const MainLayout = ({ children }: Props) => {
           onClick: () => navigate(pathRoutersService.cardService)
         },
         {
-          key: 'sell-card-service',
+          key: 'card-service-sell',
           label: 'Bán thẻ dịch vụ',
           onClick: () => navigate(pathRoutersService.sellCardService)
         },
         {
-          key: 'sold-card-service',
+          key: 'card-service-sold',
           label: 'Thẻ dịch vụ đã bán',
           onClick: () => navigate(pathRoutersService.soldCardService)
         }

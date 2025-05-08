@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Card, Space, Button } from 'antd'
+import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Card, Button } from 'antd'
 import { HttpStatusCode } from 'axios'
 import { Fragment, useContext, useEffect, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
@@ -222,13 +222,13 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
         overflowY: 'scroll'
       }}
     >
-      <Row style={{ height: '500px', overflowY: 'scroll' }}>
+      <Row style={{ height: 'auto' }}>
         <Col span={24}>
           <Typography.Title className='center-div' level={4}>
             {serviceToEdit ? 'Chỉnh sửa dịch vụ' : 'Tạo Dịch Vụ Mới'}
           </Typography.Title>
         </Col>
-        <Col span={24} style={{ marginTop: 20 }}>
+        <Col span={24} style={{ marginTop: 20, height: '400px', overflowY: 'scroll' }}>
           <Form onFinish={onFinish} autoComplete='off' layout='vertical' name='create-service' form={form}>
             <Row gutter={16}>
               <Col span={8}>
@@ -348,6 +348,13 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                                         {
                                           name: ['step_services', name, 'commision'],
                                           value: value.commision
+                                        }
+                                      ])
+                                    } else {
+                                      form.setFields([
+                                        {
+                                          name: ['step_services', name, 'commision'],
+                                          value: undefined
                                         }
                                       ])
                                     }

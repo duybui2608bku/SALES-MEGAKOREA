@@ -83,8 +83,6 @@ const Service = () => {
   })
 
   useEffect(() => {
-    console.log('pagnation: ', pagination)
-
     if (data) {
       const services = data.data.result.services
       const total = data.data.result.total
@@ -94,7 +92,7 @@ const Service = () => {
         total: total
       })
     }
-  }, [data])
+  }, [data, pagination])
 
   const columns: TableColumnType<ColumnsServicesType>[] = [
     {
@@ -169,11 +167,11 @@ const Service = () => {
     {
       title: 'Hoa hồng',
       dataIndex: 'service_group',
-      key: 'service_groupe',
+      key: 'service_group',
       align: 'center',
       render: (service_group: ServicesCategoryType) => {
         return (
-          <Text style={{ color: '#FF3399', fontSize: '15px' }} strong>
+          <Text style={{ color: '#FFB74D', fontSize: '15px' }} strong>
             {(service_group?.tour_price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
           </Text>
         )

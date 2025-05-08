@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { Button, Col, Flex, Popconfirm, Row, Table, TableColumnType, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
@@ -5,15 +6,16 @@ import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
 import { Fragment } from 'react/jsx-runtime'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
+import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import Title from 'src/Components/Title'
 import { TypeCommision } from 'src/Constants/enum'
-import { GetStepService } from 'src/Interfaces/services/services.interfaces'
+import { StepServicesInterface } from 'src/Interfaces/services/services.interfaces'
 import ModalCreateOrUpdateStepService from 'src/Modal/services/ModalCreateOrUpdateStepService'
-import { StepServices } from 'src/Utils/options.utils'
+import { servicesApi } from 'src/Service/services/services.api'
 import { getTypeCommision } from 'src/Utils/util.utils'
 const { Text } = Typography
 
-type ColumnsStepServiceType = GetStepService
+type ColumnsStepServiceType = StepServicesInterface
 
 const LIMIT = 8
 const PAGE = 1
@@ -25,10 +27,20 @@ const StepService = () => {
     limit: LIMIT,
     total: 0
   })
-  const [stepService, setStepService] = useState<GetStepService[]>([])
+  const [stepService, setStepService] = useState<StepServicesInterface[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [categoryQuery, setCategoryQuery] = useState('')
   const [openModalCreateOrUpdateStepService, setOpenModalCreateOrUpdateStepService] = useState(false)
-  const [stepServiceToEdit, setStepServiceToEdit] = useState<GetStepService | null>(null)
+  const [stepServiceToEdit, setStepServiceToEdit] = useState<StepServicesInterface | null>(null)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['stepServices'],
+    queryFn: () => {
+      const query = { search: searchQuery, services_category_id: categoryQuery }
+      return servicesApi.getAllStepService(query)
+    },
+    staleTime: STALETIME
+  })
 
   const goToNextPage = (page: number) => {
     setPagination((prev) => ({
@@ -42,11 +54,13 @@ const StepService = () => {
   }
 
   useEffect(() => {
-    setStepService(StepServices)
-  }, [])
+    if (data) {
+      setStepService(data.data.result)
+    }
+  }, [data])
 
   // Handle update step service
-  const handleUpdateStepService = (stepService: GetStepService) => {
+  const handleUpdateStepService = (stepService: StepServicesInterface) => {
     setStepServiceToEdit(stepService)
     setOpenModalCreateOrUpdateStepService(true)
   }
@@ -56,14 +70,14 @@ const StepService = () => {
       title: 'Tên bước dịch vụ',
       dataIndex: 'name',
       key: 'name',
-      width: 250,
+      width: 220,
       render: (name: string) => <Text>{name}</Text>
     },
     {
       title: 'Danh mục',
-      dataIndex: 'services_category',
-      key: 'services_category',
-      width: 250,
+      dataIndex: 'services_category_id',
+      key: 'services_category_id',
+      width: 220,
       render: (services_category: string) => <Text>{services_category}</Text>
     },
     {
@@ -76,15 +90,15 @@ const StepService = () => {
     },
     {
       title: 'Hoa hồng',
-      dataIndex: 'commission',
-      key: 'commission',
+      dataIndex: 'commision',
+      key: 'commision',
       align: 'center',
       width: 200,
-      sorter: (a: GetStepService, b: GetStepService) => a.commission - b.commission,
+      sorter: (a: StepServicesInterface, b: StepServicesInterface) => a.commission - b.commission,
       sortDirections: ['descend', 'ascend'],
-      render: (commission: number) => (
+      render: (commision: number) => (
         <Text strong style={{ color: '#ff4d4f', fontSize: '15px' }}>
-          {commission.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+          {commision.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
         </Text>
       )
     },
@@ -95,7 +109,7 @@ const StepService = () => {
       align: 'center',
       fixed: 'right',
       width: 120,
-      render: (_, record: GetStepService) => (
+      render: (_, record: StepServicesInterface) => (
         <Flex style={{ alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
           <Button onClick={() => handleUpdateStepService(record)} title='Sửa' icon={<IoPencil color='blue' />} />
           <Popconfirm
@@ -136,12 +150,16 @@ const StepService = () => {
             onSearch={(value) => setSearchQuery(value)}
           />
         </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <OptionsCategoryServices placeholder='Chọn danh mục' search onchange={(value) => setCategoryQuery(value)} />
+        </Col>
       </Row>
 
       {/* Talbe List Step Service */}
       <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
+            loading={isLoading}
             sticky
             style={{ width: '100%' }}
             bordered
@@ -161,7 +179,7 @@ const StepService = () => {
       <ModalCreateOrUpdateStepService
         open={openModalCreateOrUpdateStepService}
         onClose={setOpenModalCreateOrUpdateStepService}
-        stepServiceToEdit={stepServiceToEdit as GetStepService | null}
+        stepServiceToEdit={stepServiceToEdit as StepServicesInterface | null}
         setStepServiceToEdit={setStepServiceToEdit}
       />
     </Fragment>

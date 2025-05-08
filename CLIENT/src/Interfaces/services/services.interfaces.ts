@@ -311,7 +311,20 @@ export interface UpdateUsedServicesData {
   descriptions?: string
 }
 
-export interface GetStepService {
+export interface StepServicesInterface {
+  _id: string
+  services_category_id?: string
+  name: string
+  type: TypeCommision
+  commission: number
+}
+
+export interface GetAllStepServiceRequestBody {
+  services_category_id?: string
+  search?: string
+}
+
+export interface CreateStepServiceRequestBody {
   services_category_id?: string
   name: string
   type: TypeCommision

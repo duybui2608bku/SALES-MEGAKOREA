@@ -1,5 +1,5 @@
 import { Button, Col, Empty, message, Popconfirm, Row, Skeleton, Tag, Typography } from 'antd'
-import { CheckCircleOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, DollarOutlined } from '@ant-design/icons'
 import { useContext, useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { useQuery, useMutation } from '@tanstack/react-query'
@@ -29,6 +29,7 @@ const SoldServicesCardService = () => {
   const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<ServicesOfCardType[]>([])
   const [serviceCardSelected, setServiceCardSelected] = useState<string[]>([])
+  const [totalServiceCardSelected, setTotalServicesCardSelected] = useState<number>(0)
   const [resetServiceCard, setResetServiceCard] = useState(0)
   const [resetValueSearchCustomer, setResetValueSearchCustomer] = useState(false)
   const [resetValueSearchServiceCard, setResetValueSearchServiceCard] = useState(false)
@@ -59,8 +60,9 @@ const SoldServicesCardService = () => {
     }
   }
 
-  const handleSelectServiceCard = (serviceCardIds: string[]) => {
+  const handleSelectServiceCard = (serviceCardIds: string[], total: number) => {
     setServiceCardSelected(serviceCardIds)
+    setTotalServicesCardSelected(total)
   }
 
   const handleSearch = (value: string) => {
@@ -187,14 +189,14 @@ const SoldServicesCardService = () => {
             </Col>
           </Row>
           <Row gutter={[32, 32]} style={{ marginTop: 30 }}>
-            <Col span={8} style={{ marginTop: 30 }}>
+            <Col span={8} style={{ marginTop: 30, height: '600px' }}>
               {customer ? (
                 <CustomerSingleCard data={customer} />
               ) : (
                 <Empty
                   style={{
                     margin: 'auto',
-                    paddingTop: 250,
+                    paddingTop: 200,
                     height: '100%',
                     border: '1px solid #e8ecef',
                     borderRadius: 16
@@ -215,9 +217,14 @@ const SoldServicesCardService = () => {
                 >
                   <Title title='Chọn gói combo liệu trình' level={4} justify='left' />
                   {serviceCardSelected.length !== 0 && (
-                    <Tag icon={<CheckCircleOutlined />} color='success' style={{ padding: '5px 10px 5px 10px' }}>
-                      Tổng thẻ dịch vụ: x{serviceCardSelected.length}
-                    </Tag>
+                    <Fragment>
+                      <Tag icon={<CheckCircleOutlined />} color='success' style={{ padding: '5px 10px 5px 10px' }}>
+                        Tổng thẻ dịch vụ: x{serviceCardSelected.length}
+                      </Tag>
+                      <Tag icon={<DollarOutlined />} color='magenta' style={{ padding: '5px 10px 5px 10px' }}>
+                        {totalServiceCardSelected.toLocaleString('vi-VN')} VNĐ
+                      </Tag>
+                    </Fragment>
                   )}
                   <Popconfirm
                     okButtonProps={{

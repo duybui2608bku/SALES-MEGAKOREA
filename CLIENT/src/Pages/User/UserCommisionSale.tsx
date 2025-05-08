@@ -142,7 +142,11 @@ const UserCommisionSale = () => {
       key: 'totalCommission',
       align: 'center',
       width: 200,
-      render: (totalCommission) => <Text strong>{totalCommission.toLocaleString('vi-VN')} VNĐ</Text>
+      render: (totalCommission) => (
+        <Text style={{ color: '#ff4d4f' }} strong>
+          {totalCommission.toLocaleString('vi-VN')} VNĐ
+        </Text>
+      )
     },
     {
       title: 'Số lượng dịch vụ đã bán',

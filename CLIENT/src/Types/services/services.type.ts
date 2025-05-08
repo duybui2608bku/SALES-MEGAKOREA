@@ -2,7 +2,8 @@ import {
   GetServicesCardSoldOfCustomer,
   ServicesCategoryType,
   ServicesOfCardType,
-  ServicesType
+  ServicesType,
+  StepServicesInterface
 } from 'src/Interfaces/services/services.interfaces'
 import { SuccessResponse } from '../util.type'
 
@@ -52,3 +53,7 @@ export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>
 export type UpdateServicesCardSoldOfCustomerRespone = SuccessResponse<void>
 
 export type UpdateUsedOfServicesRespone = SuccessResponse<void>
+
+// Step Service
+export type GetAllStepServiceResponse = SuccessResponse<StepServicesInterface[]>
+export type CreateStepServiceResponse = SuccessResponse<void>
