@@ -13,7 +13,8 @@ import {
   UpdateCardRequestBody,
   UpdateHistoryPaidOfServicesCardRequestBody,
   UpdateServicesCardSoldOfCustomerRequestBody,
-  UpdateUsedServicesCardSoldRequestBody
+  UpdateUsedServicesCardSoldRequestBody,
+  UpdateQuantityServicesCardSoldRequestBody
 } from '~/models/requestes/Services.card.requests'
 import { createDateRangeQuery, getObjectOrNul, toObjectId } from '~/utils/utils'
 import servicesCardRepository from 'repository/services/services.card.repository'
@@ -300,6 +301,33 @@ class ServicesCardServices {
       history_used
     }
     await servicesCardRepository.updateUsedServicesCardSold(dataUpdate)
+  }
+
+  async UpdateQuantityServicesCardSold(data: UpdateQuantityServicesCardSoldRequestBody) {
+    const { id, history_increase_quantity, services_id, services_card_sold_id, media } = data
+    const servicesCardSoldOfCustomerId = new ObjectId(id)
+    const servicesCardSoldId = new ObjectId(services_card_sold_id)
+
+    const servicesId = new ObjectId(services_id)
+
+    // Check that all required entities exist
+    await Promise.all([
+      this.checkServicesCardSoldOfCustomerExist(servicesCardSoldOfCustomerId),
+      this.checkServicesExist(servicesId),
+      this.checkServicesCardSoldExist(servicesCardSoldId)
+    ])
+
+    // Prepare update data
+    const dataUpdate = {
+      services_card_sold_id: servicesCardSoldId,
+      services_card_sold_of_customer_id: servicesCardSoldOfCustomerId,
+      services_id: servicesId,
+      history_increase_quantity,
+      media
+    }
+
+    // Update quantity in repository
+    await servicesCardRepository.updateQuantityServicesCardSold(dataUpdate)
   }
 }
 

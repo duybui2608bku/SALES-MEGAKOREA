@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongodb'
-import { CardServicesSoldOfCustomerType, HistoryUsed, RefundType } from '~/interface/services/services.interface'
+import {
+  CardServicesSoldOfCustomerType,
+  HistoryIncreaseQuantity,
+  HistoryUsed,
+  RefundType
+} from '~/interface/services/services.interface'
 import { generateCode } from '~/utils/utils'
 
 export class CardServicesSoldOfCustomer {
@@ -13,6 +18,7 @@ export class CardServicesSoldOfCustomer {
   card_services_sold_id: ObjectId[]
   history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
+  history_increase_quantity?: HistoryIncreaseQuantity[]
   user_id: ObjectId
   employee_commision?: ObjectId[]
   seller_commission?: ObjectId[]
@@ -28,6 +34,7 @@ export class CardServicesSoldOfCustomer {
     this.branch = cardServices.branch || []
     this.history_paid = cardServices.history_paid || []
     this.history_used = cardServices.history_used || []
+    this.history_increase_quantity = cardServices.history_increase_quantity || []
     this.card_services_sold_id = cardServices.card_services_sold_id
     this.employee_commision = cardServices.employee_commision || []
     this.seller_commission = cardServices.seller_commission || []

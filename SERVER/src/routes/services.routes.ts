@@ -9,14 +9,18 @@ import {
   getAllServicesCategory,
   getStepService,
   updateServices,
-  updateServicesCategory
+  updateServicesCategory,
+  updateStepService,
+  deleteStepService
 } from '~/controllers/services.controllers'
 import {
   CreateServicesCategoryValidator,
   CreateServicesValidator,
   DeleteServicesCategoryValidator,
   DeleteServicesValidator,
+  DeleteStepServiceValidator,
   UpDateCategoryValidator,
+  UpdateStepServiceValidator,
   updateServicesValidator
 } from '~/middlewares/services.middlewares'
 import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
@@ -145,5 +149,35 @@ ServicesRouters.get('/all', accessTokenValidator, wrapRequestHandler(getAllServi
 ServicesRouters.post('/step/create', accessTokenValidator, wrapRequestHandler(createStepService))
 
 ServicesRouters.get('/step/all', accessTokenValidator, wrapRequestHandler(getStepService))
+
+/*
+Description: Update Step Service
+path: /step/update
+method: PATCH
+Body: {id: string, services_category_id?: string, name?: string, type?: TypeCommision, commission?: number}
+*/
+
+ServicesRouters.patch(
+  '/step/update',
+  accessTokenValidator,
+  // isAdminValidator,
+  UpdateStepServiceValidator,
+  wrapRequestHandler(updateStepService)
+)
+
+/*
+Description: Delete Step Service
+path: /step/delete/:id
+method: DELETE
+Params: id
+*/
+
+ServicesRouters.delete(
+  '/step/delete/:id',
+  accessTokenValidator,
+  // isAdminValidator,
+  DeleteStepServiceValidator,
+  wrapRequestHandler(deleteStepService)
+)
 
 export default ServicesRouters

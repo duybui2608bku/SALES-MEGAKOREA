@@ -297,6 +297,21 @@ export interface UpdateUsedServicesRequestBody {
   }
 }
 
+export interface UpdateQuantityServicesRequestBody {
+  id: string
+  commision_of_technician_id: string
+  services_card_sold_id: string
+  services_id: string
+  media: string[]
+  history_increase_quantity: {
+    name_service: string
+    user_name: string
+    count: number
+    date: string
+    descriptions?: string
+  }
+}
+
 export interface UpdateUsedServicesData {
   commision: number
   type: TypeCommision
@@ -308,6 +323,20 @@ export interface UpdateUsedServicesData {
   user_name: string
   count: number
   date: Date
+  descriptions?: string
+}
+
+export interface UpdateQuantityServicesData {
+  commision: number
+  type: TypeCommision
+  services_card_sold_of_customer_id: string
+  user_id: string
+  services_card_sold_id: string
+  services_id: string
+  name_service: string
+  user_name: string
+  count: number
+  date: string
   descriptions?: string
 }
 

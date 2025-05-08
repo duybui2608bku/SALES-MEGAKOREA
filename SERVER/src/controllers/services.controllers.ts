@@ -9,7 +9,9 @@ import {
   GetAllServicesRequestQuery,
   GetServicesStepRequestQuery,
   UpdateServicesCategoryRequestBody,
-  UpdateServicesRequestBody
+  UpdateServicesRequestBody,
+  UpdateStepServiceRequestBody,
+  DeleteStepServiceRequestParams
 } from '~/models/requestes/Services.requests'
 import servicesServices from '../../services/services.services'
 import { ResponseSuccess } from '~/utils/handlers'
@@ -145,5 +147,27 @@ export const getStepService = async (
     message: servicesMessages.GET_STEP_SERVICES_SUCCESS,
     res,
     result
+  })
+}
+
+export const updateStepService = async (
+  req: Request<ParamsDictionary, any, UpdateStepServiceRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  const result = await servicesServices.updateStepService(data)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_STEP_SERVICES_SUCCESS,
+    res,
+    result
+  })
+}
+
+export const deleteStepService = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+  const { id } = req.params
+  await servicesServices.deleteStepService(id)
+  ResponseSuccess({
+    message: servicesMessages.DELETE_STEP_SERVICES_SUCCESS,
+    res
   })
 }

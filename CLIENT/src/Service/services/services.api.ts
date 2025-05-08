@@ -9,6 +9,7 @@ import {
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
   UpdatePaidOfServicesCardRequestBody,
+  UpdateQuantityServicesRequestBody,
   UpdateServicesCardSoldOfCustomerRequestBody,
   UpdateServicesCategoryRequestBody,
   UpdateServicesRequestBody,
@@ -28,6 +29,7 @@ import {
   GetServicesCardSoldOfCustomerResponse,
   GetServicesResponse,
   UpdateCategoryServicesResponse,
+  UpdateQuantityOfServicesRespone,
   UpdateServicesCardResponse,
   UpdateServicesCardSoldOfCustomerRespone,
   UpdateServicesResponse,
@@ -61,6 +63,9 @@ export const servicesApi = {
   },
   async UpdateUsedOfServices(body: UpdateUsedServicesRequestBody) {
     return axiosInstanceMain.patch<UpdateUsedOfServicesRespone>(pathServices.updateUsedOfServices, body)
+  },
+  async UpdateQuantityOfServices(body: UpdateQuantityServicesRequestBody) {
+    return axiosInstanceMain.patch<UpdateQuantityOfServicesRespone>(pathServices.updateQuantityOfServices, body)
   },
   //Services card
   async createServicesCard(body: CreateServicesCardRequestBody) {

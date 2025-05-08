@@ -12,7 +12,8 @@ import {
   UpdateCardRequestBody,
   UpdateHistoryPaidOfServicesCardRequestBody,
   UpdateServicesCardSoldOfCustomerRequestBody,
-  UpdateUsedServicesCardSoldRequestBody
+  UpdateUsedServicesCardSoldRequestBody,
+  UpdateQuantityServicesCardSoldRequestBody
 } from '~/models/requestes/Services.card.requests'
 import servicesCardServices from '../../services/services.card.services'
 import { ResponseError, ResponseSuccess } from '~/utils/handlers'
@@ -181,6 +182,18 @@ export const UpdateUsedServicesCardSold = async (
   await servicesCardServices.UpdateUsedServicesCardSold(data)
   ResponseSuccess({
     message: servicesMessages.UPDATE_USED_SERVICES_CARD_SUCCESS,
+    res
+  })
+}
+
+export const UpdateQuantityServicesCardSold = async (
+  req: Request<ParamsDictionary, any, UpdateQuantityServicesCardSoldRequestBody>,
+  res: Response
+) => {
+  const data = req.body
+  await servicesCardServices.UpdateQuantityServicesCardSold(data)
+  ResponseSuccess({
+    message: servicesMessages.UPDATE_QUANTITY_SERVICES_CARD_SUCCESS,
     res
   })
 }

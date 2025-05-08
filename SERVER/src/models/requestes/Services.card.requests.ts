@@ -122,3 +122,17 @@ export interface UpdateUsedServicesCardSoldRequestBody {
   services_card_sold_id: string
   history_used: HistoryUsed
 }
+
+export interface UpdateQuantityServicesCardSoldRequestBody {
+  id: string
+  services_card_sold_id: string
+  services_id: string
+  media: string[]
+  history_increase_quantity: {
+    name_service: string
+    user_name: string
+    count: number
+    date: string
+    descriptions?: string
+  }
+}

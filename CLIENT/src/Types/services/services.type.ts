@@ -52,3 +52,5 @@ export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>
 export type UpdateServicesCardSoldOfCustomerRespone = SuccessResponse<void>
 
 export type UpdateUsedOfServicesRespone = SuccessResponse<void>
+
+export type UpdateQuantityOfServicesRespone = SuccessResponse<void>

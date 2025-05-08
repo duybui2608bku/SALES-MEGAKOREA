@@ -276,6 +276,26 @@ class ServicesRepository {
       .toArray()
     return result
   }
+
+  async updateStepService(id: ObjectId, data: any) {
+    const result = await databaseServiceSale.step_services.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          ...data,
+          updated_at: new Date()
+        }
+      },
+      { returnDocument: 'after' }
+    )
+    return result
+  }
+
+  async deleteStepService(id: ObjectId) {
+    await databaseServiceSale.step_services.deleteOne({
+      _id: id
+    })
+  }
 }
 
 const serverRepository = new ServicesRepository()

@@ -6,7 +6,8 @@ import {
   GetAllServicesRequestData,
   GetServicesStepRequestQuery,
   UpdateServicesCategoryRequestBody,
-  UpdateServicesRequestBody
+  UpdateServicesRequestBody,
+  UpdateStepServiceRequestBody
 } from '../src/models/requestes/Services.requests'
 import serverRepository from '../repository/services/services.repository'
 import { ObjectId } from 'mongodb'
@@ -129,20 +130,58 @@ class ServicesServices {
   }
 
   async getStepServices(data: GetServicesStepRequestQuery) {
-    const query = {
-      services_category_id: data.services_category_id ? new ObjectId(data.services_category_id) : null,
-      name: {
-        $regex: data.search ? data.search : null,
-        $options: 'i'
-      }
+    const { services_category_id, search } = data
+    const servicesCategoryId = services_category_id ? new ObjectId(services_category_id) : null
+    const query: any = {}
+    if (servicesCategoryId) {
+      query.services_category_id = servicesCategoryId
     }
-    console.log('query', query)
+    if (search) {
+      query.$or = [{ name: { $regex: search, $options: 'i' } }]
+    }
+    const page = Number(data.page) || 1
+    const limit = Number(data.limit) || 10
     const result = await serverRepository.getStepServices({
-      query,
-      page: 1,
-      limit: 100
+      page,
+      limit,
+      query
     })
     return result
+  }
+
+  async updateStepService(data: UpdateStepServiceRequestBody) {
+    const { id, services_category_id, ...restData } = data
+    const serviceId = new ObjectId(id)
+    await this.checkStepServiceExist(serviceId)
+
+    const servicesCategoryId = services_category_id ? new ObjectId(services_category_id) : null
+    if (servicesCategoryId) {
+      await this.checkServicesCategoryExist(servicesCategoryId)
+    }
+
+    const updateData: any = { ...restData }
+    if (services_category_id !== undefined) {
+      updateData.services_category_id = servicesCategoryId
+    }
+
+    return await serverRepository.updateStepService(serviceId, updateData)
+  }
+
+  async deleteStepService(id: string) {
+    const stepServiceId = new ObjectId(id)
+    await this.checkStepServiceExist(stepServiceId)
+    await serverRepository.deleteStepService(stepServiceId)
+  }
+
+  private async checkStepServiceExist(id: ObjectId) {
+    const stepService = await databaseServiceSale.step_services.findOne({ _id: id })
+    if (!stepService) {
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.SERVICES_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+    return stepService
   }
 }
 

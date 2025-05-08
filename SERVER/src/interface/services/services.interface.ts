@@ -215,6 +215,15 @@ export interface HistoryUsed {
   descriptions?: string
 }
 
+export interface HistoryIncreaseQuantity {
+  name_service: string
+  user_name: string
+  count: number
+  date: Date
+  descriptions?: string
+  media?: string[]
+}
+
 export interface CardServicesType {
   _id?: ObjectId
   code?: string
@@ -259,6 +268,7 @@ export interface CardServicesSoldOfCustomerType {
   card_services_sold_id: ObjectId[]
   history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
+  history_increase_quantity?: HistoryIncreaseQuantity[]
   refund?: RefundType | null
   user_id: ObjectId
   employee_commision?: ObjectId[]
