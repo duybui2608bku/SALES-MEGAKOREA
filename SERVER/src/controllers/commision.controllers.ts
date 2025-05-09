@@ -15,7 +15,7 @@ import commisionServicesOfSale from 'services/commision.services'
 import { HttpStatusCode } from '~/constants/enum'
 import commisionServicesOfTechnican from 'services/commisionOfTechnican'
 
-// SELLER COMMISION
+// SELLER Commision
 export const createCommisionOfSeller = async (
   req: Request<ParamsDictionary, any, CreateCommisionOfSellerRequestType>,
   res: Response
@@ -24,7 +24,7 @@ export const createCommisionOfSeller = async (
   const result = await commisionServicesOfSale.createCommisionOfSeller(data)
   return ResponseSuccess({
     res,
-    message: commisionMessages.CREATE_COMMISION_OF_SELLER_SUCCESS,
+    message: commisionMessages.CREATE_Commision_OF_SELLER_SUCCESS,
     result
   })
 }
@@ -44,19 +44,19 @@ export const GetCommisionOfSellerByUserId = async (
   if (result.length === 0) {
     return ResponseError({
       res,
-      message: commisionMessages.COMMISION_OF_SELLER_EMPTY,
+      message: commisionMessages.Commision_OF_SELLER_EMPTY,
       statusCode: HttpStatusCode.NotFound
     })
   } else {
     return ResponseSuccess({
       res,
-      message: commisionMessages.GET_COMMISION_OF_SELLER_SUCCESS,
+      message: commisionMessages.GET_Commision_OF_SELLER_SUCCESS,
       result
     })
   }
 }
 
-// TECHNICIAN COMMISION
+// TECHNICIAN Commision
 
 export const createCommisionOfTechnican = async (
   req: Request<ParamsDictionary, any, CreateCommisionOfTechnicanRequestType>,
@@ -66,7 +66,7 @@ export const createCommisionOfTechnican = async (
   const result = await commisionServicesOfTechnican.createCommisionOfTechnican(data)
   return ResponseSuccess({
     res,
-    message: commisionMessages.CREATE_COMMISION_OF_TECHNICAN_SUCCESS,
+    message: commisionMessages.CREATE_Commision_OF_TECHNICAN_SUCCESS,
     result: result.insertedId
   })
 }
@@ -86,13 +86,13 @@ export const GetCommisionOfTechnicanByUserId = async (
   if (result.length === 0) {
     return ResponseError({
       res,
-      message: commisionMessages.COMMISION_OF_SELLER_EMPTY,
+      message: commisionMessages.Commision_OF_SELLER_EMPTY,
       statusCode: HttpStatusCode.NotFound
     })
   } else {
     return ResponseSuccess({
       res,
-      message: commisionMessages.GET_COMMISION_OF_SELLER_SUCCESS,
+      message: commisionMessages.GET_Commision_OF_SELLER_SUCCESS,
       result
     })
   }
@@ -107,13 +107,13 @@ export const GetAllCommisionOfTechnicanReport = async (
   if (result.data.length === 0) {
     return ResponseError({
       res,
-      message: commisionMessages.COMMISION_OF_TECHNICAN_EMPTY,
+      message: commisionMessages.Commision_OF_TECHNICAN_EMPTY,
       statusCode: HttpStatusCode.NotFound
     })
   } else {
     return ResponseSuccess({
       res,
-      message: commisionMessages.GET_COMMISION_OF_TECHNICAN_SUCCESS,
+      message: commisionMessages.GET_Commision_OF_TECHNICAN_SUCCESS,
       result: result
     })
   }
@@ -128,13 +128,13 @@ export const GetAllCommisionOfSellerReport = async (
   if (result.data.length === 0) {
     return ResponseError({
       res,
-      message: commisionMessages.COMMISION_OF_SELLER_EMPTY,
+      message: commisionMessages.Commision_OF_SELLER_EMPTY,
       statusCode: HttpStatusCode.NotFound
     })
   } else {
     return ResponseSuccess({
       res,
-      message: commisionMessages.GET_COMMISION_OF_SELLER_SUCCESS,
+      message: commisionMessages.GET_Commision_OF_SELLER_SUCCESS,
       result: result
     })
   }

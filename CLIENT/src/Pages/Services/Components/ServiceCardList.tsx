@@ -23,6 +23,7 @@ const ServiceCardList = ({
 }: ServiceCardListProps) => {
   // State để theo dõi các card được chọn
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalPriceCards, setTotalPriceCards] = useState(0)
   const [prevResetCard, setPrevResetCard] = useState<number>(resetCard ?? 0)
   const [expandedCardIds, setExpandedCardIds] = useState(new Set())

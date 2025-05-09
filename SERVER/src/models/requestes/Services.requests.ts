@@ -70,7 +70,7 @@ export interface CreateServicesStepRequestBody {
   services_category_id?: string
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
 }
 
 export interface GetServicesStepRequestQuery {
@@ -81,11 +81,11 @@ export interface GetServicesStepRequestQuery {
 }
 
 export interface UpdateStepServiceRequestBody {
-  id: string
+  _id: string
   name?: string
   services_category_id?: string
   type?: TypeCommision
-  commission?: number
+  commision?: number
 }
 
 export interface DeleteStepServiceRequestParams {

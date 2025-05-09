@@ -4,8 +4,10 @@ import {
   CreateServicesCategoryRequestBody,
   CreateServicesRequestBody,
   CreateSoldServicesCardRequestBody,
+  CreateStepServiceRequestBody,
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestQuery,
+  GetAllStepServiceRequestBody,
   GetServicesCardRequestBody,
   GetServicesCardSoldOfCustomerRequestBody,
   UpdatePaidOfServicesCardRequestBody,
@@ -22,8 +24,10 @@ import {
   CreateServicesCardResponse,
   CreateServicesCardSoldOfCustomerResponse,
   CreateServicesResponse,
+  CreateStepServiceResponse,
   DeleteCategoryServicesResponse,
   DeleteServicesResponse,
+  GetAllStepServiceResponse,
   GetCategoryServicesResponse,
   GetServicesCardResponse,
   GetServicesCardSoldOfCustomerResponse,
@@ -59,10 +63,40 @@ export const servicesApi = {
     return axiosInstanceMain.delete<DeleteServicesResponse>(`${pathServices.deleteServices}/${id}`)
   },
   updateServices(body: UpdateServicesRequestBody) {
-    return axiosInstanceMain.patch<UpdateServicesResponse>(pathServices.updateServices, body)
+    // Filter out empty arrays and empty strings
+    const filteredBody = Object.entries(body).reduce((acc, [key, value]) => {
+      // Skip empty arrays or empty strings
+      if ((Array.isArray(value) && value.length === 0) || (typeof value === 'string' && value === '')) {
+        return acc
+      }
+
+      // Keep non-empty values
+      return { ...acc, [key]: value }
+    }, {})
+
+    return axiosInstanceMain.patch<UpdateServicesResponse>(pathServices.updateServices, filteredBody)
+  },
+  updateServiceStatus(id: string, is_active: boolean) {
+    return axiosInstanceMain.patch<UpdateServicesResponse>(pathServices.updateServices, {
+      _id: id,
+      is_active
+    })
   },
   async UpdateUsedOfServices(body: UpdateUsedServicesRequestBody) {
     return axiosInstanceMain.patch<UpdateUsedOfServicesRespone>(pathServices.updateUsedOfServices, body)
+  },
+  // Step service
+  async getAllStepService(query: GetAllStepServiceRequestBody) {
+    return axiosInstanceMain.get<GetAllStepServiceResponse>(pathServices.getAllStepService, { params: query })
+  },
+  async createStepService(body: CreateStepServiceRequestBody) {
+    return axiosInstanceMain.post<CreateStepServiceResponse>(pathServices.createStepService, body)
+  },
+  async updateStepService(body: any) {
+    return axiosInstanceMain.patch<any>(pathServices.updateStepService, body)
+  },
+  async deleteStepService(id: string) {
+    return axiosInstanceMain.delete<any>(`${pathServices.deleteStepService}/${id}`)
   },
   async UpdateQuantityOfServices(body: UpdateQuantityServicesRequestBody) {
     return axiosInstanceMain.patch<UpdateQuantityOfServicesRespone>(pathServices.updateQuantityOfServices, body)

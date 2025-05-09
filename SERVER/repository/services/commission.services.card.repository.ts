@@ -4,12 +4,12 @@ import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.
 
 class CommisionSellerRepository {
   async createCommisionOfSeller(data: CreateCommisionOfSellerData) {
-    return await databaseServiceSale.commission_seller.insertOne(new CommisionOfSeller(data))
+    return await databaseServiceSale.commision_seller.insertOne(new CommisionOfSeller(data))
   }
 
   async getCommisionOfSellerByUserId(data: GetCommisionOfSellerData) {
     const { user_id, query } = data
-    const result = await databaseServiceSale.commission_seller
+    const result = await databaseServiceSale.commision_seller
       .aggregate([
         {
           $match: {

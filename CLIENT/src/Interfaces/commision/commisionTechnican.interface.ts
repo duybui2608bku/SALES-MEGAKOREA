@@ -11,9 +11,9 @@ export interface CommisionTechnicanUserInterface {
   userName: string
   branchId: string
   branchName: string
-  totalPercentCommission: number
-  totalFixedCommission: number
-  totalCommission: number
+  totalPercentCommision: number
+  totalFixedCommision: number
+  totalCommision: number
   count: number
   userId: string
 }

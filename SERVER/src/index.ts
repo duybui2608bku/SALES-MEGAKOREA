@@ -13,6 +13,7 @@ import productRouters from './routes/product.routes'
 import servicesOfCardRouters from './routes/services.card.routes'
 import CustomersRouter from './routes/customers.routes'
 import CommisionRouter from './routes/commision.routes'
+
 config()
 
 const corsOptions = {

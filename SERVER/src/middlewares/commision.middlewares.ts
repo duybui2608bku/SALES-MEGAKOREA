@@ -20,12 +20,12 @@ export const CreateCommisionOfSellerValidator = validate(
       commision: {
         isInt: {
           options: { min: 0 },
-          errorMessage: commisionMessages.COMMISION_MUST_BE_NUMBER_GREATER_THAN_ZERO
+          errorMessage: commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO
         },
         custom: {
           options: (value) => {
             if (typeof value !== 'number' || !Number.isInteger(value)) {
-              throw new Error(commisionMessages.COMMISION_MUST_BE_NUMBER_GREATER_THAN_ZERO)
+              throw new Error(commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO)
             }
             return true
           }
@@ -124,12 +124,12 @@ export const CreateCommisionOfTechnicanValidator = validate(
       commision: {
         isInt: {
           options: { min: 0 },
-          errorMessage: commisionMessages.COMMISION_MUST_BE_NUMBER_GREATER_THAN_ZERO
+          errorMessage: commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO
         },
         custom: {
           options: (value) => {
             if (typeof value !== 'number' || !Number.isInteger(value)) {
-              throw new Error(commisionMessages.COMMISION_MUST_BE_NUMBER_GREATER_THAN_ZERO)
+              throw new Error(commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO)
             }
             return true
           }

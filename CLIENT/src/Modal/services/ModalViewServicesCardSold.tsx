@@ -314,10 +314,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     if (!servicesCardSoldOfCustomerData) return
 
     try {
-      // Prepare data for API call - without commission
+      // Prepare data for API call - without commision
       const dataUpdateQuantityOfServices: UpdateQuantityServicesRequestBody = {
         id: servicesCardSoldOfCustomerData._id,
-        commision_of_technician_id: '', // Empty as we don't need commission
+        commision_of_technician_id: '', // Empty as we don't need commision
         services_card_sold_id: increasingService.cardId,
         services_id: increasingService.serviceId,
         media: uploadedImages,
@@ -384,7 +384,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       // Reset ref
       updatingServiceRef.current = null
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, _, context) => {
       message.error(`Lỗi khi sử dụng dịch vụ: ${error.message}`)
 
       // Khôi phục dữ liệu cache nếu có lỗi

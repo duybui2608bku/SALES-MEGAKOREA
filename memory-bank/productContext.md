@@ -7,7 +7,7 @@ Service-based businesses with multiple branches, services, and staff roles often
 - Managing complex service offerings and packages
 - Tracking inventory and product usage
 - Monitoring customer service history
-- Managing staff commissions
+- Managing staff commisions
 - Coordinating operations across multiple locations
 - Ensuring consistent service quality
 - Processing payments and maintaining financial records
@@ -35,7 +35,7 @@ The SALE-MANAGER-MEGAKOREA system addresses these challenges by providing an int
 
 - Monitors branch performance
 - Manages service offerings and pricing
-- Reviews staff performance and commissions
+- Reviews staff performance and commisions
 - Requires access to operational reports and management functions
 
 ### Sales Staff
@@ -56,7 +56,7 @@ The SALE-MANAGER-MEGAKOREA system addresses these challenges by providing an int
 
 - Manages financial records
 - Processes payments
-- Handles commission calculations
+- Handles commision calculations
 - Requires access to financial data and reporting tools
 
 ## How the System Should Work
@@ -73,7 +73,7 @@ The system facilitates the following core workflows:
    - Service usage tracking
 3. **Staff Management Flow**
    - User registration and role assignment
-   - Commission tracking
+   - Commision tracking
    - Performance monitoring
 4. **Inventory Management Flow**
 
@@ -83,7 +83,7 @@ The system facilitates the following core workflows:
 
 5. **Financial Operations Flow**
    - Payment processing
-   - Commission calculation
+   - Commision calculation
    - Financial reporting
 
 ## Success Criteria
@@ -94,5 +94,5 @@ The system will be considered successful if it:
 - Improves customer service delivery
 - Enhances financial tracking and reporting
 - Streamlines multi-branch operations
-- Provides accurate commission calculations
+- Provides accurate commision calculations
 - Offers insightful business analytics

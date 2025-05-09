@@ -7,7 +7,7 @@ export class ServicesStep {
   services_category_id: ObjectId | null
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
   descriptions?: string
   created_at?: Date
   updated_at?: Date
@@ -17,7 +17,7 @@ export class ServicesStep {
     this.name = servicesCategory.name || ''
     this.descriptions = servicesCategory.descriptions || ''
     this.type = servicesCategory.type || TypeCommision.FIXED
-    this.commission = servicesCategory.commission || 0
+    this.commision = servicesCategory.commision || 0
     this.created_at = servicesCategory.created_at || new Date()
     this.updated_at = servicesCategory.updated_at || new Date()
   }

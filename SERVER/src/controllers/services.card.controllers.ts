@@ -97,14 +97,14 @@ export const getServicesCard = async (
     : ResponseError({ message: servicesMessages.SERVICES_CARD_NOT_FOUND, res, statusCode: HttpStatusCode.BadRequest })
 }
 
-export const getCommissionOfDate = async (
+export const getCommisionOfDate = async (
   req: Request<ParamsDictionary, any, GetCommisionOfDateRequestBody>,
   res: Response
 ) => {
   const data = req.body
-  const result = await servicesCardServices.GetCommissionOfDate(data)
+  const result = await servicesCardServices.GetCommisionOfDate(data)
   ResponseSuccess({
-    message: servicesMessages.GET_COMMISSION_SUCCESS,
+    message: servicesMessages.GET_Commision_SUCCESS,
     result,
     res
   })

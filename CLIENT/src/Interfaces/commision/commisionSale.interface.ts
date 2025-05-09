@@ -2,7 +2,7 @@ export interface CommisionSaleUserInterface {
   userName: string
   branchId: string
   branchName: string
-  totalCommission: number
+  totalCommision: number
   count: number
   userId: string
 }

@@ -1,4 +1,4 @@
-import { CommisionSaleUserInterface } from 'src/Interfaces/commison/commisionSale.interface'
+import { CommisionSaleUserInterface } from 'src/Interfaces/commision/commisionSale.interface'
 import { SuccessResponse } from '../util.type'
 
 export type GetCommisionSaleUserResponse = SuccessResponse<{
@@ -9,7 +9,7 @@ export type GetCommisionSaleUserResponse = SuccessResponse<{
     total: number
   }
   summary: {
-    totalCommission: number
+    totalCommision: number
     totalUser: number
   }
 }>

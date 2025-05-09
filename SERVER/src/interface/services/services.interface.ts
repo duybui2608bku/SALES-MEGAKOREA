@@ -272,7 +272,7 @@ export interface CardServicesSoldOfCustomerType {
   refund?: RefundType | null
   user_id: ObjectId
   employee_commision?: ObjectId[]
-  seller_commission?: ObjectId[]
+  seller_commision?: ObjectId[]
   created_at?: Date
   updated_at?: Date
 }
@@ -339,14 +339,14 @@ export interface StepServicesType {
   services_category_id: ObjectId | null
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
 }
 
 export interface CreateServicesStepData {
   services_category_id: ObjectId | null
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
   discriptions?: string
 }
 

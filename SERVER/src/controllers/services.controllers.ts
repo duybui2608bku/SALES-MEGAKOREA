@@ -146,7 +146,7 @@ export const getStepService = async (
   ResponseSuccess({
     message: servicesMessages.GET_STEP_SERVICES_SUCCESS,
     res,
-    result: response
+    result: response.result
   })
 }
 
