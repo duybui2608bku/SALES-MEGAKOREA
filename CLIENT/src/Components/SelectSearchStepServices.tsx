@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
-import { Select, SelectProps } from 'antd'
+// Thay thế component SelectSearchStepServices bằng phiên bản cải tiến này
+// import { useQuery } from '@tanstack/react-query'
+import { Select, SelectProps, Spin } from 'antd'
 import { useCallback, useEffect, useState, memo, useMemo, useRef } from 'react'
 import { servicesApi } from 'src/Service/services/services.api'
 
-// Export this interface so it can be used in other components
 export interface StepServicesInterface {
   _id: string
   name: string
@@ -13,121 +13,176 @@ export interface StepServicesInterface {
 }
 
 interface SelectSearchStepServicesProps {
+  cateValue?: string
   placeholder?: string
   clear?: boolean
   initialValue?: string
   onHandleChange?: (value: StepServicesInterface | null) => void
+  forceSelectedValue?: string // New prop
 }
 
-const STALETIME = 5 * 60 * 1000
+// const STALETIME = 5 * 60 * 1000
 
 const SelectSearchStepServices = memo((props: SelectSearchStepServicesProps) => {
-  const { placeholder = 'Nhập bước dịch vụ để tìm kiếm', onHandleChange, clear = true, initialValue } = props
+  const {
+    placeholder = 'Nhập bước dịch vụ để tìm kiếm',
+    onHandleChange,
+    clear = true,
+    initialValue,
+    cateValue,
+    forceSelectedValue
+  } = props
+
   const [searchValue, setSearchValue] = useState<string>('')
   const [selectedStepService, setSelectedStepService] = useState<StepServicesInterface | null>(null)
   const [stepServices, setStepServices] = useState<StepServicesInterface[]>([])
-  const initialLoadRef = useRef(false)
+  const [loading, setLoading] = useState(false)
 
-  // Load initial value if provided
+  // Track when we should load the initialValue
+  const initialValueLoadedRef = useRef(false)
+  const initialValueRef = useRef(initialValue)
+
+  // Keep track of category value changes
+  const [categoryValue, setCategoryValue] = useState('')
+  const prevCategoryValueRef = useRef('')
+
+  // Debug logging
   useEffect(() => {
-    if (initialValue && !selectedStepService && !initialLoadRef.current) {
-      initialLoadRef.current = true
+    console.log('SelectSearchStepServices render with:', {
+      initialValue,
+      cateValue,
+      selectedStepService: selectedStepService ? selectedStepService._id : null,
+      initialValueLoaded: initialValueLoadedRef.current,
+      optionsCount: stepServices.length
+    })
+  }, [initialValue, cateValue, selectedStepService, stepServices.length])
 
-      // First get all step services to find the one with matching ID
-      servicesApi
-        .getAllStepService({})
-        .then((response) => {
-          if (response.data && response.data.result) {
-            const allSteps = response.data.result
-            const matchingStep = allSteps.find((step: any) => step._id === initialValue)
-            if (matchingStep) {
-              setSelectedStepService({
-                _id: matchingStep._id,
-                name: matchingStep.name,
-                commision: matchingStep.commision,
-                type: matchingStep.type,
-                services_category_id: matchingStep.services_category_id || null
-              })
-              // Don't set search value to allow new searches
-            }
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching step services:', error)
-        })
+  // Update category value when prop changes
+  useEffect(() => {
+    if (cateValue !== categoryValue) {
+      console.log(`Category value changed from ${categoryValue} to ${cateValue}`)
+
+      if (cateValue) {
+        setCategoryValue(cateValue)
+        prevCategoryValueRef.current = categoryValue
+
+        // When changing categories, we may need to reset the selection
+        if (
+          selectedStepService &&
+          selectedStepService.services_category_id !== cateValue &&
+          prevCategoryValueRef.current !== ''
+        ) {
+          setSelectedStepService(null)
+        }
+      }
     }
-  }, [initialValue, selectedStepService])
+  }, [cateValue, categoryValue, selectedStepService])
 
-  // Load all steps on component mount to show options without search
+  // Reset when initialValue changes - important for when editing different records
   useEffect(() => {
+    if (initialValue !== initialValueRef.current) {
+      console.log(`initialValue changed from ${initialValueRef.current} to ${initialValue}`)
+      initialValueRef.current = initialValue
+      initialValueLoadedRef.current = false
+    }
+  }, [initialValue])
+
+  // Load step services based on category
+  useEffect(() => {
+    if (!categoryValue) return
+
+    console.log(`Loading step services for category: ${categoryValue}`)
+    setLoading(true)
+
     servicesApi
-      .getAllStepService({})
+      .getAllStepService({ services_category_id: categoryValue })
       .then((response) => {
         if (response.data && response.data.result) {
-          const allSteps = response.data.result
-          const mappedSteps = allSteps.map((step: any) => ({
+          const filteredSteps = response.data.result.map((step: any) => ({
             _id: step._id,
             name: step.name,
             commision: step.commision || 0,
             type: step.type,
             services_category_id: step.services_category_id || null
           }))
-          setStepServices(mappedSteps)
+
+          console.log(`Loaded ${filteredSteps.length} step services for category ${categoryValue}`)
+          setStepServices(filteredSteps)
+
+          // Check if we have an initialValue that needs to be loaded
+          if (initialValue && !initialValueLoadedRef.current) {
+            const matchingStep = filteredSteps.find((step) => step._id === initialValue)
+            if (matchingStep) {
+              console.log(`Found matching step for initialValue ${initialValue}:`, matchingStep)
+              setSelectedStepService(matchingStep)
+              initialValueLoadedRef.current = true
+            } else {
+              console.log(`No matching step found for initialValue ${initialValue} in category ${categoryValue}`)
+            }
+          }
         }
       })
       .catch((error) => {
-        console.error('Error fetching initial step services:', error)
+        console.error('Error fetching step services by category:', error)
       })
-  }, [])
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [categoryValue, initialValue])
 
-  // Debounce search value changes to prevent excessive API calls
-  const debouncedSearchValue = useMemo(() => {
-    return searchValue
-  }, [searchValue])
-
-  // Fetch data from API with the searchValue as a dependency
-  const { data, isLoading } = useQuery({
-    queryKey: ['searchStepService', debouncedSearchValue],
-    queryFn: () => {
-      const query = { search: debouncedSearchValue }
-      return servicesApi.getAllStepService(query)
-    },
-    staleTime: STALETIME,
-    // Enable fetching only if there's a search value
-    enabled: debouncedSearchValue !== '',
-    // Don't refetch on window focus to reduce unnecessary API calls
-    refetchOnWindowFocus: false
-  })
-
+  // Handle forceSelectedValue updates
   useEffect(() => {
-    if (data) {
-      const searchResults = data.data.result.map((service: any) => ({
-        _id: service._id,
-        name: service.name,
-        commision: service.commision || 0,
-        type: service.type,
-        services_category_id: service.services_category_id
-      }))
-
-      // If search is active, show search results
-      if (debouncedSearchValue) {
-        setStepServices(searchResults)
+    if (forceSelectedValue && stepServices.length > 0) {
+      const matchingStep = stepServices.find((step) => step._id === forceSelectedValue)
+      if (matchingStep && (!selectedStepService || selectedStepService._id !== forceSelectedValue)) {
+        console.log(`Forcing selection to ${forceSelectedValue}`)
+        setSelectedStepService(matchingStep)
       }
     }
-  }, [data, debouncedSearchValue])
+  }, [forceSelectedValue, stepServices, selectedStepService])
 
-  // Xử lý khi người dùng nhập vào ô tìm kiếm
-  const handleSearch = useCallback((value: string) => {
-    setSearchValue(value)
-    // Keep selection when searching
-  }, [])
+  // Handle search
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchValue(value)
 
-  // Xử lý khi người dùng chọn một option
+      if (value.trim() === '') return
+
+      setLoading(true)
+      servicesApi
+        .getAllStepService({
+          search: value,
+          services_category_id: categoryValue
+        })
+        .then((response) => {
+          if (response.data && response.data.result) {
+            const searchResults = response.data.result.map((step: any) => ({
+              _id: step._id,
+              name: step.name,
+              commision: step.commision || 0,
+              type: step.type,
+              services_category_id: step.services_category_id || null
+            }))
+            setStepServices(searchResults)
+          }
+        })
+        .catch((error) => {
+          console.error('Error searching step services:', error)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    },
+    [categoryValue]
+  )
+
+  // Handle selection change
   const handleChange = useCallback(
     (value: string) => {
       if (value) {
         try {
           const stepServicesValue = JSON.parse(value) as StepServicesInterface
+          console.log('Selected step service:', stepServicesValue)
           setSelectedStepService(stepServicesValue)
           setSearchValue('') // Clear search after selection
           onHandleChange?.(stepServicesValue)
@@ -142,15 +197,15 @@ const SelectSearchStepServices = memo((props: SelectSearchStepServicesProps) => 
     [onHandleChange]
   )
 
-  // Xử lí khi xoá lựa chọn
+  // Handle clear selection
   const handleClear = useCallback(() => {
     setSearchValue('')
     setSelectedStepService(null)
-    initialLoadRef.current = false
+    initialValueLoadedRef.current = false
     onHandleChange?.(null)
   }, [onHandleChange])
 
-  // Memoize options to prevent unnecessary re-renders
+  // Prepare options for the Select
   const options: SelectProps['options'] = useMemo(
     () =>
       stepServices.map((step: StepServicesInterface) => ({
@@ -160,9 +215,15 @@ const SelectSearchStepServices = memo((props: SelectSearchStepServicesProps) => 
     [stepServices]
   )
 
+  // Format the selected value for the Select
+  const selectValue = useMemo(() => {
+    if (!selectedStepService) return undefined
+    return JSON.stringify(selectedStepService)
+  }, [selectedStepService])
+
   return (
     <Select
-      value={selectedStepService ? JSON.stringify(selectedStepService) : undefined}
+      value={selectValue}
       showSearch
       placeholder={placeholder}
       filterOption={false}
@@ -171,16 +232,17 @@ const SelectSearchStepServices = memo((props: SelectSearchStepServicesProps) => 
       onSearch={handleSearch}
       onChange={handleChange}
       onClear={handleClear}
-      loading={isLoading}
+      loading={loading}
       defaultActiveFirstOption={false}
       searchValue={searchValue}
       autoClearSearchValue={false}
       labelInValue={false}
+      notFoundContent={loading ? <Spin size='small' /> : 'Không tìm thấy dữ liệu'}
+      optionFilterProp='label'
     />
   )
 })
 
-// Add display name
 SelectSearchStepServices.displayName = 'SelectSearchStepServices'
 
 export default SelectSearchStepServices

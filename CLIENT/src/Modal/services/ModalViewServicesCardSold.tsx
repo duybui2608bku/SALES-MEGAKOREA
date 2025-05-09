@@ -92,6 +92,8 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const [uploading, setUploading] = useState(false)
   const [form] = Form.useForm()
 
+  console.log('dataCard: ', servicesCardSoldOfCustomerData)
+
   // Ref lưu thông tin dịch vụ đang được cập nhật
   const updatingServiceRef = useRef<{
     cardId: string

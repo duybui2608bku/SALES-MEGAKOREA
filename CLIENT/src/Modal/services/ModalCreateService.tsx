@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Card, Button } from 'antd'
 import { HttpStatusCode } from 'axios'
-import { Fragment, useContext, useEffect, useCallback, useRef } from 'react'
+import { Fragment, useContext, useEffect, useCallback, useRef, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import { AppContext } from 'src/Context/AppContext'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
@@ -22,6 +22,11 @@ interface ModalCreateServiceProps {
   setServiceToEdit?: (value: ServicesType | null) => void
 }
 
+interface StepServiceFormType {
+  _id: string
+  commision: number
+}
+
 interface FieldsType {
   _id: string
   is_active: boolean
@@ -33,7 +38,7 @@ interface FieldsType {
   descriptions?: string
   price?: number
   service_group_id?: string
-  step_services?: string[]
+  step_services?: StepServiceFormType[]
   products?: ProductOfServices[]
   [key: string]: unknown
 }
@@ -49,7 +54,7 @@ interface FieldsCreateType {
   descriptions?: string
   price?: number
   service_group_id?: string
-  step_services?: string[]
+  step_services?: StepServiceFormType[]
   products?: ProductOfServices[]
   [key: string]: unknown
 }
@@ -80,6 +85,33 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
   const { profile } = useContext(AppContext)
   const [form] = Form.useForm()
   const { branchList } = useQueryBranch()
+  const [categoryValue, setCategoryValue] = useState('')
+  const [stepServicesKey, setStepServicesKey] = useState(0)
+
+  // force re-render khi categoryValue thay đổi
+  useEffect(() => {
+    if (categoryValue) {
+      setStepServicesKey((prev) => prev + 1)
+    }
+  }, [categoryValue])
+
+  // Khi tồn tại serviceToEdit, toạ cấu trúc dữ liệu đúng cho step_services
+  const structuredStepServices = []
+  if (serviceToEdit?.step_services_details && Array.isArray(serviceToEdit?.step_services_details)) {
+    for (const step of serviceToEdit.step_services_details) {
+      if (typeof step === 'string') {
+        structuredStepServices.push({
+          _id: step,
+          commision: 0 // Giá trị mặc định
+        })
+      } else if (step && typeof step === 'object') {
+        structuredStepServices.push({
+          _id: step._id,
+          commision: step.commision || 0
+        })
+      }
+    }
+  }
 
   // Use a ref to track if the form has been initialized
   const formInitialized = useRef(false)
@@ -109,28 +141,39 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
 
         const service_group_id = serviceToEdit.service_group?._id || ''
 
-        // Extract step service IDs
-        const stepServiceIds = []
+        // Set category value for filtering step services
+        setCategoryValue(service_group_id)
+
+        // Convert step_services_details to structured format with _id and commision
+        const structuredStepServices: StepServiceFormType[] = []
 
         // First check step_services_details (from API response)
         if (serviceToEdit.step_services_details && Array.isArray(serviceToEdit.step_services_details)) {
           for (const step of serviceToEdit.step_services_details) {
             if (typeof step === 'string') {
-              stepServiceIds.push(step)
+              structuredStepServices.push({
+                _id: step,
+                commision: 0
+              })
             } else if (step && typeof step === 'object' && step._id) {
-              stepServiceIds.push(step._id)
+              structuredStepServices.push({
+                _id: step._id,
+                commision: step.commision || 0
+              })
             }
           }
         }
 
-        console.log('Step service IDs:', stepServiceIds)
+        console.log('Step service IDs:', structuredStepServices)
 
-        form.setFieldsValue({
-          ...serviceToEdit,
-          branch: branchIds,
-          service_group_id,
-          step_services: stepServiceIds
-        })
+        setTimeout(() => {
+          form.setFieldsValue({
+            ...serviceToEdit,
+            branch: branchIds,
+            service_group_id,
+            step_services: structuredStepServices
+          })
+        }, 0)
       } catch (error) {
         console.error('Error setting form values:', error)
       }
@@ -160,6 +203,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     },
     onSuccess: () => {
       message.success('Tạo dịch vụ thành công!')
+      setCategoryValue('')
       queryClient.invalidateQueries({ queryKey: ['getAllServices'] })
       form.resetFields()
       onClose(false)
@@ -185,6 +229,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     onSuccess: () => {
       message.success('Cập nhật dịch vụ thành công!')
       form.resetFields()
+      setCategoryValue('')
       setServiceToEdit?.(null)
       onClose(false)
       formInitialized.current = false
@@ -208,11 +253,18 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
         message.error('Không thể tạo dịch vụ: User ID không hợp lệ!')
         return
       }
+
+      if (values.step_services?.length === undefined || values.step_services?.length === 0) {
+        message.error('Bạn chưa thêm bước dịch vụ!')
+        return
+      }
+
       const user_id = profile._id
       const branch = getBranchList(values.branch || [])
+      const stepServiceIds = values.step_services?.map((step) => step._id) || []
 
       // Create service data with user_id and branch
-      const serviceData = { ...values, user_id, branch }
+      const serviceData = { ...values, user_id, branch, step_services: stepServiceIds }
 
       // Filter out empty arrays and strings
       const filteredData = Object.entries(serviceData).reduce((acc, [key, value]) => {
@@ -239,13 +291,13 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
       }
 
       // Ensure step_services is an array of IDs
-      const stepServices = values.step_services || []
+      const stepServiceIds = values.step_services?.map((step) => step._id) || []
 
       // Create update data with the service ID
       const updateData = {
         ...values,
         _id: serviceToEdit._id,
-        step_services: stepServices
+        step_services: stepServiceIds
       }
 
       // Filter out empty arrays and strings
@@ -285,8 +337,30 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     onClose(false)
     setServiceToEdit?.(null)
     form.resetFields()
+    setCategoryValue('')
     formInitialized.current = false
   }, [onClose, setServiceToEdit, form])
+
+  const handleOptionsCategoryServices = (value: string) => {
+    if (categoryValue !== value) {
+      setCategoryValue(value)
+      form.setFieldsValue({ service_group_id: value })
+
+      // Khi đang ở Create hoặc khi category thay đổi khác so với giá trị ban đầu
+      // thì miows reset step_services
+      if (!serviceToEdit || serviceToEdit.service_group?._id !== value) {
+        const currentStepServies = form.getFieldValue('step_services') || []
+        if (currentStepServies.length > 0) {
+          const resetStepServices = currentStepServies.map(() => ({
+            _id: '',
+            commision: 0
+          }))
+          form.setFieldsValue({ step_services: resetStepServices })
+        }
+      }
+      setStepServicesKey((prev) => prev + 1)
+    }
+  }
 
   const isPending = isCreating || isUpdating
 
@@ -310,7 +384,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
             {serviceToEdit ? 'Chỉnh sửa dịch vụ' : 'Tạo Dịch Vụ Mới'}
           </Typography.Title>
         </Col>
-        <Col span={24} style={{ marginTop: 20, height: '400px', overflowY: 'scroll' }}>
+        <Col span={24} style={{ marginTop: 20, height: '450px', overflowY: 'scroll' }}>
           <Form onFinish={onFinish} autoComplete='off' layout='vertical' name='create-service' form={form}>
             <Row gutter={16}>
               <Col span={8}>
@@ -364,12 +438,16 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item<FieldsType> name='service_group_id' label='Nhóm dịch vụ'>
+                <Form.Item<FieldsType>
+                  name='service_group_id'
+                  label='Nhóm dịch vụ'
+                  rules={[{ required: true, message: 'Vui lòng chọn nhóm dịch vụ!' }]}
+                >
                   <OptionsCategoryServices
                     initialValue={serviceToEdit?.service_group?._id}
                     placeholder='Chọn nhóm dịch vụ'
                     search
-                    onchange={(value) => form.setFieldsValue({ service_group_id: value })}
+                    onchange={(value) => handleOptionsCategoryServices(value)}
                   />
                 </Form.Item>
               </Col>
@@ -405,8 +483,9 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   {(fields, { add, remove }) => (
                     <Fragment>
                       <Typography.Title level={5}>Các bước dịch vụ</Typography.Title>
+                      <input type='hidden' id='current-category-value' value={categoryValue} />
                       {fields.map(({ key, name, ...restField }) => {
-                        const stepServiceId = form.getFieldValue(['step_services', name])
+                        const stepService = form.getFieldValue(['step_services', name]) || {}
                         return (
                           <Card
                             style={{ marginBottom: 16 }}
@@ -419,30 +498,58 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                             key={key}
                           >
                             <Row gutter={16}>
-                              <Col span={24}>
+                              <Col span={12}>
                                 <Form.Item
                                   {...restField}
-                                  name={name}
+                                  name={[name, '_id']}
                                   label='Chọn bước'
                                   rules={[{ required: true, message: 'Vui lòng chọn bước dịch vụ!' }]}
                                 >
                                   <SelectSearchStepServices
-                                    initialValue={stepServiceId}
+                                    key={`step-service-${key}-${name}-${categoryValue}-${stepServicesKey}`}
+                                    cateValue={categoryValue}
+                                    initialValue={stepService._id}
                                     onHandleChange={(value) => {
                                       if (value) {
                                         console.log('Selected step service:', value)
 
-                                        // Get current form data
-                                        const currentStepServices = form.getFieldValue('step_services') || []
-                                        const updatedStepServices = [...currentStepServices]
+                                        // // Get current form data
+                                        // const currentStepServices = form.getFieldValue('step_services') || []
+                                        // const updatedStepServices = [...currentStepServices]
 
-                                        // Store only the ID at this position
-                                        updatedStepServices[name] = value._id
+                                        // // Store only the ID at this position
+                                        // updatedStepServices[name] = {
+                                        //   _id: value._id,
+                                        //   commision: value.commision || 0
+                                        // }
 
-                                        // Update form field
-                                        form.setFieldsValue({ step_services: updatedStepServices })
+                                        // // Update form field
+                                        // form.setFieldsValue({ step_services: updatedStepServices })
+                                        // Cập nhật giá trị hiện tại mà không ảnh hưởng đến các giá trị khác
+                                        const fieldValue = {
+                                          _id: value._id,
+                                          commision: value.commision || 0
+                                        }
+
+                                        form.setFields([
+                                          {
+                                            name: ['step_services', name],
+                                            value: fieldValue
+                                          }
+                                        ])
                                       }
                                     }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col span={12}>
+                                <Form.Item {...restField} name={[name, 'commision']} label='Giá bước dịch vụ'>
+                                  <InputNumber
+                                    suffix='đ'
+                                    disabled
+                                    style={{ width: '100%', color: '#ff4d4f' }}
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                    parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                                   />
                                 </Form.Item>
                               </Col>
@@ -451,7 +558,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                         )
                       })}
                       <Form.Item>
-                        <Button type='dashed' onClick={() => add('')} block>
+                        <Button type='dashed' onClick={() => add({ _id: '', commision: 0 })} block>
                           Thêm bước dịch vụ
                         </Button>
                       </Form.Item>

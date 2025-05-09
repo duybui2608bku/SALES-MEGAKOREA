@@ -27,7 +27,7 @@ import { TbPigMoney } from 'react-icons/tb'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
 import Title from 'src/Components/Title'
-const { Paragraph } = Typography
+const { Paragraph, Text } = Typography
 
 enum ModalType {
   NONE = 0,
@@ -147,7 +147,12 @@ const ServicesCard = () => {
       title: 'Giá',
       dataIndex: 'price',
       key: 'price',
-      render: (price: number) => price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+      align: 'center',
+      render: (price: number) => (
+        <Text strong style={{ color: '#ff4d4f', fontSize: '14px' }}>
+          {price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+        </Text>
+      ),
       sorter: (a: ColumnsServicesCardType, b: ColumnsServicesCardType) => a.price - b.price,
       sortDirections: ['descend', 'ascend'],
       width: 150
@@ -196,6 +201,7 @@ const ServicesCard = () => {
       align: 'center',
       render: (branch: BranchType[]) => (
         <Paragraph
+          style={{ margin: 0 }}
           ellipsis={{
             expandable: true,
             rows: 1

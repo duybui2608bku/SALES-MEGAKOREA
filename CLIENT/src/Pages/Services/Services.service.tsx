@@ -22,7 +22,9 @@ import ModalCreateService from 'src/Modal/services/ModalCreateService'
 import { FcCancel } from 'react-icons/fc'
 import { queryClient } from 'src/main'
 import Title from 'src/Components/Title'
+import ExpandableParagraph from 'src/Components/ExpandableParagraph'
 const { Paragraph, Text } = Typography
+import { FaAnglesDown, FaAnglesUp } from 'react-icons/fa6'
 
 const LIMIT = 9
 const PAGE = 1
@@ -124,7 +126,7 @@ const Service = () => {
       title: 'Tên dịch vụ',
       dataIndex: 'name',
       key: 'name',
-      width: 130,
+      width: 180,
       fixed: 'left'
     },
     {
@@ -188,7 +190,7 @@ const Service = () => {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',
-      width: 140,
+      width: 170,
       align: 'center',
       render: (branch: BranchType[]) => (
         <Paragraph
@@ -205,8 +207,12 @@ const Service = () => {
       title: 'Mô tả',
       dataIndex: 'descriptions',
       key: 'descriptions',
-      width: 140,
-      render: (text: string) => <Typography.Text ellipsis={{ tooltip: true }}>{text}</Typography.Text>
+      width: 150,
+      render: (text: string) => {
+        return text ? (
+          <ExpandableParagraph text={text} moreText={<FaAnglesDown />} lessText={<FaAnglesUp />} rows={1} />
+        ) : null
+      }
     },
     {
       title: 'Quy trình',
@@ -228,7 +234,7 @@ const Service = () => {
             cursor='pointer'
           />
         ) : (
-          <FcCancel size={30} />
+          <FcCancel style={{ cursor: 'not-allowed' }} size={30} />
         )
       },
       width: 120,
