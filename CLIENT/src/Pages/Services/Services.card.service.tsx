@@ -21,7 +21,7 @@ import ModalViewServicesOfCard from 'src/Modal/services/ModalViewServicesOfCard'
 import { servicesApi } from 'src/Service/services/services.api'
 import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
-import ModalViewEmployeeCommission from 'src/Modal/services/ModalViewEmployeeCommission'
+import ModalViewEmployeeCommision from 'src/Modal/services/ModalViewEmployeeCommision'
 import { GiPayMoney } from 'react-icons/gi'
 import { TbPigMoney } from 'react-icons/tb'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
@@ -390,7 +390,7 @@ const ServicesCard = () => {
         }}
         data={servicesToView || []}
       />
-      {/* <ModalViewEmployeeCommission
+      {/* <ModalViewEmployeeCommision
         open={modalType === ModalType.MODAL_VIEW_PRICE_EMPLOYEE}
         onCancel={() => {
           setServicesCardSelected(undefined)

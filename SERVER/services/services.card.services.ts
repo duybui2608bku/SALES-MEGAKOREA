@@ -122,7 +122,7 @@ class ServicesCardServices {
     return servicesCard
   }
 
-  async GetCommissionOfDate(data: GetCommisionOfDateRequestBody) {
+  async GetCommisionOfDate(data: GetCommisionOfDateRequestBody) {
     const { start_date, end_date, branch, user_id } = data
     const branchObjectId = branch?.map((branchId) => new ObjectId(branchId)) || []
     const userIdObjectId = user_id ? new ObjectId(user_id) : null
@@ -133,7 +133,7 @@ class ServicesCardServices {
       branch: branchObjectId,
       user_id: userIdObjectId
     }
-    return await servicesCardRepository.getCommissionOfDate(dataUpdate)
+    return await servicesCardRepository.getCommisionOfDate(dataUpdate)
   }
 
   async UpdateServicesCard(data: UpdateCardRequestBody) {

@@ -154,7 +154,7 @@ ServicesRouters.get('/step/all', accessTokenValidator, wrapRequestHandler(getSte
 Description: Update Step Service
 path: /step/update
 method: PATCH
-Body: {id: string, services_category_id?: string, name?: string, type?: TypeCommision, commission?: number}
+Body: {id: string, services_category_id?: string, name?: string, type?: TypeCommision, commision?: number}
 */
 
 ServicesRouters.patch(

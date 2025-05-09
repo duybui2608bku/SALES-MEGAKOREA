@@ -248,8 +248,8 @@ const SoldServicesCard = () => {
     },
     {
       title: 'Hoa hồng',
-      dataIndex: 'commission',
-      key: 'commission',
+      dataIndex: 'commision',
+      key: 'commision',
       width: 50
     },
     {

@@ -142,11 +142,11 @@ export const getStepService = async (
   res: Response
 ) => {
   const data = req.query
-  const result = await servicesServices.getStepServices(data)
+  const response = await servicesServices.getStepServices(data)
   ResponseSuccess({
     message: servicesMessages.GET_STEP_SERVICES_SUCCESS,
     res,
-    result
+    result: response.result
   })
 }
 

@@ -1,29 +1,37 @@
 import React from 'react'
 import { Modal, Steps, Descriptions, Row, Col, Flex, Typography, ConfigProvider } from 'antd'
-import { StepServicesType } from 'src/Interfaces/services/services.interfaces'
 import { TypeCommision } from 'src/Constants/enum'
 import { CheckCircleOutlined, UserOutlined } from '@ant-design/icons'
+
+// Interface mới cho step services theo yêu cầu
+interface StepServiceDetail {
+  _id: string
+  name: string
+  type: number
+  commision: number
+  services_category_id: string | null
+  employee_details?: any
+}
 
 interface ServiceStepsModalProps {
   visible: boolean
   onClose: () => void
-  stepServices: StepServicesType[]
+  stepServices: StepServiceDetail[] // Đã thay đổi type dữ liệu
 }
 
 const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose, stepServices }) => {
-  if (stepServices.length === 0) {
+  // Kiểm tra nếu không có dữ liệu
+  if (!stepServices || stepServices.length === 0) {
     return null
   }
-
-  console.log('stepServices', stepServices)
 
   return (
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#1890ff', // Màu chủ đạo
-          borderRadius: 8, // Bo góc
-          colorBgContainer: '#fff' // Màu nền
+          colorPrimary: '#1890ff',
+          borderRadius: 8,
+          colorBgContainer: '#fff'
         },
         components: {
           Modal: {
@@ -64,10 +72,10 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
             <Steps direction='vertical' current={-1} style={{ padding: '0 16px' }}>
               {stepServices.map((step, index) => (
                 <Steps.Step
-                  key={index}
+                  key={step._id || index}
                   title={
                     <span style={{ fontSize: '16px', fontWeight: 500 }}>
-                      Bước {index + 1}: {step.descriptions}
+                      Bước {index + 1}: {step.name}
                     </span>
                   }
                   icon={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
@@ -84,22 +92,23 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
                       labelStyle={{ width: '120px', fontWeight: 500, color: '#595959' }}
                       contentStyle={{ color: '#262626' }}
                     >
+                      {/* Nhân viên có thể không có trong interface mới */}
                       <Descriptions.Item
                         label={
                           <span>
-                            <UserOutlined /> Nhân Viên
+                            <UserOutlined /> Tên Bước
                           </span>
                         }
                       >
-                        {step.employee_details.name}
+                        {step.name}
                       </Descriptions.Item>
                       <Descriptions.Item label='Loại Tiền'>
                         <span
                           style={{
-                            color: step.type_step_price === TypeCommision.FIXED ? '#52c41a' : '#fa8c16'
+                            color: step.type === TypeCommision.FIXED ? '#52c41a' : '#fa8c16'
                           }}
                         >
-                          {step.type_step_price === TypeCommision.FIXED ? 'Cố định' : 'Tỷ lệ phần trăm'}
+                          {step.type === TypeCommision.FIXED ? 'Cố định' : 'Tỷ lệ phần trăm'}
                         </span>
                       </Descriptions.Item>
                       <Descriptions.Item label='Giá Tiền'>
@@ -109,6 +118,9 @@ const ServiceStepsModal: React.FC<ServiceStepsModalProps> = ({ visible, onClose,
                             : '0 ₫'}
                         </span>
                       </Descriptions.Item>
+                      {/* {step.services_category_id && (
+                        <Descriptions.Item label='Danh mục'>{step.services_category_id}</Descriptions.Item>
+                      )} */}
                     </Descriptions>
                   }
                 />

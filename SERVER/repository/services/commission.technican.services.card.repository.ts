@@ -9,12 +9,12 @@ import { CommisionOfTechnican } from '~/models/schemas/commision/commisionOfTech
 
 class CommisionTechnicanRepository {
   async CreateCommisionOfTechnican(data: CreateCommisionOfTechnicanData) {
-    return await databaseServiceSale.commission_technican.insertOne(new CommisionOfTechnican(data))
+    return await databaseServiceSale.commision_technican.insertOne(new CommisionOfTechnican(data))
   }
 
   async getCommisionOfTechnicanByUserId(data: GetCommisionOfTechnicanData) {
     const { user_id, query } = data
-    const result = await databaseServiceSale.commission_seller
+    const result = await databaseServiceSale.commision_seller
       .aggregate([
         {
           $match: {
@@ -113,7 +113,7 @@ class CommisionTechnicanRepository {
       {
         $addFields: {
           // Nếu type = 1 (PERCENT), nhân với hệ số
-          percentCommission: {
+          percentCommision: {
             $cond: {
               if: { $eq: ['$type', 1] },
               then: { $multiply: ['$commision', { $ifNull: ['$user.coefficient', 1] }] },
@@ -121,7 +121,7 @@ class CommisionTechnicanRepository {
             }
           },
           // Nếu type = 2 (FIXED), giữ nguyên giá trị
-          fixedCommission: {
+          fixedCommision: {
             $cond: {
               if: { $eq: ['$type', 2] },
               then: '$commision',
@@ -137,10 +137,10 @@ class CommisionTechnicanRepository {
           userName: { $first: { $ifNull: ['$user.name', 'Không xác định'] } },
           branchId: { $first: { $ifNull: ['$branch._id', null] } },
           branchName: { $first: { $ifNull: ['$branch.name', 'Không xác định'] } },
-          totalPercentCommission: { $sum: '$percentCommission' },
-          totalFixedCommission: { $sum: '$fixedCommission' },
-          totalCommission: {
-            $sum: { $add: ['$percentCommission', '$fixedCommission'] }
+          totalPercentCommision: { $sum: '$percentCommision' },
+          totalFixedCommision: { $sum: '$fixedCommision' },
+          totalCommision: {
+            $sum: { $add: ['$percentCommision', '$fixedCommision'] }
           },
           // Thêm đếm số lượng bản ghi
           count: { $sum: 1 }
@@ -154,9 +154,9 @@ class CommisionTechnicanRepository {
           userName: 1,
           branchId: 1,
           branchName: 1,
-          totalPercentCommission: 1,
-          totalFixedCommission: 1,
-          totalCommission: 1,
+          totalPercentCommision: 1,
+          totalFixedCommision: 1,
+          totalCommision: 1,
           count: 1
         }
       }
@@ -168,7 +168,7 @@ class CommisionTechnicanRepository {
 
       // Thêm sắp xếp để đảm bảo kết quả nhất quán
       paginatedPipeline.push({
-        $sort: { totalCommission: -1 }
+        $sort: { totalCommision: -1 }
       } as any)
 
       // Thêm phân trang
@@ -178,7 +178,7 @@ class CommisionTechnicanRepository {
       }
 
       // Thực hiện truy vấn chính
-      const result = await databaseServiceSale.commission_technican.aggregate(paginatedPipeline).toArray()
+      const result = await databaseServiceSale.commision_technican.aggregate(paginatedPipeline).toArray()
 
       // Tính tổng số bản ghi (nhóm theo user_id)
       const countPipeline = [
@@ -202,7 +202,7 @@ class CommisionTechnicanRepository {
         { $count: 'total' }
       ] as any[]
 
-      const totalCountResult = await databaseServiceSale.commission_technican.aggregate(countPipeline).toArray()
+      const totalCountResult = await databaseServiceSale.commision_technican.aggregate(countPipeline).toArray()
       const total = totalCountResult.length > 0 ? (totalCountResult[0] as any).total : 0
 
       // Thêm pipeline mới để tính tổng cho tất cả nhân viên
@@ -224,14 +224,14 @@ class CommisionTechnicanRepository {
         },
         {
           $addFields: {
-            percentCommission: {
+            percentCommision: {
               $cond: {
                 if: { $eq: ['$type', 1] },
                 then: { $multiply: ['$commision', { $ifNull: ['$user.coefficient', 1] }] },
                 else: 0
               }
             },
-            fixedCommission: {
+            fixedCommision: {
               $cond: {
                 if: { $eq: ['$type', 2] },
                 then: '$commision',
@@ -244,32 +244,32 @@ class CommisionTechnicanRepository {
           $group: {
             _id: null,
             totalUser: { $addToSet: '$user_id' }, // Sử dụng addToSet để đếm số lượng user_id duy nhất
-            totalPercentCommission: { $sum: '$percentCommission' },
-            totalFixedCommission: { $sum: '$fixedCommission' },
-            totalCommission: { $sum: { $add: ['$percentCommission', '$fixedCommission'] } }
+            totalPercentCommision: { $sum: '$percentCommision' },
+            totalFixedCommision: { $sum: '$fixedCommision' },
+            totalCommision: { $sum: { $add: ['$percentCommision', '$fixedCommision'] } }
           }
         },
         {
           $project: {
             _id: 0,
             totalUser: { $size: '$totalUser' }, // Đếm số lượng phần tử trong mảng totalUser
-            totalPercentCommission: 1,
-            totalFixedCommission: 1,
-            totalCommission: 1
+            totalPercentCommision: 1,
+            totalFixedCommision: 1,
+            totalCommision: 1
           }
         }
       ] as any[]
 
       // Thực hiện truy vấn tính tổng
-      const summaryResult = await databaseServiceSale.commission_technican.aggregate(summaryPipeline).toArray()
+      const summaryResult = await databaseServiceSale.commision_technican.aggregate(summaryPipeline).toArray()
       const summary =
         summaryResult.length > 0
           ? summaryResult[0]
           : {
               totalUser: 0,
-              totalPercentCommission: 0,
-              totalFixedCommission: 0,
-              totalCommission: 0
+              totalPercentCommision: 0,
+              totalFixedCommision: 0,
+              totalCommision: 0
             }
 
       return {
@@ -332,7 +332,7 @@ class CommisionTechnicanRepository {
       {
         $addFields: {
           // Tất cả đều là phần trăm, nhân với hệ số
-          totalCommission: { $multiply: ['$commision', { $ifNull: ['$user.coefficient', 1] }] }
+          totalCommision: { $multiply: ['$commision', { $ifNull: ['$user.coefficient', 1] }] }
         }
       },
       // Giai đoạn 7: Nhóm theo user_id
@@ -342,7 +342,7 @@ class CommisionTechnicanRepository {
           userName: { $first: { $ifNull: ['$user.name', 'Không xác định'] } },
           branchId: { $first: { $ifNull: ['$branch._id', null] } },
           branchName: { $first: { $ifNull: ['$branch.name', 'Không xác định'] } },
-          totalCommission: { $sum: '$totalCommission' },
+          totalCommision: { $sum: '$totalCommision' },
           // Thêm đếm số lượng bản ghi
           count: { $sum: 1 }
         }
@@ -355,7 +355,7 @@ class CommisionTechnicanRepository {
           userName: 1,
           branchId: 1,
           branchName: 1,
-          totalCommission: 1,
+          totalCommision: 1,
           count: 1
         }
       }
@@ -367,7 +367,7 @@ class CommisionTechnicanRepository {
 
       // Thêm sắp xếp để đảm bảo kết quả nhất quán
       paginatedPipeline.push({
-        $sort: { totalCommission: -1 }
+        $sort: { totalCommision: -1 }
       } as any)
 
       // Thêm phân trang
@@ -377,7 +377,7 @@ class CommisionTechnicanRepository {
       }
 
       // Thực hiện truy vấn chính
-      const result = await databaseServiceSale.commission_seller.aggregate(paginatedPipeline).toArray()
+      const result = await databaseServiceSale.commision_seller.aggregate(paginatedPipeline).toArray()
 
       // Tính tổng số bản ghi (nhóm theo user_id)
       const countPipeline = [
@@ -401,7 +401,7 @@ class CommisionTechnicanRepository {
         { $count: 'total' }
       ] as any[]
 
-      const totalCountResult = await databaseServiceSale.commission_seller.aggregate(countPipeline).toArray()
+      const totalCountResult = await databaseServiceSale.commision_seller.aggregate(countPipeline).toArray()
       const total = totalCountResult.length > 0 ? (totalCountResult[0] as any).total : 0
 
       // Thêm pipeline mới để tính tổng cho tất cả nhân viên
@@ -424,33 +424,33 @@ class CommisionTechnicanRepository {
         {
           $addFields: {
             // Tất cả đều là phần trăm, nhân với hệ số
-            totalCommission: { $multiply: ['$commision', { $ifNull: ['$user.coefficient', 1] }] }
+            totalCommision: { $multiply: ['$commision', { $ifNull: ['$user.coefficient', 1] }] }
           }
         },
         {
           $group: {
             _id: null,
             totalUser: { $addToSet: '$user_id' }, // Sử dụng addToSet để đếm số lượng user_id duy nhất
-            totalCommission: { $sum: '$totalCommission' }
+            totalCommision: { $sum: '$totalCommision' }
           }
         },
         {
           $project: {
             _id: 0,
             totalUser: { $size: '$totalUser' }, // Đếm số lượng phần tử trong mảng totalUser
-            totalCommission: 1
+            totalCommision: 1
           }
         }
       ] as any[]
 
       // Thực hiện truy vấn tính tổng
-      const summaryResult = await databaseServiceSale.commission_seller.aggregate(summaryPipeline).toArray()
+      const summaryResult = await databaseServiceSale.commision_seller.aggregate(summaryPipeline).toArray()
       const summary =
         summaryResult.length > 0
           ? summaryResult[0]
           : {
               totalUser: 0,
-              totalCommission: 0
+              totalCommision: 0
             }
 
       return {

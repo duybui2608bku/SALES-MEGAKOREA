@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Col, Flex, message, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState, useCallback } from 'react'
 import { IoMdTrash } from 'react-icons/io'
 import { optionsBranch } from 'src/Constants/option'
 import { BranchType } from 'src/Interfaces/branch/branch.interface'
@@ -36,7 +36,7 @@ interface ColumnsServicesType {
   branch: string[]
   descriptions: string
   is_active: boolean
-  step_services: StepServicesType[]
+  step_services_details: StepServicesType[]
   products: ProductOfServices[]
   service_group: ServicesCategoryType
   created_at: Date
@@ -52,10 +52,10 @@ enum ModalType {
 const Service = () => {
   const [services, setServices] = useState<ServicesType[]>([])
   const [filterBranch, setFilterBranch] = useState<string[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
   const [servicesToEdit, setServicesToEdit] = useState<ServicesType | null>(null)
   const [servicesSelected, setServicesSelected] = useState<StepServicesType[]>([])
   const [modalType, setModalType] = useState<ModalType>(ModalType.NONE)
+  const [loadingStatusUpdate, setLoadingStatusUpdate] = useState<string | null>(null)
 
   const [pagination, setPagination] = useState<PaginationType>({
     page: PAGE,
@@ -92,7 +92,7 @@ const Service = () => {
         total: total
       })
     }
-  }, [data, pagination])
+  }, [data])
 
   const columns: TableColumnType<ColumnsServicesType>[] = [
     {
@@ -111,7 +111,11 @@ const Service = () => {
       render: (isActive: boolean, record: ServicesType) => {
         return (
           <Flex justify='center'>
-            <Switch checked={isActive} onChange={() => console.log(record)} />
+            <Switch
+              checked={isActive}
+              onChange={(checked) => handleToggleStatus(record._id, checked)}
+              loading={loadingStatusUpdate === record._id}
+            />
           </Flex>
         )
       }
@@ -164,22 +168,22 @@ const Service = () => {
       sortDirections: ['descend', 'ascend'],
       width: 150
     },
-    {
-      title: 'Hoa hồng',
-      dataIndex: 'service_group',
-      key: 'service_group',
-      align: 'center',
-      render: (service_group: ServicesCategoryType) => {
-        return (
-          <Text style={{ color: '#FFB74D', fontSize: '15px' }} strong>
-            {(service_group?.tour_price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-          </Text>
-        )
-      },
-      sorter: (a: ServicesType, b: ServicesType) => a.price - b.price,
-      sortDirections: ['descend', 'ascend'],
-      width: 150
-    },
+    // {
+    //   title: 'Hoa hồng',
+    //   dataIndex: 'service_group',
+    //   key: 'service_group',
+    //   align: 'center',
+    //   render: (service_group: ServicesCategoryType) => {
+    //     return (
+    //       <Text style={{ color: '#FFB74D', fontSize: '15px' }} strong>
+    //         {(service_group?.tour_price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+    //       </Text>
+    //     )
+    //   },
+    //   sorter: (a: ServicesType, b: ServicesType) => a.price - b.price,
+    //   sortDirections: ['descend', 'ascend'],
+    //   width: 150
+    // },
     {
       title: 'Chi nhánh',
       dataIndex: 'branch',
@@ -206,14 +210,18 @@ const Service = () => {
     },
     {
       title: 'Quy trình',
-      dataIndex: 'step_services',
-      key: 'step_services',
-      render: (_, record: ServicesType) =>
-        record.step_services.length > 0 ? (
+      dataIndex: 'step_services_details',
+      key: 'step_services_details',
+      render: (_, record: ServicesType) => {
+        const stepServices = Array.isArray(record.step_services_details)
+          ? (record.step_services_details as StepServicesType[])
+          : []
+
+        return stepServices.length > 0 ? (
           <PiHandArrowDownDuotone
             onClick={() => {
               setModalType(ModalType.MODAL_STEP_SERVICES)
-              setServicesSelected(record.step_services)
+              setServicesSelected(stepServices)
             }}
             color='royalblue'
             size={30}
@@ -221,7 +229,8 @@ const Service = () => {
           />
         ) : (
           <FcCancel size={30} />
-        ),
+        )
+      },
       width: 120,
       align: 'center'
     },
@@ -273,29 +282,74 @@ const Service = () => {
     }
   })
 
-  const handleDeleteService = (id: string) => {
-    deleteServices(id)
-  }
+  const handleDeleteService = useCallback(
+    (id: string) => {
+      deleteServices(id)
+    },
+    [deleteServices]
+  )
 
-  const handleFilterBranch = (value: string[]) => {
+  const handleFilterBranch = useCallback((value: string[]) => {
     setFilterBranch(value)
-  }
+  }, [])
 
-  const goToNextPage = (page: number) => {
+  const goToNextPage = useCallback((page: number) => {
     setPagination((prev) => ({
       ...prev,
       page
     }))
-  }
+  }, [])
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value)
-    setPagination((prev) => ({ ...prev, page: PAGE, total: 1 }))
-  }
+  const handleSearch = useCallback((value: string) => {
+    console.log(`Searching for: ${value}`)
+    setPagination((prev) => ({ ...prev, page: PAGE }))
+  }, [])
 
-  const handleTableChange = async (page: number) => {
-    goToNextPage(page)
-  }
+  const handleTableChange = useCallback(
+    (page: number) => {
+      goToNextPage(page)
+    },
+    [goToNextPage]
+  )
+
+  const handleCloseModal = useCallback(() => {
+    setModalType(ModalType.NONE)
+    setServicesToEdit(null)
+    setServicesSelected([])
+  }, [])
+
+  const handleToggleStatus = useCallback(
+    async (id: string, checked: boolean) => {
+      setLoadingStatusUpdate(id)
+
+      // Find the service to update
+      const serviceToUpdate = services.find((service) => service._id === id)
+      if (!serviceToUpdate) {
+        message.error('Dịch vụ không tồn tại!')
+        setLoadingStatusUpdate(null)
+        return
+      }
+
+      // Optimistically update UI
+      const updatedServices = services.map((service) =>
+        service._id === id ? { ...service, is_active: checked } : service
+      )
+      setServices(updatedServices)
+
+      try {
+        await servicesApi.updateServiceStatus(id, checked)
+        queryClient.invalidateQueries({ queryKey: ['getAllServices'] })
+        message.success('Cập nhật trạng thái thành công!')
+      } catch (error: any) {
+        // Revert the optimistic update on error
+        setServices(services)
+        message.error(`Lỗi khi cập nhật trạng thái: ${error?.message || 'Đã xảy ra lỗi'}`)
+      } finally {
+        setLoadingStatusUpdate(null)
+      }
+    },
+    [services]
+  )
 
   return (
     <Fragment>
@@ -319,11 +373,7 @@ const Service = () => {
           <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <DebouncedSearch
-            placeholder='Tìm kiếm dich vụ'
-            onSearch={(value) => handleSearch(value)}
-            debounceTime={1000}
-          />
+          <DebouncedSearch placeholder='Tìm kiếm dich vụ' onSearch={handleSearch} debounceTime={1000} />
         </Col>
       </Row>
 
@@ -335,8 +385,9 @@ const Service = () => {
             style={{ width: '100%' }}
             scroll={{ x: '1200px' }}
             bordered
-            columns={columns}
+            columns={columns as any}
             dataSource={services}
+            rowKey='_id'
             pagination={{
               current: pagination.page,
               pageSize: pagination.limit,
@@ -350,18 +401,12 @@ const Service = () => {
       </Row>
       <ServiceStepsModal
         visible={modalType === ModalType.MODAL_STEP_SERVICES}
-        onClose={() => {
-          setModalType(ModalType.NONE)
-          setServicesSelected([])
-        }}
+        onClose={handleCloseModal}
         stepServices={servicesSelected}
       />
       <ModalCreateService
         visible={modalType === ModalType.MODAL_CREATE_SERVICE}
-        onClose={() => {
-          setModalType(ModalType.NONE)
-          setServicesToEdit(null)
-        }}
+        onClose={handleCloseModal}
         serviceToEdit={servicesToEdit}
       />
     </Fragment>

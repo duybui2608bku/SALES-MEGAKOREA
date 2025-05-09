@@ -36,10 +36,10 @@ SALE-MANAGER-MEGAKOREA is a comprehensive sales management system designed for m
 - Tracking sold service cards
 - Managing payment history
 
-### Commission Management
+### Commision Management
 
-- Commission tracking for technicians
-- Commission tracking for sales personnel
+- Commision tracking for technicians
+- Commision tracking for sales personnel
 
 ### Branch Management
 

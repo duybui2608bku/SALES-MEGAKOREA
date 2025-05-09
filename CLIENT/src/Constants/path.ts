@@ -75,6 +75,8 @@ const pathServices = {
   updateServices: '/services/detail-update',
   getAllStepService: '/services/step/all',
   createStepService: 'services/step/create',
+  updateStepService: 'services/step/update',
+  deleteStepService: 'services/step/delete',
   getAllServicesCard: '/services-card/all',
   updateServicesCard: '/services-card/update',
   createServicesCard: '/services-card/create',

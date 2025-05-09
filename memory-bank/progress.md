@@ -8,7 +8,7 @@
 - **Product Management**: Product inventory tracking
 - **Service Management**: Service categories, service details, and service cards
 - **Customer Management**: Customer records and history
-- **Commission Tracking**: Commission calculations for technicians and sales staff
+- **Commision Tracking**: Commision calculations for technicians and sales staff
 - **Branch Management**: Support for multiple branches
 
 ## What's Left to Build

@@ -6,13 +6,13 @@ import { getRoleUser } from 'src/Utils/util.utils'
 
 const { Title, Text } = Typography
 
-interface ModalViewEmployeeCommissionProps {
+interface ModalViewEmployeeCommisionProps {
   open: boolean
   onCancel: () => void
   data: ServicesOfCardType
 }
 
-const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) => {
+const ModalViewEmployeeCommision = (props: ModalViewEmployeeCommisionProps) => {
   const { open, onCancel, data } = props
   if (!data) return null
 
@@ -23,10 +23,10 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
       if (!acc[employeeId]) {
         acc[employeeId] = {
           employee_details: sale.employee_details,
-          commissions: []
+          commisions: []
         }
       }
-      acc[employeeId].commissions.push({
+      acc[employeeId].commisions.push({
         type: 'Sale',
         price: sale.commision,
         type_price: sale.type_price,
@@ -38,7 +38,7 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
       string,
       {
         employee_details: User
-        commissions: { type: string; price: number; type_price: number; rate?: number; descriptions: string }[]
+        commisions: { type: string; price: number; type_price: number; rate?: number; descriptions: string }[]
       }
     >
   )
@@ -54,10 +54,10 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
         if (!groupedEmployees[employeeId]) {
           groupedEmployees[employeeId] = {
             employee_details: step.employee_details,
-            commissions: []
+            commisions: []
           }
         }
-        groupedEmployees[employeeId].commissions.push({
+        groupedEmployees[employeeId].commisions.push({
           type: 'Step Service',
           price: step.commision,
           type_price: step.type_step_price,
@@ -84,9 +84,9 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
       centered
     >
       <Space direction='vertical' style={{ width: '100%', maxHeight: '80vh', overflowY: 'auto' }} size='large'>
-        {Object.entries(groupedEmployees).map(([_, { employee_details, commissions }], index) => {
+        {Object.entries(groupedEmployees).map(([_, { employee_details, commisions }], index) => {
           // Tính tổng hoa hồng cho nhân viên này
-          const totalCommission = commissions.reduce((sum, commission) => sum + commission.price, 0)
+          const totalCommision = commisions.reduce((sum, commision) => sum + commision.price, 0)
 
           return (
             <Card key={index} title={`Nhân viên: ${employee_details.name}`} style={{ marginBottom: 16 }}>
@@ -105,9 +105,9 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
 
                 {/* Danh sách hoa hồng */}
                 <Card size='small' title='Chi tiết hoa hồng' style={{ marginTop: 16 }}>
-                  {commissions.map((commission, commissionIndex) => (
+                  {commisions.map((commision, commisionIndex) => (
                     <Card
-                      key={commissionIndex}
+                      key={commisionIndex}
                       hoverable={false}
                       style={{
                         width: '100%',
@@ -118,28 +118,28 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
                     >
                       <Descriptions column={2} size='small'>
                         <Descriptions.Item label='Loại'>
-                          {commission.type === 'Sale' ? 'Hoa hồng bán hàng' : 'Bước dịch vụ'}
+                          {commision.type === 'Sale' ? 'Hoa hồng bán hàng' : 'Bước dịch vụ'}
                         </Descriptions.Item>
-                        <Descriptions.Item label='Mô tả'>{commission.descriptions}</Descriptions.Item>
+                        <Descriptions.Item label='Mô tả'>{commision.descriptions}</Descriptions.Item>
                         <Descriptions.Item label='Hoa hồng'>
-                          <Text type='success'>{commission?.price?.toLocaleString() || 0} VNĐ</Text>
+                          <Text type='success'>{commision?.price?.toLocaleString() || 0} VNĐ</Text>
                         </Descriptions.Item>
                         <Descriptions.Item label='Loại giá'>
                           <Tag
                             color={
-                              commission.type_price === TypeCommision.FIXED || commission.type_price === 2
+                              commision.type_price === TypeCommision.FIXED || commision.type_price === 2
                                 ? 'blue'
                                 : 'purple'
                             }
                           >
-                            {commission.type_price === TypeCommision.PRECENT || commission.type_price === 1
+                            {commision.type_price === TypeCommision.PRECENT || commision.type_price === 1
                               ? 'Theo tỷ lệ'
                               : 'Cố định'}
                           </Tag>
                         </Descriptions.Item>
-                        {/* {commission.rate ? (
+                        {/* {commision.rate ? (
                           <Descriptions.Item label='Tỷ lệ hoa hồng'>
-                            {(commission.rate * 100).toFixed(2)}%
+                            {(commision.rate * 100).toFixed(2)}%
                           </Descriptions.Item>
                         ) : (
                           <Descriptions.Item label=''>{''}</Descriptions.Item>
@@ -152,7 +152,7 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
                 {/* Tổng hoa hồng của nhân viên */}
                 <Descriptions column={1} bordered size='small'>
                   <Descriptions.Item label='Tổng hoa hồng'>
-                    <Text type='success'>{totalCommission.toLocaleString()} VNĐ</Text>
+                    <Text type='success'>{totalCommision.toLocaleString()} VNĐ</Text>
                   </Descriptions.Item>
                 </Descriptions>
               </Space>
@@ -164,4 +164,4 @@ const ModalViewEmployeeCommission = (props: ModalViewEmployeeCommissionProps) =>
   )
 }
 
-export default ModalViewEmployeeCommission
+export default ModalViewEmployeeCommision

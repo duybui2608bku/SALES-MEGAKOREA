@@ -314,10 +314,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     if (!servicesCardSoldOfCustomerData) return
 
     try {
-      // Prepare data for API call - without commission
+      // Prepare data for API call - without commision
       const dataUpdateQuantityOfServices: UpdateQuantityServicesRequestBody = {
         id: servicesCardSoldOfCustomerData._id,
-        commision_of_technician_id: '', // Empty as we don't need commission
+        commision_of_technician_id: '', // Empty as we don't need commision
         services_card_sold_id: increasingService.cardId,
         services_id: increasingService.serviceId,
         media: uploadedImages,

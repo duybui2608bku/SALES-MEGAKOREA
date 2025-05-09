@@ -471,12 +471,12 @@ export const UpdateServicesCardSoldOfCustomerValidator = validate(
     },
     employee_commision_id: {
       isArray: {
-        errorMessage: servicesMessages.EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY
+        errorMessage: servicesMessages.EMPLOYEE_Commision_ID_MUST_BE_ARRAY
       },
       custom: {
         options: (value: string[]) => {
           if (value && !value.every((item) => typeof item === 'string' && ObjectId.isValid(item))) {
-            throw new Error(servicesMessages.EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY)
+            throw new Error(servicesMessages.EMPLOYEE_Commision_ID_MUST_BE_ARRAY)
           }
           return true
         }

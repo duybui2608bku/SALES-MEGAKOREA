@@ -8,8 +8,9 @@ import {
   GetCommisionOfTechnicanReportRequestType
 } from '~/models/requestes/Commision.request'
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
-import commisionTechnicanRepository from 'repository/services/commision.technican.services.card.repository'
+
 import { createDateRangeQuery, toObjectId } from '~/utils/utils'
+import commisionTechnicanRepository from 'repository/services/commission.technican.services.card.repository'
 
 class CommisionServicesOfTechnican {
   private async checkUserExist(id: ObjectId) {
@@ -66,7 +67,7 @@ class CommisionServicesOfTechnican {
 
     if (!commisions) {
       throw new ErrorWithStatusCode({
-        message: commisionMessages.COMMISION_OF_SELLER_NOT_FOUND,
+        message: commisionMessages.Commision_OF_SELLER_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }
@@ -89,7 +90,7 @@ class CommisionServicesOfTechnican {
     })
     if (!commisions) {
       throw new ErrorWithStatusCode({
-        message: commisionMessages.COMMISION_OF_SELLER_REPORT_NOT_FOUND,
+        message: commisionMessages.Commision_OF_SELLER_REPORT_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }
@@ -113,7 +114,7 @@ class CommisionServicesOfTechnican {
 
     if (!commisions) {
       throw new ErrorWithStatusCode({
-        message: commisionMessages.COMMISION_OF_SELLER_REPORT_NOT_FOUND,
+        message: commisionMessages.Commision_OF_SELLER_REPORT_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }

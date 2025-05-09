@@ -21,7 +21,7 @@ interface FieldsType {
   services_category_id?: string
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
 }
 
 const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServiceProps) => {
@@ -62,6 +62,33 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
     retry: 2
   })
 
+  // Func update step service
+  const { mutate: updateStepService, isPending: isUpdating } = useMutation({
+    mutationFn: servicesApi.updateStepService,
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['stepServices'])()
+    },
+    onSuccess: () => {
+      message.success('Cập nhật bước dịch vụ thành công!')
+      queryClient.invalidateQueries({ queryKey: ['stepServices'] })
+      form.resetFields()
+      handleCancel()
+    },
+    onError: (error: Error, _, context) => {
+      queryClient.setQueryData(['stepServices'], context?.previousData)
+      const errorMsg = error.message.includes(String(HttpStatusCode.BadRequest))
+        ? 'Dữ liệu không hợp lệ!'
+        : error.message.includes(`${HttpStatusCode.Unauthorized}`)
+          ? 'Bạn không có quyền thực thi hành động này!'
+          : `Lỗi khi cập nhật bước dịch vụ: ${error.message}`
+      message.error(errorMsg)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['stepServices'] })
+    },
+    retry: 2
+  })
+
   // Xử lý tạo bước dịch vụ mới
   const handleCreateStepService = (value: FieldsType) => {
     try {
@@ -70,6 +97,22 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
       createStepService(stepService)
     } catch (error) {
       message.error(`Đã xảy lỗi trong quá trình tạo bước dịch vụ: ${error}`)
+    }
+  }
+
+  // Handle update step service
+  const handleUpdateStepService = (value: FieldsType) => {
+    try {
+      if (!stepServiceToEdit) return
+      const services_category_id = categoryQuery
+      const updatedStepService = {
+        ...value,
+        services_category_id,
+        _id: stepServiceToEdit._id
+      }
+      updateStepService(updatedStepService)
+    } catch (error) {
+      message.error(`Đã xảy lỗi trong quá trình cập nhật bước dịch vụ: ${error}`)
     }
   }
 
@@ -83,12 +126,10 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
     }
   }, [stepServiceToEdit, form])
 
-  // Func update step service
-
   const onFinish = (value: FieldsType) => {
     try {
       if (stepServiceToEdit) {
-        console.log('chưa tạo hàm edit')
+        handleUpdateStepService(value)
       } else {
         handleCreateStepService(value)
       }
@@ -98,7 +139,7 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
   }
 
   // Sự kiện loading
-  const isPending = isCreating
+  const isPending = isCreating || isUpdating
 
   return (
     <Modal
@@ -143,7 +184,7 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
               <Col xs={24} md={12}>
                 <Form.Item
                   label='Loại hoa hồng'
-                  name='type-price'
+                  name='type'
                   initialValue={TypeCommision.FIXED}
                   rules={[{ required: true, message: 'Vui lòng chọn loại hoa hồng' }]}
                 >

@@ -123,7 +123,7 @@ export const servicesMessages = {
   TYPE_PRICE_MUST_BE_FIXED_OR_PERCENT: 'Type price must be fixed or percentage !',
   SERVICES_OF_CARD_MUST_BE_ARRAY: 'Services of card must be a array !',
   GET_SERVICES_CARD_SUCCESS: 'Get services card success !',
-  GET_COMMISSION_SUCCESS: 'Get commission success !',
+  GET_Commision_SUCCESS: 'Get commision success !',
   NAME_MUST_NOT_BE_EMPTY: 'Name must not be empty !',
   SESSION_TIME_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Session time must be a number greater than zero !',
   CUSTOMER_ID_MUST_BE_STRING: 'Customer id must be a string !',
@@ -149,7 +149,7 @@ export const servicesMessages = {
   HISTORY_PAID_NOT_FOUND: 'History paid not found !',
   HISTORY_PAID_ID_MUST_BE_STRING: 'History paid id must be a string !',
   CARD_SERVICES_SOLD_ID_MUST_BE_STRING: 'Card services sold id must be a string !',
-  EMPLOYEE_COMMISSION_ID_MUST_BE_ARRAY: 'Employee commission id must be a array !',
+  EMPLOYEE_Commision_ID_MUST_BE_ARRAY: 'Employee commision id must be a array !',
   DELETE_SERVICES_CARD_SUCCESS: 'Delete services card success !',
   CARD_SERVICES_SOLD_ID_MUST_ARRAY_STRING: 'Card services sold id must be a array string !'
 }
@@ -203,18 +203,18 @@ export const branchMessages = {
 }
 
 export const commisionMessages = {
-  CREATE_COMMISION_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !',
-  CREATE_COMMISION_OF_SELLER_SUCCESS: 'Create commision of sale success !',
-  COMMISION_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Commision must be a number greater than zero !',
+  CREATE_Commision_SERVICES_OF_CARD_SUCCESS: 'Create commision services of card success !',
+  CREATE_Commision_OF_SELLER_SUCCESS: 'Create commision of sale success !',
+  Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO: 'Commision must be a number greater than zero !',
   DATE_MUST_BE_DATE: 'Date must be a date !',
-  COMMISION_OF_SELLER_NOT_FOUND: 'Commision of seller not found !',
-  GET_COMMISION_OF_SELLER_SUCCESS: 'Get commision of seller success !',
-  COMMISION_OF_SELLER_EMPTY: 'Commision of seller empty !',
+  Commision_OF_SELLER_NOT_FOUND: 'Commision of seller not found !',
+  GET_Commision_OF_SELLER_SUCCESS: 'Get commision of seller success !',
+  Commision_OF_SELLER_EMPTY: 'Commision of seller empty !',
   END_DATE_CANNOT_BE_BEFORE_START_DATE: 'End date cannot be before start date !',
-  CREATE_COMMISION_OF_TECHNICAN_SUCCESS: 'Create commision of technican success !',
-  COMMISION_OF_SELLER_REPORT_NOT_FOUND: 'Commision of seller report not found !',
-  GET_COMMISION_OF_TECHNICAN_SUCCESS: 'Get commision of technican success !',
-  COMMISION_OF_TECHNICAN_EMPTY: 'Commision of technican empty !'
+  CREATE_Commision_OF_TECHNICAN_SUCCESS: 'Create commision of technican success !',
+  Commision_OF_SELLER_REPORT_NOT_FOUND: 'Commision of seller report not found !',
+  GET_Commision_OF_TECHNICAN_SUCCESS: 'Get commision of technican success !',
+  Commision_OF_TECHNICAN_EMPTY: 'Commision of technican empty !'
 }
 
 export const customerMessages = {

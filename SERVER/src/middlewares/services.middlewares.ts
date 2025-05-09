@@ -412,7 +412,7 @@ export const updateServicesValidator = validate(
 export const UpdateStepServiceValidator = validate(
   checkSchema(
     {
-      id: {
+      _id: {
         isString: {
           errorMessage: servicesMessages.INVALID_ID
         },
@@ -458,7 +458,7 @@ export const UpdateStepServiceValidator = validate(
           errorMessage: servicesMessages.TYPE_PRICE_MUST_BE_FIXED_OR_PERCENT
         }
       },
-      commission: {
+      commision: {
         optional: true,
         isNumeric: {
           errorMessage: servicesMessages.TYPE_PRICE_MUST_BE_NUMBER

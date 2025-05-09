@@ -17,17 +17,12 @@ export interface HistoryUsed {
 }
 
 export interface StepServicesType {
-  id_employee: string
+  _id: string
+  id?: string
+  name: string
+  type: TypeCommision
   commision: number
-  commision_other_month: {
-    date: Date
-    commision: number
-  }[]
-  employee_details: UserGeneralInterface
-  type_step_price: TypeCommision
-  descriptions?: string
-  type_step?: unknown
-  products: ProductOfServices[]
+  services_category_id: string | null
 }
 
 export interface ServicesType {
@@ -39,7 +34,7 @@ export interface ServicesType {
   price: number
   descriptions: string
   service_group: ServicesCategoryType
-  step_services: StepServicesType[]
+  step_services_details: string[] | StepServicesType[]
   products: ProductOfServices[]
 }
 
@@ -115,7 +110,7 @@ export interface CreateServicesRequestBody {
   service_group_id?: string
   price?: number
   user_id: string
-  step_services?: StepServicesType[]
+  step_services?: string[]
   products?: ProductOfServices[]
   employee?: EmployeeOfServices[]
   [key: string]: unknown
@@ -151,7 +146,7 @@ export interface UpdateServicesRequestBody {
   service_group_id?: string
   price?: number
   user_id: string
-  step_services?: StepServicesFieldType[]
+  step_services?: string[]
   products?: ProductOfServices[]
   employee?: EmployeeOfServices[]
   [key: string]: unknown
@@ -331,7 +326,8 @@ export interface StepServicesInterface {
   services_category_id?: string
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
+  category: ServicesCategoryType
 }
 
 export interface GetAllStepServiceRequestBody {
@@ -343,7 +339,7 @@ export interface CreateStepServiceRequestBody {
   services_category_id?: string
   name: string
   type: TypeCommision
-  commission: number
+  commision: number
 }
 
 export interface UpdateQuantityServicesData {

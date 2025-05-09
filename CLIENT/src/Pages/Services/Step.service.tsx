@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { Button, Col, Flex, Popconfirm, Row, Table, TableColumnType, Typography } from 'antd'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button, Col, Flex, Popconfirm, Row, Table, TableColumnType, Typography, message } from 'antd'
 import { useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { IoMdTrash } from 'react-icons/io'
@@ -9,7 +9,7 @@ import DebouncedSearch from 'src/Components/DebouncedSearch'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import Title from 'src/Components/Title'
 import { TypeCommision } from 'src/Constants/enum'
-import { StepServicesInterface } from 'src/Interfaces/services/services.interfaces'
+import { ServicesCategoryType, StepServicesInterface } from 'src/Interfaces/services/services.interfaces'
 import ModalCreateOrUpdateStepService from 'src/Modal/services/ModalCreateOrUpdateStepService'
 import { servicesApi } from 'src/Service/services/services.api'
 import { getTypeCommision } from 'src/Utils/util.utils'
@@ -22,6 +22,7 @@ const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
 const StepService = () => {
+  const queryClient = useQueryClient()
   const [pagination, setPagination] = useState({
     page: PAGE,
     limit: LIMIT,
@@ -34,7 +35,7 @@ const StepService = () => {
   const [stepServiceToEdit, setStepServiceToEdit] = useState<StepServicesInterface | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['stepServices'],
+    queryKey: ['stepServices', searchQuery, categoryQuery],
     queryFn: () => {
       const query = { search: searchQuery, services_category_id: categoryQuery }
       return servicesApi.getAllStepService(query)
@@ -65,6 +66,18 @@ const StepService = () => {
     setOpenModalCreateOrUpdateStepService(true)
   }
 
+  // Handle delete step service
+  const handleDeleteStepService = async (id: string) => {
+    try {
+      await servicesApi.deleteStepService(id)
+      message.success('Xóa bước dịch vụ thành công')
+      queryClient.invalidateQueries({ queryKey: ['stepServices'] })
+    } catch (error) {
+      message.error('Xóa bước dịch vụ thất bại')
+      console.error('Error deleting step service:', error)
+    }
+  }
+
   const columns: TableColumnType<ColumnsStepServiceType>[] = [
     {
       title: 'Tên bước dịch vụ',
@@ -76,9 +89,9 @@ const StepService = () => {
     {
       title: 'Danh mục',
       dataIndex: 'category',
-      key: 'services_category_id',
+      key: 'category',
       width: 220,
-      render: (services_category: string) => <Text>{services_category}</Text>
+      render: (category: ServicesCategoryType) => <Text>{category ? category.name : 'Không có'}</Text>
     },
     {
       title: 'Loại hoa hồng',
@@ -94,7 +107,7 @@ const StepService = () => {
       key: 'commision',
       align: 'center',
       width: 200,
-      sorter: (a: StepServicesInterface, b: StepServicesInterface) => a.commission - b.commission,
+      sorter: (a: StepServicesInterface, b: StepServicesInterface) => a.commision - b.commision,
       sortDirections: ['descend', 'ascend'],
       render: (commision: number) => (
         <Text strong style={{ color: '#ff4d4f', fontSize: '15px' }}>
@@ -120,6 +133,7 @@ const StepService = () => {
             }
             okText='Có'
             cancelText='Không'
+            onConfirm={() => handleDeleteStepService(record._id)}
           >
             <Button title='Xoá' icon={<IoMdTrash color='red' />} />
           </Popconfirm>
@@ -173,13 +187,17 @@ const StepService = () => {
               onChange: handleTableChange,
               position: ['bottomCenter']
             }}
+            rowKey='_id'
           />
         </Col>
       </Row>
       <ModalCreateOrUpdateStepService
         open={openModalCreateOrUpdateStepService}
-        onClose={setOpenModalCreateOrUpdateStepService}
-        stepServiceToEdit={stepServiceToEdit as StepServicesInterface | null}
+        onClose={() => {
+          setOpenModalCreateOrUpdateStepService(false)
+          setStepServiceToEdit(null)
+        }}
+        stepServiceToEdit={stepServiceToEdit}
         setStepServiceToEdit={setStepServiceToEdit}
       />
     </Fragment>

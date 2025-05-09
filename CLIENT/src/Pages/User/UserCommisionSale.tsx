@@ -16,7 +16,7 @@ type ColumnsCommisionSaleType = CommisionSaleUserInterface
 
 // Interface cho summary data
 interface SummaryData {
-  totalCommission: number
+  totalCommision: number
   totalUser: number
 }
 
@@ -32,7 +32,7 @@ const UserCommisionSale = () => {
   })
   const [commisionSale, setCommisionSale] = useState<CommisionSaleUserInterface[]>([])
   const [summary, setSummary] = useState<SummaryData>({
-    totalCommission: 0,
+    totalCommision: 0,
     totalUser: 0
   })
   const [dateQuery, setDateQuery] = useState('')
@@ -138,13 +138,13 @@ const UserCommisionSale = () => {
     },
     {
       title: 'Tổng hoa hồng',
-      dataIndex: 'totalCommission',
-      key: 'totalCommission',
+      dataIndex: 'totalCommision',
+      key: 'totalCommision',
       align: 'center',
       width: 200,
-      render: (totalCommission) => (
+      render: (totalCommision) => (
         <Text style={{ color: '#ff4d4f' }} strong>
-          {totalCommission.toLocaleString('vi-VN')} VNĐ
+          {totalCommision.toLocaleString('vi-VN')} VNĐ
         </Text>
       )
     },
@@ -173,7 +173,7 @@ const UserCommisionSale = () => {
                 <Card loading={isLoading} style={cardStyles[0]} hoverable bodyStyle={{ padding: '24px' }}>
                   <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Tổng Hoa Hồng</Text>
                   <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
-                    {formatCurrency(summary.totalCommission)}
+                    {formatCurrency(summary.totalCommision)}
                   </div>
                   <div
                     style={{

@@ -4,8 +4,9 @@ import { ErrorWithStatusCode } from '~/models/Errors'
 import { commisionMessages, servicesMessages, userMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
 import { CreateCommisionOfSellerRequestType } from '~/models/requestes/Commision.request'
-import commisionSellerRepository from 'repository/services/commision.services.card.repository'
+
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
+import commisionSellerRepository from 'repository/services/commission.services.card.repository'
 
 class CommisionServicesOfSeller {
   private async checkUserExist(id: ObjectId) {
@@ -62,7 +63,7 @@ class CommisionServicesOfSeller {
 
     if (!commisions) {
       throw new ErrorWithStatusCode({
-        message: commisionMessages.COMMISION_OF_SELLER_NOT_FOUND,
+        message: commisionMessages.Commision_OF_SELLER_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }

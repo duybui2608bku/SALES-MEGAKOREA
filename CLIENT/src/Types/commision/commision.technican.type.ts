@@ -11,9 +11,9 @@ export type GetCommisionTechnicanUserResponse = SuccessResponse<{
     total: number
   }
   summary: {
-    totalPercentCommission: number
-    totalFixedCommission: number
-    totalCommission: number
+    totalPercentCommision: number
+    totalFixedCommision: number
+    totalCommision: number
     totalUser: number
   }
 }>

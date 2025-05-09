@@ -21,7 +21,7 @@ export class CardServicesSoldOfCustomer {
   history_increase_quantity?: HistoryIncreaseQuantity[]
   user_id: ObjectId
   employee_commision?: ObjectId[]
-  seller_commission?: ObjectId[]
+  seller_commision?: ObjectId[]
   refund: RefundType | null
   created_at?: Date
   updated_at?: Date
@@ -37,7 +37,7 @@ export class CardServicesSoldOfCustomer {
     this.history_increase_quantity = cardServices.history_increase_quantity || []
     this.card_services_sold_id = cardServices.card_services_sold_id
     this.employee_commision = cardServices.employee_commision || []
-    this.seller_commission = cardServices.seller_commission || []
+    this.seller_commision = cardServices.seller_commision || []
     this.customer_id = cardServices.customer_id
     this.refund = cardServices.refund || null
     this.descriptions = cardServices.descriptions || ''

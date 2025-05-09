@@ -141,17 +141,18 @@ class ServicesServices {
     }
     const page = Number(data.page) || 1
     const limit = Number(data.limit) || 10
-    const result = await serverRepository.getStepServices({
+    const response = await serverRepository.getStepServices({
       page,
       limit,
       query
     })
-    return result
+    return response
   }
 
   async updateStepService(data: UpdateStepServiceRequestBody) {
-    const { id, services_category_id, ...restData } = data
-    const serviceId = new ObjectId(id)
+    const { _id, services_category_id, ...restData } = data
+    const serviceId = new ObjectId(_id)
+
     await this.checkStepServiceExist(serviceId)
 
     const servicesCategoryId = services_category_id ? new ObjectId(services_category_id) : null

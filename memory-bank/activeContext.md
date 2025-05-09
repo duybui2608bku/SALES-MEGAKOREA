@@ -6,7 +6,7 @@ The SALE-MANAGER-MEGAKOREA system has been set up with its primary functionality
 
 ## Project Status
 
-The project appears to be in active development with a functional frontend and backend structure. Core features for user management, product management, service management, customer management, and commission tracking are in place.
+The project appears to be in active development with a functional frontend and backend structure. Core features for user management, product management, service management, customer management, and commision tracking are in place.
 
 ## Recent Changes
 
@@ -32,7 +32,7 @@ The project appears to be in active development with a functional frontend and b
 
 1. **Explore Specific Features**:
 
-   - Understand the commission calculation logic
+   - Understand the commision calculation logic
    - Review service card management implementation
    - Examine customer management workflow
 

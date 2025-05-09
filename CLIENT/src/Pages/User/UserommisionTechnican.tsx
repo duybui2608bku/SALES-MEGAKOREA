@@ -16,9 +16,9 @@ type ColumnsCommisionTechnicanType = CommisionTechnicanUserInterface
 
 // Interface cho summary data
 interface SummaryData {
-  totalPercentCommission: number
-  totalFixedCommission: number
-  totalCommission: number
+  totalPercentCommision: number
+  totalFixedCommision: number
+  totalCommision: number
   totalUser: number
 }
 
@@ -34,9 +34,9 @@ const UserCommisionTechnican = () => {
   })
   const [commisionTechnican, setCommisionTechnican] = useState<CommisionTechnicanUserInterface[]>([])
   const [summary, setSummary] = useState<SummaryData>({
-    totalPercentCommission: 0,
-    totalFixedCommission: 0,
-    totalCommission: 0,
+    totalPercentCommision: 0,
+    totalFixedCommision: 0,
+    totalCommision: 0,
     totalUser: 0
   })
   const [dateQuery, setDateQuery] = useState('')
@@ -142,46 +142,46 @@ const UserCommisionTechnican = () => {
     },
     {
       title: 'Tổng hoa hồng %',
-      dataIndex: 'totalPercentCommission',
-      key: 'totalPercentCommission',
+      dataIndex: 'totalPercentCommision',
+      key: 'totalPercentCommision',
       align: 'center',
       width: 200,
       sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
-        a.totalPercentCommission - b.totalPercentCommission,
+        a.totalPercentCommision - b.totalPercentCommision,
       sortDirections: ['descend', 'ascend'],
-      render: (totalPercentCommission) => (
+      render: (totalPercentCommision) => (
         <Text style={{ color: '#fa8c16' }} strong>
-          {totalPercentCommission.toLocaleString('vi-VN')} VNĐ
+          {totalPercentCommision.toLocaleString('vi-VN')} VNĐ
         </Text>
       )
     },
     {
       title: 'Tổng hoa hồng cố định',
-      dataIndex: 'totalFixedCommission',
-      key: 'totalFixedCommission',
+      dataIndex: 'totalFixedCommision',
+      key: 'totalFixedCommision',
       align: 'center',
       width: 230,
       sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
-        a.totalFixedCommission - b.totalFixedCommission,
+        a.totalFixedCommision - b.totalFixedCommision,
       sortDirections: ['descend', 'ascend'],
-      render: (totalFixedCommission) => (
+      render: (totalFixedCommision) => (
         <Text style={{ color: '#A8A8FF' }} strong>
-          {totalFixedCommission.toLocaleString('vi-VN')} VNĐ
+          {totalFixedCommision.toLocaleString('vi-VN')} VNĐ
         </Text>
       )
     },
     {
       title: 'Tổng hoa hồng',
-      dataIndex: 'totalCommission',
-      key: 'totalCommission',
+      dataIndex: 'totalCommision',
+      key: 'totalCommision',
       align: 'center',
       width: 200,
       sorter: (a: CommisionTechnicanUserInterface, b: CommisionTechnicanUserInterface) =>
-        a.totalCommission - b.totalCommission,
+        a.totalCommision - b.totalCommision,
       sortDirections: ['descend', 'ascend'],
-      render: (totalCommission) => (
+      render: (totalCommision) => (
         <Text style={{ color: '#ff4d4f' }} strong>
-          {totalCommission.toLocaleString('vi-VN')} VNĐ
+          {totalCommision.toLocaleString('vi-VN')} VNĐ
         </Text>
       )
     },
@@ -221,7 +221,7 @@ const UserCommisionTechnican = () => {
               <Card loading={isLoading} style={cardStyles[0]} hoverable bodyStyle={{ padding: '24px' }}>
                 <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Tổng Hoa Hồng</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
-                  {formatCurrency(summary.totalCommission)}
+                  {formatCurrency(summary.totalCommision)}
                 </div>
                 <div
                   style={{
@@ -240,7 +240,7 @@ const UserCommisionTechnican = () => {
               <Card loading={isLoading} style={cardStyles[1]} hoverable bodyStyle={{ padding: '24px' }}>
                 <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Hoa Hồng %</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
-                  {formatCurrency(summary.totalPercentCommission)}
+                  {formatCurrency(summary.totalPercentCommision)}
                 </div>
                 <div
                   style={{
@@ -259,7 +259,7 @@ const UserCommisionTechnican = () => {
               <Card loading={isLoading} style={cardStyles[2]} hoverable bodyStyle={{ padding: '24px' }}>
                 <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>Hoa Hồng Cố Định</Text>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
-                  {formatCurrency(summary.totalFixedCommission)}
+                  {formatCurrency(summary.totalFixedCommision)}
                 </div>
                 <div
                   style={{

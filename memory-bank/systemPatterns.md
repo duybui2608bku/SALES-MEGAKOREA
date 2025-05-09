@@ -165,9 +165,9 @@ The SALE-MANAGER-MEGAKOREA system follows a client-server architecture with:
 5. Service card associated with customer
 6. Transaction appears in sold cards list
 
-### Commission Calculation
+### Commision Calculation
 
 1. Services completed by technicians recorded
 2. Sales completed by sales staff recorded
-3. Commission rates applied based on role and performance
-4. Commission reports generated for review
+3. Commision rates applied based on role and performance
+4. Commision reports generated for review

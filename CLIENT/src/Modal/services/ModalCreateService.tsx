@@ -1,19 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
 import { Col, Form, Input, InputNumber, message, Modal, Row, Typography, Select, Card, Button } from 'antd'
 import { HttpStatusCode } from 'axios'
-import { Fragment, useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useCallback, useRef } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import { AppContext } from 'src/Context/AppContext'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import useQueryBranch from 'src/hook/query/useQueryBranch'
 import { queryClient } from 'src/main'
-import {
-  EmployeeOfServices,
-  ProductOfServices,
-  ServicesType,
-  StepServicesFieldType,
-  UpdateServicesRequestBody
-} from 'src/Interfaces/services/services.interfaces'
+import { EmployeeOfServices, ProductOfServices, ServicesType } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { generateCode } from 'src/Utils/util.utils'
 import { TypeCommision } from 'src/Constants/enum'
@@ -39,7 +33,7 @@ interface FieldsType {
   descriptions?: string
   price?: number
   service_group_id?: string
-  step_services?: StepServicesFieldType[]
+  step_services?: string[]
   products?: ProductOfServices[]
   [key: string]: unknown
 }
@@ -55,26 +49,26 @@ interface FieldsCreateType {
   descriptions?: string
   price?: number
   service_group_id?: string
-  step_services?: StepServicesFieldType[]
+  step_services?: string[]
   products?: ProductOfServices[]
   [key: string]: unknown
 }
 
 const SELECT_ALL_BRANCH = 'all'
 
-// const validateCommission = (values: FieldsType): boolean => {
+// const validateCommision = (values: FieldsType): boolean => {
 //   const servicePrice = values.price || 0
 //   const stepServices = values.step_services || []
-//   let totalCommission = 0
+//   let totalCommision = 0
 //   for (const step of stepServices) {
 //     if (step.type_step_price === TypeCommision.FIXED && step.price) {
-//       totalCommission += step.price
+//       totalCommision += step.price
 //     } else if (step.type_step_price === TypeCommision.PRECENT && step.rate) {
-//       totalCommission += servicePrice * step.rate
+//       totalCommision += servicePrice * step.rate
 //     }
 //   }
 
-//   if (totalCommission > servicePrice) {
+//   if (totalCommision > servicePrice) {
 //     message.error('Tổng giá hoa hồng của nhân viên vượt quá giá gốc của dịch vụ!')
 //     return false
 //   }
@@ -86,29 +80,78 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
   const { profile } = useContext(AppContext)
   const [form] = Form.useForm()
   const { branchList } = useQueryBranch()
-  const [branchId, setBranchId] = useState<string[]>([])
 
+  // Use a ref to track if the form has been initialized
+  const formInitialized = useRef(false)
+
+  // Reset form when modal closes
   useEffect(() => {
+    if (!visible) {
+      form.resetFields()
+      formInitialized.current = false
+    }
+  }, [visible, form])
+
+  // Initialize form with serviceToEdit data only once when needed
+  useEffect(() => {
+    // Only set form values if the modal is visible, we have serviceToEdit data,
+    // branch data is loaded, and we haven't already initialized
+    if (!visible || formInitialized.current) {
+      return
+    }
+
     if (serviceToEdit && branchList.length > 0) {
-      const branchId = serviceToEdit?.branch?.map((branch) => (typeof branch === 'string' ? branch : branch._id)) || []
-      const service_group_id = serviceToEdit?.service_group._id || ''
-      setBranchId(branchId)
-      form.setFieldsValue({
-        ...serviceToEdit,
-        branch: branchId,
-        service_group_id: service_group_id
-      })
+      try {
+        console.log('Service to edit:', JSON.stringify(serviceToEdit))
+
+        const branchIds =
+          serviceToEdit.branch?.map((branch) => (typeof branch === 'string' ? branch : branch._id)) || []
+
+        const service_group_id = serviceToEdit.service_group?._id || ''
+
+        // Extract step service IDs
+        const stepServiceIds = []
+
+        // First check step_services_details (from API response)
+        if (serviceToEdit.step_services_details && Array.isArray(serviceToEdit.step_services_details)) {
+          for (const step of serviceToEdit.step_services_details) {
+            if (typeof step === 'string') {
+              stepServiceIds.push(step)
+            } else if (step && typeof step === 'object' && step._id) {
+              stepServiceIds.push(step._id)
+            }
+          }
+        }
+
+        console.log('Step service IDs:', stepServiceIds)
+
+        form.setFieldsValue({
+          ...serviceToEdit,
+          branch: branchIds,
+          service_group_id,
+          step_services: stepServiceIds
+        })
+      } catch (error) {
+        console.error('Error setting form values:', error)
+      }
     } else {
+      // For new service, just reset fields
       form.resetFields()
     }
-  }, [serviceToEdit, form, branchList])
 
-  const getBranchList = (branch: string[]): string[] => {
-    if (branch.includes(SELECT_ALL_BRANCH)) {
-      return branchList.map((branch) => branch._id)
-    }
-    return branch
-  }
+    // Mark as initialized to prevent repeated initialization
+    formInitialized.current = true
+  }, [visible, serviceToEdit, branchList, form])
+
+  const getBranchList = useCallback(
+    (branch: string[]): string[] => {
+      if (branch.includes(SELECT_ALL_BRANCH)) {
+        return branchList.map((branch) => branch._id)
+      }
+      return branch
+    },
+    [branchList]
+  )
 
   const { mutate: createService, isPending: isCreating } = useMutation({
     mutationFn: servicesApi.createServices,
@@ -134,27 +177,8 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     retry: 2
   })
 
-  const handleCreateService = (values: FieldsCreateType) => {
-    if (!profile?._id) {
-      message.error('Không thể tạo dịch vụ: User ID không hợp lệ!')
-      return
-    }
-    const user_id = profile._id
-    const branch = getBranchList(values.branch || [])
-    const service = { ...values, user_id, branch }
-    createService(service as any)
-  }
-
-  const handleUpdateService = (values: FieldsType) => {
-    if (!serviceToEdit?._id) {
-      message.error('Không thể cập nhật dịch vụ: User ID không hợp lệ!')
-      return
-    }
-    updateService(values)
-  }
-
   const { mutate: updateService, isPending: isUpdating } = useMutation({
-    mutationFn: (data: UpdateServicesRequestBody) => servicesApi.updateServices(data),
+    mutationFn: (data: any) => servicesApi.updateServices(data),
     onMutate: async () => {
       return createOptimisticUpdateHandler(queryClient, ['getAllServices'])()
     },
@@ -163,6 +187,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
       form.resetFields()
       setServiceToEdit?.(null)
       onClose(false)
+      formInitialized.current = false
     },
     onError: (error: Error, _, context) => {
       queryClient.setQueryData(['getAllServices'], context?.previousData)
@@ -177,37 +202,94 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
     retry: 2
   })
 
-  const onFinish = (values: FieldsType) => {
-    try {
-      if (serviceToEdit) {
-        // if (!validateCommission(values)) {
-        //   return
-        // }
-        const serviceId = serviceToEdit._id
-        handleUpdateService({
-          ...values,
-          _id: serviceId
-        })
-      } else {
-        // if (!validateCommission(values)) {
-        //   return
-        // }
-        handleCreateService(values)
+  const handleCreateService = useCallback(
+    (values: FieldsCreateType) => {
+      if (!profile?._id) {
+        message.error('Không thể tạo dịch vụ: User ID không hợp lệ!')
+        return
       }
-    } catch (error) {
-      console.error(error)
-      message.error('Đã xảy ra lỗi không xác định!')
-    }
-  }
+      const user_id = profile._id
+      const branch = getBranchList(values.branch || [])
+
+      // Create service data with user_id and branch
+      const serviceData = { ...values, user_id, branch }
+
+      // Filter out empty arrays and strings
+      const filteredData = Object.entries(serviceData).reduce((acc, [key, value]) => {
+        // Skip empty arrays or empty strings
+        if ((Array.isArray(value) && value.length === 0) || (typeof value === 'string' && value === '')) {
+          return acc
+        }
+
+        // Keep non-empty values
+        return { ...acc, [key]: value }
+      }, {})
+
+      // Call create API with filtered data
+      createService(filteredData as any)
+    },
+    [profile, getBranchList, createService]
+  )
+
+  const handleUpdateService = useCallback(
+    (values: FieldsType) => {
+      if (!serviceToEdit?._id) {
+        message.error('Không thể cập nhật dịch vụ: ID dịch vụ không hợp lệ!')
+        return
+      }
+
+      // Ensure step_services is an array of IDs
+      const stepServices = values.step_services || []
+
+      // Create update data with the service ID
+      const updateData = {
+        ...values,
+        _id: serviceToEdit._id,
+        step_services: stepServices
+      }
+
+      // Filter out empty arrays and strings
+      const filteredData = Object.entries(updateData).reduce((acc, [key, value]) => {
+        // Skip empty arrays or empty strings
+        if ((Array.isArray(value) && value.length === 0) || (typeof value === 'string' && value === '')) {
+          return acc
+        }
+
+        // Keep non-empty values
+        return { ...acc, [key]: value }
+      }, {})
+
+      // Call update API with filtered data
+      updateService(filteredData)
+    },
+    [serviceToEdit, updateService]
+  )
+
+  const onFinish = useCallback(
+    (values: FieldsType) => {
+      try {
+        if (serviceToEdit) {
+          handleUpdateService(values)
+        } else {
+          handleCreateService(values)
+        }
+      } catch (error) {
+        console.error(error)
+        message.error('Đã xảy ra lỗi không xác định!')
+      }
+    },
+    [serviceToEdit, handleUpdateService, handleCreateService]
+  )
+
+  const handleCancelModal = useCallback(() => {
+    onClose(false)
+    setServiceToEdit?.(null)
+    form.resetFields()
+    formInitialized.current = false
+  }, [onClose, setServiceToEdit, form])
 
   const isPending = isCreating || isUpdating
 
-  const handleCancelModal = () => {
-    onClose(false)
-    setServiceToEdit?.(null)
-    setBranchId([])
-    form.resetFields()
-  }
   return (
     <Modal
       onCancel={handleCancelModal}
@@ -217,7 +299,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
       confirmLoading={isPending}
       cancelText='Hủy'
       open={visible}
-      width={700}
+      width={900}
       style={{
         overflowY: 'scroll'
       }}
@@ -271,7 +353,9 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   initialValue={[profile?.branch._id]}
                 >
                   <OptionsBranch
-                    initialValue={branchId}
+                    initialValue={
+                      serviceToEdit?.branch?.map((branch) => (typeof branch === 'string' ? branch : branch._id)) || []
+                    }
                     placeholder={serviceToEdit ? 'Toàn bộ' : 'Chọn chi nhánh'}
                     mode='multiple'
                     search
@@ -282,7 +366,7 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
               <Col span={8}>
                 <Form.Item<FieldsType> name='service_group_id' label='Nhóm dịch vụ'>
                   <OptionsCategoryServices
-                    initialValue={serviceToEdit?.service_group._id}
+                    initialValue={serviceToEdit?.service_group?._id}
                     placeholder='Chọn nhóm dịch vụ'
                     search
                     onchange={(value) => form.setFieldsValue({ service_group_id: value })}
@@ -321,63 +405,53 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                   {(fields, { add, remove }) => (
                     <Fragment>
                       <Typography.Title level={5}>Các bước dịch vụ</Typography.Title>
-                      {fields.map(({ key, name, ...restField }) => (
-                        <Card
-                          style={{ marginBottom: 16 }}
-                          title={`Bước ${name + 1}` || 'Bước 1'}
-                          size='small'
-                          extra={<MinusCircleOutlined onClick={() => remove(name)} />}
-                          bordered
-                          className='card-step'
-                          hoverable
-                          key={key}
-                        >
-                          <Row gutter={16}>
-                            <Col span={12}>
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'step_services']}
-                                label='Mô tả bước'
-                                rules={[{ required: true, message: 'Vui lòng chọn bước dịch vụ!' }]}
-                              >
-                                <SelectSearchStepServices
-                                  onHandleChange={(value) => {
-                                    if (value) {
-                                      // Cập nhật giá trị hoa hồng trực tiếp trong form
-                                      form.setFields([
-                                        {
-                                          name: ['step_services', name, 'commision'],
-                                          value: value.commision
-                                        }
-                                      ])
-                                    } else {
-                                      form.setFields([
-                                        {
-                                          name: ['step_services', name, 'commision'],
-                                          value: undefined
-                                        }
-                                      ])
-                                    }
-                                  }}
-                                />
-                              </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                              <Form.Item {...restField} name={[name, 'commision']} label='Giá'>
-                                <InputNumber
-                                  disabled
-                                  suffix='đ'
-                                  style={{ width: '100%', color: '#ff4d4f' }}
-                                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                  parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                        </Card>
-                      ))}
+                      {fields.map(({ key, name, ...restField }) => {
+                        const stepServiceId = form.getFieldValue(['step_services', name])
+                        return (
+                          <Card
+                            style={{ marginBottom: 16 }}
+                            title={`Bước ${name + 1}` || 'Bước 1'}
+                            size='small'
+                            extra={<MinusCircleOutlined onClick={() => remove(name)} />}
+                            bordered
+                            className='card-step'
+                            hoverable
+                            key={key}
+                          >
+                            <Row gutter={16}>
+                              <Col span={24}>
+                                <Form.Item
+                                  {...restField}
+                                  name={name}
+                                  label='Chọn bước'
+                                  rules={[{ required: true, message: 'Vui lòng chọn bước dịch vụ!' }]}
+                                >
+                                  <SelectSearchStepServices
+                                    initialValue={stepServiceId}
+                                    onHandleChange={(value) => {
+                                      if (value) {
+                                        console.log('Selected step service:', value)
+
+                                        // Get current form data
+                                        const currentStepServices = form.getFieldValue('step_services') || []
+                                        const updatedStepServices = [...currentStepServices]
+
+                                        // Store only the ID at this position
+                                        updatedStepServices[name] = value._id
+
+                                        // Update form field
+                                        form.setFieldsValue({ step_services: updatedStepServices })
+                                      }
+                                    }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </Card>
+                        )
+                      })}
                       <Form.Item>
-                        <Button type='dashed' onClick={() => add()} block>
+                        <Button type='dashed' onClick={() => add('')} block>
                           Thêm bước dịch vụ
                         </Button>
                       </Form.Item>
