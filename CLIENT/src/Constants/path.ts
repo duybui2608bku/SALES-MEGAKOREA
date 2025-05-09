@@ -107,7 +107,8 @@ const pathApiCustomer = {
 const pathCommision = {
   createCommisionTechnician: '/commision/technican/create',
   getCommisionTechnican: '/commision/technican/report',
-  getCommisionSale: '/commision/seller/report'
+  getCommisionSale: '/commision/seller/report',
+  createCommisionSeller: '/commision/seller/create'
 }
 
 export {

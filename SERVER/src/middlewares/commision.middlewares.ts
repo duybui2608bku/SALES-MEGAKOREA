@@ -17,20 +17,20 @@ export const CreateCommisionOfSellerValidator = validate(
           errorMessage: servicesMessages.INVALID_ID
         }
       },
-      commision: {
-        isInt: {
-          options: { min: 0 },
-          errorMessage: commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO
-        },
-        custom: {
-          options: (value) => {
-            if (typeof value !== 'number' || !Number.isInteger(value)) {
-              throw new Error(commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO)
-            }
-            return true
-          }
-        }
-      },
+      // commision: {
+      //   isInt: {
+      //     options: { min: 0 },
+      //     errorMessage: commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO
+      //   },
+      //   custom: {
+      //     options: (value) => {
+      //       if (typeof value !== 'number' || !Number.isInteger(value)) {
+      //         throw new Error(commisionMessages.Commision_MUST_BE_NUMBER_GREATER_THAN_ZERO)
+      //       }
+      //       return true
+      //     }
+      //   }
+      // },
 
       services_card_sold_of_customer_id: {
         isString: {

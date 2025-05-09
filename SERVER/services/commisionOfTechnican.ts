@@ -96,30 +96,6 @@ class CommisionServicesOfTechnican {
     }
     return commisions
   }
-
-  async getAllCommisionOfSellerReport(data: GetCommisionOfTechnicanReportRequestType) {
-    const { user_id, branch_id, date, page = 1, limit = 10 } = data
-
-    const dataQuery = {
-      ...(user_id ? { user_id: new ObjectId(user_id as string) } : null),
-      ...(branch_id ? { branch_id: new ObjectId(branch_id as string) } : null),
-      ...createDateRangeQuery(date)
-    }
-
-    const commisions = await commisionTechnicanRepository.getAllCommisionOfSellerReport({
-      query: dataQuery,
-      page: Number(page),
-      limit: Number(limit)
-    })
-
-    if (!commisions) {
-      throw new ErrorWithStatusCode({
-        message: commisionMessages.Commision_OF_SELLER_REPORT_NOT_FOUND,
-        statusCode: HttpStatusCode.NotFound
-      })
-    }
-    return commisions
-  }
 }
 
 const commisionServicesOfTechnican = new CommisionServicesOfTechnican()
