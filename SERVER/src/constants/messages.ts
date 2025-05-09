@@ -199,7 +199,9 @@ export const branchMessages = {
   INVALID_ID: 'Invalid id !',
   UPDATE_BRANCH_SUCCESS: 'Update branch success !',
   GET_ALL_BRANCH_SUCCESS: 'Get all branch success !',
-  BRANCH_ID_MUST_BE_STRING: 'Branch id must be a string !'
+  BRANCH_ID_MUST_BE_STRING: 'Branch id must be a string !',
+  BRANCH_ID_REQUIRED: 'Branch ID is required for this operation !',
+  BRANCH_REQUIRED: 'Branch information is required for this operation !'
 }
 
 export const commisionMessages = {

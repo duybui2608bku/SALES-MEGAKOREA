@@ -38,6 +38,7 @@ export interface StepServicesType {
   descriptions?: string
   created_at?: Date
   updated_at?: Date
+  branch?: ObjectId[]
 }
 
 export interface ServicesType {
@@ -340,6 +341,7 @@ export interface StepServicesType {
   name: string
   type: TypeCommision
   commision: number
+  branch?: ObjectId[]
 }
 
 export interface CreateServicesStepData {

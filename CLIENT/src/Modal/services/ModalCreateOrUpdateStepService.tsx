@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { Col, Form, Input, InputNumber, message, Modal, Row, Select } from 'antd'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import Title from 'src/Components/Title'
 import { TypeCommision } from 'src/Constants/enum'
@@ -9,6 +9,8 @@ import createOptimisticUpdateHandler from 'src/Function/product/createOptimistic
 import { CreateStepServiceRequestBody, StepServicesInterface } from 'src/Interfaces/services/services.interfaces'
 import { queryClient } from 'src/main'
 import { servicesApi } from 'src/Service/services/services.api'
+import OptionsBranch from 'src/Components/OptionsBranch'
+import { AppContext } from 'src/Context/AppContext'
 
 interface ModalCreateOrUpdateStepServiceProps {
   open: boolean
@@ -22,12 +24,15 @@ interface FieldsType {
   name: string
   type: TypeCommision
   commision: number
+  branch: string[]
 }
 
 const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServiceProps) => {
   const { open, onClose, stepServiceToEdit, setStepServiceToEdit } = props
   const [form] = Form.useForm()
   const [categoryQuery, setCategoryQuery] = useState<string | undefined>(undefined)
+  const [branchValue, setBranchValue] = useState<string[]>([])
+  const { profile } = useContext(AppContext)
 
   const handleCancel = () => {
     onClose(false)
@@ -93,7 +98,7 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
   const handleCreateStepService = (value: FieldsType) => {
     try {
       const services_category_id = categoryQuery
-      const stepService: CreateStepServiceRequestBody = { ...value, services_category_id }
+      const stepService: CreateStepServiceRequestBody = { ...value, services_category_id, branch: branchValue }
       createStepService(stepService)
     } catch (error) {
       message.error(`Đã xảy lỗi trong quá trình tạo bước dịch vụ: ${error}`)
@@ -108,6 +113,7 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
       const updatedStepService = {
         ...value,
         services_category_id,
+        branch: branchValue,
         _id: stepServiceToEdit._id
       }
       updateStepService(updatedStepService)
@@ -121,10 +127,17 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
     if (stepServiceToEdit) {
       form.setFieldsValue(stepServiceToEdit)
       setCategoryQuery(stepServiceToEdit.services_category_id)
+      setBranchValue(stepServiceToEdit.branch || [])
     } else {
       form.resetFields()
+      // Set branch value based on profile branch
+      if (profile?.branch?._id) {
+        setBranchValue([profile.branch._id])
+      } else {
+        setBranchValue([])
+      }
     }
-  }, [stepServiceToEdit, form])
+  }, [stepServiceToEdit, form, profile])
 
   const onFinish = (value: FieldsType) => {
     try {
@@ -140,6 +153,8 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
 
   // Sự kiện loading
   const isPending = isCreating || isUpdating
+
+  console.log(form.getFieldsValue())
 
   return (
     <Modal
@@ -212,6 +227,23 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
                     placeholder='Nhập hoa hồng'
                     step={1000}
                     min={0}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label='Chi nhánh'
+                  name='branch'
+                  rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+                  initialValue={branchValue}
+                >
+                  <OptionsBranch
+                    mode='multiple'
+                    placeholder='Chọn chi nhánh'
+                    value={branchValue}
+                    onchange={setBranchValue}
                   />
                 </Form.Item>
               </Col>

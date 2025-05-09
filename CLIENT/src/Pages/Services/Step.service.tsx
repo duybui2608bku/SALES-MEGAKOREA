@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Col, Flex, Popconfirm, Row, Table, TableColumnType, Typography, message } from 'antd'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
@@ -8,18 +8,21 @@ import { Fragment } from 'react/jsx-runtime'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
 import OptionsCategoryServices from 'src/Components/OptionsCategoryServices'
 import Title from 'src/Components/Title'
-import { TypeCommision } from 'src/Constants/enum'
+import { TypeCommision, RoleUser } from 'src/Constants/enum'
 import { ServicesCategoryType, StepServicesInterface } from 'src/Interfaces/services/services.interfaces'
 import ModalCreateOrUpdateStepService from 'src/Modal/services/ModalCreateOrUpdateStepService'
 import { servicesApi } from 'src/Service/services/services.api'
 import { getTypeCommision } from 'src/Utils/util.utils'
-const { Text } = Typography
+import OptionsBranch from 'src/Components/OptionsBranch'
+import { AppContext } from 'src/Context/AppContext'
 
 type ColumnsStepServiceType = StepServicesInterface
 
 const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
+
+const { Text } = Typography
 
 const StepService = () => {
   const queryClient = useQueryClient()
@@ -33,11 +36,15 @@ const StepService = () => {
   const [categoryQuery, setCategoryQuery] = useState('')
   const [openModalCreateOrUpdateStepService, setOpenModalCreateOrUpdateStepService] = useState(false)
   const [stepServiceToEdit, setStepServiceToEdit] = useState<StepServicesInterface | null>(null)
+  const { profile } = useContext(AppContext)
+  const isAdmin = profile?.role === RoleUser.ADMIN
+  const userBranchId = profile?.branch?._id && !isAdmin ? [profile.branch._id] : []
+  const [branchFilter, setBranchFilter] = useState<string[]>(userBranchId)
 
   const { data, isLoading } = useQuery({
     queryKey: ['stepServices', searchQuery, categoryQuery],
     queryFn: () => {
-      const query = { search: searchQuery, services_category_id: categoryQuery }
+      const query: any = { search: searchQuery, services_category_id: categoryQuery, branch: branchFilter }
       return servicesApi.getAllStepService(query)
     },
     staleTime: STALETIME
@@ -78,7 +85,7 @@ const StepService = () => {
     }
   }
 
-  const columns: TableColumnType<ColumnsStepServiceType>[] = [
+  const columns: TableColumnType<ColumnsStepServiceType & { branch_details?: any[] }>[] = [
     {
       title: 'Tên bước dịch vụ',
       dataIndex: 'name',
@@ -92,6 +99,14 @@ const StepService = () => {
       key: 'category',
       width: 220,
       render: (category: ServicesCategoryType) => <Text>{category ? category.name : 'Không có'}</Text>
+    },
+    {
+      title: 'Chi nhánh',
+      dataIndex: 'branch_details',
+      key: 'branch_details',
+      width: 220,
+      render: (branch_details: any[] = []) =>
+        branch_details.length > 0 ? branch_details.map((b) => b.name).join(', ') : 'Không có'
     },
     {
       title: 'Loại hoa hồng',
@@ -166,6 +181,16 @@ const StepService = () => {
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <OptionsCategoryServices placeholder='Chọn danh mục' search onchange={(value) => setCategoryQuery(value)} />
+        </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <OptionsBranch
+            mode='multiple'
+            placeholder='Lọc theo chi nhánh'
+            search
+            onchange={isAdmin ? setBranchFilter : undefined}
+            value={branchFilter}
+            disabled={!isAdmin}
+          />
         </Col>
       </Row>
 

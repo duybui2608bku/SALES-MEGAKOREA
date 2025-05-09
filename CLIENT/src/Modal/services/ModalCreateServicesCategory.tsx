@@ -8,7 +8,9 @@ import {
 import { HttpStatusCode } from 'axios'
 import { servicesApi } from 'src/Service/services/services.api'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
-import { useEffect } from 'react' // Thêm useEffect
+import { useEffect, useContext } from 'react'
+import OptionsBranch from 'src/Components/OptionsBranch'
+import { AppContext } from 'src/Context/AppContext'
 
 interface ModalCreateServicesCategoryProps {
   visible: boolean
@@ -26,17 +28,21 @@ const ModalCreateServicesCategory = ({
   const [form] = Form.useForm()
   const queryClient = useQueryClient()
   const isEditMode = !!category
+  const { profile } = useContext(AppContext)
 
-  // Đồng bộ form với category mỗi khi category thay đổi
+  // Lấy branch id mặc định cho user thường
+  const defaultBranch = profile && profile.branch && profile.branch._id ? [profile.branch._id] : []
+
   useEffect(() => {
     if (visible) {
       if (isEditMode) {
-        form.setFieldsValue({ name: category?.name, descriptions: category?.descriptions })
+        form.setFieldsValue({ name: category?.name, descriptions: category?.descriptions, branch: category?.branch })
       } else {
-        form.resetFields() // Reset form khi tạo mới
+        form.setFieldsValue({ branch: defaultBranch }) // Set branch mặc định khi tạo mới
+        form.resetFields(['name', 'descriptions'])
       }
     }
-  }, [category, visible, form, isEditMode])
+  }, [category, visible, form, isEditMode, defaultBranch])
 
   // Mutation để tạo mới danh mục
   const createMutation = useMutation({
@@ -88,9 +94,9 @@ const ModalCreateServicesCategory = ({
   // Xử lý submit form
   const handleFinish = (values: CreateServicesCategoryRequestBody | UpdateServicesCategoryRequestBody) => {
     if (isEditMode) {
-      updateMutation.mutate(values as UpdateServicesCategoryRequestBody)
+      updateMutation.mutate({ ...values, branch: values.branch } as UpdateServicesCategoryRequestBody)
     } else {
-      createMutation.mutate(values as CreateServicesCategoryRequestBody)
+      createMutation.mutate({ ...values, branch: values.branch } as CreateServicesCategoryRequestBody)
     }
   }
 
@@ -109,7 +115,7 @@ const ModalCreateServicesCategory = ({
       footer={null}
       destroyOnClose // Hủy toàn bộ trạng thái khi modal đóng
     >
-      <Form form={form} layout='vertical' onFinish={handleFinish}>
+      <Form form={form} layout='vertical' onFinish={handleFinish} initialValues={{ branch: defaultBranch }}>
         <Form.Item
           name='name'
           label='Tên danh mục'
@@ -124,6 +130,14 @@ const ModalCreateServicesCategory = ({
           rules={[{ max: 500, message: 'Mô tả không được vượt quá 500 ký tự!' }]}
         >
           <Input.TextArea rows={4} placeholder='Nhập mô tả (tùy chọn)' />
+        </Form.Item>
+
+        <Form.Item
+          name='branch'
+          label='Chi nhánh áp dụng'
+          rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
+        >
+          <OptionsBranch mode='multiple' placeholder='Chọn chi nhánh áp dụng' search />
         </Form.Item>
 
         <Form.Item>
