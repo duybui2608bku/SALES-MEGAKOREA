@@ -389,12 +389,11 @@ class UsersService {
   }
 
   async getUserWithRole(role: string) {
+    const query = role ? { role: Number(role) } : { role: { $nin: [UserRole.ADMIN] } }
     const result = await databaseServiceSale.users
       .aggregate([
         {
-          $match: {
-            role: Number(role)
-          }
+          $match: query
         },
         {
           $project: {

@@ -4,7 +4,6 @@ import {
   deleteProduct,
   getAllProduct,
   importProducts,
-  SearchProduct,
   updateProduct,
   updateStockProduct
 } from '~/controllers/product.controllers'
@@ -13,9 +12,10 @@ import {
   DeleteProductValidator,
   UpdateProductValidator
 } from '~/middlewares/product.middlewares'
-import { accessTokenValidator, isAdminValidator } from '~/middlewares/users.middlewares'
-import { paginatonValidator } from '~/middlewares/utils.middlewares'
+import { accessTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
+import { branchAccessMiddleware } from '~/middlewares/utils.middlewares'
+import { requireBranchArrayValidator } from '~/middlewares/branch.middlewares'
 
 const productRouters = Router()
 
@@ -27,10 +27,18 @@ Body:{ branch?: string[] ,code: string,price?: number ,label?: string ,category?
 */
 
 productRouters.post(
-  '/',
+  '/add',
   accessTokenValidator,
-  isAdminValidator,
   CreateProductValidator,
+  branchAccessMiddleware,
+  wrapRequestHandler(createProduct)
+)
+
+productRouters.post(
+  '/add-general',
+  accessTokenValidator,
+  CreateProductValidator,
+  branchAccessMiddleware,
   wrapRequestHandler(createProduct)
 )
 
@@ -40,13 +48,7 @@ path: /:id
 method: DELETE
 */
 
-productRouters.delete(
-  '/:id',
-  accessTokenValidator,
-  isAdminValidator,
-  DeleteProductValidator,
-  wrapRequestHandler(deleteProduct)
-)
+productRouters.delete('/delete/:id', accessTokenValidator, DeleteProductValidator, wrapRequestHandler(deleteProduct))
 
 /*
 Description: Update Product 
@@ -56,10 +58,10 @@ Body:{ branch?: string[] ,code?: string,price?: number ,label?: string ,category
 */
 
 productRouters.patch(
-  '/',
+  '/update/:id',
   accessTokenValidator,
-  isAdminValidator,
   UpdateProductValidator,
+  branchAccessMiddleware,
   wrapRequestHandler(updateProduct)
 )
 
@@ -70,16 +72,13 @@ method: GET
 Query: { page: string, limit: string, branch?: string ,is_consumable: boolean }
 */
 
-productRouters.get('/', accessTokenValidator, isAdminValidator, paginatonValidator, wrapRequestHandler(getAllProduct))
-
-/*
-Description: Search Product 
-path: /search
-method: GET
-Query: { branch?: string,q: string,is_consumable: boolean }
-*/
-
-productRouters.get('/search', accessTokenValidator, isAdminValidator, wrapRequestHandler(SearchProduct))
+productRouters.get(
+  '/all',
+  accessTokenValidator,
+  branchAccessMiddleware,
+  requireBranchArrayValidator,
+  wrapRequestHandler(getAllProduct)
+)
 
 /*
 Description: Import multiple products
@@ -88,8 +87,20 @@ method: POST
 Body: { file: any }
 */
 
-productRouters.post('/import', accessTokenValidator, isAdminValidator, wrapRequestHandler(importProducts))
+productRouters.post(
+  '/import/:id',
+  accessTokenValidator,
+  UpdateProductValidator,
+  branchAccessMiddleware,
+  wrapRequestHandler(importProducts)
+)
 
-productRouters.patch('/update/stock', accessTokenValidator, isAdminValidator, wrapRequestHandler(updateStockProduct))
+productRouters.post(
+  '/update-stock/:id',
+  accessTokenValidator,
+  UpdateProductValidator,
+  branchAccessMiddleware,
+  wrapRequestHandler(updateStockProduct)
+)
 
 export default productRouters

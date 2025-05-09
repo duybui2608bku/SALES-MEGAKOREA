@@ -6,7 +6,7 @@ import { UserWithRole } from 'src/Types/user/user.type'
 
 const STALETIME = 5 * 60 * 1000
 
-const useQueryUsersWithRole = (role: RoleUser) => {
+const useQueryUsersWithRole = (role?: RoleUser) => {
   const [userSWithRole, setUserSWithRole] = useState<UserWithRole[]>([])
   const { data, isLoading } = useQuery({
     queryKey: ['getAllUserSWithRole'],

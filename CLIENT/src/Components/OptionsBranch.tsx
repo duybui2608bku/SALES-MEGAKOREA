@@ -76,6 +76,7 @@ interface BranchOptionsType {
   onchange?: (value: string[]) => void
   initialValue?: string[]
   disabled?: boolean
+  value?: string[]
 }
 
 const OptionsBranch = (props: BranchOptionsType) => {
@@ -138,11 +139,13 @@ const OptionsBranch = (props: BranchOptionsType) => {
     <Select
       onChange={handleChange}
       value={
-        !isAdminValidator(profile?.role as RoleUser)
-          ? Array.isArray(profile?.branch._id)
-            ? profile.branch._id.filter((id): id is string => id !== undefined)
-            : [profile?.branch._id].filter((id): id is string => id !== undefined)
-          : selectedValues
+        props.value !== undefined
+          ? props.value
+          : !isAdminValidator(profile?.role as RoleUser)
+            ? Array.isArray(profile?.branch._id)
+              ? profile.branch._id.filter((id): id is string => id !== undefined)
+              : [profile?.branch._id].filter((id): id is string => id !== undefined)
+            : selectedValues
       }
       style={{ width: '100%' }}
       mode={!isAdminValidator(profile?.role as RoleUser) ? undefined : mode}

@@ -8,6 +8,7 @@ import {
 } from '../../src/interface/services/services.interface'
 import { Services, ServicesCategory } from '../../src/models/schemas/services/Services.schema'
 import {
+  GetAllServicesCategoryRequestData,
   GetAllServicesCategoryRequestQuery,
   GetAllServicesRequestData,
   UpdateServicesCategoryRequestBody
@@ -30,13 +31,30 @@ class ServicesRepository {
     )
   }
 
-  async getAllServicesCategory(data: GetAllServicesCategoryRequestQuery) {
-    const { page, limit } = data
+  async getAllServicesCategory(data: GetAllServicesCategoryRequestData) {
+    const { page, limit, query } = data
     const skip = (page - 1) * limit
-    const [categoryServices, total] = await Promise.all([
-      databaseServiceSale.services_category.find().sort({ _id: -1 }).skip(skip).limit(limit).toArray(),
-      databaseServiceSale.services_category.countDocuments()
+
+    // Aggregation pipeline
+    const pipeline = [
+      { $match: query },
+      {
+        $lookup: {
+          from: 'branch',
+          localField: 'branch',
+          foreignField: '_id',
+          as: 'branch_details'
+        }
+      },
+      { $sort: { _id: -1 } },
+      { $skip: skip },
+      { $limit: limit }
+    ]
+    const [categoryServices, totalArr] = await Promise.all([
+      databaseServiceSale.services_category.aggregate(pipeline).toArray(),
+      databaseServiceSale.services_category.aggregate([{ $match: query }, { $count: 'total' }]).toArray()
     ])
+    const total = totalArr.length > 0 ? totalArr[0].total : 0
     return { categoryServices, limit, page, total }
   }
 
@@ -311,6 +329,14 @@ class ServicesRepository {
       {
         $addFields: {
           category: { $arrayElemAt: ['$category', 0] }
+        }
+      },
+      {
+        $lookup: {
+          from: 'branch',
+          localField: 'branch',
+          foreignField: '_id',
+          as: 'branch_details'
         }
       }
     ]

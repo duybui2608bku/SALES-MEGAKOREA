@@ -52,6 +52,13 @@ export interface UpdateServicesRequestBody {
 export interface GetAllServicesCategoryRequestQuery {
   page: number
   limit: number
+  branch?: string[]
+}
+
+export interface GetAllServicesCategoryRequestData {
+  page: number
+  limit: number
+  query: any
 }
 
 export interface GetAllServicesRequestQuery {
@@ -71,6 +78,7 @@ export interface CreateServicesStepRequestBody {
   name: string
   type: TypeCommision
   commision: number
+  branch?: string[]
 }
 
 export interface GetServicesStepRequestQuery {
@@ -78,6 +86,7 @@ export interface GetServicesStepRequestQuery {
   search?: string
   page?: string
   limit?: string
+  branch?: string[]
 }
 
 export interface UpdateStepServiceRequestBody {
@@ -86,6 +95,7 @@ export interface UpdateStepServiceRequestBody {
   services_category_id?: string
   type?: TypeCommision
   commision?: number
+  branch?: string[]
 }
 
 export interface DeleteStepServiceRequestParams {

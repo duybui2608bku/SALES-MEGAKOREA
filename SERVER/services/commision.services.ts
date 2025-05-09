@@ -3,10 +3,15 @@ import databaseServiceSale from './database.services.sale'
 import { ErrorWithStatusCode } from '~/models/Errors'
 import { commisionMessages, servicesMessages, userMessages } from '~/constants/messages'
 import { HttpStatusCode } from '~/constants/enum'
-import { CreateCommisionOfSellerRequestType } from '~/models/requestes/Commision.request'
+import {
+  CreateCommisionOfSellerRequestType,
+  GetCommisionOfSellerRequestType,
+  GetCommisionOfTechnicanReportRequestType
+} from '~/models/requestes/Commision.request'
 
 import { GetCommisionOfSellerRequests } from '~/interface/commision/commision.interface'
 import commisionSellerRepository from 'repository/services/commission.services.card.repository'
+import { createDateRangeQuery } from '~/utils/utils'
 
 class CommisionServicesOfSeller {
   private async checkUserExist(id: ObjectId) {
@@ -64,6 +69,30 @@ class CommisionServicesOfSeller {
     if (!commisions) {
       throw new ErrorWithStatusCode({
         message: commisionMessages.Commision_OF_SELLER_NOT_FOUND,
+        statusCode: HttpStatusCode.NotFound
+      })
+    }
+    return commisions
+  }
+
+  async getAllCommisionOfSellerReport(data: GetCommisionOfSellerRequestType) {
+    const { user_id, branch_id, date, page = 1, limit = 10 } = data
+
+    const dataQuery = {
+      ...(user_id ? { user_id: new ObjectId(user_id as string) } : null),
+      ...(branch_id ? { branch_id: new ObjectId(branch_id as string) } : null),
+      ...createDateRangeQuery(date)
+    }
+
+    const commisions = await commisionSellerRepository.getAllCommisionOfSellerReport({
+      query: dataQuery,
+      page: Number(page),
+      limit: Number(limit)
+    })
+
+    if (!commisions) {
+      throw new ErrorWithStatusCode({
+        message: commisionMessages.Commision_OF_SELLER_REPORT_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }

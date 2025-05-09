@@ -73,11 +73,11 @@ class DatabaseServiceSale {
   }
 
   get commision_seller(): Collection<CommisionOfSeller> {
-    return this.db.collection(process.env.Commision_OF_Seller_COLLECTION as string)
+    return this.db.collection(process.env.COMMISION_OF_SELLER_COLLECTION as string)
   }
 
   get commision_technican(): Collection<CommisionOfTechnican> {
-    return this.db.collection(process.env.Commision_OF_TECHNICAN_COLLECTION as string)
+    return this.db.collection(process.env.COMMISION_OF_TECHNICAN_COLLECTION as string)
   }
 
   get customers(): Collection<Customer> {

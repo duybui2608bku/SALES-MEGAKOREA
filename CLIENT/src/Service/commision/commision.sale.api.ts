@@ -6,6 +6,15 @@ import { pathCommision } from 'src/Constants/path'
 const commisionSaleApi = {
   async getAllCommisionSale(body: GetCommisionSaleUserRequestBody) {
     return axiosInstanceMain.post<GetCommisionSaleUserResponse>(pathCommision.getCommisionSale, body)
+  },
+
+  async createCommisionSeller(data: {
+    user_id: string
+    commision: number
+    date: Date
+    services_card_sold_of_customer_id: string
+  }) {
+    return axiosInstanceMain.post(pathCommision.createCommisionSeller, data)
   }
 }
 

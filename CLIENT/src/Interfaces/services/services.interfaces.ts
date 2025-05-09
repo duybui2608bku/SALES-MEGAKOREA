@@ -23,6 +23,7 @@ export interface StepServicesType {
   type: TypeCommision
   commision: number
   services_category_id: string | null
+  branch: string[]
 }
 
 export interface ServicesType {
@@ -73,6 +74,7 @@ export interface ServicesOfCardType {
 export interface GetAllServicesCategoryRequestQuery {
   page: number
   limit: number
+  branch?: string[]
 }
 
 export interface ServicesCategoryType {
@@ -81,17 +83,20 @@ export interface ServicesCategoryType {
   descriptions: string
   tour_price?: number
   type_price?: TypeCommision
+  branch?: string[]
 }
 
 export interface CreateServicesCategoryRequestBody {
   name: string
   descriptions?: string
+  branch?: string[]
 }
 
 export interface UpdateServicesCategoryRequestBody {
   _id: string
   name?: string
   descriptions?: string
+  branch?: string[]
   [key: string]: unknown
 }
 
@@ -328,6 +333,7 @@ export interface StepServicesInterface {
   type: TypeCommision
   commision: number
   category: ServicesCategoryType
+  branch: string[]
 }
 
 export interface GetAllStepServiceRequestBody {
@@ -340,6 +346,7 @@ export interface CreateStepServiceRequestBody {
   name: string
   type: TypeCommision
   commision: number
+  branch: string[]
 }
 
 export interface UpdateQuantityServicesData {

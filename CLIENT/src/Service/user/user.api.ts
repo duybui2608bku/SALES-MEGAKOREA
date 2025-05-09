@@ -16,8 +16,10 @@ import {
 } from 'src/Interfaces/user/user.interface'
 
 const userApi = {
-  getUsersWithRole: async (role: number) => {
-    return axiosInstanceMain.get<GetUsersWithRoleResponse>(`${pathApiUsers.getAllUsersWithRole}?role=${role}`)
+  getUsersWithRole: async (role?: number) => {
+    return axiosInstanceMain.get<GetUsersWithRoleResponse>(
+      `${pathApiUsers.getAllUsersWithRole}?role=${role ? role : ''}`
+    )
   },
 
   getUser() {

@@ -16,7 +16,7 @@ import {
   Typography
 } from 'antd'
 import { DownOutlined, PlusOutlined, ReloadOutlined, SyncOutlined, TagsOutlined } from '@ant-design/icons'
-import { IoPencilOutline, IoPrintSharp } from 'react-icons/io5'
+import { IoPrintSharp } from 'react-icons/io5'
 import { IoIosAddCircleOutline } from 'react-icons/io'
 import { FaRegEye, FaCheckCircle } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
@@ -40,6 +40,8 @@ import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
 import { RiRefund2Fill, RiMoneyDollarCircleLine } from 'react-icons/ri'
 import DatePickerComponent from 'src/Components/DatePicker'
 import { queryClient } from 'src/main'
+import { HiUserPlus } from 'react-icons/hi2'
+import ModalCommissionDistribution from 'src/Modal/services/ModalCommissionDistribution'
 
 const { Text, Paragraph } = Typography
 
@@ -51,6 +53,7 @@ enum StatusOpenModalServicesCard {
   VIEW,
   UPDATE,
   VIEW_HISTORY,
+  DISTRIBUTE_COMMISSION,
   NONE
 }
 
@@ -179,6 +182,10 @@ const SoldServicesCard = () => {
   // const handleRefundMoney = (refundType: RefundEnum) => {
   //   setOpenModalRefundMoney(refundType)
   // }
+
+  const handleCommissionDistribution = (record: GetServicesCardSoldOfCustomer) => {
+    handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION)
+  }
 
   const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
     {
@@ -477,11 +484,14 @@ const SoldServicesCard = () => {
       fixed: 'right',
       width: 60,
       align: 'center',
-      render: () => {
+      render: (_, record) => {
         return (
           <Flex justify='center' gap={10}>
-            <Button icon={<IoPencilOutline color='#3B82F6' />}></Button>
-            {/* <Button icon={<MdDelete color='#EF4444' />}></Button> */}
+            <Button
+              icon={<HiUserPlus color='#3B82F6' />}
+              onClick={() => handleCommissionDistribution(record)}
+              title='Chia doanh số'
+            />
             <Button icon={<IoPrintSharp color='#4B5563' />}></Button>
           </Flex>
         )
@@ -566,6 +576,11 @@ const SoldServicesCard = () => {
         open={openModalPayment === StatusOpenModalPayyment.VIEW_HISTORY}
         onCancel={() => setOpenModalPayment(StatusOpenModalPayyment.NONE)}
         data={servicesCardSoldOfCustomerData?.history_paid || []}
+      />
+      <ModalCommissionDistribution
+        open={openModalServicesCardSold === StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION}
+        onClose={() => setOpenModalServicesCardSold(StatusOpenModalServicesCard.NONE)}
+        serviceCardData={servicesCardSoldOfCustomerData}
       />
     </Fragment>
   )

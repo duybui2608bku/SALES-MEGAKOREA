@@ -38,7 +38,8 @@ export const getAllServicesCategory = async (
 ) => {
   const limit = Number(req.query.limit)
   const page = Number(req.query.page)
-  const query = { limit, page }
+  const branch = req.query.branch
+  const query = { limit, page, branch }
   const result = await servicesServices.GetAllServicesCategory(query)
   ResponseSuccess({
     message: servicesMessages.GET_ALL_SERVICES_CATEGORY_SUCCESS,
@@ -141,7 +142,7 @@ export const getStepService = async (
   req: Request<ParamsDictionary, any, any, GetServicesStepRequestQuery>,
   res: Response
 ) => {
-  const data = req.query
+  const data = req.query as any
   const response = await servicesServices.getStepServices(data)
   ResponseSuccess({
     message: servicesMessages.GET_STEP_SERVICES_SUCCESS,

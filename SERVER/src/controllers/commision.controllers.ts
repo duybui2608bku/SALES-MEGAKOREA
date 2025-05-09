@@ -14,6 +14,7 @@ import {
 import commisionServicesOfSale from 'services/commision.services'
 import { HttpStatusCode } from '~/constants/enum'
 import commisionServicesOfTechnican from 'services/commisionOfTechnican'
+import commisionServicesOfSeller from 'services/commision.services'
 
 // SELLER Commision
 export const createCommisionOfSeller = async (
@@ -124,7 +125,7 @@ export const GetAllCommisionOfSellerReport = async (
   res: Response
 ) => {
   const data = req.body
-  const result = await commisionServicesOfTechnican.getAllCommisionOfSellerReport(data)
+  const result = await commisionServicesOfSeller.getAllCommisionOfSellerReport(data)
   if (result.data.length === 0) {
     return ResponseError({
       res,

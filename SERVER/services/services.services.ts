@@ -71,7 +71,16 @@ class ServicesServices {
   }
 
   async GetAllServicesCategory(query: GetAllServicesCategoryRequestQuery) {
-    return await serverRepository.getAllServicesCategory(query)
+    const { branch, limit, page } = query
+    const branchObjectId = branch?.map((branchId) => toObjectId(branchId)) || []
+    const queryData = {
+      branch: { $in: branchObjectId }
+    }
+    return await serverRepository.getAllServicesCategory({
+      limit,
+      page,
+      query: queryData
+    })
   }
 
   async DeleteServicesCategory(id: ObjectId) {
@@ -117,20 +126,23 @@ class ServicesServices {
   }
 
   async CreateServicesStep(stepServices: CreateServicesStepRequestBody) {
-    const { services_category_id } = stepServices
+    const { services_category_id, branch } = stepServices
     const servicesCategoryId = services_category_id ? new ObjectId(services_category_id) : null
+    const branchObjectId = branch?.map((branchId) => toObjectId(branchId)) || []
     if (servicesCategoryId) {
       await this.checkServicesCategoryExist(new ObjectId(servicesCategoryId))
     }
+
     const stepServicesWithObjectId = {
       ...stepServices,
-      services_category_id: servicesCategoryId
+      services_category_id: servicesCategoryId,
+      branch: branchObjectId
     }
     await serverRepository.createStepServices(stepServicesWithObjectId)
   }
 
   async getStepServices(data: GetServicesStepRequestQuery) {
-    const { services_category_id, search } = data
+    const { services_category_id, search, branch } = data
     const servicesCategoryId = services_category_id ? new ObjectId(services_category_id) : null
     const query: any = {}
     if (servicesCategoryId) {
@@ -138,6 +150,10 @@ class ServicesServices {
     }
     if (search) {
       query.$or = [{ name: { $regex: search, $options: 'i' } }]
+    }
+
+    if (branch) {
+      query.branch = { $in: branch.map((branchId) => new ObjectId(branchId)) }
     }
     const page = Number(data.page) || 1
     const limit = Number(data.limit) || 10
@@ -150,7 +166,7 @@ class ServicesServices {
   }
 
   async updateStepService(data: UpdateStepServiceRequestBody) {
-    const { _id, services_category_id, ...restData } = data
+    const { _id, services_category_id, branch, ...restData } = data
     const serviceId = new ObjectId(_id)
 
     await this.checkStepServiceExist(serviceId)
@@ -163,6 +179,10 @@ class ServicesServices {
     const updateData: any = { ...restData }
     if (services_category_id !== undefined) {
       updateData.services_category_id = servicesCategoryId
+    }
+
+    if (branch) {
+      updateData.branch = branch.map((branchId) => new ObjectId(branchId))
     }
 
     return await serverRepository.updateStepService(serviceId, updateData)

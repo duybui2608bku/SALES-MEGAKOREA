@@ -8,6 +8,7 @@ import { ServicesCategoryType } from 'src/Interfaces/services/services.interface
 import ModalCreateServicesCategory from 'src/Modal/services/ModalCreateServicesCategory'
 import { servicesApi } from 'src/Service/services/services.api'
 import { PaginationType } from 'src/Types/util.type'
+import OptionsBranch from 'src/Components/OptionsBranch'
 
 const LIMIT = 9
 const PAGE = 1
@@ -28,13 +29,15 @@ const CategoryService = () => {
     limit: LIMIT,
     total: 0
   })
+  const [branchFilter, setBranchFilter] = useState<string[]>([])
 
   const { data, isLoading } = useQuery({
-    queryKey: ['getAllServicesCategory'],
+    queryKey: ['getAllServicesCategory', pagination.page, branchFilter],
     queryFn: () =>
       servicesApi.getAllServicesCategory({
         limit: pagination.limit,
-        page: pagination.page
+        page: pagination.page,
+        branch: branchFilter
       }),
     staleTime: STALETIME
   })
@@ -48,7 +51,7 @@ const CategoryService = () => {
     }
   }, [data])
 
-  const columnsCategoryServices: TableColumnType<ColumnsCategoryServicesType>[] = [
+  const columnsCategoryServices: TableColumnType<ColumnsCategoryServicesType & { branch_details?: any[] }>[] = [
     {
       title: 'Tên danh mục',
       dataIndex: 'name',
@@ -61,10 +64,17 @@ const CategoryService = () => {
       render: (text: string) => <Typography.Text ellipsis={{ tooltip: true }}>{text}</Typography.Text>
     },
     {
+      title: 'Chi nhánh',
+      dataIndex: 'branch_details',
+      key: 'branch_details',
+      render: (branch_details: any[] = []) =>
+        branch_details.length > 0 ? branch_details.map((b) => b.name).join(', ') : 'Không có'
+    },
+    {
       title: 'Hành động',
       dataIndex: 'action',
       key: 'action',
-      render: (_: unknown, record: ServicesCategoryType) => (
+      render: (_: unknown, record: ServicesCategoryType & { branch_details?: any[] }) => (
         <Flex gap={10} justify='center'>
           <Button
             onClick={() => {
@@ -111,6 +121,9 @@ const CategoryService = () => {
           <Button type='primary' onClick={() => setOpenModal(true)}>
             Thêm danh mục
           </Button>
+        </Col>
+        <Col xs={24} sm={12} md={6} lg={6}>
+          <OptionsBranch mode='multiple' placeholder='Lọc theo chi nhánh' search onchange={setBranchFilter} />
         </Col>
       </Row>
 

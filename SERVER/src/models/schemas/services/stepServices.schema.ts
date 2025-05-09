@@ -9,6 +9,7 @@ export class ServicesStep {
   type: TypeCommision
   commision: number
   descriptions?: string
+  branch?: ObjectId[]
   created_at?: Date
   updated_at?: Date
   constructor(servicesCategory: StepServicesType) {
@@ -18,6 +19,7 @@ export class ServicesStep {
     this.descriptions = servicesCategory.descriptions || ''
     this.type = servicesCategory.type || TypeCommision.FIXED
     this.commision = servicesCategory.commision || 0
+    this.branch = servicesCategory.branch || []
     this.created_at = servicesCategory.created_at || new Date()
     this.updated_at = servicesCategory.updated_at || new Date()
   }

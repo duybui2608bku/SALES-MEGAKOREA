@@ -191,6 +191,16 @@ export const accessTokenValidator = validate(
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESSTOKEN as string
               })
               req.decode_authorization = decode_authorization
+
+              // Load complete user object including branch information for branch-based permission
+              const { user_id } = decode_authorization
+              const user = await databaseServiceSale.users.findOne({
+                _id: new ObjectId(user_id)
+              })
+
+              if (user) {
+                req.user = user
+              }
             } catch (error) {
               throw new ErrorWithStatusCode({
                 message: capitalize((error as JsonWebTokenError).message),

@@ -13,7 +13,6 @@ export interface CreateCommisionOfSellerData {
 export interface CommisionOfSellerType {
   _id?: ObjectId
   user_id: ObjectId
-  commision: number
   services_card_sold_of_customer_id: ObjectId
   created_at?: Date
   updated_at?: Date

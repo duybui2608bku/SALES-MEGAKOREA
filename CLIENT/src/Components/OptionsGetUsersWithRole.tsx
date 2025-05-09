@@ -9,7 +9,7 @@ interface UsersOptionsType {
   search?: boolean
   onchange?: (value: string) => void
   initialValue?: string
-  role: RoleUser
+  role?: RoleUser
   style?: React.CSSProperties
 }
 
