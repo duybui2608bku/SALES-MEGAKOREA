@@ -75,7 +75,7 @@ const StepService = () => {
     },
     {
       title: 'Danh mục',
-      dataIndex: 'services_category_id',
+      dataIndex: 'category',
       key: 'services_category_id',
       width: 220,
       render: (services_category: string) => <Text>{services_category}</Text>

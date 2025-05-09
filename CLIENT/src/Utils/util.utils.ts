@@ -107,3 +107,76 @@ export const getChangedFields = (original: any, updated: any): Partial<any> => {
     return !_.isEqual(value, original[key as keyof any])
   }) as Partial<any>
 }
+
+export const dataTestOutstandingStaff = [
+  {
+    user: {
+      avatar: '',
+      name: 'Nguyễn Thị Nở'
+    },
+    count: 484
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Đoàn Minh Tâm'
+    },
+    count: 112
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Phan Thanh Tùng'
+    },
+    count: 191
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Đoàn Minh Tâm'
+    },
+    count: 356
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Đoàn Minh Tâm'
+    },
+    count: 327
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Nguyễn Thị Nở'
+    },
+    count: 267
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Nguyễn Tuấn Anh'
+    },
+    count: 191
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Nguyễn Tuấn Anh'
+    },
+    count: 250
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Hoàng Hải Long'
+    },
+    count: 420
+  },
+  {
+    user: {
+      avatar: '',
+      name: 'Phan Thanh Tùng'
+    },
+    count: 223
+  }
+]

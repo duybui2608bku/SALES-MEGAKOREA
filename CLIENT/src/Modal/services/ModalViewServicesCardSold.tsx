@@ -530,28 +530,30 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                     </Text>
                   </Space>
 
-                  <Space direction='vertical' size={8}>
+                  <Space direction='vertical' size={8} style={{ width: '100%' }}>
                     <Text strong style={{ fontSize: '12px', color: '#2d3436' }}>
                       Dịch vụ:
                     </Text>
                     {card.services_of_card.map((service, index) => (
-                      <Space key={index} align='center' style={{ width: '100%' }}>
-                        <Tag
-                          color='cyan'
-                          icon={<TagOutlined />}
-                          style={{
-                            fontSize: '10px',
-                            padding: '4px 10px',
-                            borderRadius: '10px',
-                            background: '#e6f7ff',
-                            border: 'none'
-                          }}
-                        >
-                          {service.name}
-                        </Tag>
-                        <Text type='danger' style={{ fontSize: '12px' }}>
-                          {service.used} / {service.quantity}
-                        </Text>
+                      <Flex key={index} align='start' style={{ width: '100%', justifyContent: 'space-between' }}>
+                        <Flex style={{ flexDirection: 'column', alignItems: 'start', gap: '8px', width: '100%' }}>
+                          <Tag
+                            color='cyan'
+                            icon={<TagOutlined />}
+                            style={{
+                              fontSize: '10px',
+                              padding: '4px 10px',
+                              borderRadius: '10px',
+                              background: '#e6f7ff',
+                              border: 'none'
+                            }}
+                          >
+                            {service.name}
+                          </Tag>
+                          <Text type='danger' style={{ fontSize: '12px', marginLeft: '7px' }}>
+                            {service.used} / {service.quantity}
+                          </Text>
+                        </Flex>
                         <Space>
                           {/* Button for using service */}
                           <Popconfirm
@@ -630,7 +632,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                             icon={<AiOutlinePlusCircle style={{ color: '#1890ff', fontSize: '16px' }} />}
                           />
                         </Space>
-                      </Space>
+                      </Flex>
                     ))}
                   </Space>
 

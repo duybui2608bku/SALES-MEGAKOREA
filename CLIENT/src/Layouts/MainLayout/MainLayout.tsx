@@ -1,4 +1,4 @@
-import { Menu, MenuProps, Layout, Button } from 'antd'
+import { Menu, MenuProps, Layout, Button, Space } from 'antd'
 import { Fragment, useEffect, useState } from 'react'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
@@ -9,7 +9,13 @@ import { IoMdLogOut } from 'react-icons/io'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useLocation, useNavigate } from 'react-router'
-import { pathRoutersProduct, pathRoutersService, pathRoutersUser, pathRoutesCustomers } from 'src/Constants/path'
+import {
+  pathRoutersProduct,
+  pathRoutersService,
+  pathRoutersUser,
+  pathRoutesCustomers,
+  pathUtil
+} from 'src/Constants/path'
 import ModalLogout from 'src/Modal/ModalLogout'
 
 interface Props {
@@ -27,7 +33,7 @@ const MainLayout = ({ children }: Props) => {
   useEffect(() => {
     // Xác định khóa menu và menu con mở dựa trên đường dẫn hiện tại
     const path = location.pathname
-    let newSelectedKey: string[] = ['customers']
+    let newSelectedKey: string[] = ['']
     let newOpenKeys: string[] = []
 
     // Map đường dẫn tới khóa menu tương ứng
@@ -182,8 +188,11 @@ const MainLayout = ({ children }: Props) => {
           collapsible
           collapsed={collapsed}
         >
-          <div
+          <Space
+            className='LogoMainLayout'
+            onClick={() => navigate(pathUtil.home)}
             style={{
+              width: '100%',
               height: 'auto',
               display: 'flex',
               justifyContent: 'center',
@@ -196,13 +205,14 @@ const MainLayout = ({ children }: Props) => {
               src={collapsed ? logoMobile : logo}
               alt='Logo'
               style={{
+                cursor: 'pointer',
                 height: '100%',
                 width: '62%',
                 transition: 'all 0.3s',
                 transform: collapsed ? 'scale(0.8)' : 'scale(1)'
               }}
             />
-          </div>
+          </Space>
           <Menu
             style={{ height: '100vh' }}
             theme='light'
