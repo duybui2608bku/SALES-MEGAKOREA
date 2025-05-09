@@ -279,7 +279,9 @@ const SoldServicesCard = () => {
               <Text>
                 {service_card.name} |{' '}
                 <Tag bordered={false} color='magenta'>
-                  {service_card.lineTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                  {service_card.lineTotal
+                    ? service_card.lineTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                    : ''}
                 </Tag>
               </Text>
             )
