@@ -81,7 +81,7 @@ const SoldServicesCard = () => {
     useState<GetServicesCardSoldOfCustomer | null>(null)
   const [historyUsedData, setHistoryUsedData] = useState<HistoryUsed[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [datePickerQuery, setDatePickerQuery] = useState('')
+  const [datePickerQuery, setDatePickerQuery] = useState<string>('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [openPopOver, setOpenPopOver] = useState(false)
   const [openModalRefund, setOpenModalRefund] = useState(false)
@@ -110,12 +110,16 @@ const SoldServicesCard = () => {
     queryKey: queryKey,
     queryFn: async () => {
       const searchType = checkValueSearchQuery(searchQuery)
+      const date =
+        datePickerQuery.split(' & ')[0] === datePickerQuery.split(' & ')[1]
+          ? datePickerQuery.split(' & ')[0]
+          : datePickerQuery
       const response = await servicesApi.GetServicesCardSoldOfCustomer({
         page: pagination.page,
         limit: pagination.limit,
         search: searchQuery,
         search_type: searchType,
-        date: datePickerQuery,
+        date: date,
         branch: branchQuery
       })
       return response
@@ -542,7 +546,7 @@ const SoldServicesCard = () => {
           <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => handleSearch(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
+          <DatePickerComponent isRange disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <OptionsBranch onchange={(value) => setBranchQuery(value)} mode='multiple' />

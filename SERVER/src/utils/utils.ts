@@ -43,38 +43,46 @@ export const removeNullOutOfObject = (obj: Record<string, any>) => {
   return _.omitBy(obj, _.isNull)
 }
 
-export const createDateRangeQuery = (dateInput: string | string[] | null | undefined, fieldName = 'created_at') => {
+export const createDateRangeQuery = (dateInput: string | null | undefined, fieldName = 'created_at') => {
   // Nếu không có dữ liệu đầu vào, trả về đối tượng rỗng
   if (!dateInput) return {}
 
-  // Xử lý trường hợp đầu vào là mảng [startDate, endDate]
-  if (Array.isArray(dateInput) && dateInput.length >= 2) {
-    const startDate = dayjs(dateInput[0]).utc().startOf('day').toDate()
-    const endDate = dayjs(dateInput[1]).utc().endOf('day').toDate()
+  // Kiểm tra xem đầu vào có chứa dấu '-' không (định dạng khoảng thời gian)
+  if (dateInput.includes('&')) {
+    // Tách chuỗi thành startDate và endDate bằng dấu '-'
+    const [startDateStr, endDateStr] = dateInput.split('&').map((str) => str.trim())
 
-    return {
-      [fieldName]: {
-        $gte: startDate,
-        $lt: endDate
+    // Phân tích các chuỗi ngày thành đối tượng dayjs
+    const startDate = dayjs(startDateStr).utc()
+    const endDate = dayjs(endDateStr).utc()
+
+    // Kiểm tra tính hợp lệ của ngày
+    if (startDate.isValid() && endDate.isValid()) {
+      return {
+        [fieldName]: {
+          $gte: startDate.toDate(),
+          $lt: endDate.toDate()
+        }
       }
     }
   }
 
-  // Xử lý trường hợp đầu vào là string hoặc mảng có 1 phần tử (ngày đơn lẻ)
-  const dateString = Array.isArray(dateInput) ? dateInput[0] : dateInput
+  // Trường hợp chỉ có một ngày đơn lẻ hoặc định dạng khoảng thời gian không hợp lệ
+  const date = dayjs(dateInput).utc()
 
-  // Phân tích ngày đầu vào bằng dayjs
-  const date = dayjs(dateString).utc()
+  // Nếu ngày hợp lệ, tạo khoảng thời gian cho một ngày
+  if (date.isValid()) {
+    const startOfDay = date.startOf('day').toDate()
+    const endOfDay = date.endOf('day').toDate()
 
-  // Tạo ngày bắt đầu (00:00:00) và kết thúc (23:59:59) ở UTC
-  const startOfDay = date.startOf('day').toDate()
-  const endOfDay = date.endOf('day').toDate()
-
-  // Trả về điều kiện truy vấn MongoDB
-  return {
-    [fieldName]: {
-      $gte: startOfDay,
-      $lt: endOfDay
+    return {
+      [fieldName]: {
+        $gte: startOfDay,
+        $lt: endOfDay
+      }
     }
   }
+
+  // Trả về đối tượng rỗng nếu không thể phân tích ngày
+  return {}
 }
