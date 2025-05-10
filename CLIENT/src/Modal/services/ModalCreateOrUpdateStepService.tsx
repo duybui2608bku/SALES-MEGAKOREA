@@ -38,6 +38,9 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
     onClose(false)
     setCategoryQuery(undefined)
     setStepServiceToEdit?.(null)
+    if (setStepServiceToEdit) {
+      setStepServiceToEdit(null)
+    }
   }
 
   // Func create a step service
@@ -98,7 +101,7 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
   const handleCreateStepService = (value: FieldsType) => {
     try {
       const services_category_id = categoryQuery
-      const stepService: CreateStepServiceRequestBody = { ...value, services_category_id, branch: branchValue }
+      const stepService: CreateStepServiceRequestBody = { ...value, services_category_id }
       createStepService(stepService)
     } catch (error) {
       message.error(`Đã xảy lỗi trong quá trình tạo bước dịch vụ: ${error}`)
@@ -113,7 +116,6 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
       const updatedStepService = {
         ...value,
         services_category_id,
-        branch: branchValue,
         _id: stepServiceToEdit._id
       }
       updateStepService(updatedStepService)
@@ -122,19 +124,35 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
     }
   }
 
+  // Xử lý thay đổi giá trị branch
+  const handleBranchChange = (value: string[]) => {
+    setBranchValue(value)
+
+    // Cập nhật giá trị trong form
+    form.setFieldValue('branch', value)
+  }
+
   // Fetch data step service to edit
   useEffect(() => {
     if (stepServiceToEdit) {
-      form.setFieldsValue(stepServiceToEdit)
-      setCategoryQuery(stepServiceToEdit.services_category_id)
-      setBranchValue(stepServiceToEdit.branch || [])
+      const initialData = {
+        ...stepServiceToEdit,
+        branch: stepServiceToEdit.branch || []
+      }
+
+      form.setFieldsValue(initialData)
+      setCategoryQuery(initialData.services_category_id)
+      setBranchValue(initialData.branch)
     } else {
       form.resetFields()
       // Set branch value based on profile branch
       if (profile?.branch?._id) {
-        setBranchValue([profile.branch._id])
+        const initialBranch = profile.branch._id ? [profile.branch._id] : []
+        setBranchValue(initialBranch)
+        form.setFieldValue('branch', initialBranch)
       } else {
         setBranchValue([])
+        form.setFieldValue('branch', [])
       }
     }
   }, [stepServiceToEdit, form, profile])
@@ -153,8 +171,6 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
 
   // Sự kiện loading
   const isPending = isCreating || isUpdating
-
-  console.log(form.getFieldsValue())
 
   return (
     <Modal
@@ -237,13 +253,12 @@ const ModalCreateOrUpdateStepService = (props: ModalCreateOrUpdateStepServicePro
                   label='Chi nhánh'
                   name='branch'
                   rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
-                  initialValue={branchValue}
                 >
                   <OptionsBranch
                     mode='multiple'
                     placeholder='Chọn chi nhánh'
-                    value={branchValue}
-                    onchange={setBranchValue}
+                    initialValue={branchValue}
+                    onchange={handleBranchChange}
                   />
                 </Form.Item>
               </Col>

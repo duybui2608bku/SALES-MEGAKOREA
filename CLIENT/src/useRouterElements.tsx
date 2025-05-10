@@ -23,11 +23,11 @@ import Customers from './Pages/customer/customers'
 import UserInformation from './Pages/User/UserInformation'
 import SellServicesCardService from './Pages/Services/SellServices.card.service'
 import SoldServicesCardService from './Pages/Services/SoldServices.card.service'
-import Page404 from './Pages/404/404'
 
 import StepService from './Pages/Services/Step.service'
 import UserCommisionSale from './Pages/User/UserCommisionSale'
 import UserCommisionTechnican from './Pages/User/UserommisionTechnican'
+import NotFoundPage from './Pages/404/404'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -53,11 +53,7 @@ const useRouterElements = () => {
   const routeElemnts = useRoutes([
     {
       path: pathUtil.none,
-      element: (
-        <ProtectedRoute
-          allowedRoles={[RoleUser.ADMIN, RoleUser.USER, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE]}
-        />
-      ),
+      element: <ProtectedRoute />,
       children: [
         {
           path: pathUtil.home,
@@ -71,11 +67,22 @@ const useRouterElements = () => {
     },
     {
       path: pathUtil.none,
-      element: <ProtectedRoute allowedRoles={[RoleUser.USER, RoleUser.ACCOUNTANT, RoleUser.MANAGER, RoleUser.SALE]} />,
+      element: (
+        <ProtectedRoute
+          allowedRoles={[
+            RoleUser.USER,
+            RoleUser.ACCOUNTANT,
+            RoleUser.MANAGER,
+            RoleUser.SALE,
+            RoleUser.TECHNICIAN,
+            RoleUser.TECHNICAN_MASTER
+          ]}
+        />
+      ),
       children: [
         {
           path: pathUtil.notFound,
-          element: <Page404 />
+          element: <NotFoundPage />
         }
       ]
     },

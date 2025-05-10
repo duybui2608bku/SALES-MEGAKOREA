@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Button, Col, Flex, Popconfirm, Row, Table, TableColumnType, Typography } from 'antd'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
 import Title from 'src/Components/Title'
@@ -9,6 +9,8 @@ import ModalCreateServicesCategory from 'src/Modal/services/ModalCreateServicesC
 import { servicesApi } from 'src/Service/services/services.api'
 import { PaginationType } from 'src/Types/util.type'
 import OptionsBranch from 'src/Components/OptionsBranch'
+import { AppContext } from 'src/Context/AppContext'
+import { RoleUser } from 'src/Constants/enum'
 
 const LIMIT = 9
 const PAGE = 1
@@ -29,7 +31,10 @@ const CategoryService = () => {
     limit: LIMIT,
     total: 0
   })
-  const [branchFilter, setBranchFilter] = useState<string[]>([])
+  const { profile } = useContext(AppContext)
+  const isAdmin = profile?.role === RoleUser.ADMIN
+  const userBranchId = profile?.branch?._id && !isAdmin ? [profile.branch._id] : []
+  const [branchFilter, setBranchFilter] = useState<string[]>(userBranchId)
 
   const { data, isLoading } = useQuery({
     queryKey: ['getAllServicesCategory', pagination.page, branchFilter],
@@ -41,6 +46,8 @@ const CategoryService = () => {
       }),
     staleTime: STALETIME
   })
+
+  console.log('branchFilter: ', branchFilter)
 
   useEffect(() => {
     if (data) {
@@ -112,6 +119,12 @@ const CategoryService = () => {
     goToNextPage(page)
   }
 
+  const handleBranchFilterChange = (value: string[]) => {
+    console.log('valueHangleBranchFilter: ', value)
+
+    setBranchFilter(value)
+  }
+
   return (
     <Fragment>
       {/* Title Categories Service */}
@@ -123,7 +136,14 @@ const CategoryService = () => {
           </Button>
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch mode='multiple' placeholder='Lọc theo chi nhánh' search onchange={setBranchFilter} />
+          <OptionsBranch
+            mode='multiple'
+            placeholder='Lọc theo chi nhánh'
+            search
+            value={branchFilter}
+            onchange={isAdmin ? handleBranchFilterChange : undefined}
+            disabled={!isAdmin}
+          />
         </Col>
       </Row>
 

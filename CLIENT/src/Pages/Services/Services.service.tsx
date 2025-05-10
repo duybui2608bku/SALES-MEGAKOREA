@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Col, Flex, message, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
-import { Fragment, useEffect, useState, useCallback } from 'react'
+import { Fragment, useEffect, useState, useCallback, useContext } from 'react'
 import { IoMdTrash } from 'react-icons/io'
 import { optionsBranch } from 'src/Constants/option'
 import { BranchType } from 'src/Interfaces/branch/branch.interface'
@@ -25,6 +25,8 @@ import Title from 'src/Components/Title'
 import ExpandableParagraph from 'src/Components/ExpandableParagraph'
 const { Paragraph, Text } = Typography
 import { FaAnglesDown, FaAnglesUp } from 'react-icons/fa6'
+import { AppContext } from 'src/Context/AppContext'
+import { RoleUser } from 'src/Constants/enum'
 
 const LIMIT = 9
 const PAGE = 1
@@ -53,12 +55,14 @@ enum ModalType {
 
 const Service = () => {
   const [services, setServices] = useState<ServicesType[]>([])
-  const [filterBranch, setFilterBranch] = useState<string[]>([])
   const [servicesToEdit, setServicesToEdit] = useState<ServicesType | null>(null)
   const [servicesSelected, setServicesSelected] = useState<StepServicesType[]>([])
   const [modalType, setModalType] = useState<ModalType>(ModalType.NONE)
   const [loadingStatusUpdate, setLoadingStatusUpdate] = useState<string | null>(null)
-
+  const { profile } = useContext(AppContext)
+  const isAdmin = profile?.role === RoleUser.ADMIN
+  const userBranchId = profile?.branch?._id && !isAdmin ? [profile.branch._id] : []
+  const [filterBranch, setFilterBranch] = useState<string[]>(userBranchId)
   const [pagination, setPagination] = useState<PaginationType>({
     page: PAGE,
     limit: LIMIT,
@@ -73,7 +77,7 @@ const Service = () => {
           ? {
               page: pagination.page,
               limit: LIMIT,
-              branch: encodeURI(filterBranch.join(','))
+              branch: filterBranch.join(',')
             }
           : {
               page: pagination.page,
@@ -376,7 +380,14 @@ const Service = () => {
           </Button>
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
+          <OptionsBranch
+            mode='multiple'
+            placeholder='Lọc theo chi nhánh'
+            search
+            onchange={isAdmin ? handleFilterBranch : undefined}
+            value={filterBranch}
+            disabled={!isAdmin}
+          />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <DebouncedSearch placeholder='Tìm kiếm dich vụ' onSearch={handleSearch} debounceTime={1000} />

@@ -73,8 +73,9 @@ class ServicesServices {
   async GetAllServicesCategory(query: GetAllServicesCategoryRequestQuery) {
     const { branch, limit, page } = query
     const branchObjectId = branch?.map((branchId) => toObjectId(branchId)) || []
-    const queryData = {
-      branch: { $in: branchObjectId }
+    let queryData = {}
+    if (branchObjectId.length > 0) {
+      queryData = { branch: { $in: branchObjectId } }
     }
     return await serverRepository.getAllServicesCategory({
       limit,

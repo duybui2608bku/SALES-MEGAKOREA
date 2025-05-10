@@ -8,7 +8,7 @@ import {
 import { HttpStatusCode } from 'axios'
 import { servicesApi } from 'src/Service/services/services.api'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, useState } from 'react'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import { AppContext } from 'src/Context/AppContext'
 
@@ -29,20 +29,39 @@ const ModalCreateServicesCategory = ({
   const queryClient = useQueryClient()
   const isEditMode = !!category
   const { profile } = useContext(AppContext)
+  const [branchValue, setBranchValue] = useState<string[]>([])
 
-  // Lấy branch id mặc định cho user thường
-  const defaultBranch = profile && profile.branch && profile.branch._id ? [profile.branch._id] : []
-
+  // Fetch data category service to edit
   useEffect(() => {
-    if (visible) {
-      if (isEditMode) {
-        form.setFieldsValue({ name: category?.name, descriptions: category?.descriptions, branch: category?.branch })
+    if (category) {
+      const initialData = {
+        ...category,
+        branch: category.branch || []
+      }
+
+      form.setFieldsValue(initialData)
+      setBranchValue(initialData.branch)
+    } else {
+      form.resetFields()
+      // Set branch value based on profile branch
+      if (profile?.branch?._id) {
+        const initialBranch = profile.branch._id ? [profile.branch._id] : []
+        setBranchValue(initialBranch)
+        form.setFieldValue('branch', initialBranch)
       } else {
-        form.setFieldsValue({ branch: defaultBranch }) // Set branch mặc định khi tạo mới
-        form.resetFields(['name', 'descriptions'])
+        setBranchValue([])
+        form.setFieldValue('branch', [])
       }
     }
-  }, [category, visible, form, isEditMode, defaultBranch])
+  }, [category, form, profile])
+
+  // Xử lý thay đổi giá trị branch
+  const handleBranchChange = (value: string[]) => {
+    setBranchValue(value)
+
+    // Cập nhật giá trị trong form
+    form.setFieldValue('branch', value)
+  }
 
   // Mutation để tạo mới danh mục
   const createMutation = useMutation({
@@ -115,7 +134,7 @@ const ModalCreateServicesCategory = ({
       footer={null}
       destroyOnClose // Hủy toàn bộ trạng thái khi modal đóng
     >
-      <Form form={form} layout='vertical' onFinish={handleFinish} initialValues={{ branch: defaultBranch }}>
+      <Form form={form} layout='vertical' onFinish={handleFinish}>
         <Form.Item
           name='name'
           label='Tên danh mục'
@@ -137,7 +156,13 @@ const ModalCreateServicesCategory = ({
           label='Chi nhánh áp dụng'
           rules={[{ required: true, message: 'Vui lòng chọn chi nhánh!' }]}
         >
-          <OptionsBranch mode='multiple' placeholder='Chọn chi nhánh áp dụng' search />
+          <OptionsBranch
+            mode='multiple'
+            placeholder='Chọn chi nhánh áp dụng'
+            initialValue={branchValue}
+            onchange={handleBranchChange}
+            search
+          />
         </Form.Item>
 
         <Form.Item>
