@@ -1595,19 +1595,98 @@ class ServicesCardRepository {
       .limit(limit)
       .toArray()
 
-    const [total, customersCountResult] = await Promise.all([
+    const [total, customersCountResult, revenue, debt] = await Promise.all([
       databaseServiceSale.services_card_sold_of_customer.countDocuments(query),
       databaseServiceSale.services_card_sold_of_customer
         .aggregate([{ $match: query }, { $group: { _id: '$customer_id' } }, { $count: 'uniqueCustomers' }])
+        .toArray(),
+      databaseServiceSale.services_card_sold_of_customer
+        .aggregate([{ $match: query }, { $group: { _id: null, total: { $sum: '$price_paid' } } }])
+        .toArray(),
+      // Thêm promise tính tổng công nợ
+      databaseServiceSale.services_card_sold_of_customer
+        .aggregate([
+          // 1. Match theo query ban đầu
+          { $match: query },
+
+          // 2. Lookup để lấy thông tin các thẻ đã bán
+          {
+            $lookup: {
+              from: 'services_card_sold',
+              localField: 'card_services_sold_id',
+              foreignField: '_id',
+              as: 'cards'
+            }
+          },
+
+          // 3. Unwind cards để xử lý từng thẻ
+          { $unwind: '$cards' },
+
+          // 4. Unwind services_of_card để xử lý từng dịch vụ
+          { $unwind: '$cards.services_of_card' },
+
+          // 5. Lookup để lấy giá của từng dịch vụ
+          {
+            $lookup: {
+              from: 'services',
+              localField: 'cards.services_of_card.services_id',
+              foreignField: '_id',
+              as: 'service_details'
+            }
+          },
+
+          // 6. Tính tổng tiền của từng dịch vụ
+          {
+            $addFields: {
+              service_total: {
+                $subtract: [
+                  {
+                    $multiply: [{ $arrayElemAt: ['$service_details.price', 0] }, '$cards.services_of_card.quantity']
+                  },
+                  { $ifNull: ['$cards.services_of_card.discount', 0] }
+                ]
+              }
+            }
+          },
+
+          // 7. Group theo customer để tính tổng tiền và công nợ
+          {
+            $group: {
+              _id: '$_id',
+              total_card_value: { $sum: '$service_total' },
+              price_paid: { $first: '$price_paid' }
+            }
+          },
+
+          // 8. Tính công nợ = tổng tiền thẻ - số tiền đã trả
+          {
+            $addFields: {
+              debt: {
+                $subtract: ['$total_card_value', { $ifNull: ['$price_paid', 0] }]
+              }
+            }
+          },
+
+          // 9. Group lại để tính tổng công nợ toàn hệ thống
+          {
+            $group: {
+              _id: null,
+              total_debt: { $sum: '$debt' }
+            }
+          }
+        ])
         .toArray()
     ])
 
+    // Xử lý kết quả trả về
     return {
       servicesCardSold,
       total,
       limit,
       page,
-      customersCount: customersCountResult.length > 0 ? customersCountResult[0].uniqueCustomers : 0
+      customersCount: customersCountResult.length > 0 ? customersCountResult[0].uniqueCustomers : 0,
+      revenue: revenue.length > 0 ? revenue[0].total : 0,
+      debt: debt.length > 0 ? debt[0].total_debt : 0 // Thêm debt vào kết quả trả về
     }
   }
 

@@ -234,7 +234,7 @@ export interface GetServicesCardSoldOfCustomerRequestBody {
   code?: string
   search?: string
   search_type?: GetServicesCardSoldOfCustomerSearchType
-  date?: string
+  date?: string | string[]
 }
 
 export interface RefundType {

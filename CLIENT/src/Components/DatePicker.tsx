@@ -29,7 +29,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
       const [start, end] = date
       if (start && end) {
         //   const rangeValue = `${start.format('YYYY-MM-DD')} - ${end.format('YYYY-MM-DD')}`
-        const rangeValue = `${dayjs(start).hour(12).minute(0).second(0).toISOString()} - ${dayjs(end).hour(12).minute(0).second(0).toISOString()}`
+        const rangeValue = `${dayjs(start).hour(12).minute(0).second(0).toISOString()} & ${dayjs(end).hour(12).minute(0).second(0).toISOString()}`
         onChange?.(rangeValue)
       } else {
         onChange?.('') // Nếu một trong hai giá trị là null, trả về chuỗi rỗng

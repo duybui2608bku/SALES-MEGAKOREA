@@ -111,6 +111,10 @@ const pathCommision = {
   createCommisionSeller: '/commision/seller/create'
 }
 
+const pathDashBoard = {
+  home: '/'
+}
+
 export {
   pathAuth,
   pathUtil,
@@ -126,5 +130,6 @@ export {
   pathRoutesCustomers,
   pathApiUploadAvatarUser,
   pathApiCustomer,
-  pathCommision
+  pathCommision,
+  pathDashBoard
 }

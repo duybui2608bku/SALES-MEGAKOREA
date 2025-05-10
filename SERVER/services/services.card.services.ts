@@ -233,18 +233,13 @@ class ServicesCardServices {
     }
 
     // Fetch services card sold data
-    const { servicesCardSold, total } = await servicesCardRepository.getAllServicesCardSoldOfCustomer({
+    const result = await servicesCardRepository.getAllServicesCardSoldOfCustomer({
       page,
       limit,
       query
     })
 
-    return {
-      servicesCardSold,
-      total,
-      limit,
-      page
-    }
+    return result
   }
 
   async UpdateServicesCardSoldOfCustomer(data: UpdateServicesCardSoldOfCustomerRequestBody) {

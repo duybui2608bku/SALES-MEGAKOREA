@@ -108,12 +108,16 @@ const SoldServicesCard = () => {
     queryKey: queryKey,
     queryFn: async () => {
       const searchType = checkValueSearchQuery(searchQuery)
+      const date =
+        datePickerQuery.split(' & ')[0] === datePickerQuery.split(' & ')[1]
+          ? datePickerQuery.split(' & ')[0]
+          : datePickerQuery
       const response = await servicesApi.GetServicesCardSoldOfCustomer({
         page: pagination.page,
         limit: pagination.limit,
         search: searchQuery,
         search_type: searchType,
-        date: datePickerQuery,
+        date: date,
         branch: branchQuery
       })
       return response
