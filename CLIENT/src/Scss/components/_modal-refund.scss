@@ -1,0 +1,106 @@
+.refund-modal {
+  .ant-modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    margin-bottom: 24px;
+  }
+
+  .info-card {
+    border-radius: 8px;
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+
+    .ant-card-body {
+      padding: 20px;
+    }
+  }
+
+  .refund-options {
+    width: 100%;
+
+    .ant-radio-wrapper {
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+
+  .refund-option-card {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+
+    &:hover {
+      border-color: #ffb74d;
+    }
+
+    &.selected {
+      border-color: #ff9900;
+      background-color: #fff7e6;
+    }
+
+    .ant-card-body {
+      padding: 16px;
+    }
+
+    .ant-radio {
+      top: 20px;
+    }
+  }
+
+  .ant-input-number {
+    .ant-input-number-input {
+      height: 40px;
+      font-size: 16px;
+    }
+  }
+
+  .ant-input {
+    border-radius: 6px;
+
+    &:hover,
+    &:focus {
+      border-color: #ff9900;
+    }
+  }
+
+  .ant-form-item-label {
+    padding-bottom: 8px;
+  }
+
+  .ant-alert {
+    border-radius: 8px;
+  }
+
+  .ant-btn-primary {
+    &:hover,
+    &:focus {
+      background: #ffb74d !important;
+      border-color: #ffb74d !important;
+    }
+  }
+}
+
+// Animation keyframes
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

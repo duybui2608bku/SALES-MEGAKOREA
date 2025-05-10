@@ -31,17 +31,18 @@ import { pathRoutersService } from 'src/Constants/path'
 import { motion, AnimatePresence } from 'framer-motion'
 import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
-import { GiReceiveMoney, GiTakeMyMoney, GiPayMoney } from 'react-icons/gi'
+import { GiReceiveMoney } from 'react-icons/gi'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
-import { TbMoneybag } from 'react-icons/tb'
+import { TbCreditCardRefund, TbMoneybag } from 'react-icons/tb'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
 import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
 import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
-import { RiRefund2Fill, RiMoneyDollarCircleLine } from 'react-icons/ri'
+import { RiRefund2Fill } from 'react-icons/ri'
 import DatePickerComponent from 'src/Components/DatePicker'
 import { queryClient } from 'src/main'
 import { HiUserPlus } from 'react-icons/hi2'
 import ModalCommissionDistribution from 'src/Modal/services/ModalCommissionDistribution'
+import ModalRefund from 'src/Modal/services/ModalRefund'
 
 const { Text, Paragraph } = Typography
 
@@ -83,8 +84,8 @@ const SoldServicesCard = () => {
   const [datePickerQuery, setDatePickerQuery] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [openPopOver, setOpenPopOver] = useState(false)
-  // const [openModalRefundMoney, setOpenModalRefundMoney] = useState(RefundEnum.NONE)
-
+  const [openModalRefund, setOpenModalRefund] = useState(false)
+  const [branchQuery, setBranchQuery] = useState<string[]>([])
   // Hàm check searchQuery là Number hay là String
   const checkValueSearchQuery = (value: string) => {
     if (!value || value.length === 0) return
@@ -104,7 +105,7 @@ const SoldServicesCard = () => {
     return
   }
 
-  const queryKey = ['services-card-sold-customer', pagination.page, searchQuery, datePickerQuery]
+  const queryKey = ['services-card-sold-customer', pagination.page, searchQuery, datePickerQuery, branchQuery]
   const { data, isLoading, refetch } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
@@ -114,7 +115,8 @@ const SoldServicesCard = () => {
         limit: pagination.limit,
         search: searchQuery,
         search_type: searchType,
-        date: datePickerQuery
+        date: datePickerQuery,
+        branch: branchQuery
       })
       return response
     },
@@ -174,14 +176,16 @@ const SoldServicesCard = () => {
     setOpenPopOver(newOpen)
   }
 
-  const handleReloadPage = () => {
+  const handleReloadPage = async () => {
+    await message.loading('Đang tải dữ liệu...', 3)
+    message.success('Tải dữ liệu thành công !')
     queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
-    // window.location.reload()
   }
 
-  // const handleRefundMoney = (refundType: RefundEnum) => {
-  //   setOpenModalRefundMoney(refundType)
-  // }
+  const handleRefundMoney = (record: GetServicesCardSoldOfCustomer) => {
+    setServicesCardSoldOfCustomerData(record)
+    setOpenModalRefund(true)
+  }
 
   const handleCommissionDistribution = (record: GetServicesCardSoldOfCustomer) => {
     handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION)
@@ -198,7 +202,11 @@ const SoldServicesCard = () => {
       render: (_, record) => {
         return (
           <Fragment>
-            {(record.price ?? 0) - (record.price_paid ?? 0) !== 0 ? (
+            {record.refund && record.refund.type !== 0 ? (
+              <Tooltip title='Đã hoàn tiền'>
+                <TbCreditCardRefund cursor='pointer' style={{ color: '#FF9900', fontSize: '18px' }} />
+              </Tooltip>
+            ) : (record.price ?? 0) - (record.price_paid ?? 0) !== 0 ? (
               <Tooltip title='Đang thanh toán'>
                 <SyncOutlined spin style={{ color: '#1677ff', fontSize: '18px' }} />
               </Tooltip>
@@ -252,12 +260,6 @@ const SoldServicesCard = () => {
           </Space>
         )
       }
-    },
-    {
-      title: 'Hoa hồng',
-      dataIndex: 'commision',
-      key: 'commision',
-      width: 50
     },
     {
       title: 'Dịch vụ',
@@ -451,29 +453,46 @@ const SoldServicesCard = () => {
                 <Flex style={{ flexDirection: 'column', gap: '10px' }}>
                   <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <Button
-                      // onClick={() => handleRefundMoney(RefundEnum.FULL)}
-                      icon={<GiTakeMyMoney style={{ color: '#FF9900' }} />}
+                      onClick={() =>
+                        servicesCardSoldOfCustomerData && handleRefundMoney(servicesCardSoldOfCustomerData)
+                      }
+                      icon={<RiRefund2Fill style={{ color: '#FF9900' }} />}
                     />{' '}
-                    Hoàn tiền 100%
-                  </Row>
-                  <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <Button
-                      // onClick={() => handleRefundMoney(RefundEnum.PARTIAL_FULL_TREATMENT)}
-                      icon={<GiPayMoney style={{ color: '#FF9900' }} />}
-                    />{' '}
-                    Hoàn tiền theo số buổi
-                  </Row>
-                  <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <Button
-                      // onClick={() => handleRefundMoney(RefundEnum.PARTIAL_HALF_REATMENT)}
-                      icon={<RiMoneyDollarCircleLine style={{ color: '#FF9900' }} />}
-                    />{' '}
-                    Hoàn tiền theo số tiền
+                    Hoàn tiền
                   </Row>
                 </Flex>
               }
             >
-              <Button title='Hoàn tiền' icon={<RiRefund2Fill color='#FF9900' />}></Button>
+              {record.refund && record.refund.type !== 0 ? (
+                <Popover
+                  trigger='hover'
+                  content={
+                    <div style={{ padding: '8px' }}>
+                      <Text strong>Thông tin hoàn tiền:</Text>
+                      <div style={{ marginTop: '8px' }}>
+                        <Text>Số tiền: </Text>
+                        <Text type='warning'>
+                          {record.refund.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                        </Text>
+                      </div>
+                      <div style={{ marginTop: '4px' }}>
+                        <Text>Ngày hoàn: </Text>
+                        <Text>
+                          {record.refund.date ? new Date(record.refund.date).toLocaleDateString('vi-VN') : 'N/A'}
+                        </Text>
+                      </div>
+                    </div>
+                  }
+                >
+                  <Button title='Đã hoàn tiền' icon={<TbCreditCardRefund style={{ color: '#FF9900' }} />} />
+                </Popover>
+              ) : (
+                <Button
+                  title='Hoàn tiền'
+                  icon={<RiRefund2Fill color='#FF9900' />}
+                  onClick={() => record && handleRefundMoney(record)}
+                />
+              )}
             </Popover>
           </Flex>
         )
@@ -526,7 +545,7 @@ const SoldServicesCard = () => {
           <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch mode='multiple' />
+          <OptionsBranch onchange={(value) => setBranchQuery(value)} mode='multiple' />
         </Col>
       </Row>
 
@@ -583,6 +602,11 @@ const SoldServicesCard = () => {
         open={openModalServicesCardSold === StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION}
         onClose={() => setOpenModalServicesCardSold(StatusOpenModalServicesCard.NONE)}
         serviceCardData={servicesCardSoldOfCustomerData}
+      />
+      <ModalRefund
+        open={openModalRefund}
+        onClose={() => setOpenModalRefund(false)}
+        servicesCardData={servicesCardSoldOfCustomerData}
       />
     </Fragment>
   )
