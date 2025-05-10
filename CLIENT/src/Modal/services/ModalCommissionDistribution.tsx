@@ -192,7 +192,7 @@ const ModalCommissionDistribution = ({ open, onClose, serviceCardData }: ModalCo
     <Modal
       title={
         <div style={{ textAlign: 'center' }}>
-          <Title level={4} style={{ margin: 0, color: '#3B82F6' }}>
+          <Title level={3} style={{ margin: 0 }}>
             <TeamOutlined /> Chia Doanh Số Dịch Vụ
           </Title>
         </div>
@@ -209,7 +209,7 @@ const ModalCommissionDistribution = ({ open, onClose, serviceCardData }: ModalCo
       }}
     >
       {serviceCardData && (
-        <div>
+        <div style={{ maxHeight: '80vh', overflowY: 'scroll' }}>
           <Card
             bordered={false}
             style={{

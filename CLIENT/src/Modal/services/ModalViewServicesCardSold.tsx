@@ -9,8 +9,10 @@ import {
   message,
   Modal,
   Popconfirm,
+  Progress,
   Space,
   Tag,
+  Tooltip,
   Typography,
   Upload
 } from 'antd'
@@ -22,12 +24,16 @@ import {
   UpdateQuantityServicesRequestBody
 } from 'src/Interfaces/services/services.interfaces'
 const { Title, Text } = Typography
-import { DollarOutlined, InboxOutlined, TagOutlined } from '@ant-design/icons'
+import {
+  DollarOutlined,
+  InboxOutlined,
+  PlusOutlined,
+  MinusOutlined,
+  PrinterOutlined,
+  InfoCircleOutlined,
+  FileImageOutlined
+} from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { IoPrintOutline } from 'react-icons/io5'
-import { RiErrorWarningLine } from 'react-icons/ri'
-import { GrSubtractCircle } from 'react-icons/gr'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { Row } from 'antd/lib'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
 import { RoleUser, TypeCommision } from 'src/Constants/enum'
@@ -92,9 +98,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const [uploading, setUploading] = useState(false)
   const [form] = Form.useForm()
 
-  console.log('dataCard: ', servicesCardSoldOfCustomerData)
-
-  // Ref lưu thông tin dịch vụ đang được cập nhật
+  // Ref for tracking service being updated
   const updatingServiceRef = useRef<{
     cardId: string
     serviceId: string
@@ -103,7 +107,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
 
   useEffect(() => {
     if (servicesCardSoldOfCustomerData) {
-      // Thêm parentId vào mỗi card
+      // Add parentId to each card
       const cardsWithParentId = servicesCardSoldOfCustomerData.cards.map((card) => ({
         ...card,
         parentId: servicesCardSoldOfCustomerData._id
@@ -112,27 +116,27 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     }
   }, [servicesCardSoldOfCustomerData])
 
-  // Theo dõi cập nhật từ query cache
+  // Watch for updates from query cache
   useEffect(() => {
     if (!open || !servicesCardSoldOfCustomerData) return
 
-    // Đăng ký listener để theo dõi khi query thành công
+    // Register listener to track when query succeeds
     const unsubscribe = queryClientHook.getQueryCache().subscribe((event) => {
-      // Chỉ xử lý cho sự kiện thành công
+      // Only process success events
       if (event.type === 'updated') {
         const queryKey = event.query.queryKey
 
-        // Kiểm tra xem đây có phải là query chính không
+        // Check if this is the main query
         if (Array.isArray(queryKey) && queryKey[0] === 'services-card-sold-customer') {
-          // Tìm dữ liệu mới trong cache
+          // Find new data in cache
           const newData = event.query.state.data?.data?.result?.servicesCardSold
 
           if (Array.isArray(newData)) {
-            // Tìm card đang hiển thị trong modal
+            // Find card currently displayed in modal
             const updatedServiceCard = newData.find((card) => card._id === servicesCardSoldOfCustomerData._id)
 
             if (updatedServiceCard) {
-              // Cập nhật danh sách dịch vụ trong modal
+              // Update service list in modal
               const cardsWithParentId = updatedServiceCard.cards.map((card: any) => ({
                 ...card,
                 parentId: updatedServiceCard._id
@@ -145,13 +149,13 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       }
     })
 
-    // Cleanup khi component unmount hoặc modal đóng
+    // Cleanup when component unmounts or modal closes
     return () => {
       unsubscribe()
     }
   }, [open, servicesCardSoldOfCustomerData, queryClientHook])
 
-  // Func đóng Modal view
+  // Function to close view Modal
   const handleCancelModal = () => {
     close(false)
   }
@@ -195,7 +199,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       return
     }
 
-    // Lưu thông tin dịch vụ đang cập nhật
+    // Save info about service being updated
     updatingServiceRef.current = {
       cardId: data.services_card_sold_id,
       serviceId: data.services_id,
@@ -237,7 +241,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
       }
     }
 
-    // Cập nhật local trước khi gọi API
+    // Update locally before API call
     setListServicesCard((prevCards) => {
       return prevCards.map((card) => {
         if (card._id === services_card_sold_id) {
@@ -247,7 +251,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
               if (service._id === services_id) {
                 return {
                   ...service,
-                  used: service.used + 1 // Tăng số lượng đã sử dụng
+                  used: service.used + 1 // Increase used count
                 }
               }
               return service
@@ -261,7 +265,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     updateUsedOfServices(dataUpdateUsedOfServices)
   }
 
-  // New function to handle showing the increase quantity modal
+  // Function to show increase quantity modal
   const showIncreaseQuantityModal = (service: {
     cardId: string
     serviceId: string
@@ -316,10 +320,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     if (!servicesCardSoldOfCustomerData) return
 
     try {
-      // Prepare data for API call - without commision
+      // Prepare data for API call - without commission
       const dataUpdateQuantityOfServices: UpdateQuantityServicesRequestBody = {
         id: servicesCardSoldOfCustomerData._id,
-        commision_of_technician_id: '', // Empty as we don't need commision
+        commision_of_technician_id: '', // Empty as we don't need commission
         services_card_sold_id: increasingService.cardId,
         services_id: increasingService.serviceId,
         media: uploadedImages,
@@ -377,10 +381,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     onSuccess: () => {
       message.success('Sử dụng dịch vụ thành công!')
 
-      // Chỉ cần invalidate để cập nhật data chính xác - UI đã được cập nhật trước đó
+      // Only invalidate to update accurate data - UI was already updated
       queryClient.invalidateQueries({ queryKey: queryKey })
 
-      // Vẫn gọi refetch để đảm bảo dữ liệu hiển thị ở component cha được cập nhật
+      // Still call refetch to ensure data displayed in parent component is updated
       refetchData()
 
       // Reset ref
@@ -389,10 +393,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     onError: (error: Error, _, context) => {
       message.error(`Lỗi khi sử dụng dịch vụ: ${error.message}`)
 
-      // Khôi phục dữ liệu cache nếu có lỗi
+      // Restore cache data if error
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
 
-      // Khôi phục UI về trạng thái trước khi cập nhật
+      // Restore UI to state before update
       if (updatingServiceRef.current && updatingServiceRef.current.action === 'use') {
         const { cardId, serviceId } = updatingServiceRef.current
 
@@ -403,7 +407,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                 ...card,
                 services_of_card: card.services_of_card.map((service) => {
                   if (service._id === serviceId) {
-                    // Giảm lại giá trị used đã tăng trước đó
+                    // Decrease used value increased earlier
                     return {
                       ...service,
                       used: service.used - 1
@@ -432,10 +436,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     onSuccess: () => {
       message.success('Tăng số lượng dịch vụ thành công!')
 
-      // Chỉ cần invalidate để cập nhật data chính xác - UI đã được cập nhật trước đó
+      // Only invalidate to update accurate data - UI was already updated
       queryClient.invalidateQueries({ queryKey: queryKey })
 
-      // Vẫn gọi refetch để đảm bảo dữ liệu hiển thị ở component cha được cập nhật
+      // Still call refetch to ensure data displayed in parent component is updated
       refetchData()
 
       // Reset ref
@@ -444,10 +448,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     onError: (error: Error, variables, context) => {
       message.error(`Lỗi khi tăng số lượng dịch vụ: ${error.message}`)
 
-      // Khôi phục dữ liệu cache nếu có lỗi
+      // Restore cache data if error
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
 
-      // Khôi phục UI về trạng thái trước khi cập nhật
+      // Restore UI to state before update
       if (updatingServiceRef.current && updatingServiceRef.current.action === 'increase') {
         const { cardId, serviceId } = updatingServiceRef.current
 
@@ -458,7 +462,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                 ...card,
                 services_of_card: card.services_of_card.map((service) => {
                   if (service._id === serviceId) {
-                    // Giảm lại giá trị quantity đã tăng trước đó
+                    // Decrease quantity value increased earlier
                     return {
                       ...service,
                       quantity: service.quantity - increasingQuantity
@@ -485,190 +489,291 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
         open={open}
         onCancel={handleCancelModal}
         centered
-        okText={'Đóng'}
-        footer={null}
-        style={{ padding: 0 }}
-        width={Math.min(listServicesCard.length * 260 + 48, 1100)}
+        footer={
+          <Button type='primary' onClick={handleCancelModal}>
+            Đóng
+          </Button>
+        }
+        className='service-card-modal'
+        width={listServicesCard.length <= 3 ? `${Math.min(listServicesCard.length * 320 + 80, 1000)}px` : '90%'}
+        style={{ maxWidth: listServicesCard.length <= 3 ? 'none' : '1200px' }}
+        bodyStyle={{ padding: '24px' }}
       >
-        <Title className='center-div' level={2} style={{ textAlign: 'center', marginBottom: 32 }}>
-          Thẻ dịch vụ đã bán
-        </Title>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <Title level={3} style={{ margin: 0, fontWeight: 600 }}>
+            Thẻ dịch vụ đã bán
+          </Title>
+          {servicesCardSoldOfCustomerData?.customers.name && (
+            <Text type='secondary' style={{ fontSize: '15px', color: '#1890ff' }}>
+              Khách hàng: {servicesCardSoldOfCustomerData.customers.name}
+            </Text>
+          )}
+        </div>
+
         <div
+          className='service-card-container'
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 24,
-            justifyContent: listServicesCard.length <= 4 ? 'center' : 'flex-start',
-            alignItems: 'stretch',
-            height: listServicesCard.length <= 4 ? 'auto' : '660px',
-            overflowY: 'scroll',
-            overflowX: 'hidden'
+            display: 'grid',
+            gridTemplateColumns:
+              listServicesCard.length >= 4
+                ? 'repeat(auto-fill, minmax(250px, 1fr))'
+                : `repeat(${listServicesCard.length}, 1fr)`,
+            gap: '16px',
+            maxHeight: '70vh',
+            overflowY: 'auto'
           }}
         >
           {listServicesCard.map((card) => (
             <Card
               key={card._id}
               hoverable
+              className='service-card'
               style={{
-                flex: '0 0 240px',
-                borderRadius: '16px',
+                borderRadius: '12px',
                 overflow: 'hidden',
-                border: '1px solid lightgray',
-                background: 'linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%)'
+                boxShadow: 'rgba(0, 0, 0, 0.09) 0px 2px 8px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                backgroundColor: 'rgb(247, 250, 252)',
+                padding: '8px 5px'
               }}
+              bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
             >
               <div style={{ flexGrow: 1 }}>
-                <Space direction='vertical' size='middle' style={{ width: '100%' }}>
-                  <Title level={5} style={{ margin: 0, color: '#2d3436', fontWeight: 600, lineHeight: '1.4' }}>
-                    {card.name}
+                <Flex justify='space-between' align='center' style={{ marginBottom: '12px', flexDirection: 'row' }}>
+                  <Title
+                    level={4}
+                    style={{
+                      margin: 0,
+                      color: '#262626',
+                      fontWeight: 600,
+                      maxWidth: '80%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '17px'
+                    }}
+                  >
+                    <Tooltip title={card.name}>{card.name}</Tooltip>
                   </Title>
+                  <Tag
+                    color='#1890ff'
+                    style={{
+                      fontSize: '12px',
+                      padding: '2px 8px',
+                      borderRadius: '16px',
+                      marginRight: 0
+                    }}
+                  >
+                    <DollarOutlined style={{ marginRight: '4px' }} />
+                    {card.services_of_card.reduce((total, s) => total + s.lineTotal, 0).toLocaleString('vi-VN')}
+                  </Tag>
+                </Flex>
 
-                  <Divider style={{ margin: '2px 0', borderColor: '#e8ecef' }} />
+                <Divider style={{ margin: '12px 0', borderColor: '#f0f0f0' }} />
 
-                  <Space align='center'>
-                    <DollarOutlined style={{ color: '#fa8c16', fontSize: '17px' }} />
-                    <Text strong style={{ fontSize: '15px', color: '#2d3436' }}>
-                      {card.services_of_card.reduce((total, s) => total + s.lineTotal, 0).toLocaleString('vi-VN')} VNĐ
-                    </Text>
-                  </Space>
-
-                  <Space direction='vertical' size={8} style={{ width: '100%' }}>
-                    <Text strong style={{ fontSize: '12px', color: '#2d3436' }}>
-                      Dịch vụ:
-                    </Text>
-                    {card.services_of_card.map((service, index) => (
-                      <Flex key={index} align='start' style={{ width: '100%', justifyContent: 'space-between' }}>
-                        <Flex style={{ flexDirection: 'column', alignItems: 'start', gap: '8px', width: '100%' }}>
-                          <Tag
-                            color='cyan'
-                            icon={<TagOutlined />}
-                            style={{
-                              fontSize: '10px',
-                              padding: '4px 10px',
-                              borderRadius: '10px',
-                              background: '#e6f7ff',
-                              border: 'none'
-                            }}
-                          >
-                            {service.name}
-                          </Tag>
-                          <Text type='danger' style={{ fontSize: '12px', marginLeft: '7px' }}>
-                            {service.used} / {service.quantity}
-                          </Text>
-                        </Flex>
-                        <Space>
-                          {/* Button for using service */}
-                          <Popconfirm
-                            title='Xác nhận sử dụng dịch vụ'
-                            onConfirm={() =>
-                              handleUpdateUsedOfServices({
-                                commision: service.lineTotal,
-                                type: service.type_price,
-                                services_card_sold_of_customer_id: servicesCardSoldOfCustomerData?._id as string,
-                                user_id: userId,
-                                count: 1,
-                                date: new Date(),
-                                name_service: service.name,
-                                services_card_sold_id: card._id,
-                                services_id: service._id,
-                                user_name: profile?.name || 'Người dùng',
-                                descriptions: `Sử dụng dịch vụ ${service.name} của thẻ dịch vụ ${card.name} vào lúc ${dayjs().format(
-                                  'DD/MM/YYYY HH:mm'
-                                )} `
-                              })
-                            }
-                            okText='Xác nhận'
-                            cancelText='Hủy'
-                            description={
-                              <Row style={{ width: '500px', gap: '18px', marginTop: '20px' }}>
-                                <Col span={11}>
-                                  <Text>Thực hiện</Text>
-                                  <OptionsGetUsersWithRole
-                                    onchange={(value) => setUserId(value)}
-                                    style={{
-                                      marginTop: '8px'
-                                    }}
-                                    search
-                                    role={RoleUser.TECHNICIAN}
-                                  />
-                                </Col>
-                                <Col span={11}>
-                                  <Flex
-                                    style={{
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      gap: '10px'
-                                    }}
-                                  >
-                                    <Text>Hoa hồng</Text>
-                                    <Text style={{ color: '#ff4d4f', fontSize: '15px' }}>
-                                      {new Intl.NumberFormat('vi-VN', {
-                                        style: 'currency',
-                                        currency: 'VND'
-                                      }).format(service.price)}
-                                    </Text>
-                                  </Flex>
-                                </Col>
-                              </Row>
-                            }
-                          >
-                            <Button
-                              disabled={isUpdateUsedOfServices || service.used >= service.quantity}
-                              style={{ width: '32px', height: '32px', padding: 0 }}
-                              icon={<GrSubtractCircle style={{ color: '#10B981', fontSize: '16px' }} />}
-                            />
-                          </Popconfirm>
-
-                          {/* Button for increasing quantity - now just opens modal */}
-                          <Button
-                            onClick={() =>
-                              showIncreaseQuantityModal({
-                                cardId: card._id,
-                                serviceId: service._id,
-                                serviceName: service.name,
-                                cardName: card.name
-                              })
-                            }
-                            disabled={isUpdateQuantityOfServices}
-                            style={{ width: '32px', height: '32px', padding: 0 }}
-                            icon={<AiOutlinePlusCircle style={{ color: '#1890ff', fontSize: '16px' }} />}
-                          />
-                        </Space>
-                      </Flex>
-                    ))}
-                  </Space>
-
-                  <Divider style={{ margin: '2px 0', borderColor: '#e8ecef' }} />
-                  <Text type='secondary' style={{ fontSize: '10px' }}>
-                    Ngày tạo: {dayjs(card.create_at).format('DD/MM/YYYY HH:mm')}
+                <div className='services-list' style={{ marginBottom: '16px' }}>
+                  <Text strong style={{ fontSize: '14px', color: '#262626', display: 'block', marginBottom: '12px' }}>
+                    Dịch vụ ({card.services_of_card.length}):
                   </Text>
-                </Space>
+                  <Space direction='vertical' size={12} style={{ width: '100%' }}>
+                    {card.services_of_card.map((service) => {
+                      const usagePercent = Math.min(Math.round((service.used / service.quantity) * 100), 100)
+                      const isExhausted = service.used >= service.quantity
+
+                      return (
+                        <div
+                          key={service._id}
+                          style={{
+                            background: '#ffffff',
+                            boxShadow: 'rgba(0, 0, 0, 0.09) 0px 2px 8px',
+                            borderRadius: '8px',
+                            padding: '10px',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          <Flex justify='space-between' align='center' style={{ marginBottom: '8px' }}>
+                            <Tooltip title={service.name}>
+                              <Text
+                                style={{
+                                  fontWeight: 500,
+                                  fontSize: '12px',
+                                  color: '#262626',
+                                  maxWidth: '200px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                {service.name}
+                              </Text>
+                            </Tooltip>
+                            <Text
+                              style={{ fontSize: '12px', fontWeight: 500, color: isExhausted ? '#ff4d4f' : '#1890ff' }}
+                            >
+                              {service.used}/{service.quantity}
+                            </Text>
+                          </Flex>
+
+                          <Progress
+                            percent={usagePercent}
+                            size='small'
+                            status={isExhausted ? 'exception' : 'active'}
+                            style={{ marginBottom: '8px' }}
+                            showInfo={false}
+                          />
+
+                          <Flex justify='space-between' align='center'>
+                            <Text type='secondary' style={{ fontSize: '12px', color: '#1890ff' }}>
+                              {new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND'
+                              }).format(service.price)}
+                            </Text>
+
+                            <Space size={8}>
+                              <Popconfirm
+                                title='Xác nhận sử dụng dịch vụ'
+                                onConfirm={() =>
+                                  handleUpdateUsedOfServices({
+                                    commision: service.lineTotal,
+                                    type: service.type_price,
+                                    services_card_sold_of_customer_id: servicesCardSoldOfCustomerData?._id as string,
+                                    user_id: userId,
+                                    count: 1,
+                                    date: new Date(),
+                                    name_service: service.name,
+                                    services_card_sold_id: card._id,
+                                    services_id: service._id,
+                                    user_name: profile?.name || 'Người dùng',
+                                    descriptions: `Sử dụng dịch vụ ${service.name} của thẻ dịch vụ ${card.name} vào lúc ${dayjs().format(
+                                      'DD/MM/YYYY HH:mm'
+                                    )}`
+                                  })
+                                }
+                                okText='Xác nhận'
+                                cancelText='Hủy'
+                                placement='left'
+                                description={
+                                  <Row style={{ width: '500px', gap: '18px', marginTop: '20px' }}>
+                                    <Col span={11}>
+                                      <Text>Thực hiện</Text>
+                                      <OptionsGetUsersWithRole
+                                        onchange={(value) => setUserId(value)}
+                                        style={{
+                                          marginTop: '8px',
+                                          width: '100%'
+                                        }}
+                                        search
+                                        role={RoleUser.TECHNICIAN}
+                                      />
+                                    </Col>
+                                    <Col span={11}>
+                                      <Flex
+                                        style={{
+                                          display: 'flex',
+                                          flexDirection: 'column',
+                                          gap: '10px'
+                                        }}
+                                      >
+                                        <Text>Hoa hồng</Text>
+                                        <Text style={{ color: '#ff4d4f', fontSize: '15px' }}>
+                                          {new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND'
+                                          }).format(service.price)}
+                                        </Text>
+                                      </Flex>
+                                    </Col>
+                                  </Row>
+                                }
+                              >
+                                <Button
+                                  type='text'
+                                  disabled={isUpdateUsedOfServices || isExhausted}
+                                  style={{
+                                    padding: '4px',
+                                    color: isExhausted ? '#d9d9d9' : '#52c41a',
+                                    background: isExhausted ? '#f5f5f5' : 'rgba(82, 196, 26, 0.1)'
+                                  }}
+                                  icon={<MinusOutlined />}
+                                  size='small'
+                                  title='Sử dụng dịch vụ'
+                                />
+                              </Popconfirm>
+
+                              <Button
+                                type='text'
+                                onClick={() =>
+                                  showIncreaseQuantityModal({
+                                    cardId: card._id,
+                                    serviceId: service._id,
+                                    serviceName: service.name,
+                                    cardName: card.name
+                                  })
+                                }
+                                disabled={isUpdateQuantityOfServices}
+                                style={{
+                                  padding: '4px',
+                                  color: '#1890ff',
+                                  background: 'rgba(24, 144, 255, 0.1)'
+                                }}
+                                icon={<PlusOutlined />}
+                                size='small'
+                                title='Tăng số lượng'
+                              />
+                            </Space>
+                          </Flex>
+                        </div>
+                      )
+                    })}
+                  </Space>
+                </div>
               </div>
-              <Flex justify='space-around' style={{ marginTop: 12 }}>
-                <Button
-                  style={{ width: '40px', height: '40px' }}
-                  icon={<IoPrintOutline style={{ color: '#3B82F6', fontSize: '18px' }} />}
-                />
-                <Button
-                  style={{ width: '40px', height: '40px' }}
-                  icon={<RiErrorWarningLine style={{ color: '#F59E0B', fontSize: '18px' }} />}
-                />
-              </Flex>
+
+              <div style={{ marginTop: 'auto' }}>
+                <Divider style={{ margin: '8px 0 12px', borderColor: '#f0f0f0' }} />
+
+                <Flex justify='space-between' align='center'>
+                  <Text type='secondary' style={{ fontSize: '12px' }}>
+                    {dayjs(card.create_at).format('DD/MM/YYYY HH:mm')}
+                  </Text>
+
+                  <Space>
+                    <Button
+                      type='text'
+                      icon={<PrinterOutlined style={{ fontSize: '18px' }} />}
+                      style={{ color: '#1890ff' }}
+                      title='In'
+                    />
+                    <Button
+                      type='text'
+                      icon={<InfoCircleOutlined style={{ fontSize: '18px' }} />}
+                      style={{ color: '#faad14' }}
+                      title='Thông tin'
+                    />
+                  </Space>
+                </Flex>
+              </div>
             </Card>
           ))}
         </div>
       </Modal>
 
-      {/* New Modal for increasing quantity */}
+      {/* Modal for increasing quantity */}
       <Modal
         title={
-          <div style={{ textAlign: 'center' }}>
-            <Title level={4} style={{ margin: 0, color: '#1890ff' }}>
+          <div style={{ textAlign: 'center', padding: '12px 0' }}>
+            <Title level={3} style={{ margin: 0, fontWeight: 600 }}>
               Tăng số lượng dịch vụ
             </Title>
             {increasingService && (
-              <Text type='secondary' style={{ display: 'block', marginTop: 8 }}>
-                {increasingService.serviceName}
+              <Text style={{ display: 'block', marginTop: '8px', fontSize: '15px' }}>
+                <Tag color='cyan' style={{ fontWeight: 500, padding: '2px 8px' }}>
+                  {increasingService.serviceName}
+                </Tag>
               </Text>
             )}
           </div>
@@ -711,15 +816,19 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
               value={increasingQuantity}
               onChange={(value) => setIncreasingQuantity(value || 1)}
               size='large'
+              addonAfter='dịch vụ'
             />
           </Form.Item>
 
           <Form.Item
             name='images'
             label={
-              <Text strong style={{ fontSize: '15px', color: '#1890ff' }}>
-                Tải lên hình ảnh <span style={{ color: 'red' }}>*</span>
-              </Text>
+              <Flex align='center' gap={8}>
+                <Text strong style={{ fontSize: '15px', color: '#1890ff' }}>
+                  Tải lên hình ảnh <span style={{ color: '#ff4d4f' }}>*</span>
+                </Text>
+                <FileImageOutlined style={{ color: '#1890ff' }} />
+              </Flex>
             }
             rules={[{ required: true, message: 'Vui lòng tải lên ít nhất một hình ảnh!' }]}
           >
@@ -740,11 +849,11 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                 return isPNG || isJPG || isJPEG ? true : Upload.LIST_IGNORE
               }}
               style={{
-                padding: '30px 0',
+                padding: '24px 0',
                 background: '#fafafa',
                 border: '1px dashed #d9d9d9',
                 borderRadius: '8px',
-                transition: 'border-color 0.3s'
+                transition: 'border-color 0.3s ease'
               }}
             >
               <div style={{ padding: '0 20px' }}>
@@ -764,9 +873,12 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
           {/* Display already uploaded images */}
           {uploadedImages.length > 0 && (
             <div style={{ marginTop: 8, marginBottom: 16 }}>
-              <Text strong style={{ display: 'block', marginBottom: 8, color: '#52c41a' }}>
-                Đã tải lên {uploadedImages.length} hình ảnh
-              </Text>
+              <Flex align='center' style={{ marginBottom: 8 }}>
+                <Text strong style={{ color: '#52c41a', marginRight: 8 }}>
+                  Đã tải lên {uploadedImages.length} hình ảnh
+                </Text>
+                <Tag color='success'>{uploadedImages.length} ảnh</Tag>
+              </Flex>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {uploadedImages.map((url, index) => (
                   <div key={index} style={{ position: 'relative' }}>

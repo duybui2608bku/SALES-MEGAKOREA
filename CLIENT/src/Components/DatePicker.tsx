@@ -53,7 +53,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
     <Fragment>
       {isRange ? (
         <AntdDatePicker.RangePicker
-          disabledDate={disableDate ? (current) => current && current < dayjs().endOf('day') : undefined}
+          disabledDate={disableDate ? (current) => current && current > dayjs().endOf('day') : undefined}
           style={{ width: '100%' }}
           placeholder={[placeholder, placeholder]}
           value={parsedValue as [Dayjs | null, Dayjs | null]} // Kiểu phù hợp với RangePicker

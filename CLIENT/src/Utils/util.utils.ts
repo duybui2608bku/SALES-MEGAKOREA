@@ -108,6 +108,13 @@ export const getChangedFields = (original: any, updated: any): Partial<any> => {
   }) as Partial<any>
 }
 
+export const dataTestServiceCardSold = {
+  total: 40,
+  customersCount: 13,
+  revenue: 751232133,
+  debt: 1128767867
+}
+
 export const dataTestOutstandingStaff = [
   {
     user: {

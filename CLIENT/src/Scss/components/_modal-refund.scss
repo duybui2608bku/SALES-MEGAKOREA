@@ -24,6 +24,8 @@
     .ant-radio-wrapper {
       width: 100%;
       margin-right: 0;
+      gap: 15px;
+      align-items: center;
     }
   }
 
@@ -34,20 +36,16 @@
     border: 2px solid transparent;
 
     &:hover {
-      border-color: #ffb74d;
+      border-color: rgba(22, 119, 255, 0.7);
     }
 
     &.selected {
-      border-color: #ff9900;
-      background-color: #fff7e6;
+      border-color: rgba(22, 119, 255, 0.7);
+      background-color: #1677ff10;
     }
 
     .ant-card-body {
       padding: 16px;
-    }
-
-    .ant-radio {
-      top: 20px;
     }
   }
 
@@ -63,7 +61,7 @@
 
     &:hover,
     &:focus {
-      border-color: #ff9900;
+      border-color: rgba(22, 119, 255, 0.7);
     }
   }
 
@@ -78,8 +76,8 @@
   .ant-btn-primary {
     &:hover,
     &:focus {
-      background: #ffb74d !important;
-      border-color: #ffb74d !important;
+      background: rgba(22, 119, 255, 0.7) !important;
+      border-color: rgba(22, 119, 255, 0.7) !important;
     }
   }
 }

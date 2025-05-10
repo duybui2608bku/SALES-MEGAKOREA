@@ -28,7 +28,6 @@ import { GetServicesCardSoldOfCustomer, HistoryUsed } from 'src/Interfaces/servi
 import { servicesApi } from 'src/Service/services/services.api'
 import { useNavigate } from 'react-router'
 import { pathRoutersService } from 'src/Constants/path'
-import { motion, AnimatePresence } from 'framer-motion'
 import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
 import { GiReceiveMoney } from 'react-icons/gi'
@@ -82,10 +81,9 @@ const SoldServicesCard = () => {
   const [historyUsedData, setHistoryUsedData] = useState<HistoryUsed[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [datePickerQuery, setDatePickerQuery] = useState('')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [openPopOver, setOpenPopOver] = useState(false)
   const [openModalRefund, setOpenModalRefund] = useState(false)
   const [branchQuery, setBranchQuery] = useState<string[]>([])
+
   // Hàm check searchQuery là Number hay là String
   const checkValueSearchQuery = (value: string) => {
     if (!value || value.length === 0) return
@@ -172,10 +170,6 @@ const SoldServicesCard = () => {
     setPagination((prev) => ({ ...prev, page: PAGE, total: 1 }))
   }
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpenPopOver(newOpen)
-  }
-
   const handleReloadPage = async () => {
     await message.loading('Đang tải dữ liệu...', 3)
     message.success('Tải dữ liệu thành công !')
@@ -208,11 +202,11 @@ const SoldServicesCard = () => {
               </Tooltip>
             ) : (record.price ?? 0) - (record.price_paid ?? 0) !== 0 ? (
               <Tooltip title='Đang thanh toán'>
-                <SyncOutlined spin style={{ color: '#1677ff', fontSize: '18px' }} />
+                <SyncOutlined spin style={{ color: '#1677ff', fontSize: '18px', cursor: 'pointer' }} />
               </Tooltip>
             ) : (
               <Tooltip title='Đã thanh toán hoàn tất!'>
-                <FaCheckCircle color='#10B981' style={{ fontSize: '18px' }} />
+                <FaCheckCircle color='#10B981' style={{ fontSize: '18px', cursor: 'pointer' }} />
               </Tooltip>
             )}
           </Fragment>
@@ -330,18 +324,7 @@ const SoldServicesCard = () => {
         return (
           <Flex align='center' justify='space-between'>
             <Space style={{ width: '100%', overflowX: 'hidden' }}>
-              <AnimatePresence>
-                <motion.div
-                  key={isExpanded ? 'expanded' : 'collapsed'}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  <Tree switcherIcon={<DownOutlined />} showLine treeData={visibleCards} />
-                </motion.div>
-              </AnimatePresence>
+              <Tree switcherIcon={<DownOutlined />} showLine treeData={visibleCards} />
             </Space>
             <Space>
               <Tooltip title='Xem chi tiết'>
@@ -446,54 +429,36 @@ const SoldServicesCard = () => {
               ></Button>
             </Badge>
 
-            <Popover
-              trigger='click'
-              onOpenChange={handleOpenChange}
-              content={
-                <Flex style={{ flexDirection: 'column', gap: '10px' }}>
-                  <Row className='optionPayment' style={{ alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <Button
-                      onClick={() =>
-                        servicesCardSoldOfCustomerData && handleRefundMoney(servicesCardSoldOfCustomerData)
-                      }
-                      icon={<RiRefund2Fill style={{ color: '#FF9900' }} />}
-                    />{' '}
-                    Hoàn tiền
-                  </Row>
-                </Flex>
-              }
-            >
-              {record.refund && record.refund.type !== 0 ? (
-                <Popover
-                  trigger='hover'
-                  content={
-                    <div style={{ padding: '8px' }}>
-                      <Text strong>Thông tin hoàn tiền:</Text>
-                      <div style={{ marginTop: '8px' }}>
-                        <Text>Số tiền: </Text>
-                        <Text type='warning'>
-                          {record.refund.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                        </Text>
-                      </div>
-                      <div style={{ marginTop: '4px' }}>
-                        <Text>Ngày hoàn: </Text>
-                        <Text>
-                          {record.refund.date ? new Date(record.refund.date).toLocaleDateString('vi-VN') : 'N/A'}
-                        </Text>
-                      </div>
+            {record.refund && record.refund.type !== 0 ? (
+              <Popover
+                trigger='hover'
+                content={
+                  <div style={{ padding: '8px' }}>
+                    <Text strong>Thông tin hoàn tiền:</Text>
+                    <div style={{ marginTop: '8px' }}>
+                      <Text>Số tiền: </Text>
+                      <Text type='warning'>
+                        {record.refund.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                      </Text>
                     </div>
-                  }
-                >
-                  <Button title='Đã hoàn tiền' icon={<TbCreditCardRefund style={{ color: '#FF9900' }} />} />
-                </Popover>
-              ) : (
-                <Button
-                  title='Hoàn tiền'
-                  icon={<RiRefund2Fill color='#FF9900' />}
-                  onClick={() => record && handleRefundMoney(record)}
-                />
-              )}
-            </Popover>
+                    <div style={{ marginTop: '4px' }}>
+                      <Text>Ngày hoàn: </Text>
+                      <Text>
+                        {record.refund.date ? new Date(record.refund.date).toLocaleDateString('vi-VN') : 'N/A'}
+                      </Text>
+                    </div>
+                  </div>
+                }
+              >
+                <Button title='Đã hoàn tiền' icon={<TbCreditCardRefund style={{ color: '#FF9900' }} />} />
+              </Popover>
+            ) : (
+              <Button
+                onClick={() => record && handleRefundMoney(record)}
+                title='Hoàn tiền'
+                icon={<RiRefund2Fill color='#FF9900' />}
+              />
+            )}
           </Flex>
         )
       }
@@ -542,7 +507,7 @@ const SoldServicesCard = () => {
           <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => handleSearch(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
-          <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
+          <DatePickerComponent isRange disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
         </Col>
         <Col xs={24} sm={12} md={6} lg={6}>
           <OptionsBranch onchange={(value) => setBranchQuery(value)} mode='multiple' />

@@ -166,7 +166,7 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
                 <Space align='center'>
                   <GiPayMoney size={24} style={{ color: '#d9d9d9' }} />
                   <div>
-                    <Text type='secondary' style={{ fontSize: '16px', display: 'block' }}>
+                    <Text type='secondary' style={{ fontSize: '15px', display: 'block' }}>
                       Hoàn tiền theo số buổi
                     </Text>
                     <Text type='secondary' style={{ fontSize: '12px' }}>
@@ -190,9 +190,12 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
             >
               <Radio value={RefundEnum.PARTIAL_HALF_REATMENT}>
                 <Space align='center'>
-                  <RiMoneyDollarCircleLine size={24} style={{ color: '#1677ff' }} />
+                  <RiMoneyDollarCircleLine
+                    size={24}
+                    style={{ color: '#1677ff', marginRight: '5px', display: 'grid', placeItems: 'center' }}
+                  />
                   <div style={{ width: '100%' }}>
-                    <Text strong style={{ fontSize: '16px', display: 'block' }}>
+                    <Text strong style={{ fontSize: '15px', display: 'block' }}>
                       Hoàn tiền theo số tiền
                     </Text>
                     {refundType === RefundEnum.PARTIAL_HALF_REATMENT && (
@@ -224,7 +227,7 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
                             max={maxRefundAmount}
                             min={0}
                             placeholder='Nhập số tiền cần hoàn'
-                            size='large'
+                            size='small'
                           />
                         </Form.Item>
                       </motion.div>
@@ -248,7 +251,9 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
           </Title>
         </div>
       }
+      centered
       open={open}
+      // open={true}
       onCancel={onClose}
       width={700}
       footer={[
@@ -315,7 +320,7 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
               <Alert
                 message={
-                  <Text strong style={{ fontSize: '15px' }}>
+                  <Text strong style={{ fontSize: '14px', marginLeft: '10px' }}>
                     Số tiền sẽ hoàn:{' '}
                     <Text style={{ color: '#FF9900', fontSize: '16px' }}>
                       {refundAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
@@ -323,7 +328,7 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
                   </Text>
                 }
                 type='info'
-                style={{ marginBottom: 16, background: '#FFF7E6', border: '1px solid #FFD591' }}
+                style={{ marginBottom: 16, background: '#1677ff10', border: '1px solid rgba(22, 119, 255, 0.7)' }}
               />
 
               <Form.Item
