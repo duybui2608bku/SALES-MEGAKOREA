@@ -1,4 +1,4 @@
-import { GetServicesCardSoldOfCustomerSearchType, TypeCommision } from 'src/Constants/enum'
+import { GetServicesCardSoldOfCustomerSearchType, TypeCommision, RefundEnum } from 'src/Constants/enum'
 import { BranchType } from '../branch/branch.interface'
 import { UserGeneralInterface } from '../user/user.interface'
 import { Customer } from '../customers/customers.interfaces'
@@ -237,6 +237,12 @@ export interface GetServicesCardSoldOfCustomerRequestBody {
   date?: string
 }
 
+export interface RefundType {
+  type: RefundEnum
+  price: number
+  date?: Date
+}
+
 export interface GetServicesCardSoldOfCustomer {
   _id: string
   code: string
@@ -250,6 +256,7 @@ export interface GetServicesCardSoldOfCustomer {
   customers: Customer
   userInfo: UserGeneralInterface
   created_at: string
+  refund?: RefundType | null
   cards: {
     _id: string
     price: number | null
@@ -281,6 +288,7 @@ export interface UpdateServicesCardSoldOfCustomerRequestBody {
   history_paid_id?: string
   history_used?: HistoryUsed
   employee_commision_id?: string[]
+  refund?: RefundType
 }
 
 export interface UpdateUsedServicesRequestBody {

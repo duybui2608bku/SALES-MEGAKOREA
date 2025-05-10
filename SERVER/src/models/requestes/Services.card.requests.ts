@@ -1,6 +1,12 @@
 import { ObjectId } from 'mongodb'
 import { GetServicesCardSoldOfCustomerSearchType } from '~/constants/enum'
-import { EmployeeOfServices, HistoryPaid, HistoryUsed, ServicesOfCard } from '~/interface/services/services.interface'
+import {
+  EmployeeOfServices,
+  HistoryPaid,
+  HistoryUsed,
+  RefundType,
+  ServicesOfCard
+} from '~/interface/services/services.interface'
 
 export interface CreateServicesCardRequestBody {
   code?: string
@@ -97,6 +103,7 @@ export interface UpdateServicesCardSoldOfCustomerRequestBody {
   history_paid_id?: string
   history_used?: HistoryUsed
   employee_commision_id?: string[]
+  refund?: RefundType
 }
 
 export interface UpdateServicesCardSoldOfCustomerData {
@@ -105,6 +112,7 @@ export interface UpdateServicesCardSoldOfCustomerData {
   history_paid_id?: ObjectId | null
   history_used?: HistoryUsed | null | any
   employee_commision_id?: ObjectId[] | null
+  refund?: RefundType | null
 }
 
 export interface DeleteHistoryPaidOfServicesCardRequestParams {

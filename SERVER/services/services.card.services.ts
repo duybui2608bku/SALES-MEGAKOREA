@@ -248,7 +248,7 @@ class ServicesCardServices {
   }
 
   async UpdateServicesCardSoldOfCustomer(data: UpdateServicesCardSoldOfCustomerRequestBody) {
-    const { _id, card_services_sold_id, history_paid_id, history_used, employee_commision_id } = data
+    const { _id, card_services_sold_id, history_paid_id, history_used, employee_commision_id, refund } = data
     const id = new ObjectId(_id)
     await this.checkServicesCardSoldOfCustomerExist(new ObjectId(id))
     const cardServicesSoldIds =
@@ -263,7 +263,8 @@ class ServicesCardServices {
       history_paid: historyPaidId,
       history_used: history_used_data,
       employee_commision: employeeCommisionId,
-      _id: id
+      _id: id,
+      refund
     }
 
     const result = await servicesCardRepository.updateServicesCardSoldOfCustomer(cardServicesSoldData)

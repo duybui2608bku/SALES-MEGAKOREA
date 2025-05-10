@@ -1594,12 +1594,25 @@ class ServicesCardRepository {
       .skip(skip)
       .limit(limit)
       .toArray()
-    const total = await databaseServiceSale.services_card_sold_of_customer.countDocuments(query)
-    return { servicesCardSold, total, limit, page }
+
+    const [total, customersCountResult] = await Promise.all([
+      databaseServiceSale.services_card_sold_of_customer.countDocuments(query),
+      databaseServiceSale.services_card_sold_of_customer
+        .aggregate([{ $match: query }, { $group: { _id: '$customer_id' } }, { $count: 'uniqueCustomers' }])
+        .toArray()
+    ])
+
+    return {
+      servicesCardSold,
+      total,
+      limit,
+      page,
+      customersCount: customersCountResult.length > 0 ? customersCountResult[0].uniqueCustomers : 0
+    }
   }
 
   async updateServicesCardSoldOfCustomer(data: UpdateServicesCardSoldOfCustomerData) {
-    const { _id, card_services_sold_id, employee_commision_id, history_paid_id, history_used } = data
+    const { _id, card_services_sold_id, employee_commision_id, history_paid_id, history_used, refund } = data
 
     // Tạo payload update một cách có điều kiện
     const pushData: Record<string, any> = {}
@@ -1629,6 +1642,10 @@ class ServicesCardRepository {
         }
       )
       return result
+    }
+
+    if (refund != null) {
+      await databaseServiceSale.services_card_sold_of_customer.updateOne({ _id }, { $set: { refund } })
     }
   }
 

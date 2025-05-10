@@ -256,6 +256,8 @@ export interface CardServicesSoldType {
 export interface RefundType {
   type: RefundEnum
   price: number
+  date: Date
+  descriptions?: string
 }
 
 export interface CardServicesSoldOfCustomerType {
