@@ -282,7 +282,7 @@ const Customers = () => {
       title: 'T.Thái số',
       dataIndex: 'status_data',
       key: 'status_data',
-      width: 100,
+      width: 120,
       align: 'center'
     },
 

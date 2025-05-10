@@ -1,4 +1,4 @@
-import { Menu, MenuProps, Layout, Button } from 'antd'
+import { Menu, MenuProps, Layout, Button, Space } from 'antd'
 import { Fragment, useEffect, useState } from 'react'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
@@ -9,7 +9,13 @@ import { IoMdLogOut } from 'react-icons/io'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useLocation, useNavigate } from 'react-router'
-import { pathRoutersProduct, pathRoutersService, pathRoutersUser, pathRoutesCustomers } from 'src/Constants/path'
+import {
+  pathRoutersProduct,
+  pathRoutersService,
+  pathRoutersUser,
+  pathRoutesCustomers,
+  pathUtil
+} from 'src/Constants/path'
 import ModalLogout from 'src/Modal/ModalLogout'
 
 interface Props {
@@ -24,43 +30,51 @@ const MainLayout = ({ children }: Props) => {
   const [selectedKey, setSelectedKey] = useState<string[]>(['customers'])
   const [openKeys, setOpenKeys] = useState<string[]>([])
 
+  // Hàm kiểm tra đường dẫn chính xác, hỗ trợ các tham số truy vẫn
+  const isExactPath = (currentPath: string, targetPath: string) => {
+    // Loại bỏ các tham số truy vấn nếu có
+    const cleanPath = currentPath.split('?')[0]
+    // So sánh với đường dẫn mục tiêu
+    return cleanPath === targetPath || cleanPath === targetPath + '/' || cleanPath + '/' === targetPath
+  }
+
   useEffect(() => {
     // Xác định khóa menu và menu con mở dựa trên đường dẫn hiện tại
     const path = location.pathname
-    let newSelectedKey: string[] = ['customers']
+    let newSelectedKey: string[] = ['']
     let newOpenKeys: string[] = []
 
     // Map đường dẫn tới khóa menu tương ứng
-    if (path.includes(pathRoutesCustomers.customers)) {
+    if (isExactPath(path, pathRoutesCustomers.customers)) {
       newSelectedKey = ['customers']
-    } else if (path.includes(pathRoutersService.cardService)) {
+    } else if (isExactPath(path, pathRoutersService.cardService)) {
       newSelectedKey = ['card-service']
       newOpenKeys = ['card-service-main']
-    } else if (path.includes(pathRoutersService.sellCardService)) {
+    } else if (isExactPath(path, pathRoutersService.sellCardService)) {
       newSelectedKey = ['card-service-sell']
       newOpenKeys = ['card-service-main']
-    } else if (path.includes(pathRoutersService.soldCardService)) {
+    } else if (isExactPath(path, pathRoutersService.soldCardService)) {
       newSelectedKey = ['card-service-sold']
       newOpenKeys = ['card-service-main']
-    } else if (path.includes(pathRoutersProduct.productGeneral)) {
+    } else if (isExactPath(path, pathRoutersProduct.productGeneral)) {
       newSelectedKey = ['product-general']
       newOpenKeys = ['setting']
-    } else if (path.includes(pathRoutersService.service)) {
+    } else if (isExactPath(path, pathRoutersService.service)) {
       newSelectedKey = ['service']
       newOpenKeys = ['setting']
-    } else if (path.includes(pathRoutersService.categoryService)) {
+    } else if (isExactPath(path, pathRoutersService.categoryService)) {
       newSelectedKey = ['category-service']
       newOpenKeys = ['setting']
-    } else if (path.includes(pathRoutersService.stepService)) {
+    } else if (isExactPath(path, pathRoutersService.stepService)) {
       newSelectedKey = ['step-service']
       newOpenKeys = ['setting']
-    } else if (path.includes(pathRoutersUser.userGeneral)) {
+    } else if (isExactPath(path, pathRoutersUser.userGeneral)) {
       newSelectedKey = ['user-general']
       newOpenKeys = ['users']
-    } else if (path.includes(pathRoutersUser.userCommisionTechnican)) {
+    } else if (isExactPath(path, pathRoutersUser.userCommisionTechnican)) {
       newSelectedKey = ['user-commision-technican']
       newOpenKeys = ['users']
-    } else if (path.includes(pathRoutersUser.userCommisionSale)) {
+    } else if (isExactPath(path, pathRoutersUser.userCommisionSale)) {
       newSelectedKey = ['user-commision-sale']
       newOpenKeys = ['users']
     }
@@ -182,8 +196,11 @@ const MainLayout = ({ children }: Props) => {
           collapsible
           collapsed={collapsed}
         >
-          <div
+          <Space
+            className='LogoMainLayout'
+            onClick={() => navigate(pathUtil.home)}
             style={{
+              width: '100%',
               height: 'auto',
               display: 'flex',
               justifyContent: 'center',
@@ -196,13 +213,14 @@ const MainLayout = ({ children }: Props) => {
               src={collapsed ? logoMobile : logo}
               alt='Logo'
               style={{
+                cursor: 'pointer',
                 height: '100%',
                 width: '62%',
                 transition: 'all 0.3s',
                 transform: collapsed ? 'scale(0.8)' : 'scale(1)'
               }}
             />
-          </div>
+          </Space>
           <Menu
             style={{ height: '100vh' }}
             theme='light'

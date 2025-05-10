@@ -91,23 +91,49 @@ class ServicesRepository {
   }
 
   async updateServices(data: UpdateServicesData) {
-    const { _id, branch, step_services, ...body } = data
+    // const { _id, branch, step_services, ...body } = data
 
-    // Transform step_services to ObjectIds if provided
-    let stepServicesObjectIds
-    if (step_services) {
-      stepServicesObjectIds = step_services.map((id) => {
-        return typeof id === 'string' ? new ObjectId(id) : id
-      })
+    // // Transform step_services to ObjectIds if provided
+    // let stepServicesObjectIds
+    // if (step_services) {
+    //   stepServicesObjectIds = step_services.map((id) => {
+    //     return typeof id === 'string' ? new ObjectId(id) : id
+    //   })
+    // }
+
+    // await databaseServiceSale.services.updateOne(
+    //   { _id: _id },
+    //   {
+    //     $set: {
+    //       ...body,
+    //       step_services: stepServicesObjectIds
+    //     }
+    //   }
+    // )
+
+    const { _id, ...updateData } = data
+    const updateSet: any = {}
+
+    // Chỉ cập nhật các trường có giá trị
+    for (const [key, value] of Object.entries(updateData)) {
+      if (value !== undefined) {
+        if (key === 'branch') {
+          // Xử lý branch nếu cần
+          updateSet[key] = value
+        } else if (key === 'step_services' && Array.isArray(value)) {
+          // Xử lý step_services nếu có
+          updateSet[key] = value.map((id) => (typeof id === 'string' ? new ObjectId(id) : id))
+        } else {
+          // Các trường khác
+          updateSet[key] = value
+        }
+      }
     }
 
     await databaseServiceSale.services.updateOne(
-      { _id: _id },
+      { _id: new ObjectId(_id) },
       {
-        $set: {
-          ...body,
-          step_services: stepServicesObjectIds
-        }
+        $set: updateSet
       }
     )
   }

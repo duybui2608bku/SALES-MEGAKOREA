@@ -42,7 +42,7 @@ const StepService = () => {
   const [branchFilter, setBranchFilter] = useState<string[]>(userBranchId)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['stepServices', searchQuery, categoryQuery],
+    queryKey: ['stepServices', searchQuery, categoryQuery, branchFilter],
     queryFn: () => {
       const query: any = { search: searchQuery, services_category_id: categoryQuery, branch: branchFilter }
       return servicesApi.getAllStepService(query)
@@ -85,26 +85,31 @@ const StepService = () => {
     }
   }
 
+  // Handler cho thay đổi branch filter
+  const handleBranchFilterChange = (value: string[]) => {
+    setBranchFilter(value)
+  }
+
   const columns: TableColumnType<ColumnsStepServiceType & { branch_details?: any[] }>[] = [
     {
       title: 'Tên bước dịch vụ',
       dataIndex: 'name',
       key: 'name',
-      width: 220,
+      width: 200,
       render: (name: string) => <Text>{name}</Text>
     },
     {
       title: 'Danh mục',
       dataIndex: 'category',
       key: 'category',
-      width: 220,
+      width: 200,
       render: (category: ServicesCategoryType) => <Text>{category ? category.name : 'Không có'}</Text>
     },
     {
       title: 'Chi nhánh',
       dataIndex: 'branch_details',
       key: 'branch_details',
-      width: 220,
+      width: 200,
       render: (branch_details: any[] = []) =>
         branch_details.length > 0 ? branch_details.map((b) => b.name).join(', ') : 'Không có'
     },
@@ -187,7 +192,7 @@ const StepService = () => {
             mode='multiple'
             placeholder='Lọc theo chi nhánh'
             search
-            onchange={isAdmin ? setBranchFilter : undefined}
+            onchange={isAdmin ? handleBranchFilterChange : undefined}
             value={branchFilter}
             disabled={!isAdmin}
           />

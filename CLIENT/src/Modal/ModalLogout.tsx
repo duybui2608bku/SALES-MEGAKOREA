@@ -31,6 +31,7 @@ const ModalLogout = (props: ModalLogoutProps) => {
       centered
       open={open}
       onCancel={handleCancel}
+      okButtonProps={{ style: { backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' } }}
       okText='Đăng xuất'
       cancelText='Huỷ'
     >
