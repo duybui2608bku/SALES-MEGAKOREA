@@ -4,7 +4,7 @@ import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
-import { FcEngineering, FcAssistant, FcKindle, FcButtingIn, FcHome } from 'react-icons/fc'
+import { FcEngineering, FcAssistant, FcKindle, FcButtingIn, FcHome, FcFlowChart } from 'react-icons/fc'
 import { IoMdLogOut } from 'react-icons/io'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
@@ -83,6 +83,12 @@ const MainLayout = ({ children }: Props) => {
     } else if (isExactPath(path, pathRoutersUser.userCommisionSale)) {
       newSelectedKey = ['user-commision-sale']
       newOpenKeys = ['users']
+    } else if (isExactPath(path, pathRoutersService.adminQuantityRequests)) {
+      newSelectedKey = ['request-quantity-service-admin']
+      newOpenKeys = ['request-quantity-service']
+    } else if (isExactPath(path, pathRoutersService.userQuantityRequests)) {
+      newSelectedKey = ['request-quantity-service-user']
+      newOpenKeys = ['request-quantity-service']
     }
 
     setSelectedKey(newSelectedKey)
@@ -127,6 +133,23 @@ const MainLayout = ({ children }: Props) => {
           key: 'card-service-sold',
           label: 'Thẻ dịch vụ đã bán',
           onClick: () => navigate(pathRoutersService.soldCardService)
+        }
+      ]
+    },
+    {
+      key: 'request-quantity-service',
+      label: 'Yêu cầu',
+      icon: <FcFlowChart size={20} />,
+      children: [
+        {
+          key: 'request-quantity-service-admin',
+          label: 'Xét duyệt',
+          onClick: () => navigate(pathRoutersService.adminQuantityRequests)
+        },
+        {
+          key: 'request-quantity-service-user',
+          label: 'Lịch sử yêu cầu',
+          onClick: () => navigate(pathRoutersService.userQuantityRequests)
         }
       ]
     },

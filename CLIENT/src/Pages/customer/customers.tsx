@@ -12,9 +12,7 @@ import {
   Tag,
   DatePicker,
   Select,
-  Grid,
-  Checkbox,
-  Space
+  Grid
 } from 'antd'
 import dayjs from 'dayjs'
 import { Fragment, useContext, useEffect, useState } from 'react'
@@ -36,6 +34,7 @@ import { Customer, CustomerFilterRequestType } from 'src/Interfaces/customers/cu
 import { customerApi } from 'src/Service/customers/customer.api'
 import { isAdminValidator } from 'src/Utils/util.utils'
 import ExpandableParagraph from 'src/Components/ExpandableParagraph'
+import HiddenColumns from 'src/Components/HiddenColumns'
 const { useBreakpoint } = Grid
 const { Text } = Typography
 const LIMIT = 10
@@ -57,27 +56,6 @@ enum FillterOptions {
 }
 
 const today = dayjs().format('YYYY-MM-DD')
-
-const STORAGE_KEY = 'customer_table_columns'
-// Hàm đọc trạng thái cột từ localStorage
-const getStoredColumns = () => {
-  try {
-    const storedData = localStorage.getItem(STORAGE_KEY)
-    return storedData ? JSON.parse(storedData) : null
-  } catch (error) {
-    console.error('Lỗi khi đọc từ localStorage:', error)
-    return null
-  }
-}
-
-// Hàm lưu trạng thái cột vào localStorage
-const saveColumnsToStorage = (columns: string[]) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(columns))
-  } catch (error) {
-    console.error('Lỗi khi lưu vào localStorage:', error)
-  }
-}
 
 const Customers = () => {
   const screens = useBreakpoint()
@@ -263,37 +241,7 @@ const Customers = () => {
       : [profile?.branch.name].filter((id): id is string => id !== undefined)
   })
   const [customers, setCustomers] = useState<Customer[]>([])
-
-  // Handle check options for hidden columns
-  const defaultColumns = columnsCustomers.map((item) => item.key).filter(Boolean)
-  const storedColumns = getStoredColumns()
-  const validStoredColumns = storedColumns
-    ? storedColumns.filter((col: any) => defaultColumns.includes(col))
-    : defaultColumns
-  const [checkedList, setCheckedList] = useState(validStoredColumns)
-  const options = columnsCustomers
-    .filter((column) => column.key && column.title)
-    .map(({ key, title }) => ({
-      label: title,
-      value: key
-    }))
-
-  const handleColumnsChange = (value: string[]) => {
-    setCheckedList(value)
-    saveColumnsToStorage(value)
-  }
-
-  const handleSelectAll = (e: any) => {
-    const allValues = options.map((opt) => opt.value as string)
-    const newValues = e.target.checked ? allValues : []
-    setCheckedList(newValues)
-    saveColumnsToStorage(newValues)
-  }
-
-  const newColumns = columnsCustomers.map((item) => ({
-    ...item,
-    hidden: !checkedList.includes(item.key as string)
-  }))
+  const [newColumns, setNewColumns] = useState([])
 
   const {
     data: customersResponse,
@@ -374,17 +322,6 @@ const Customers = () => {
     }))
   }
 
-  const customTagRender = (props: any) => {
-    const { label, closable, onClose } = props
-
-    // Hiển thị bình thường cho các trường hợp khác
-    return (
-      <Tag color='blue' closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-        {label}
-      </Tag>
-    )
-  }
-
   return (
     <Fragment>
       <Row style={{ padding: '20px' }} gutter={[16, 16]}>
@@ -447,29 +384,14 @@ const Customers = () => {
         </Col>
       </Row>
 
-      <Row style={{ padding: '0 20px', width: '100%' }}>
-        <Col xs={24}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Checkbox
-              checked={checkedList.length === options.length}
-              indeterminate={checkedList.length > 0 && checkedList.length < options.length}
-              onChange={handleSelectAll}
-            >
-              Chọn tất cả
-            </Checkbox>
-
-            <Select
-              mode='multiple'
-              style={{ width: '100%' }}
-              placeholder='Chọn các cột hiển thị'
-              value={checkedList}
-              onChange={handleColumnsChange}
-              options={options}
-              allowClear
-              tagRender={customTagRender}
-            />
-          </Space>
-        </Col>
+      <Row style={{ padding: '0 20px', width: '100%', justifyContent: 'flex-end' }}>
+        <HiddenColumns
+          colSpan={12}
+          STORAGE_KEY='customers_table_columns'
+          tableColumns={columnsCustomers}
+          style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+          onNewColums={(value) => setNewColumns(value)}
+        />
       </Row>
 
       {/* Table Customer */}

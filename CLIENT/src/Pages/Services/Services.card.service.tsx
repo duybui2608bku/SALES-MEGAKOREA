@@ -27,6 +27,7 @@ import { TbPigMoney } from 'react-icons/tb'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
 import Title from 'src/Components/Title'
+import HiddenColumns from 'src/Components/HiddenColumns'
 const { Paragraph, Text } = Typography
 
 enum ModalType {
@@ -71,43 +72,6 @@ const ServicesCard = () => {
   const [servicesCard, setServicesCard] = useState<ServicesOfCardType[]>([])
   const [servicesToView, setServicesToView] = useState<ServicesOfCard[] | null>(null)
   const [servicesCardSelected, setServicesCardSelected] = useState<ServicesOfCardType>()
-  const [pagination, setPagination] = useState({
-    page: PAGE,
-    limit: LIMIT,
-    total: 0
-  })
-
-  const [requestBody, setRequestBody] = useState<GetServicesCardRequestBody>({
-    limit: pagination.limit,
-    page: pagination.page,
-    search: searchValue,
-    branch: [],
-    code: searchValue,
-    is_active: true,
-    name: searchValue
-  })
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['getAllServicesCard', requestBody],
-    queryFn: () => servicesApi.getServicesCard(requestBody),
-    staleTime: STALETIME
-  })
-
-  useEffect(() => {
-    if (data) {
-      const response = data?.data?.result
-      const servicesCard = response?.servicesCard || []
-      const total = response?.total || 0
-      const page = response?.page || PAGE
-      const limit = response?.limit || LIMIT
-      setServicesCard(servicesCard)
-      setPagination({
-        page: page,
-        limit: limit,
-        total: total
-      })
-    }
-  }, [data])
 
   const columns: TableColumnType<ColumnsServicesCardType>[] = [
     {
@@ -313,6 +277,45 @@ const ServicesCard = () => {
       fixed: 'right'
     }
   ]
+  const [pagination, setPagination] = useState({
+    page: PAGE,
+    limit: LIMIT,
+    total: 0
+  })
+
+  const [requestBody, setRequestBody] = useState<GetServicesCardRequestBody>({
+    limit: pagination.limit,
+    page: pagination.page,
+    search: searchValue,
+    branch: [],
+    code: searchValue,
+    is_active: true,
+    name: searchValue
+  })
+
+  const [newColumns, setNewColumns] = useState([])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['getAllServicesCard', requestBody],
+    queryFn: () => servicesApi.getServicesCard(requestBody),
+    staleTime: STALETIME
+  })
+
+  useEffect(() => {
+    if (data) {
+      const response = data?.data?.result
+      const servicesCard = response?.servicesCard || []
+      const total = response?.total || 0
+      const page = response?.page || PAGE
+      const limit = response?.limit || LIMIT
+      setServicesCard(servicesCard)
+      setPagination({
+        page: page,
+        limit: limit,
+        total: total
+      })
+    }
+  }, [data])
 
   const handleFilterBranch = (value: string[]) => {
     setRequestBody((prev) => ({
@@ -363,11 +366,21 @@ const ServicesCard = () => {
         </Col>
       </Row>
 
+      <Row style={{ padding: '0 20px', width: '100%', justifyContent: 'flex-end' }}>
+        <HiddenColumns
+          colSpan={12}
+          STORAGE_KEY='serviceCard_table_columns'
+          tableColumns={columns}
+          style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+          onNewColums={(value) => setNewColumns(value)}
+        />
+      </Row>
+
       {/* Table Services Card Service */}
       <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
-            columns={columns}
+            columns={newColumns}
             bordered
             scroll={{ x: 'max-content' }}
             dataSource={servicesCard}

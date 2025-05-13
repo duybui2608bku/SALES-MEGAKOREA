@@ -2,13 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Badge,
   Button,
-  Checkbox,
   Col,
   Flex,
   message,
   Popover,
   Row,
-  Select,
   Space,
   Table,
   TableColumnType,
@@ -54,6 +52,7 @@ import ModalCommissionDistribution from 'src/Modal/services/ModalCommissionDistr
 import ModalRefund from 'src/Modal/services/ModalRefund'
 import { BsCardText } from 'react-icons/bs'
 import StatisticCard from 'src/Components/StatisticCard'
+import HiddenColumns from 'src/Components/HiddenColumns'
 
 const { Text, Paragraph } = Typography
 
@@ -76,27 +75,6 @@ enum StatusOpenModalPayyment {
 }
 
 type ColumnsServicesCardSoldOfCustomerType = GetServicesCardSoldOfCustomer
-
-const STORAGE_KEY = 'soldServices_table_columns'
-// Hàm đọc trạng thái cột từ localStorage
-const getStoredColumns = () => {
-  try {
-    const storedData = localStorage.getItem(STORAGE_KEY)
-    return storedData ? JSON.parse(storedData) : null
-  } catch (error) {
-    console.error('Lỗi khi đọc từ localStorage: ', error)
-    return null
-  }
-}
-
-// Hàm lưu trạng thái cột vào localStorage
-const saveColumnsToStorage = (columns: string[]) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(columns))
-  } catch (error) {
-    console.error('Lỗi khi lưu vào localStorage: ', error)
-  }
-}
 
 const SoldServicesCard = () => {
   const navigate = useNavigate()
@@ -422,38 +400,7 @@ const SoldServicesCard = () => {
   const [datePickerQuery, setDatePickerQuery] = useState('')
   const [openModalRefund, setOpenModalRefund] = useState(false)
   const [branchQuery, setBranchQuery] = useState<string[]>([])
-
-  // Handle check options for hidden columns
-  const defaultColumns = columns.map((item) => item.key).filter(Boolean)
-  const storedColumns = getStoredColumns()
-  const validStoredColumns = storedColumns
-    ? storedColumns.filter((col: any) => defaultColumns.includes(col))
-    : defaultColumns
-  const [checkedList, setCheckedList] = useState(validStoredColumns)
-  const options = columns
-    .filter((column) => column.key && column.title)
-    .map(({ key, title }) => ({
-      label: title,
-      value: key
-    }))
-
-  const handleColumnsChange = (value: string[]) => {
-    setCheckedList(value)
-    saveColumnsToStorage(value)
-  }
-
-  const handleSelectAll = (e: any) => {
-    const allValues = options.map((opt) => opt.value as string)
-    const newValues = e.target.checked ? allValues : []
-    setCheckedList(newValues)
-    saveColumnsToStorage(newValues)
-  }
-
-  const newColumns = columns.map((item) => ({
-    ...item,
-    hidden: !checkedList.includes(item.key as string)
-  }))
-
+  const [newColumns, setNewColumns] = useState([])
   // Hàm check searchQuery là Number hay là String
   const checkValueSearchQuery = (value: string) => {
     if (!value || value.length === 0) return
@@ -565,17 +512,6 @@ const SoldServicesCard = () => {
     handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION)
   }
 
-  const customRender = (props: any) => {
-    const { label, closable, onClose } = props
-
-    // Hiển thị bình thường cho các trường hợp khác
-    return (
-      <Tag color='blue' closable={closable} onClose={onClose} style={{ marginRight: 5 }}>
-        {label} cột đã được chọn
-      </Tag>
-    )
-  }
-
   return (
     <Fragment>
       {/* Title Service Card */}
@@ -665,45 +601,13 @@ const SoldServicesCard = () => {
       </Row>
 
       <Row style={{ padding: '0 20px', width: '100%', justifyContent: 'flex-end' }}>
-        <Col xs={12}>
-          <Space
-            direction='vertical'
-            style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
-          >
-            <Text strong style={{ marginRight: '5px' }}>
-              Chọn các cột hiển thị:{' '}
-            </Text>
-            <Tooltip title='Chọn tất cả'>
-              <Checkbox
-                checked={checkedList.length === options.length}
-                indeterminate={checkedList.length > 0 && checkedList.length < options.length}
-                onChange={handleSelectAll}
-              />
-            </Tooltip>
-
-            <Select
-              mode='multiple'
-              style={{ width: '230px' }}
-              placeholder={checkedList.length > 0 ? `Đã chọn ${checkedList.length} mục` : 'Chọn các cột hiển thị'}
-              value={checkedList}
-              onChange={handleColumnsChange}
-              options={options}
-              allowClear
-              maxTagCount={0}
-              dropdownRender={(menu) => (
-                <div>
-                  <div style={{ padding: '8px 12px', borderBottom: '1px solid #e8e8e8' }}>
-                    <Text>
-                      Cột hiển thị: {checkedList.length}/{options.length}
-                    </Text>
-                  </div>
-                  {menu}
-                </div>
-              )}
-              tagRender={customRender}
-            />
-          </Space>
-        </Col>
+        <HiddenColumns
+          colSpan={12}
+          STORAGE_KEY='soldService_table_columns'
+          tableColumns={columns}
+          style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+          onNewColums={(value) => setNewColumns(value)}
+        />
       </Row>
 
       {/* Talbe Service Card */}

@@ -1,9 +1,9 @@
+import axiosInstanceMain from '../axious.api'
+import { pathCommision } from 'src/Constants/path'
 import {
   CreateCommisionTechnicanRequestBody,
   GetCommisionTechnicanUserRequestBody
-} from 'src/Interfaces/commison/commisionTechnican.interface'
-import axiosInstanceMain from '../axious.api'
-import { pathCommision } from 'src/Constants/path'
+} from 'src/Interfaces/commision/commisionTechnican.interface'
 import {
   CreateCommisionTechnicanResponse,
   GetCommisionTechnicanUserResponse
