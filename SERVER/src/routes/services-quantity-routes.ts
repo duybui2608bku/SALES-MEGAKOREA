@@ -21,6 +21,7 @@ const serviceQuantityRouters = Router()
 serviceQuantityRouters.post('/request', accessTokenValidator, wrapRequestHandler(createRequestController))
 
 serviceQuantityRouters.get('/user-requests', accessTokenValidator, wrapRequestHandler(getUserRequestsController))
+
 serviceQuantityRouters.get(
   '/request/:requestId/history',
   accessTokenValidator,
@@ -35,20 +36,23 @@ serviceQuantityRouters.post(
   checkRole(adminRoles),
   wrapRequestHandler(getAllRequestsController)
 )
+
 serviceQuantityRouters.get(
   '/admin/stats',
   accessTokenValidator,
   checkRole(adminRoles),
   wrapRequestHandler(getRequestStatsController)
 )
+
 serviceQuantityRouters.put(
-  '/admin/approve/:requestId',
+  '/admin/approve',
   accessTokenValidator,
   checkRole(adminRoles),
   wrapRequestHandler(approveRequestController)
 )
+
 serviceQuantityRouters.put(
-  '/admin/reject/:requestId',
+  '/admin/reject',
   accessTokenValidator,
   checkRole(adminRoles),
   wrapRequestHandler(rejectRequestController)

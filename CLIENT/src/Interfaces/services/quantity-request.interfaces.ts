@@ -65,6 +65,7 @@ export interface ICreateQuantityRequestPayload {
 
 export interface IUpdateQuantityRequestStatusPayload {
   note?: string
+  requestId: string
 }
 
 export interface IQuantityRequestsQueryParams {

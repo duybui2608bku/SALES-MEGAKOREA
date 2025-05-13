@@ -39,11 +39,8 @@ export class QuantityRequestAPI {
     return response.data
   }
 
-  public async approveRequest(
-    requestId: string,
-    payload: IUpdateQuantityRequestStatusPayload
-  ): Promise<IQuantityRequest> {
-    const response = await this.httpClient.put(`${this.apiEndpoint}/admin/approve/${requestId}`, payload)
+  public async approveRequest(payload: IUpdateQuantityRequestStatusPayload): Promise<IQuantityRequest> {
+    const response = await this.httpClient.put(`${this.apiEndpoint}/admin/approve`, payload)
     return response.data
   }
 

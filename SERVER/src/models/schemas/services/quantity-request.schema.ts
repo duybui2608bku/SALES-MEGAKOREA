@@ -31,7 +31,7 @@ export class QuantityRequest {
   reason: string
   media?: string[]
   branch: string
-  servicesCardSoldId?: ObjectId
+  servicesCardSoldId: ObjectId
   status: QuantityRequestStatus
   adminNote?: string
   createdAt: Date

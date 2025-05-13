@@ -193,46 +193,93 @@ export class QuantityRequestRepository {
   /**
    * Lấy thống kê yêu cầu
    */
-  async getRequestStats(): Promise<{
-    total: number
-    pending: number
-    approved: number
-    rejected: number
-  }> {
+  async getRequestStats() {
     const pipeline = [
       {
-        $group: {
-          _id: '$status',
-          count: { $sum: 1 }
+        $facet: {
+          byStatus: [
+            {
+              $group: {
+                _id: '$status',
+                count: { $sum: 1 }
+              }
+            }
+          ],
+          total: [
+            {
+              $count: 'count'
+            }
+          ]
+        }
+      },
+      {
+        $project: {
+          stats: {
+            $arrayToObject: {
+              $map: {
+                input: '$byStatus',
+                as: 'status',
+                in: [{ $toString: '$$status._id' }, '$$status.count']
+              }
+            }
+          },
+          total: { $arrayElemAt: ['$total.count', 0] }
+        }
+      },
+      {
+        $project: {
+          total: '$total',
+          pending: {
+            $ifNull: [
+              { $toInt: { $getField: { field: QuantityRequestStatus.PENDING.toString(), input: '$stats' } } },
+              0
+            ]
+          },
+          approved: {
+            $ifNull: [
+              { $toInt: { $getField: { field: QuantityRequestStatus.APPROVED.toString(), input: '$stats' } } },
+              0
+            ]
+          },
+          rejected: {
+            $ifNull: [
+              { $toInt: { $getField: { field: QuantityRequestStatus.REJECTED.toString(), input: '$stats' } } },
+              0
+            ]
+          }
         }
       }
     ]
 
-    const stats = await databaseServiceSale.quantityRequests.aggregate(pipeline).toArray()
-
-    const result = {
-      total: 0,
-      pending: 0,
-      approved: 0,
-      rejected: 0
-    }
-
-    stats.forEach((stat) => {
-      const status = stat._id
-      const count = stat.count
-
-      if (status === QuantityRequestStatus.PENDING) {
-        result.pending = count
-      } else if (status === QuantityRequestStatus.APPROVED) {
-        result.approved = count
-      } else if (status === QuantityRequestStatus.REJECTED) {
-        result.rejected = count
+    const result = await databaseServiceSale.quantityRequests.aggregate(pipeline).toArray()
+    return (
+      result[0] || {
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
       }
+    )
+  }
 
-      result.total += count
-    })
-
-    return result
+  async updateQuantityServicesCardSold(data: {
+    services_card_sold_id: ObjectId
+    services_id: ObjectId
+    increaseAmount: number
+  }) {
+    const { services_card_sold_id, services_id, increaseAmount } = data
+    // Increase the quantity in services_card_sold
+    await databaseServiceSale.services_card_sold.updateOne(
+      {
+        _id: services_card_sold_id,
+        'services_of_card.services_id': services_id
+      },
+      {
+        $inc: {
+          'services_of_card.$.quantity': increaseAmount
+        }
+      }
+    )
   }
 }
 
