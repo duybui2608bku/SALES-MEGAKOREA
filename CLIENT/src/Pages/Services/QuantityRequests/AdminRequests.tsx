@@ -104,9 +104,15 @@ const AdminRequest = () => {
   const { data: allrequestsAdminDataFetch, isLoading: loadingAllRequest } = useQuery({
     queryKey: ['requestsAdmin', statusFilter],
     queryFn: async () => {
-      const response = await quantityRequestApi.getAllRequestAdmin({
-        status: statusFilter
-      })
+      const query =
+        statusFilter === 'all'
+          ? {
+              status: ''
+            }
+          : {
+              status: statusFilter
+            }
+      const response = await quantityRequestApi.getAllRequestAdmin(query)
       return response
     },
     staleTime: STALETIME
@@ -259,6 +265,7 @@ const AdminRequest = () => {
       title: 'Người dùng',
       dataIndex: ['user', 'name'],
       key: 'userName',
+      width: 250,
       render: (_, record) => (
         <Space>
           <Avatar
@@ -339,6 +346,8 @@ const AdminRequest = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      align: 'center',
+      width: 180,
       render: (status: QuantityRequestStatus) => (
         <Tag
           icon={statusIcons[status]}
@@ -358,14 +367,16 @@ const AdminRequest = () => {
     {
       title: 'Hành động',
       key: 'action',
+      align: 'center',
+      fixed: 'right',
+      width: 350,
       render: (_, record) => (
-        <Space size='small'>
+        <Space size='small' style={{ width: '100%', justifyContent: 'center' }}>
           <Button
             type='primary'
             ghost
             icon={<FileSearchOutlined />}
-            size='middle'
-            style={{ borderRadius: '6px' }}
+            style={{ borderRadius: '6px', fontSize: '11px', height: '25px' }}
             onClick={() => handleShowDetail(record)}
           >
             Chi tiết
@@ -376,11 +387,12 @@ const AdminRequest = () => {
               <Button
                 type='primary'
                 icon={<CheckOutlined />}
-                size='middle'
                 style={{
                   backgroundColor: '#52c41a',
                   borderColor: '#52c41a',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  height: '25px'
                 }}
                 onClick={() => handleConfirmAction(record, 'approve')}
               >
@@ -389,7 +401,6 @@ const AdminRequest = () => {
               <Button
                 danger
                 icon={<CloseOutlined />}
-                size='middle'
                 style={{ borderRadius: '6px' }}
                 onClick={() => handleConfirmAction(record, 'reject')}
               >
@@ -410,7 +421,9 @@ const AdminRequest = () => {
                 style={{
                   color: record.status === QuantityRequestStatus.APPROVED ? '#52c41a' : '#ff4d4f',
                   borderColor: record.status === QuantityRequestStatus.APPROVED ? '#52c41a' : '#ff4d4f',
-                  borderRadius: '6px'
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  height: '25px'
                 }}
               >
                 Đã xử lý
@@ -566,17 +579,17 @@ const AdminRequest = () => {
         bodyStyle={{ padding: '0' }}
       >
         <Table
+          sticky
           loading={loadingAllRequest || loadingStats}
           dataSource={allRequestAdminData}
           columns={columns}
           rowKey='_id'
           pagination={{
             pageSize: 10,
-            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
-            showSizeChanger: true,
-            pageSizeOptions: ['10', '20', '50']
+            position: ['bottomCenter']
           }}
-          style={{ borderRadius: '12px' }}
+          style={{ borderRadius: '12px', width: '100%' }}
+          scroll={{ x: '1200px' }}
         />
       </Card>
 
@@ -970,10 +983,9 @@ const AdminRequest = () => {
         )}
       </Modal>
 
-      <style jsx global>{`
+      <style>{`
         .stat-card {
           border-radius: 12px;
-          // box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
           transition: all 0.3s;
           overflow: hidden;
         }
