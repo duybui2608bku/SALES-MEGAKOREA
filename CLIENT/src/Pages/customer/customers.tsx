@@ -12,7 +12,9 @@ import {
   Tag,
   DatePicker,
   Select,
-  Grid
+  Grid,
+  Checkbox,
+  Space
 } from 'antd'
 import dayjs from 'dayjs'
 import { Fragment, useContext, useEffect, useState } from 'react'
@@ -56,89 +58,31 @@ enum FillterOptions {
 
 const today = dayjs().format('YYYY-MM-DD')
 
+const STORAGE_KEY = 'customer_table_columns'
+// Hàm đọc trạng thái cột từ localStorage
+const getStoredColumns = () => {
+  try {
+    const storedData = localStorage.getItem(STORAGE_KEY)
+    return storedData ? JSON.parse(storedData) : null
+  } catch (error) {
+    console.error('Lỗi khi đọc từ localStorage:', error)
+    return null
+  }
+}
+
+// Hàm lưu trạng thái cột vào localStorage
+const saveColumnsToStorage = (columns: string[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(columns))
+  } catch (error) {
+    console.error('Lỗi khi lưu vào localStorage:', error)
+  }
+}
+
 const Customers = () => {
   const screens = useBreakpoint()
   const isMobile = !screens.md
-
-  const { profile } = useContext(AppContext)
-  const [pagination, setPagination] = useState({
-    page: PAGE,
-    limit: LIMIT,
-    total: 0
-  })
-
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const [filterCustomers, setFilterCustomers] = useState<CustomerFilterRequestType>({
-    date: today,
-    branch: isAdminValidator(profile?.role as RoleUser)
-      ? undefined
-      : [profile?.branch.name].filter((id): id is string => id !== undefined)
-  })
-
-  const [customers, setCustomers] = useState<Customer[]>([])
-
-  const {
-    data: customersResponse,
-    isLoading,
-    refetch
-  } = useQuery({
-    queryKey: ['customers', pagination.page, filterCustomers],
-    queryFn: () =>
-      customerApi.getAllCustomersSchedule({
-        limit: pagination.limit,
-        page: pagination.page,
-        filter: {
-          ...filterCustomers,
-          service: filterCustomers.service?.length ? filterCustomers.service : undefined
-        }
-      }),
-    staleTime: STALETIME
-  })
-
-  const { data: customersByPhone, isLoading: isLoadingSearch } = useQuery({
-    queryKey: ['searchCustomersSuccessByPhone', searchQuery],
-    queryFn: () => customerApi.searchCustomersByPhoneSuccessSchedule(searchQuery),
-    enabled: !!searchQuery,
-    staleTime: STALETIME
-  })
-
-  useEffect(() => {
-    if (customersResponse) {
-      const data = customersResponse.data.result.customers
-      const total = customersResponse.data.result.total
-      const limit = customersResponse.data.result.limit
-      const page = customersResponse.data.result.page
-
-      setCustomers(data)
-      setPagination({
-        ...pagination,
-        total,
-        limit,
-        page
-      })
-    }
-  }, [customersResponse, pagination])
-
-  useEffect(() => {
-    if (customersByPhone) {
-      const data = customersByPhone.data.result
-      setCustomers(data)
-      // setPagination({
-      //   ...pagination,
-      //   page: 1,
-      //   limit: data.length,
-      //   total: data.length
-      // })
-    }
-  }, [customersByPhone])
-
-  useEffect(() => {
-    if (searchQuery === '') {
-      refetch()
-    }
-  }, [refetch, searchQuery])
-
+  // Columns Table
   const columnsCustomers: TableColumnType<ColumnsCustomer>[] = [
     {
       title: 'Lịch hẹn',
@@ -208,6 +152,7 @@ const Customers = () => {
       title: 'Số điện thoại',
       align: 'center',
       width: 160,
+      key: 'phone',
       dataIndex: 'phone',
       render: (phone: string, record) => {
         return (
@@ -239,7 +184,7 @@ const Customers = () => {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',
-      width: 120
+      width: 150
     },
     {
       title: 'Địa chỉ',
@@ -304,6 +249,113 @@ const Customers = () => {
     }
   ]
 
+  const { profile } = useContext(AppContext)
+  const [pagination, setPagination] = useState({
+    page: PAGE,
+    limit: LIMIT,
+    total: 0
+  })
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterCustomers, setFilterCustomers] = useState<CustomerFilterRequestType>({
+    date: today,
+    branch: isAdminValidator(profile?.role as RoleUser)
+      ? undefined
+      : [profile?.branch.name].filter((id): id is string => id !== undefined)
+  })
+  const [customers, setCustomers] = useState<Customer[]>([])
+
+  // Handle check options for hidden columns
+  const defaultColumns = columnsCustomers.map((item) => item.key).filter(Boolean)
+  const storedColumns = getStoredColumns()
+  const validStoredColumns = storedColumns
+    ? storedColumns.filter((col: any) => defaultColumns.includes(col))
+    : defaultColumns
+  const [checkedList, setCheckedList] = useState(validStoredColumns)
+  const options = columnsCustomers
+    .filter((column) => column.key && column.title)
+    .map(({ key, title }) => ({
+      label: title,
+      value: key
+    }))
+
+  const handleColumnsChange = (value: string[]) => {
+    setCheckedList(value)
+    saveColumnsToStorage(value)
+  }
+
+  const handleSelectAll = (e: any) => {
+    const allValues = options.map((opt) => opt.value as string)
+    const newValues = e.target.checked ? allValues : []
+    setCheckedList(newValues)
+    saveColumnsToStorage(newValues)
+  }
+
+  const newColumns = columnsCustomers.map((item) => ({
+    ...item,
+    hidden: !checkedList.includes(item.key as string)
+  }))
+
+  const {
+    data: customersResponse,
+    isLoading,
+    refetch
+  } = useQuery({
+    queryKey: ['customers', pagination.page, filterCustomers],
+    queryFn: () =>
+      customerApi.getAllCustomersSchedule({
+        limit: pagination.limit,
+        page: pagination.page,
+        filter: {
+          ...filterCustomers,
+          service: filterCustomers.service?.length ? filterCustomers.service : undefined
+        }
+      }),
+    staleTime: STALETIME
+  })
+
+  const { data: customersByPhone, isLoading: isLoadingSearch } = useQuery({
+    queryKey: ['searchCustomersSuccessByPhone', searchQuery],
+    queryFn: () => customerApi.searchCustomersByPhoneSuccessSchedule(searchQuery),
+    enabled: !!searchQuery,
+    staleTime: STALETIME
+  })
+
+  useEffect(() => {
+    if (customersResponse) {
+      const data = customersResponse.data.result.customers
+      const total = customersResponse.data.result.total
+      const limit = customersResponse.data.result.limit
+      const page = customersResponse.data.result.page
+
+      setCustomers(data)
+      setPagination({
+        ...pagination,
+        total,
+        limit,
+        page
+      })
+    }
+  }, [customersResponse, pagination])
+
+  useEffect(() => {
+    if (customersByPhone) {
+      const data = customersByPhone.data.result
+      setCustomers(data)
+      // setPagination({
+      //   ...pagination,
+      //   page: 1,
+      //   limit: data.length,
+      //   total: data.length
+      // })
+    }
+  }, [customersByPhone])
+
+  useEffect(() => {
+    if (searchQuery === '') {
+      refetch()
+    }
+  }, [refetch, searchQuery])
+
   const goToNextPage = (page: number) => {
     setPagination((prev) => ({
       ...prev,
@@ -320,6 +372,17 @@ const Customers = () => {
       ...prev,
       [filter]: value
     }))
+  }
+
+  const customTagRender = (props: any) => {
+    const { label, closable, onClose } = props
+
+    // Hiển thị bình thường cho các trường hợp khác
+    return (
+      <Tag color='blue' closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+        {label}
+      </Tag>
+    )
   }
 
   return (
@@ -384,11 +447,36 @@ const Customers = () => {
         </Col>
       </Row>
 
+      <Row style={{ padding: '0 20px', width: '100%' }}>
+        <Col xs={24}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Checkbox
+              checked={checkedList.length === options.length}
+              indeterminate={checkedList.length > 0 && checkedList.length < options.length}
+              onChange={handleSelectAll}
+            >
+              Chọn tất cả
+            </Checkbox>
+
+            <Select
+              mode='multiple'
+              style={{ width: '100%' }}
+              placeholder='Chọn các cột hiển thị'
+              value={checkedList}
+              onChange={handleColumnsChange}
+              options={options}
+              allowClear
+              tagRender={customTagRender}
+            />
+          </Space>
+        </Col>
+      </Row>
+
       {/* Table Customer */}
       <Row gutter={16} style={{ padding: '20px' }}>
         <Col span={24}>
           <Table
-            columns={columnsCustomers}
+            columns={newColumns}
             bordered
             loading={isLoading || isLoadingSearch}
             dataSource={customers}

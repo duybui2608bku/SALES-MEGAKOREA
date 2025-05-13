@@ -2,11 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Badge,
   Button,
+  Checkbox,
   Col,
   Flex,
   message,
   Popover,
   Row,
+  Select,
   Space,
   Table,
   TableColumnType,
@@ -15,7 +17,15 @@ import {
   Tree,
   Typography
 } from 'antd'
-import { DownOutlined, PlusOutlined, ReloadOutlined, SyncOutlined, TagsOutlined } from '@ant-design/icons'
+import {
+  DollarOutlined,
+  DownOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SyncOutlined,
+  TagsOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
 import { IoPrintSharp } from 'react-icons/io5'
 import { IoIosAddCircleOutline } from 'react-icons/io'
 import { FaRegEye, FaCheckCircle } from 'react-icons/fa'
@@ -30,7 +40,7 @@ import { useNavigate } from 'react-router'
 import { pathRoutersService } from 'src/Constants/path'
 import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardSold'
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
-import { GiReceiveMoney } from 'react-icons/gi'
+import { GiReceiveMoney, GiTakeMyMoney } from 'react-icons/gi'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import { TbCreditCardRefund, TbMoneybag } from 'react-icons/tb'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
@@ -42,6 +52,8 @@ import { queryClient } from 'src/main'
 import { HiUserPlus } from 'react-icons/hi2'
 import ModalCommissionDistribution from 'src/Modal/services/ModalCommissionDistribution'
 import ModalRefund from 'src/Modal/services/ModalRefund'
+import { BsCardText } from 'react-icons/bs'
+import StatisticCard from 'src/Components/StatisticCard'
 
 const { Text, Paragraph } = Typography
 
@@ -65,6 +77,27 @@ enum StatusOpenModalPayyment {
 
 type ColumnsServicesCardSoldOfCustomerType = GetServicesCardSoldOfCustomer
 
+const STORAGE_KEY = 'soldServices_table_columns'
+// Hàm đọc trạng thái cột từ localStorage
+const getStoredColumns = () => {
+  try {
+    const storedData = localStorage.getItem(STORAGE_KEY)
+    return storedData ? JSON.parse(storedData) : null
+  } catch (error) {
+    console.error('Lỗi khi đọc từ localStorage: ', error)
+    return null
+  }
+}
+
+// Hàm lưu trạng thái cột vào localStorage
+const saveColumnsToStorage = (columns: string[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(columns))
+  } catch (error) {
+    console.error('Lỗi khi lưu vào localStorage: ', error)
+  }
+}
+
 const SoldServicesCard = () => {
   const navigate = useNavigate()
   const [servicesCardSoldOfCustomer, setServicesCardSoldOfCustomer] = useState<GetServicesCardSoldOfCustomer[]>([])
@@ -73,128 +106,19 @@ const SoldServicesCard = () => {
     limit: LIMIT,
     total: 0
   })
-  const [expandedServicesCard, setExpandedServicesCard] = useState<Record<string, boolean>>({})
-  const [openModalServicesCardSold, setOpenModalServicesCardSold] = useState(StatusOpenModalServicesCard.NONE)
-  const [openModalPayment, setOpenModalPayment] = useState(StatusOpenModalPayyment.NONE)
-  const [servicesCardSoldOfCustomerData, setServicesCardSoldOfCustomerData] =
-    useState<GetServicesCardSoldOfCustomer | null>(null)
-  const [historyUsedData, setHistoryUsedData] = useState<HistoryUsed[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [datePickerQuery, setDatePickerQuery] = useState('')
-  const [openModalRefund, setOpenModalRefund] = useState(false)
-  const [branchQuery, setBranchQuery] = useState<string[]>([])
-
-  // Hàm check searchQuery là Number hay là String
-  const checkValueSearchQuery = (value: string) => {
-    if (!value || value.length === 0) return
-
-    const firstChar = value.charAt(0)
-
-    // Check kí tự đầu tiên là chữ
-    if (/[a-zA-Z]/.test(firstChar)) {
-      return GetServicesCardSoldOfCustomerSearchType.NAME_CUSTOMER
-    }
-
-    // Check kí tự đầu tiên là số
-    if (/[0-9]/.test(firstChar)) {
-      return GetServicesCardSoldOfCustomerSearchType.PHONE__CUSTOMER
-    }
-
-    return
-  }
-
-  const queryKey = ['services-card-sold-customer', pagination.page, searchQuery, datePickerQuery, branchQuery]
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: queryKey,
-    queryFn: async () => {
-      const searchType = checkValueSearchQuery(searchQuery)
-      const date =
-        datePickerQuery.split(' & ')[0] === datePickerQuery.split(' & ')[1]
-          ? datePickerQuery.split(' & ')[0]
-          : datePickerQuery
-      const response = await servicesApi.GetServicesCardSoldOfCustomer({
-        page: pagination.page,
-        limit: pagination.limit,
-        search: searchQuery,
-        search_type: searchType,
-        date: date,
-        branch: branchQuery
-      })
-      return response
-    },
-    staleTime: STALETIME
+  const [statistical, setStatistical] = useState({
+    total: 0,
+    customersCount: 0,
+    revenue: 0,
+    debt: 0
   })
-
-  useEffect(() => {
-    if (data) {
-      const result = data.data.result.servicesCardSold
-      setServicesCardSoldOfCustomer(result)
-      setPagination({
-        page: data.data.result.page || PAGE,
-        limit: data.data.result.limit,
-        total: data.data.result.total
-      })
-    }
-  }, [data])
-
-  const goToNextPage = (page: number) => {
-    setPagination((prev) => ({
-      ...prev,
-      page
-    }))
-  }
-
-  const handleTableChange = async (page: number) => {
-    goToNextPage(page)
-  }
-
-  const handleOpenModalServicesCardSold = (
-    servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
-    statusOpenModalServicesCard: StatusOpenModalServicesCard
-  ) => {
-    setOpenModalServicesCardSold(statusOpenModalServicesCard)
-    setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
-  }
-
-  const handleOpenModalViewHistoryUsed = (historyUsedData: HistoryUsed[]) => {
-    setHistoryUsedData(historyUsedData)
-    setOpenModalServicesCardSold(StatusOpenModalServicesCard.VIEW_HISTORY)
-  }
-
-  const handleOpenModalPayment = (
-    servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
-    statusOpenModalPayment: StatusOpenModalPayyment
-  ) => {
-    setOpenModalPayment(statusOpenModalPayment)
-    setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
-  }
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value)
-    setPagination((prev) => ({ ...prev, page: PAGE, total: 1 }))
-  }
-
-  const handleReloadPage = async () => {
-    await message.loading('Đang tải dữ liệu...', 3)
-    message.success('Tải dữ liệu thành công !')
-    queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
-  }
-
-  const handleRefundMoney = (record: GetServicesCardSoldOfCustomer) => {
-    setServicesCardSoldOfCustomerData(record)
-    setOpenModalRefund(true)
-  }
-
-  const handleCommissionDistribution = (record: GetServicesCardSoldOfCustomer) => {
-    handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION)
-  }
 
   const columns: TableColumnType<ColumnsServicesCardSoldOfCustomerType>[] = [
     {
       title: 'TT',
       width: 25,
-      key: 'paid',
-      dataIndex: 'paid',
+      key: 'status',
+      dataIndex: 'status',
       align: 'center',
       fixed: 'left',
       render: (_, record) => {
@@ -327,7 +251,7 @@ const SoldServicesCard = () => {
 
         return (
           <Flex align='center' justify='space-between'>
-            <Space style={{ width: '100%', overflowX: 'hidden' }}>
+            <Space style={{ width: '100%', overflow: 'hidden' }}>
               <Tree switcherIcon={<DownOutlined />} showLine treeData={visibleCards} />
             </Space>
             <Space>
@@ -488,6 +412,169 @@ const SoldServicesCard = () => {
       }
     }
   ]
+  const [expandedServicesCard, setExpandedServicesCard] = useState<Record<string, boolean>>({})
+  const [openModalServicesCardSold, setOpenModalServicesCardSold] = useState(StatusOpenModalServicesCard.NONE)
+  const [openModalPayment, setOpenModalPayment] = useState(StatusOpenModalPayyment.NONE)
+  const [servicesCardSoldOfCustomerData, setServicesCardSoldOfCustomerData] =
+    useState<GetServicesCardSoldOfCustomer | null>(null)
+  const [historyUsedData, setHistoryUsedData] = useState<HistoryUsed[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [datePickerQuery, setDatePickerQuery] = useState('')
+  const [openModalRefund, setOpenModalRefund] = useState(false)
+  const [branchQuery, setBranchQuery] = useState<string[]>([])
+
+  // Handle check options for hidden columns
+  const defaultColumns = columns.map((item) => item.key).filter(Boolean)
+  const storedColumns = getStoredColumns()
+  const validStoredColumns = storedColumns
+    ? storedColumns.filter((col: any) => defaultColumns.includes(col))
+    : defaultColumns
+  const [checkedList, setCheckedList] = useState(validStoredColumns)
+  const options = columns
+    .filter((column) => column.key && column.title)
+    .map(({ key, title }) => ({
+      label: title,
+      value: key
+    }))
+
+  const handleColumnsChange = (value: string[]) => {
+    setCheckedList(value)
+    saveColumnsToStorage(value)
+  }
+
+  const handleSelectAll = (e: any) => {
+    const allValues = options.map((opt) => opt.value as string)
+    const newValues = e.target.checked ? allValues : []
+    setCheckedList(newValues)
+    saveColumnsToStorage(newValues)
+  }
+
+  const newColumns = columns.map((item) => ({
+    ...item,
+    hidden: !checkedList.includes(item.key as string)
+  }))
+
+  // Hàm check searchQuery là Number hay là String
+  const checkValueSearchQuery = (value: string) => {
+    if (!value || value.length === 0) return
+
+    const firstChar = value.charAt(0)
+
+    // Check kí tự đầu tiên là chữ
+    if (/[a-zA-Z]/.test(firstChar)) {
+      return GetServicesCardSoldOfCustomerSearchType.NAME_CUSTOMER
+    }
+
+    // Check kí tự đầu tiên là số
+    if (/[0-9]/.test(firstChar)) {
+      return GetServicesCardSoldOfCustomerSearchType.PHONE__CUSTOMER
+    }
+
+    return
+  }
+
+  const queryKey = ['services-card-sold-customer', pagination.page, searchQuery, datePickerQuery, branchQuery]
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: queryKey,
+    queryFn: async () => {
+      const searchType = checkValueSearchQuery(searchQuery)
+      const date =
+        datePickerQuery.split(' & ')[0] === datePickerQuery.split(' & ')[1]
+          ? datePickerQuery.split(' & ')[0]
+          : datePickerQuery
+      const response = await servicesApi.GetServicesCardSoldOfCustomer({
+        page: pagination.page,
+        limit: pagination.limit,
+        search: searchQuery,
+        search_type: searchType,
+        date: date,
+        branch: branchQuery
+      })
+      return response
+    },
+    staleTime: STALETIME
+  })
+
+  useEffect(() => {
+    if (data) {
+      const result = data.data.result.servicesCardSold
+      setServicesCardSoldOfCustomer(result)
+      setPagination({
+        page: data.data.result.page || PAGE,
+        limit: data.data.result.limit,
+        total: data.data.result.total
+      })
+      setStatistical({
+        total: data.data.result.total,
+        customersCount: data.data.result.customersCount,
+        revenue: data.data.result.revenue,
+        debt: data.data.result.debt
+      })
+    }
+  }, [data])
+
+  const goToNextPage = (page: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page
+    }))
+  }
+
+  const handleTableChange = async (page: number) => {
+    goToNextPage(page)
+  }
+
+  const handleOpenModalServicesCardSold = (
+    servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
+    statusOpenModalServicesCard: StatusOpenModalServicesCard
+  ) => {
+    setOpenModalServicesCardSold(statusOpenModalServicesCard)
+    setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
+  }
+
+  const handleOpenModalViewHistoryUsed = (historyUsedData: HistoryUsed[]) => {
+    setHistoryUsedData(historyUsedData)
+    setOpenModalServicesCardSold(StatusOpenModalServicesCard.VIEW_HISTORY)
+  }
+
+  const handleOpenModalPayment = (
+    servicesCardSoldOfCustomerData: GetServicesCardSoldOfCustomer,
+    statusOpenModalPayment: StatusOpenModalPayyment
+  ) => {
+    setOpenModalPayment(statusOpenModalPayment)
+    setServicesCardSoldOfCustomerData(servicesCardSoldOfCustomerData)
+  }
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    setPagination((prev) => ({ ...prev, page: PAGE, total: 1 }))
+  }
+
+  const handleReloadPage = async () => {
+    await message.loading('Đang tải dữ liệu...', 3)
+    message.success('Tải dữ liệu thành công !')
+    queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+  }
+
+  const handleRefundMoney = (record: GetServicesCardSoldOfCustomer) => {
+    setServicesCardSoldOfCustomerData(record)
+    setOpenModalRefund(true)
+  }
+
+  const handleCommissionDistribution = (record: GetServicesCardSoldOfCustomer) => {
+    handleOpenModalServicesCardSold(record, StatusOpenModalServicesCard.DISTRIBUTE_COMMISSION)
+  }
+
+  const customRender = (props: any) => {
+    const { label, closable, onClose } = props
+
+    // Hiển thị bình thường cho các trường hợp khác
+    return (
+      <Tag color='blue' closable={closable} onClose={onClose} style={{ marginRight: 5 }}>
+        {label} cột đã được chọn
+      </Tag>
+    )
+  }
 
   return (
     <Fragment>
@@ -516,10 +603,111 @@ const SoldServicesCard = () => {
         <Col xs={24} sm={12} md={6} lg={6}>
           <OptionsBranch onchange={(value) => setBranchQuery(value)} mode='multiple' />
         </Col>
+
+        {/* Thống kê Cards */}
+        <Col style={{ marginTop: '8px' }} xs={24}>
+          <Row gutter={16}>
+            {/* Card 1: Tổng thẻ */}
+            <StatisticCard
+              color={0}
+              loading={isLoading}
+              title='Tổng thẻ'
+              value={statistical.total}
+              icon={<BsCardText />}
+              colSpan={6}
+            />
+
+            {/* Card 2: Tổng khách hàng*/}
+            <StatisticCard
+              color={1}
+              loading={isLoading}
+              title='Tổng khách hàng'
+              value={statistical.customersCount}
+              icon={<TeamOutlined />}
+              colSpan={6}
+            />
+
+            {/* Card 3: Doanh thu */}
+            <StatisticCard
+              color={2}
+              loading={isLoading}
+              title='Doanh thu'
+              value={statistical.revenue
+                .toLocaleString('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                })
+                .replace('₫', 'đ')}
+              icon={<DollarOutlined />}
+              colSpan={6}
+            />
+
+            {/* Card 4: Công nợ*/}
+            <StatisticCard
+              color={3}
+              loading={isLoading}
+              title='Công nợ'
+              value={statistical.debt
+                .toLocaleString('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                })
+                .replace('₫', 'đ')}
+              icon={<GiTakeMyMoney />}
+              colSpan={6}
+            />
+          </Row>
+        </Col>
+      </Row>
+
+      <Row style={{ padding: '0 20px', width: '100%', justifyContent: 'flex-end' }}>
+        <Col xs={12}>
+          <Space
+            direction='vertical'
+            style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+          >
+            <Text strong style={{ marginRight: '5px' }}>
+              Chọn các cột hiển thị:{' '}
+            </Text>
+            <Tooltip title='Chọn tất cả'>
+              <Checkbox
+                checked={checkedList.length === options.length}
+                indeterminate={checkedList.length > 0 && checkedList.length < options.length}
+                onChange={handleSelectAll}
+              />
+            </Tooltip>
+
+            <Select
+              mode='multiple'
+              style={{ width: '230px' }}
+              placeholder={checkedList.length > 0 ? `Đã chọn ${checkedList.length} mục` : 'Chọn các cột hiển thị'}
+              value={checkedList}
+              onChange={handleColumnsChange}
+              options={options}
+              allowClear
+              maxTagCount={0}
+              dropdownRender={(menu) => (
+                <div>
+                  <div style={{ padding: '8px 12px', borderBottom: '1px solid #e8e8e8' }}>
+                    <Text>
+                      Cột hiển thị: {checkedList.length}/{options.length}
+                    </Text>
+                  </div>
+                  {menu}
+                </div>
+              )}
+              tagRender={customRender}
+            />
+          </Space>
+        </Col>
       </Row>
 
       {/* Talbe Service Card */}
-      <Row gutter={16} style={{ padding: '20px' }}>
+      <Row gutter={16} style={{ padding: '10px 20px' }}>
         <Col span={24}>
           <Table
             sticky
@@ -528,7 +716,7 @@ const SoldServicesCard = () => {
             loading={isLoading}
             dataSource={servicesCardSoldOfCustomer}
             bordered
-            columns={columns}
+            columns={newColumns}
             pagination={{
               current: pagination.page,
               pageSize: pagination.limit,

@@ -1,48 +1,44 @@
 import { Card, Divider, Flex, Space, Tag, Tooltip, Typography } from 'antd'
-import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
+const { Title, Text } = Typography
 import { DollarOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { useState } from 'react'
-const { Title, Text } = Typography
+import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
 
-interface PreviewServiceCardCreatedProp {
-  serviceCardCreatedData: ServicesOfCardType
+interface ServiceCardProps {
+  card: ServicesOfCardType
+  isHandleSelect?: boolean
+  selected?: boolean
+  onCardClick?: (value: string) => void
+  toggleServicesList: (value: string) => void
+  expandedCardIds: Set<string>
 }
 
-const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
-  const { serviceCardCreatedData } = props
-  const [expandedCardIds, setExpandedCardIds] = useState(new Set())
-
-  if (!serviceCardCreatedData) return null
-
-  // Xử lý Mở rộng/Thu gọn của service_of_card nếu số lượng service_of_card lớn hơn 2
-  const toggleServicesList = (cardId: string) => {
-    const newExpandedIds = new Set(expandedCardIds)
-    if (newExpandedIds.has(cardId)) {
-      newExpandedIds.delete(cardId)
-    } else {
-      newExpandedIds.add(cardId)
-    }
-    setExpandedCardIds(newExpandedIds)
-  }
+const ServiceCard = (props: ServiceCardProps) => {
+  const { card, selected = false, onCardClick, toggleServicesList, expandedCardIds, isHandleSelect = true } = props
 
   return (
     <Card
-      key={serviceCardCreatedData._id}
+      key={card._id}
       hoverable
+      className='service-card'
       style={{
         borderRadius: '12px',
         overflow: 'hidden',
-        boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+        boxShadow: isHandleSelect
+          ? selected
+            ? '0 8px 24px rgba(24, 144, 255, 0.4)'
+            : 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px'
+          : 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease-in-out, border .2s ease-in-out',
         backgroundColor: 'rgb(247, 250, 252)',
         padding: '8px 5px',
-        border: 'none'
+        border: isHandleSelect ? (selected ? '2px solid #1890ff' : '2px solid transparent') : 'none'
       }}
       bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
+      onClick={() => isHandleSelect && onCardClick && onCardClick(card._id)}
     >
       <div style={{ flexGrow: 1 }}>
         <Flex justify='space-between' align='center' style={{ marginBottom: '12px', flexDirection: 'row' }}>
@@ -59,7 +55,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
               fontSize: '17px'
             }}
           >
-            <Tooltip title={serviceCardCreatedData.name}>{serviceCardCreatedData.name}</Tooltip>
+            <Tooltip title={card.name}>{card.name}</Tooltip>
           </Title>
           <Tag
             color='#1890ff'
@@ -71,18 +67,19 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
             }}
           >
             <DollarOutlined style={{ marginRight: '4px' }} />
-            {serviceCardCreatedData.services_of_card.reduce((total, s) => total + s.total, 0).toLocaleString('vi-VN')}
+            {new Intl.NumberFormat('vi-VN').format(card.price)}
           </Tag>
         </Flex>
+        {card.code && <Text style={{ color: '#1890ff' }}>#{card.code}</Text>}
 
         <Divider style={{ margin: '12px 0', borderColor: '#f0f0f0' }} />
 
         <div className='services-list' style={{ marginBottom: '16px' }}>
           <Flex justify='space-between' align='center' style={{ marginBottom: '12px' }}>
             <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-              Dịch vụ ({serviceCardCreatedData.services_of_card.length}):
+              Dịch vụ ({card.services_of_card.length}):
             </Text>
-            {serviceCardCreatedData.services_of_card.length > 1 && (
+            {card.services_of_card.length > 1 && (
               <Tag
                 color='geekblue'
                 style={{
@@ -94,15 +91,15 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
                 }}
                 onClick={(e) => {
                   e.stopPropagation()
-                  toggleServicesList(serviceCardCreatedData._id)
+                  toggleServicesList(card._id)
                 }}
               >
-                {expandedCardIds.has(serviceCardCreatedData._id) ? (
+                {expandedCardIds.has(card._id) ? (
                   <Tooltip title='Thu gọn'>
                     <UpOutlined style={{ fontSize: '9px' }} />
                   </Tooltip>
                 ) : (
-                  <Tooltip title={`Xem thêm (${serviceCardCreatedData.services_of_card.length - 1})`}>
+                  <Tooltip title={`Xem thêm (${card.services_of_card.length - 1})`}>
                     <DownOutlined style={{ fontSize: '9px' }} />
                   </Tooltip>
                 )}
@@ -112,7 +109,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
 
           <div style={{ width: '100%' }}>
             {/* Dịch vụ đầu tiên luôn hiển thị */}
-            {serviceCardCreatedData.services_of_card.slice(0, 1).map((service, index) => {
+            {card.services_of_card.slice(0, 1).map((service, index) => {
               const usedCount = 0 // Giả định trường used (nếu không có, gán 0)
               const quantity = service.quantity || 1
               const isExhausted = usedCount >= quantity
@@ -126,7 +123,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
                     borderRadius: '8px',
                     padding: '10px',
                     transition: 'all 0.3s ease',
-                    marginBottom: serviceCardCreatedData.services_of_card.length > 1 ? '12px' : '0'
+                    marginBottom: card.services_of_card.length > 1 ? '12px' : '0'
                   }}
                 >
                   <Flex justify='space-between' align='center' style={{ marginBottom: '8px' }}>
@@ -161,7 +158,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
                       {new Intl.NumberFormat('vi-VN', {
                         style: 'currency',
                         currency: 'VND'
-                      }).format(service.service_details.price || 0)}
+                      }).format(service.price || 0)}
                     </Text>
                   </Flex>
                 </div>
@@ -169,18 +166,16 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
             })}
 
             {/* Container cho các dịch vụ còn lại với hiệu ứng */}
-            {serviceCardCreatedData.services_of_card.length > 1 && (
+            {card.services_of_card.length > 1 && (
               <div
                 style={{
-                  maxHeight: expandedCardIds.has(serviceCardCreatedData._id)
-                    ? `${(serviceCardCreatedData.services_of_card.length - 1) * 100}px`
-                    : '0px',
-                  opacity: expandedCardIds.has(serviceCardCreatedData._id) ? 1 : 0,
+                  maxHeight: expandedCardIds.has(card._id) ? `${(card.services_of_card.length - 1) * 100}px` : '0px',
+                  opacity: expandedCardIds.has(card._id) ? 1 : 0,
                   transition: 'max-height 0.5s ease, opacity 0.4s ease'
                 }}
               >
                 <Space direction='vertical' size={12} style={{ width: '100%', display: 'flex' }}>
-                  {serviceCardCreatedData.services_of_card.slice(1).map((service, index) => {
+                  {card.services_of_card.slice(1).map((service: any, index: number) => {
                     const usedCount = 0 // Giả định trường used (nếu không có, gán 0)
                     const quantity = service.quantity || 1
                     const isExhausted = usedCount >= quantity
@@ -228,7 +223,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
                             {new Intl.NumberFormat('vi-VN', {
                               style: 'currency',
                               currency: 'VND'
-                            }).format(service.service_details.price || 0)}
+                            }).format(service.price || 0)}
                           </Text>
                         </Flex>
                       </div>
@@ -246,7 +241,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
 
         <Flex justify='space-between' align='center'>
           <Text type='secondary' style={{ fontSize: '12px' }}>
-            {dayjs(serviceCardCreatedData.created_at).format('DD/MM/YYYY HH:mm')}
+            {dayjs(card.created_at).format('DD/MM/YYYY HH:mm')}
           </Text>
         </Flex>
       </div>
@@ -254,4 +249,4 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
   )
 }
 
-export default PreviewServiceCardCreated
+export default ServiceCard

@@ -513,13 +513,14 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
         <div
           className='service-card-container'
           style={{
+            padding: '8px',
             display: 'grid',
             gridTemplateColumns:
               listServicesCard.length >= 4
                 ? 'repeat(auto-fill, minmax(250px, 1fr))'
                 : `repeat(${listServicesCard.length}, 1fr)`,
             gap: '16px',
-            maxHeight: '70vh',
+            maxHeight: '65vh',
             overflowY: 'auto'
           }}
         >
@@ -531,11 +532,11 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
               style={{
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: 'rgba(0, 0, 0, 0.09) 0px 2px 8px',
+                boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease-in-out',
                 backgroundColor: 'rgb(247, 250, 252)',
                 padding: '8px 5px'
               }}
@@ -588,7 +589,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                           key={service._id}
                           style={{
                             background: '#ffffff',
-                            boxShadow: 'rgba(0, 0, 0, 0.09) 0px 2px 8px',
+                            boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
                             borderRadius: '8px',
                             padding: '10px',
                             transition: 'all 0.3s ease'

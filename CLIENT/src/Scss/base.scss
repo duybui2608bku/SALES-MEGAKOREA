@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet');
 
 html {
+  font-family: 'JetBrains Mono', monospace !important;
   font-size: 100%;
   line-height: 1.5;
   @include mobile {
@@ -12,6 +13,13 @@ html {
     font-size: 80%;
   }
 }
+.chartHome {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+.recharts-legend-item-text {
+  font-size: 13px !important;
+}
+
 .ant-tag,
 .ant-form-item-label,
 .ant-form,
@@ -184,8 +192,8 @@ iframe {
   position: absolute;
   inset: 0;
   padding: 2px;
-  border-radius: 16px;
-  background: linear-gradient(90deg, #0d9488, #06b5d477, #0d9488);
+  border-radius: 12px;
+  background: linear-gradient(90deg, #0b8177, #06b5d477, #0d9488);
   background-size: 200% 100%;
   background-position: 0% 0%;
   animation: border-pulse 2s ease infinite;
@@ -197,6 +205,20 @@ iframe {
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
+  pointer-events: none; /* Thêm dòng này để cho phép sự kiện đi qua lớp pseudoelement */
+  z-index: 0; /* Đảm bảo lớp pseudoelement ở dưới nội dung */
+}
+
+/* Đảm bảo nội dung thẻ nằm trên lớp viền */
+.pulse-border-card .ant-card-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* Đảm bảo sự kiện hover hoạt động trên các phần tử con */
+.pulse-border-card .ant-typography,
+.pulse-border-card .ant-tooltip-trigger {
+  pointer-events: auto;
 }
 
 @keyframes border-pulse {

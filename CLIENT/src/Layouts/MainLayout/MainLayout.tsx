@@ -1,15 +1,16 @@
 import { Menu, MenuProps, Layout, Button, Space } from 'antd'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { BiSolidCaretLeftSquare, BiSolidCaretRightSquare } from 'react-icons/bi'
 const { Header, Sider, Content } = Layout
 import logo from '../../Assets/megakorea-logo-300x105-1.png'
 import logoMobile from '../../Assets/logo-mobile.png'
-import { FcEngineering, FcAssistant, FcKindle, FcButtingIn } from 'react-icons/fc'
+import { FcEngineering, FcAssistant, FcKindle, FcButtingIn, FcHome } from 'react-icons/fc'
 import { IoMdLogOut } from 'react-icons/io'
 import HeaderMain from '../Header/Header'
 import './MainLayout.scss'
 import { useLocation, useNavigate } from 'react-router'
 import {
+  pathDashBoard,
   pathRoutersProduct,
   pathRoutersService,
   pathRoutersUser,
@@ -17,12 +18,15 @@ import {
   pathUtil
 } from 'src/Constants/path'
 import ModalLogout from 'src/Modal/ModalLogout'
+import { AppContext } from 'src/Context/AppContext'
+import { RoleUser } from 'src/Constants/enum'
 
 interface Props {
   children?: React.ReactNode
 }
 
 const MainLayout = ({ children }: Props) => {
+  const { profile } = useContext(AppContext)
   const [collapsed, setCollapsed] = useState(false)
   const [openModalLogout, setOpenModalLogout] = useState(false)
   const navigate = useNavigate()
@@ -45,7 +49,9 @@ const MainLayout = ({ children }: Props) => {
     let newOpenKeys: string[] = []
 
     // Map đường dẫn tới khóa menu tương ứng
-    if (isExactPath(path, pathRoutesCustomers.customers)) {
+    if (isExactPath(path, pathDashBoard.home)) {
+      newSelectedKey = ['dashboard']
+    } else if (isExactPath(path, pathRoutesCustomers.customers)) {
       newSelectedKey = ['customers']
     } else if (isExactPath(path, pathRoutersService.cardService)) {
       newSelectedKey = ['card-service']
@@ -91,9 +97,14 @@ const MainLayout = ({ children }: Props) => {
 
   const items: MenuItem[] = [
     {
+      key: 'dashboard',
+      label: 'Trang chủ',
+      icon: <FcHome size={20} />,
+      onClick: () => navigate(pathDashBoard.home)
+    },
+    {
       key: 'customers',
       label: 'Khách hàng',
-      // eslint-disable-next-line react/jsx-no-undef
       icon: <FcButtingIn size={20} />,
       onClick: () => navigate(pathRoutesCustomers.customers)
     },
@@ -158,6 +169,7 @@ const MainLayout = ({ children }: Props) => {
       ]
     },
     {
+      style: !(profile?.role === RoleUser.ADMIN) ? { display: 'none' } : undefined,
       key: 'users',
       label: 'Nhân viên',
       icon: <FcAssistant size={20} />,
