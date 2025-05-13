@@ -28,7 +28,9 @@ const pathRoutersService = {
   cardService: '/card-service',
   sellCardService: '/card-service-sell',
   soldCardService: '/card-service-sold',
-  stepService: '/step-service'
+  stepService: '/step-service',
+  userQuantityRequests: '/services/quantity-requests/user',
+  adminQuantityRequests: '/services/quantity-requests/admin'
 }
 
 const pathRoutersUser = {
@@ -90,7 +92,14 @@ const pathServices = {
   createServiceCardSoldOfCustomer: 'services-card/sold-of-customer/create',
   updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update',
   updateUsedOfServices: '/services-card/sold/update-used',
-  updateQuantityOfServices: '/services-card/sold/update-quantity'
+  updateQuantityOfServices: '/services-card/sold/update-quantity',
+  createQuantityRequest: '/api/service-quantity/request',
+  getUserQuantityRequests: '/api/service-quantity/user-requests',
+  getRequestHistory: '/api/service-quantity/request/:requestId/history',
+  getAdminRequests: '/api/service-quantity/admin/requests',
+  getRequestStats: '/api/service-quantity/admin/stats',
+  approveRequest: '/api/service-quantity/admin/approve/:requestId',
+  rejectRequest: '/api/service-quantity/admin/reject/:requestId'
 }
 
 const pathRoutesCustomers = {

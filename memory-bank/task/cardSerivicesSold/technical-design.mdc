@@ -1,0 +1,225 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Technical Design: Service Quantity Approval System
+
+## System Overview
+
+The Service Quantity Approval System provides a structured workflow for handling requests to increase the number of times a service can be used. This document outlines the technical implementation details for this feature.
+
+## Architecture
+
+The feature follows the existing application's client-server architecture:
+- **Frontend**: React SPA with Ant Design
+- **Backend**: Express REST API
+- **Database**: MongoDB
+
+## Database Schema
+
+### New Collections
+
+#### `service_quantity_requests`
+```javascript
+{
+  _id: ObjectId,
+  userId: ObjectId,          // References users collection
+  serviceId: ObjectId,       // References services collection
+  currentQuantity: Number,   // Current number of uses
+  requestedQuantity: Number, // Requested number of uses
+  reason: String,            // User's reason for the request
+  status: String,            // 'pending', 'approved', 'rejected'
+  adminNote: String,         // Note from admin when approving/rejecting
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+#### `service_request_history`
+```javascript
+{
+  _id: ObjectId,
+  requestId: ObjectId,       // References service_quantity_requests
+  action: String,            // 'created', 'approved', 'rejected'
+  performedBy: ObjectId,     // User who performed the action
+  note: String,              // Any notes about the action
+  createdAt: Date
+}
+```
+
+## API Endpoints
+
+### User Endpoints
+
+#### `POST /api/service-quantity/request`
+- **Purpose**: Create a new quantity increase request
+- **Request Body**:
+  ```javascript
+  {
+    serviceId: String,
+    requestedQuantity: Number,
+    reason: String
+  }
+  ```
+- **Response**: The created request object
+- **Authorization**: Authenticated user
+
+#### `GET /api/service-quantity/user-requests`
+- **Purpose**: Get all requests for the current user
+- **Query Parameters**: 
+  - `status`: Filter by status
+  - `limit`: Limit number of results
+  - `skip`: Skip results for pagination
+- **Response**: Array of request objects
+- **Authorization**: Authenticated user
+
+### Admin Endpoints
+
+#### `GET /api/service-quantity/admin/requests`
+- **Purpose**: Get all requests for admin review
+- **Query Parameters**: 
+  - `status`: Filter by status
+  - `limit`: Limit number of results
+  - `skip`: Skip results for pagination
+- **Response**: Array of request objects with user details
+- **Authorization**: Admin or manager role
+
+#### `PUT /api/service-quantity/admin/approve/:requestId`
+- **Purpose**: Approve a request
+- **Request Body**:
+  ```javascript
+  {
+    note: String
+  }
+  ```
+- **Response**: Updated request object
+- **Authorization**: Admin or manager role
+- **Side Effects**: Updates service quantity for user
+
+#### `PUT /api/service-quantity/admin/reject/:requestId`
+- **Purpose**: Reject a request
+- **Request Body**:
+  ```javascript
+  {
+    note: String
+  }
+  ```
+- **Response**: Updated request object
+- **Authorization**: Admin or manager role
+
+## Frontend Components
+
+### User Components
+
+1. **RequestQuantityButton**
+   - Button to trigger the request modal
+   - Displayed in service detail view
+
+2. **RequestQuantityModal**
+   - Form with fields for requested quantity and reason
+   - Shows current quantity for reference
+   - Validation for requested quantity
+
+3. **UserRequestsTable**
+   - Table displaying user's requests
+   - Columns: Service, Current Quantity, Requested Quantity, Status, Date
+   - Filters for status
+   - Sort by date
+
+### Admin Components
+
+1. **AdminRequestsTable**
+   - Table displaying all user requests
+   - Columns: User, Service, Current Quantity, Requested Quantity, Reason, Status, Date, Actions
+   - Filters for status, user, service
+   - Sort by date
+   - Action buttons for approve/reject
+
+2. **ApproveRejectModal**
+   - Form for admin notes
+   - Confirmation buttons
+   - Display of request details
+
+3. **RequestStatsDashboard**
+   - Charts showing requests by status
+   - Trends over time
+   - Service breakdown
+
+## State Management
+
+- React Context API for managing request state
+- TanStack Query for data fetching and cache management
+- Optimistic updates for improved UX
+
+## Data Flow
+
+### Creating a Request
+1. User opens RequestQuantityModal
+2. System fetches current service details
+3. User enters requested quantity and reason
+4. Frontend validates input
+5. API call creates request
+6. System updates UI and shows success message
+7. System creates notification for admin
+
+### Approving a Request
+1. Admin reviews request in AdminRequestsTable
+2. Admin clicks Approve button
+3. ApproveRejectModal opens
+4. Admin enters optional note
+5. API call updates request status
+6. System updates service quantity
+7. System creates history record
+8. System creates notification for user
+
+## Error Handling
+
+- Validation errors displayed inline on forms
+- API errors shown with appropriate error messages
+- Retry mechanism for failed requests
+- Graceful degradation for network issues
+
+## Notifications
+
+- In-app notifications for status changes
+- Email notifications (future implementation)
+- Real-time updates for admin dashboard
+
+## Security Considerations
+
+- Role-based access control for all endpoints
+- Validation of user ownership for service cards
+- Validation of request data
+- Rate limiting for request creation
+
+## Performance Optimizations
+
+- Pagination for request lists
+- Indexing on status and userId fields
+- Caching of request data with appropriate invalidation
+
+## Testing Strategy
+
+1. **Unit Tests**
+   - Controller functions
+   - Validation logic
+   - Permission checks
+
+2. **Integration Tests**
+   - API endpoint functionality
+   - Database interactions
+   - Workflow operations
+
+3. **UI Tests**
+   - Component rendering
+   - Form validations
+   - User interactions
+
+## Deployment Strategy
+
+- Feature flag for initial rollout
+- Phased deployment starting with admin features
+- Monitoring for performance issues
+- Backup plan for rollback if needed
+

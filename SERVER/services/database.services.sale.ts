@@ -1,4 +1,4 @@
-import { Collection, Db, MongoClient } from 'mongodb'
+import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
 import dotenv from 'dotenv'
 import User from '../src/models/schemas/User.schema'
 import Bracnh from '../src/models/schemas/branch/branch.schema'
@@ -15,6 +15,7 @@ import HistoryPaidServicesCardSoldOfCustomer from '~/models/schemas/services/His
 import { ServicesStep } from '~/models/schemas/services/stepServices.schema'
 import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.schema'
 import { CommisionOfTechnican } from '~/models/schemas/commision/commisionOfTechnican.schema'
+import { QuantityRequest, QuantityRequestHistory } from '~/models/schemas/services/quantity-request.schema'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@megakorae-call.rrq1b.mongodb.net/${process.env.DB_NAME_SALE_MEGA}?retryWrites=true&w=majority&appName=MEGAKORAE-CALL&tls=true`
@@ -90,6 +91,14 @@ class DatabaseServiceSale {
 
   get step_services(): Collection<ServicesStep> {
     return this.db.collection(process.env.SERVICES_STEP_COLLECTION as string)
+  }
+
+  get quantityRequests(): Collection<QuantityRequest> {
+    return this.db.collection(process.env.QUANTITY_REQUEST_COLLECTION as string)
+  }
+
+  get quantityRequestHistories(): Collection<QuantityRequestHistory> {
+    return this.db.collection(process.env.QUANTITY_REQUEST_HISTORY_COLLECTION as string)
   }
 }
 

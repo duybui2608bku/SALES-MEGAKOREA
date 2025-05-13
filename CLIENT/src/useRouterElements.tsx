@@ -28,6 +28,8 @@ import StepService from './Pages/Services/Step.service'
 import UserCommisionSale from './Pages/User/UserCommisionSale'
 import UserCommisionTechnican from './Pages/User/UserommisionTechnican'
 import NotFoundPage from './Pages/404/404'
+import UserRequestsPage from './Pages/Services/QuantityRequests/UserRequestsPage'
+import AdminRequestsPage from './Pages/Services/QuantityRequests/AdminRequestsPage'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -153,6 +155,28 @@ const useRouterElements = () => {
           element: (
             <MainLayout>
               <SoldServicesCardService />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.userQuantityRequests,
+          element: (
+            <MainLayout>
+              <UserRequestsPage />
+            </MainLayout>
+          )
+        }
+      ]
+    },
+    {
+      path: pathUtil.none,
+      element: <ProtectedRoute allowedRoles={[RoleUser.ADMIN, RoleUser.MANAGER]} />,
+      children: [
+        {
+          path: pathRoutersService.adminQuantityRequests,
+          element: (
+            <MainLayout>
+              <AdminRequestsPage />
             </MainLayout>
           )
         }

@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb'
 import { TypeCommision } from '~/constants/enum'
 import { EmployeeOfServices, ProductOfServices, StepServicesType } from '~/interface/services/services.interface'
+import { QuantityRequestStatus } from '../schemas/services/quantity-request.schema'
 
 export interface CreateServicesCategoryRequestBody {
   name: string
@@ -100,4 +101,33 @@ export interface UpdateStepServiceRequestBody {
 
 export interface DeleteStepServiceRequestParams {
   id: string
+}
+
+export interface CreateQuantityRequestBody {
+  page: number
+  limit: number
+  serviceId: string
+  branch?: string
+  requestedQuantity: number
+  reason?: string
+  currentQuantity: number
+  servicesCardSoldId: string
+  media: string[]
+}
+
+export interface GetAllQuantityRequestBody {
+  user_id: string
+  page: number
+  limit: number
+  branch?: string
+  status?: QuantityRequestStatus
+  date?: string
+}
+
+export interface GetAllQuantityAdminRequestBody {
+  page: number
+  limit: number
+  branch?: string
+  status?: QuantityRequestStatus
+  date?: string
 }

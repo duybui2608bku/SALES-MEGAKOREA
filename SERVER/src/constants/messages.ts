@@ -79,6 +79,10 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  GET_ALL_REQUESTS_ADMIN_SUCCESS: 'Get all requests successfully',
+  GET_USER_REQUESTS_SUCCESS: 'Get user requests successfully',
+  SERVICE_NOT_FOUND: 'Service not found',
+  CREATE_REQUEST_SUCCESS: 'Request created successfully',
   GET_STEP_SERVICES_SUCCESS: 'Get step services success !',
   CREATE_STEP_SERVICES_SUCCESS: 'Create step services success !',
   UPDATE_STEP_SERVICES_SUCCESS: 'Update step services success !',

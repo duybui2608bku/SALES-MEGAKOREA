@@ -1,0 +1,200 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Implementation Rules: Service Quantity Approval System
+
+## Coding Standards
+
+### Naming Conventions
+
+1. **Files and Folders**
+   - Use PascalCase for React components: `RequestQuantityModal.tsx`
+   - Use kebab-case for non-component files: `service-quantity-api.ts`
+   - Group related components in folders: `/Modal/services/QuantityRequest/`
+
+2. **Variables and Functions**
+   - Use camelCase for variables and functions: `requestQuantity`, `handleApproval`
+   - Use descriptive names that reflect purpose: `fetchUserRequests` not `fetchData`
+   - Prefix boolean variables with "is", "has", or "should": `isApproved`, `hasBeenReviewed`
+
+3. **Components**
+   - Use PascalCase for component names: `RequestQuantityButton`
+   - Use self-descriptive names that indicate purpose
+   - Follow noun or noun-verb pattern: `RequestTable`, `ApproveModal`
+
+4. **API Endpoints**
+   - Use kebab-case for URL paths
+   - Use RESTful conventions: GET, POST, PUT, DELETE
+   - Group by resource: `/api/service-quantity/...`
+
+### Code Structure
+
+1. **Frontend Components**
+   - Follow the existing component structure in the project
+   - Place new components in appropriate directories:
+     - Core components in `/Components`
+     - Page components in `/Pages`
+     - Modal components in `/Modal/services`
+   - Split complex components into smaller sub-components
+
+2. **Backend Structure**
+   - Create new controllers in `/controllers`
+   - Add routes in `/routes`
+   - Define models in `/models/schemas`
+   - Implement business logic in `/services`
+   - Handle data access in `/repository`
+
+3. **File Organization**
+   - Group related files together
+   - Keep files focused on a single responsibility
+   - Separate interface definitions from implementations
+   - Organize imports in a consistent order: React, libraries, local components
+
+## Implementation Guidelines
+
+### Frontend
+
+1. **Component Development**
+   - Use functional components with hooks
+   - Implement form validation with Ant Design form rules
+   - Use Ant Design components for consistency
+   - Apply appropriate SCSS for custom styling
+   - Ensure mobile responsiveness
+
+2. **State Management**
+   - Use TanStack Query for API data fetching
+   - Implement optimistic updates for better UX
+   - Use context for shared state across components
+   - Keep form state local to form components
+
+3. **Error Handling**
+   - Implement comprehensive form validation
+   - Display user-friendly error messages
+   - Handle API errors gracefully
+   - Provide fallback UI for error states
+
+4. **API Integration**
+   - Create service methods for all API calls
+   - Handle loading and error states
+   - Implement proper data transformations
+   - Use TanStack Query's caching capabilities
+
+### Backend
+
+1. **API Development**
+   - Implement proper request validation
+   - Use middleware for authentication and authorization
+   - Ensure consistent error responses
+   - Document API endpoints with comments
+
+2. **Business Logic**
+   - Implement business rules in service layer
+   - Validate all user inputs
+   - Check permissions before processing requests
+   - Maintain audit trails of all actions
+
+3. **Data Access**
+   - Use repository pattern for data access
+   - Implement proper error handling
+   - Use transactions where appropriate
+   - Optimize database queries
+
+4. **Security**
+   - Validate user permissions for all operations
+   - Sanitize all user inputs
+   - Implement rate limiting for request creation
+   - Log suspicious activities
+
+## Testing Requirements
+
+1. **Frontend Testing**
+   - Test form validations
+   - Verify UI state updates
+   - Test error handling
+   - Verify component rendering
+
+2. **Backend Testing**
+   - Test API endpoints with valid and invalid inputs
+   - Verify business logic implementation
+   - Test authorization rules
+   - Verify database operations
+
+3. **Integration Testing**
+   - Test complete workflows
+   - Verify notifications
+   - Test error scenarios
+   - Verify data consistency
+
+## Performance Requirements
+
+1. **Frontend Performance**
+   - Minimize bundle size
+   - Implement pagination for large datasets
+   - Use appropriate loading indicators
+   - Optimize component re-renders
+
+2. **Backend Performance**
+   - Optimize database queries
+   - Implement appropriate indexes
+   - Use caching where appropriate
+   - Optimize API response times
+
+## Documentation Requirements
+
+1. **Code Documentation**
+   - Add JSDoc comments for functions and components
+   - Document complex business logic
+   - Explain non-obvious implementations
+   - Update interfaces with descriptions
+
+2. **API Documentation**
+   - Document all API endpoints
+   - Specify request and response formats
+   - Document error responses
+   - Provide usage examples
+
+3. **User Documentation**
+   - Update user guides for new features
+   - Document admin workflows
+   - Provide troubleshooting information
+
+## Feature Flags
+
+1. **Implementation**
+   - Create feature flag for service quantity approval
+   - Allow enabling/disabling feature
+   - Implement UI changes to respect feature flag
+
+2. **Rollout Strategy**
+   - Enable for admin features first
+   - Gradually enable for user features
+   - Monitor usage and performance
+
+## Commit Guidelines
+
+1. **Commit Messages**
+   - Use conventional commit format: `feat(service-quantity): add request modal`
+   - Include feature area in parentheses
+   - Keep messages concise but descriptive
+   - Reference issue numbers when applicable
+
+2. **Pull Requests**
+   - Create focused pull requests
+   - Provide clear descriptions
+   - Include testing steps
+   - Link to related issues
+
+## Review Criteria
+
+The implementation will be considered successful if it:
+
+1. Follows all coding standards and guidelines
+2. Passes all automated tests
+3. Meets all functional requirements
+4. Maintains or improves performance
+5. Includes proper documentation
+6. Follows security best practices
+7. Integrates seamlessly with existing features
+
