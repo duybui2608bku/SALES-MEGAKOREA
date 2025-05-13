@@ -3,12 +3,13 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import quantityRequestServices from 'services/quantity-request.services'
 import { servicesMessages } from '~/constants/messages'
 import {
+  ApproveQuantityRequestBody,
   CreateQuantityRequestBody,
   GetAllQuantityAdminRequestBody,
-  GetAllQuantityRequestBody
+  GetAllQuantityRequestBody,
+  RejectQuantityRequestBody
 } from '~/models/requestes/Services.requests'
 import { TokenPayload } from '~/models/requestes/User.requests'
-import { QuantityRequestStatus } from '~/models/schemas/services/quantity-request.schema'
 import { ResponseSuccess } from '~/utils/handlers'
 
 /**
@@ -99,23 +100,22 @@ export const getAllRequestsController = async (
 /**
  * Phê duyệt yêu cầu
  */
-export const approveRequestController = async (req: Request, res: Response) => {
-  const { requestId } = req.params
-  const { note } = req.body
+export const approveRequestController = async (
+  req: Request<ParamsDictionary, any, ApproveQuantityRequestBody>,
+  res: Response
+) => {
+  const { requestId, note } = req.body
+  const { user_id } = req.decode_authorization as TokenPayload
 
-  if (!req.user || !req.user._id) {
-    return res.status(401).json({
-      message: 'Người dùng chưa đăng nhập'
-    })
-  }
-
-  const userId = req.user._id.toString()
-
-  const updatedRequest = await quantityRequestServices.approveRequest(requestId, userId, note)
+  const updatedRequest = await quantityRequestServices.approveRequest({
+    requestId,
+    note,
+    userId: user_id
+  })
 
   return ResponseSuccess({
     res,
-    message: 'Phê duyệt yêu cầu thành công',
+    message: servicesMessages.APPROVE_REQUEST_SUCCESS,
     result: updatedRequest
   })
 }
@@ -123,23 +123,22 @@ export const approveRequestController = async (req: Request, res: Response) => {
 /**
  * Từ chối yêu cầu
  */
-export const rejectRequestController = async (req: Request, res: Response) => {
-  const { requestId } = req.params
-  const { note } = req.body
+export const rejectRequestController = async (
+  req: Request<ParamsDictionary, any, RejectQuantityRequestBody>,
+  res: Response
+) => {
+  const { requestId, note } = req.body
+  const { user_id } = req.decode_authorization as TokenPayload
 
-  if (!req.user || !req.user._id) {
-    return res.status(401).json({
-      message: 'Người dùng chưa đăng nhập'
-    })
-  }
-
-  const userId = req.user._id.toString()
-
-  const updatedRequest = await quantityRequestServices.rejectRequest(requestId, userId, note)
+  const updatedRequest = await quantityRequestServices.rejectRequest({
+    requestId,
+    note,
+    userId: user_id
+  })
 
   return ResponseSuccess({
     res,
-    message: 'Từ chối yêu cầu thành công',
+    message: servicesMessages.REJECT_REQUEST_SUCCESS,
     result: updatedRequest
   })
 }
@@ -147,12 +146,11 @@ export const rejectRequestController = async (req: Request, res: Response) => {
 /**
  * Lấy thống kê yêu cầu
  */
-export const getRequestStatsController = async (_req: Request, res: Response) => {
+export const getRequestStatsController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
   const stats = await quantityRequestServices.getRequestStats()
-
   return ResponseSuccess({
     res,
-    message: 'Lấy thống kê yêu cầu thành công',
+    message: servicesMessages.GET_REQUEST_STATS_SUCCESS,
     result: stats
   })
 }

@@ -5,8 +5,14 @@ import { ErrorWithStatusCode } from '~/models/Errors'
 import { HttpStatusCode } from '~/constants/enum'
 import { CreateQuantityRequest } from '~/interface/services/quantity-request.interface'
 import { ObjectId } from 'mongodb'
-import { GetAllQuantityAdminRequestBody, GetAllQuantityRequestBody } from '~/models/requestes/Services.requests'
+import {
+  ApproveQuantityRequestBody,
+  GetAllQuantityAdminRequestBody,
+  GetAllQuantityRequestBody,
+  RejectQuantityRequestBody
+} from '~/models/requestes/Services.requests'
 import { removeNullOutOfObject, toObjectId } from '~/utils/utils'
+import { servicesMessages } from '~/constants/messages'
 
 class QuantityRequestServices {
   /**
@@ -108,14 +114,25 @@ class QuantityRequestServices {
   /**
    * Phê duyệt yêu cầu
    */
-  async approveRequest(requestId: string, userId: string, note?: string) {
+  async approveRequest(data: ApproveQuantityRequestBody) {
+    const { requestId, note, userId } = data
     // Lấy thông tin yêu cầu
     const request = await this.checkRequestExist(requestId)
 
     // Kiểm tra trạng thái
     if (request.status !== QuantityRequestStatus.PENDING) {
-      throw new Error('Yêu cầu đã được xử lý trước đó')
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.REQUEST_ALREADY_PROCESSED,
+        statusCode: HttpStatusCode.BadRequest
+      })
     }
+
+    //Update số lần dịch vụ
+    await quantityRequestRepository.updateQuantityServicesCardSold({
+      services_card_sold_id: toObjectId(request.servicesCardSoldId),
+      services_id: toObjectId(request.serviceId),
+      increaseAmount: request.requestedQuantity
+    })
 
     // Cập nhật số lần dịch vụ
     // await databaseServiceSale.updateServiceQuantity(request.serviceId.toString(), request.requestedQuantity)
@@ -131,7 +148,7 @@ class QuantityRequestServices {
     await quantityRequestRepository.createRequestHistory({
       requestId,
       action: 'approved',
-      performedBy: userId,
+      performedBy: userId as string,
       note
     })
 
@@ -141,13 +158,17 @@ class QuantityRequestServices {
   /**
    * Từ chối yêu cầu
    */
-  async rejectRequest(requestId: string, userId: string, note?: string) {
+  async rejectRequest(data: RejectQuantityRequestBody) {
+    const { requestId, note, userId } = data
     // Lấy thông tin yêu cầu
     const request = await this.checkRequestExist(requestId)
 
     // Kiểm tra trạng thái
     if (request.status !== QuantityRequestStatus.PENDING) {
-      throw new Error('Yêu cầu đã được xử lý trước đó')
+      throw new ErrorWithStatusCode({
+        message: servicesMessages.REQUEST_ALREADY_PROCESSED,
+        statusCode: HttpStatusCode.BadRequest
+      })
     }
 
     // Cập nhật trạng thái yêu cầu
@@ -161,7 +182,7 @@ class QuantityRequestServices {
     await quantityRequestRepository.createRequestHistory({
       requestId,
       action: 'rejected',
-      performedBy: userId,
+      performedBy: userId as string,
       note
     })
 
@@ -183,7 +204,7 @@ class QuantityRequestServices {
     const request = await quantityRequestRepository.getRequestById(requestId)
     if (!request) {
       throw new ErrorWithStatusCode({
-        message: 'Quantity request not found',
+        message: servicesMessages.QUANTITY_REQUEST_NOT_FOUND,
         statusCode: HttpStatusCode.NotFound
       })
     }

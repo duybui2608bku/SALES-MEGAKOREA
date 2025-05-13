@@ -79,6 +79,11 @@ export const userMessages = {
 } as const
 
 export const servicesMessages = {
+  QUANTITY_REQUEST_NOT_FOUND: 'Quantity request not found',
+  REQUEST_ALREADY_PROCESSED: 'Request already processed',
+  APPROVE_REQUEST_SUCCESS: 'Approve request successfully',
+  REJECT_REQUEST_SUCCESS: 'Reject request successfully',
+  GET_REQUEST_STATS_SUCCESS: 'Get request stats successfully',
   GET_ALL_REQUESTS_ADMIN_SUCCESS: 'Get all requests successfully',
   GET_USER_REQUESTS_SUCCESS: 'Get user requests successfully',
   SERVICE_NOT_FOUND: 'Service not found',

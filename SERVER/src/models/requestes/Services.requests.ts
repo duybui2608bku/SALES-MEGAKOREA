@@ -131,3 +131,15 @@ export interface GetAllQuantityAdminRequestBody {
   status?: QuantityRequestStatus
   date?: string
 }
+
+export interface ApproveQuantityRequestBody {
+  requestId: string
+  note: string
+  userId?: string
+}
+
+export interface RejectQuantityRequestBody {
+  requestId: string
+  note: string
+  userId?: string
+}
