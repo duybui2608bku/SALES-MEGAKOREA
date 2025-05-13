@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Card, Col, Row, Table, TableColumnType, Typography } from 'antd'
+import { Col, Row, Table, TableColumnType, Typography } from 'antd'
 import { DollarOutlined, TeamOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
@@ -8,8 +8,9 @@ import OptionsBranch from 'src/Components/OptionsBranch'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
 import Title from 'src/Components/Title'
 import { RoleUser } from 'src/Constants/enum'
-import { CommisionSaleUserInterface } from 'src/Interfaces/commison/commisionSale.interface'
 import commisionSaleApi from 'src/Service/commision/commision.sale.api'
+import { CommisionSaleUserInterface } from 'src/Interfaces/commision/commisionSale.interface'
+import StatisticCard from 'src/Components/StatisticCard'
 const { Text } = Typography
 
 type ColumnsCommisionSaleType = CommisionSaleUserInterface
@@ -88,38 +89,6 @@ const UserCommisionSale = () => {
     goToNextPage(page)
   }
 
-  // Card styles với hiệu ứng hover
-  const cardStyles = [
-    {
-      background: 'linear-gradient(135deg, #1890ff 0%, #36cfc9 100%)',
-      color: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 10px 20px rgba(24, 144, 255, 0.2)',
-      transition: 'all 0.3s'
-    },
-    {
-      background: 'linear-gradient(135deg, #722ed1 0%, #a855f7 100%)',
-      color: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 10px 20px rgba(114, 46, 209, 0.2)',
-      transition: 'all 0.3s'
-    },
-    {
-      background: 'linear-gradient(135deg, #52c41a 0%, #95de64 100%)',
-      color: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 10px 20px rgba(82, 196, 26, 0.2)',
-      transition: 'all 0.3s'
-    },
-    {
-      background: 'linear-gradient(135deg, #fa8c16 0%, #ffc53d 100%)',
-      color: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 10px 20px rgba(250, 140, 22, 0.2)',
-      transition: 'all 0.3s'
-    }
-  ]
-
   const columns: TableColumnType<ColumnsCommisionSaleType>[] = [
     {
       title: 'Tên nhân viên',
@@ -169,42 +138,24 @@ const UserCommisionSale = () => {
           <Col span={16}>
             <Row gutter={16}>
               {/* Card 1: Tổng Hoa Hồng */}
-              <Col span={12}>
-                <Card loading={isLoading} style={cardStyles[0]} hoverable bodyStyle={{ padding: '24px' }}>
-                  <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Tổng Hoa Hồng</Text>
-                  <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
-                    {formatCurrency(summary.totalCommision)}
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'flex-end',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <DollarOutlined style={{ fontSize: '35px', opacity: 0.8 }} />
-                  </div>
-                </Card>
-              </Col>
+              <StatisticCard
+                color={0}
+                loading={isLoading}
+                title='Tổng hoa hồng'
+                value={formatCurrency(summary.totalCommision)}
+                icon={<DollarOutlined />}
+                colSpan={12}
+              />
 
               {/* Card 2: Tổng user */}
-              <Col span={12}>
-                <Card loading={isLoading} style={cardStyles[3]} hoverable bodyStyle={{ padding: '24px' }}>
-                  <Text style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px' }}>Tổng Nhân viên Sale</Text>
-                  <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '12px 0', color: 'white' }}>
-                    {summary.totalUser}
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'flex-end',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <TeamOutlined style={{ fontSize: '35px', opacity: 0.8 }} />
-                  </div>
-                </Card>
-              </Col>
+              <StatisticCard
+                color={1}
+                loading={isLoading}
+                title='Tổng nhân viên'
+                value={summary.totalUser}
+                icon={<TeamOutlined />}
+                colSpan={12}
+              />
             </Row>
           </Col>
           <Col span={8}>

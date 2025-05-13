@@ -112,28 +112,28 @@ export const dataTestOutstandingStaff = [
   {
     user: {
       avatar: '',
-      name: 'Nguyễn Thị Nở'
+      name: 'Huỳnh Quốc Trí'
     },
     count: 484
   },
   {
     user: {
       avatar: '',
-      name: 'Đoàn Minh Tâm'
+      name: 'Hồ Minh Thành'
     },
     count: 112
   },
   {
     user: {
       avatar: '',
-      name: 'Phan Thanh Tùng'
+      name: 'Lê Đức Minh'
     },
     count: 191
   },
   {
     user: {
       avatar: '',
-      name: 'Đoàn Minh Tâm'
+      name: 'Cao Thị Thuỷ'
     },
     count: 356
   },
@@ -154,7 +154,7 @@ export const dataTestOutstandingStaff = [
   {
     user: {
       avatar: '',
-      name: 'Nguyễn Tuấn Anh'
+      name: 'Huỳnh Minh Trung'
     },
     count: 191
   },
@@ -178,5 +178,79 @@ export const dataTestOutstandingStaff = [
       name: 'Phan Thanh Tùng'
     },
     count: 223
+  }
+]
+
+export const dataTestRevenue = [
+  {
+    name: 'Doanh thu trong ngày',
+    value: 30409
+  },
+  {
+    name: 'Công nợ',
+    value: 94940
+  }
+]
+
+export const dataTestRevenueAtMonth = [
+  {
+    month: 'Tháng 1',
+    revenue: 37469,
+    debt: 64798
+  },
+  {
+    month: 'Tháng 2',
+    revenue: 42851,
+    debt: 8472
+  },
+  {
+    month: 'Tháng 3',
+    revenue: 51264,
+    debt: 1234
+  },
+  {
+    month: 'Tháng 4',
+    revenue: 39754,
+    debt: 42423
+  },
+  {
+    month: 'Tháng 5',
+    revenue: 45982,
+    debt: 23433
+  },
+  {
+    month: 'Tháng 6',
+    revenue: 56219,
+    debt: 23432
+  },
+  {
+    month: 'Tháng 7',
+    revenue: 48735,
+    debt: 1234
+  },
+  {
+    month: 'Tháng 8',
+    revenue: 52376,
+    debt: 4542
+  },
+  {
+    month: 'Tháng 9',
+    revenue: 47628,
+    debt: 1234
+  },
+  {
+    month: 'Tháng 10',
+    revenue: 53892,
+    debt: 5543
+  },
+  {
+    month: 'Tháng 11',
+    revenue: 49573,
+    debt: 2344
+  },
+  {
+    month: 'Tháng 12',
+    revenue: 61245,
+    debt: 23423
   }
 ]

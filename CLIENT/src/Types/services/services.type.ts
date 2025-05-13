@@ -47,6 +47,9 @@ export type GetServicesCardSoldOfCustomerResponse = SuccessResponse<{
   limit: number
   page: number
   total: number
+  customersCount: number
+  revenue: number
+  debt: number
 }>
 
 export type CreateServicesCardSoldOfCustomerResponse = SuccessResponse<void>

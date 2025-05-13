@@ -4,6 +4,7 @@ import {
   Col,
   Divider,
   Empty,
+  Flex,
   Form,
   Input,
   InputNumber,
@@ -15,6 +16,7 @@ import {
   Space,
   Tabs,
   Tag,
+  Tooltip,
   Typography
 } from 'antd'
 import { Fragment, useContext, useEffect, useState } from 'react'
@@ -31,7 +33,6 @@ import {
   MinusCircleOutlined,
   PlusOutlined,
   SyncOutlined,
-  TagOutlined,
   UpOutlined
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -92,7 +93,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
   const { profile } = useContext(AppContext)
   const { branchList } = useQueryBranch()
   const [newServiceCardData, setNewServiceCardData] = useState<ServicesOfCardType>()
-  const [expandedCardIds, setExpandedCardIds] = useState(new Set())
+  const [expandedCardIds, setExpandedCardIds] = useState(new Set<string>())
 
   // Set list Service card sold (thẻ dịch vụ đang dùng)
   useEffect(() => {
@@ -341,13 +342,18 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
         okText={'Đóng'}
         footer={null}
         style={{ padding: 0 }}
-        // Tính chiều rộng động của Modal (giới hạn tối đa là 1100p)
-        // width={Math.min(listServicesCard.length * 260 + 48, 1300)}
         width={1300}
       >
-        <Title className='center-div' level={2} style={{ textAlign: 'center', marginBottom: 32 }}>
-          Chỉnh sửa thẻ dịch vụ
-        </Title>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <Title level={3} style={{ margin: 0, fontWeight: 600 }}>
+            Chỉnh sửa thẻ dịch vụ
+          </Title>
+          {servicesCardSoldOfCustomerData?.customers.name && (
+            <Text type='secondary' style={{ fontSize: '15px', color: '#1890ff' }}>
+              Khách hàng: {servicesCardSoldOfCustomerData.customers.name}
+            </Text>
+          )}
+        </div>
         <Row style={{ margin: '20px 10px', justifyContent: 'space-between' }}>
           <Col span={9} style={{ borderRight: '1px solid lightgray' }}>
             <Tag
@@ -357,14 +363,13 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
             >
               Các thẻ dịch vụ đang dùng
             </Tag>
-            <Col span={24} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '62vh' }}>
+            <Col span={24} style={{ overflowY: 'scroll', overflowX: 'hidden', height: '62vh', paddingRight: '15px' }}>
               <div
                 style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 24,
-                  justifyContent: listServicesCardSold.length <= 2 ? 'flex-start' : 'flex-start',
-                  alignItems: 'stretch'
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  columnGap: 16,
+                  rowGap: 20
                 }}
               >
                 {listServicesCardSold.map((card) => (
@@ -373,88 +378,230 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                     hoverable
                     className='pulse-border-card'
                     style={{
-                      position: 'relative',
-                      width: '210px',
-                      borderRadius: '16px',
+                      borderRadius: '12px',
                       overflow: 'hidden',
-                      border: 'none', //#91caff
-                      background: 'linear-gradient(145deg, #ffffff 0%, #f9f9f9 100%)'
+                      boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      transition: 'transform 0.2s ease, box-shadow 0.2s ease-in-out, border .2s ease-in-out',
+                      backgroundColor: 'rgb(247, 250, 252)',
+                      padding: '8px 5px',
+                      border: 'none'
                     }}
+                    bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
                   >
                     <div style={{ flexGrow: 1 }}>
-                      <Space direction='vertical' size='middle' style={{ width: '100%' }}>
-                        <Title level={5} style={{ margin: 0, color: '#2d3436', fontWeight: 600, lineHeight: '1.4' }}>
-                          {card.name}
+                      <Flex
+                        justify='space-between'
+                        align='center'
+                        style={{ marginBottom: '12px', flexDirection: 'row' }}
+                      >
+                        <Title
+                          level={4}
+                          style={{
+                            margin: 0,
+                            color: '#262626',
+                            fontWeight: 600,
+                            maxWidth: '80%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            fontSize: '17px'
+                          }}
+                        >
+                          <Tooltip title={card.name}>{card.name}</Tooltip>
                         </Title>
+                        <Tag
+                          color='#1890ff'
+                          style={{
+                            fontSize: '12px',
+                            padding: '2px 8px',
+                            borderRadius: '16px',
+                            marginRight: 0
+                          }}
+                        >
+                          <DollarOutlined style={{ marginRight: '4px' }} />
+                          {card.services_of_card.reduce((total, s) => total + s.lineTotal, 0).toLocaleString('vi-VN')}
+                        </Tag>
+                      </Flex>
 
-                        <Divider style={{ margin: '0px 0', borderColor: '#e8ecef' }} />
+                      <Divider style={{ margin: '12px 0', borderColor: '#f0f0f0' }} />
 
-                        <Space align='center'>
-                          <DollarOutlined style={{ color: '#fa8c16', fontSize: '17px' }} />
-                          <Text strong style={{ fontSize: '13px', color: '#2d3436' }}>
-                            {card.services_of_card.reduce((total, s) => total + s.lineTotal, 0).toLocaleString('vi-VN')}{' '}
-                            VNĐ
+                      <div className='services-list' style={{ marginBottom: '16px' }}>
+                        <Flex justify='space-between' align='center' style={{ marginBottom: '12px' }}>
+                          <Text strong style={{ fontSize: '14px', color: '#262626' }}>
+                            Dịch vụ ({card.services_of_card.length}):
                           </Text>
-                        </Space>
-
-                        <Space direction='vertical' size={8}>
-                          <Text strong style={{ fontSize: '11px', color: '#2d3436' }}>
-                            Dịch vụ:
-                          </Text>
-
-                          {(expandedCardIds.has(card._id)
-                            ? card.services_of_card
-                            : card.services_of_card.slice(0, 1)
-                          ).map((service, index) => (
-                            <Space key={index} align='center' style={{ width: '100%' }}>
-                              <Tag
-                                color='cyan'
-                                icon={<TagOutlined />}
-                                style={{
-                                  fontSize: '9px',
-                                  padding: '4px 10px',
-                                  borderRadius: '10px',
-                                  background: '#e6f7ff',
-                                  border: 'none'
-                                }}
-                              >
-                                {service.name}
-                              </Tag>
-                              <Text type='secondary' style={{ fontSize: '9px' }}>
-                                x{service.quantity}
-                              </Text>
-                            </Space>
-                          ))}
-
                           {card.services_of_card.length > 1 && (
                             <Tag
                               color='geekblue'
                               style={{
-                                outline: 'none',
-                                fontSize: '10px'
+                                cursor: 'pointer',
+                                fontSize: '11px',
+                                padding: '1px 15px',
+                                borderRadius: '12px',
+                                margin: 0
                               }}
-                              onClick={() => toggleServicesList(card._id)}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                toggleServicesList(card._id)
+                              }}
                             >
                               {expandedCardIds.has(card._id) ? (
-                                <>
-                                  <UpOutlined style={{ fontSize: '9px', marginRight: '4px' }} /> Thu gọn
-                                </>
+                                <Tooltip title='Thu gọn'>
+                                  <UpOutlined style={{ fontSize: '9px' }} />
+                                </Tooltip>
                               ) : (
-                                <>
-                                  {' '}
-                                  <DownOutlined style={{ fontSize: '9px', marginRight: '4px' }} /> Xem thêm (
-                                  {card.services_of_card.length - 1})
-                                </>
+                                <Tooltip title={`Xem thêm (${card.services_of_card.length - 1})`}>
+                                  <DownOutlined style={{ fontSize: '9px' }} />
+                                </Tooltip>
                               )}
                             </Tag>
                           )}
-                        </Space>
+                        </Flex>
 
-                        <Divider style={{ margin: '0px 0', borderColor: '#e8ecef' }} />
-                        <Text type='secondary' style={{ fontSize: '9px' }}>
-                          Ngày tạo: {dayjs(card.create_at).format('DD/MM/YYYY HH:mm')}
+                        <div style={{ width: '100%' }}>
+                          {/* Dịch vụ đầu tiên luôn hiển thị */}
+                          {card.services_of_card.slice(0, 1).map((service, index) => {
+                            const usedCount = 0 // Giả định trường used (nếu không có, gán 0)
+                            const quantity = service.quantity || 1
+                            const isExhausted = usedCount >= quantity
+
+                            return (
+                              <div
+                                key={`first-${index}`}
+                                style={{
+                                  background: '#ffffff',
+                                  boxShadow:
+                                    'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                                  borderRadius: '8px',
+                                  padding: '10px',
+                                  transition: 'all 0.3s ease',
+                                  marginBottom: card.services_of_card.length > 1 ? '12px' : '0'
+                                }}
+                              >
+                                <Flex justify='space-between' align='center' style={{ marginBottom: '8px' }}>
+                                  <Tooltip title={service.name}>
+                                    <Text
+                                      style={{
+                                        fontWeight: 500,
+                                        fontSize: '12px',
+                                        color: '#262626',
+                                        maxWidth: '200px',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap'
+                                      }}
+                                    >
+                                      {service.name}
+                                    </Text>
+                                  </Tooltip>
+                                  <Text
+                                    style={{
+                                      fontSize: '12px',
+                                      fontWeight: 500,
+                                      color: isExhausted ? '#ff4d4f' : '#1890ff'
+                                    }}
+                                  >
+                                    x{quantity}
+                                  </Text>
+                                </Flex>
+
+                                <Flex justify='space-between' align='center'>
+                                  <Text type='secondary' style={{ fontSize: '12px', color: '#1890ff' }}>
+                                    {new Intl.NumberFormat('vi-VN', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    }).format(service.lineTotal || 0)}
+                                  </Text>
+                                </Flex>
+                              </div>
+                            )
+                          })}
+
+                          {/* Container cho các dịch vụ còn lại với hiệu ứng */}
+                          {card.services_of_card.length > 1 && (
+                            <div
+                              style={{
+                                maxHeight: expandedCardIds.has(card._id)
+                                  ? `${(card.services_of_card.length - 1) * 100}px`
+                                  : '0px',
+                                opacity: expandedCardIds.has(card._id) ? 1 : 0,
+                                transition: 'max-height 0.5s ease, opacity 0.4s ease'
+                              }}
+                            >
+                              <Space direction='vertical' size={12} style={{ width: '100%', display: 'flex' }}>
+                                {card.services_of_card.slice(1).map((service, index) => {
+                                  const usedCount = 0 // Giả định trường used (nếu không có, gán 0)
+                                  const quantity = service.quantity || 1
+                                  const isExhausted = usedCount >= quantity
+
+                                  return (
+                                    <div
+                                      key={`extra-${index}`}
+                                      style={{
+                                        background: '#ffffff',
+                                        boxShadow:
+                                          'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                                        borderRadius: '8px',
+                                        padding: '10px',
+                                        transition: 'all 0.3s ease'
+                                      }}
+                                    >
+                                      <Flex justify='space-between' align='center' style={{ marginBottom: '8px' }}>
+                                        <Tooltip title={service.name}>
+                                          <Text
+                                            style={{
+                                              fontWeight: 500,
+                                              fontSize: '12px',
+                                              color: '#262626',
+                                              maxWidth: '200px',
+                                              overflow: 'hidden',
+                                              textOverflow: 'ellipsis',
+                                              whiteSpace: 'nowrap'
+                                            }}
+                                          >
+                                            {service.name}
+                                          </Text>
+                                        </Tooltip>
+                                        <Text
+                                          style={{
+                                            fontSize: '12px',
+                                            fontWeight: 500,
+                                            color: isExhausted ? '#ff4d4f' : '#1890ff'
+                                          }}
+                                        >
+                                          x{quantity}
+                                        </Text>
+                                      </Flex>
+
+                                      <Flex justify='space-between' align='center'>
+                                        <Text type='secondary' style={{ fontSize: '12px', color: '#1890ff' }}>
+                                          {new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND'
+                                          }).format(service.lineTotal || 0)}
+                                        </Text>
+                                      </Flex>
+                                    </div>
+                                  )
+                                })}
+                              </Space>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: '5px' }}>
+                      <Divider style={{ margin: '8px 0 12px', borderColor: '#f0f0f0' }} />
+
+                      <Flex justify='space-between' align='center'>
+                        <Text type='secondary' style={{ fontSize: '12px' }}>
+                          {dayjs(card.create_at).format('DD/MM/YYYY HH:mm')}
                         </Text>
-                      </Space>
+                      </Flex>
                     </div>
                   </Card>
                 ))}
@@ -494,56 +641,57 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                             resetValue={resetValueSearchServiceCard}
                           />
                         </Col>
-                        {isLoading ? (
-                          <Skeleton active />
-                        ) : listServicesCard.length === 0 ? (
-                          <Empty
-                            image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
-                            styles={{ image: { width: '100%', height: '100px', margin: '50px 0' } }}
-                            description={
-                              <Typography.Text>
-                                Dịch vụ bạn đang tìm kiếm đã tồn tại trong{' '}
-                                <Tag color='magenta'>Các thẻ dịch vụ đang dùng</Tag>
-                              </Typography.Text>
-                            }
-                          >
-                            <Button
-                              type='primary'
-                              onClick={() => {
-                                handleSearch('')
-                                setResetValueSearchServiceCard(true)
-                                setTimeout(() => setResetValueSearchServiceCard(false), 200)
-                              }}
+                        <Col span={24} style={{ padding: '8px' }}>
+                          {isLoading ? (
+                            <Skeleton active />
+                          ) : listServicesCard.length === 0 ? (
+                            <Empty
+                              image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+                              styles={{ image: { width: '100%', height: '100px', margin: '50px 0' } }}
+                              description={
+                                <Typography.Text>
+                                  Dịch vụ bạn đang tìm kiếm đã tồn tại trong{' '}
+                                  <Tag color='magenta'>Các thẻ dịch vụ đang dùng</Tag>
+                                </Typography.Text>
+                              }
                             >
-                              Quay về
-                            </Button>
-                          </Empty>
-                        ) : checkData ? (
-                          <ServiceCardList
-                            columnsGird={8}
-                            onServiceClick={handleSelectServiceCard}
-                            cards={listServicesCard}
-                            customCss={true}
-                            resetCard={resetServicesCardSelected}
-                          />
-                        ) : (
-                          <Empty
-                            image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
-                            styles={{ image: { width: '100%', height: '100px', margin: '50px 0' } }}
-                            description={<Typography.Text>No Data</Typography.Text>}
-                          >
-                            <Button
-                              type='primary'
-                              onClick={() => {
-                                handleSearch('')
-                                setResetValueSearchServiceCard(true)
-                                setTimeout(() => setResetValueSearchServiceCard(false), 200)
-                              }}
+                              <Button
+                                type='primary'
+                                onClick={() => {
+                                  handleSearch('')
+                                  setResetValueSearchServiceCard(true)
+                                  setTimeout(() => setResetValueSearchServiceCard(false), 200)
+                                }}
+                              >
+                                Quay về
+                              </Button>
+                            </Empty>
+                          ) : checkData ? (
+                            <ServiceCardList
+                              columnsGird={8}
+                              onServiceClick={handleSelectServiceCard}
+                              cards={listServicesCard}
+                              resetCard={resetServicesCardSelected}
+                            />
+                          ) : (
+                            <Empty
+                              image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+                              styles={{ image: { width: '100%', height: '100px', margin: '50px 0' } }}
+                              description={<Typography.Text>No Data</Typography.Text>}
                             >
-                              Quay về
-                            </Button>
-                          </Empty>
-                        )}
+                              <Button
+                                type='primary'
+                                onClick={() => {
+                                  handleSearch('')
+                                  setResetValueSearchServiceCard(true)
+                                  setTimeout(() => setResetValueSearchServiceCard(false), 200)
+                                }}
+                              >
+                                Quay về
+                              </Button>
+                            </Empty>
+                          )}
+                        </Col>
                       </Col>
                       <Row justify={'end'} style={{ marginTop: '30px' }}>
                         {serviceCardSelected.length !== 0 && (
@@ -760,7 +908,7 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                             <Col span={24}>
                               <Typography.Title level={5}>Xem trước</Typography.Title>
                             </Col>
-                            <Col>
+                            <Col style={{ padding: '8px' }}>
                               <PreviewServiceCardCreated
                                 serviceCardCreatedData={newServiceCardData as ServicesOfCardType}
                               />
