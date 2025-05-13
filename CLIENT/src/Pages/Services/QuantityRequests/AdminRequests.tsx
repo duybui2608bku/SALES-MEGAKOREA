@@ -1,30 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { QuantityRequestAPI } from 'src/Service/services/quantity-request.api'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import {
-  IQuantityRequestWithDetails,
-  IUpdateQuantityRequestStatusPayload
-} from 'src/Interfaces/services/quantity-request.interfaces'
-import {
-  Table,
-  Card,
-  Tag,
-  Button,
-  Space,
-  Typography,
-  Row,
-  Col,
-  Empty,
-  Spin,
   Alert,
-  Modal,
-  Input,
-  Statistic,
   Avatar,
-  Progress,
+  Button,
+  Card,
+  Col,
   List,
-  Tooltip,
   message,
-  Segmented
+  Modal,
+  Progress,
+  Row,
+  Segmented,
+  Space,
+  Statistic,
+  Table,
+  TableColumnType,
+  Tag,
+  Tooltip,
+  Typography
 } from 'antd'
 import {
   CheckCircleOutlined,
@@ -47,13 +40,23 @@ import {
   ExclamationCircleOutlined,
   DashboardOutlined
 } from '@ant-design/icons'
-import dayjs from 'dayjs'
-import axiosInstanceMain from 'src/Service/axious.api'
-import { QuantityRequestStatus } from 'src/Constants/enum'
-
-const { Title, Text, Paragraph } = Typography
-const { TextArea } = Input
+const { Text, Paragraph, Title } = Typography
 const { confirm } = Modal
+import { useEffect, useState } from 'react'
+import {
+  AllRequestAdmin,
+  IUpdateQuantityRequestStatusPayload
+} from 'src/Interfaces/services/quantity-request.interfaces'
+import quantityRequestApi from 'src/Service/services/services.quantityRequest.api'
+import dayjs from 'dayjs'
+import { QuantityRequestStatus } from 'src/Constants/enum'
+import { queryClient } from 'src/main'
+import TextArea from 'antd/es/input/TextArea'
+import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
+import HttpStatusCode from 'src/Constants/httpCode'
+
+const STALETIME = 5 * 60 * 1000
+type ColumnsAllRequestAdminType = AllRequestAdmin
 
 const statusColors = {
   [QuantityRequestStatus.PENDING]: '#faad14',
@@ -79,10 +82,8 @@ const statusLabels = {
   [QuantityRequestStatus.REJECTED]: 'Từ chối'
 }
 
-const AdminRequestsPage: React.FC = () => {
-  const [requests, setRequests] = useState<IQuantityRequestWithDetails[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+const AdminRequest = () => {
+  const [allRequestAdminData, setAllRequestAdminData] = useState<AllRequestAdmin[]>([])
   const [statusFilter, setStatusFilter] = useState<QuantityRequestStatus | 'all'>('all')
   const [stats, setStats] = useState<{
     total: number
@@ -90,53 +91,55 @@ const AdminRequestsPage: React.FC = () => {
     approved: number
     rejected: number
   }>({ total: 0, pending: 0, approved: 0, rejected: 0 })
-
   const [noteModalVisible, setNoteModalVisible] = useState<boolean>(false)
   const [actionType, setActionType] = useState<'approve' | 'reject' | null>(null)
   const [currentRequestId, setCurrentRequestId] = useState<string | null>(null)
-  const [currentRequest, setCurrentRequest] = useState<IQuantityRequestWithDetails | null>(null)
+  const [currentRequest, setCurrentRequest] = useState<AllRequestAdmin | null>(null)
   const [adminNote, setAdminNote] = useState<string>('')
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [showDetail, setShowDetail] = useState<boolean>(false)
   const [messageApi, contextHolder] = message.useMessage()
 
-  const quantityRequestAPI = new QuantityRequestAPI(axiosInstanceMain)
+  // Fetch data allRequest from API
+  const { data: allrequestsAdminDataFetch, isLoading: loadingAllRequest } = useQuery({
+    queryKey: ['requestsAdmin', statusFilter],
+    queryFn: async () => {
+      const response = await quantityRequestApi.getAllRequestAdmin({
+        status: statusFilter
+      })
+      return response
+    },
+    staleTime: STALETIME
+  })
 
   useEffect(() => {
-    fetchRequests()
-    fetchStats()
-  }, [statusFilter])
-
-  const fetchRequests = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const data = await quantityRequestAPI.getAllRequests()
-
-      // Lọc dữ liệu theo trạng thái nếu filter khác 'all'
-      const filteredData =
-        statusFilter === 'all' ? data.result : data.result.filter((req) => req.status === statusFilter)
-
-      setRequests(filteredData)
-    } catch (err) {
-      console.error('Failed to fetch requests:', err)
-      setError('Không thể tải danh sách yêu cầu. Vui lòng thử lại sau.')
-    } finally {
-      setLoading(false)
+    if (allrequestsAdminDataFetch) {
+      setAllRequestAdminData(allrequestsAdminDataFetch.data.result)
     }
-  }
+  }, [allrequestsAdminDataFetch])
 
-  const fetchStats = async () => {
-    try {
-      const data = await quantityRequestAPI.getRequestStats()
-      setStats(data)
-    } catch (err) {
-      console.error('Failed to fetch stats:', err)
+  // Fetch data stats from API
+  const { data: statsRequestAdminDataFetch, isLoading: loadingStats } = useQuery({
+    queryKey: ['statsRequestAdmin'],
+    queryFn: async () => {
+      const response = await quantityRequestApi.getRequestStatsAdmin()
+      return response
+    },
+    staleTime: STALETIME
+  })
+
+  useEffect(() => {
+    if (statsRequestAdminDataFetch) {
+      setStats({
+        approved: statsRequestAdminDataFetch.data.result.approved,
+        rejected: statsRequestAdminDataFetch.data.result.rejected,
+        pending: statsRequestAdminDataFetch.data.result.pending,
+        total: statsRequestAdminDataFetch.data.result.total
+      })
     }
-  }
+  }, [statsRequestAdminDataFetch])
 
-  const handleShowActionModal = (request: IQuantityRequestWithDetails, action: 'approve' | 'reject') => {
+  const handleShowActionModal = (request: AllRequestAdmin, action: 'approve' | 'reject') => {
     setCurrentRequestId(request._id)
     setCurrentRequest(request)
     setActionType(action)
@@ -144,10 +147,53 @@ const AdminRequestsPage: React.FC = () => {
     setNoteModalVisible(true)
   }
 
-  const handleShowDetail = (request: IQuantityRequestWithDetails) => {
+  const handleShowDetail = (request: AllRequestAdmin) => {
     setCurrentRequest(request)
     setShowDetail(true)
   }
+
+  const approveRequestMutation = useMutation({
+    mutationFn: (payload: IUpdateQuantityRequestStatusPayload) => quantityRequestApi.approveRequestAdmin(payload),
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['requestsAdmin'])()
+    },
+    onSuccess: () => {
+      message.success('Yêu cầu đã được phê duyệt thành công!')
+      queryClient.invalidateQueries({ queryKey: ['requestsAdmin'] })
+    },
+    onError: (error: any, _, context) => {
+      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
+      const errorMsg =
+        error.response?.status === HttpStatusCode.BadRequest
+          ? 'Dữ liệu không hợp lệ!'
+          : error.response?.status === HttpStatusCode.NotFound
+            ? 'Thẻ dịch vụ không tồn tại!'
+            : `Lỗi khi cập nhật thẻ dịch vụ: ${error.message}`
+      message.error(errorMsg)
+    }
+  })
+
+  const rejectRequestMutation = useMutation({
+    mutationFn: ({ requestId, payload }: { requestId: string; payload: IUpdateQuantityRequestStatusPayload }) =>
+      quantityRequestApi.rejectRequestAdmin(requestId, payload),
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['requestsAdmin'])()
+    },
+    onSuccess: () => {
+      message.success('Yêu cầu đã bị từ chối!')
+      queryClient.invalidateQueries({ queryKey: ['requestsAdmin'] })
+    },
+    onError: (error: any, _, context) => {
+      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
+      const errorMsg =
+        error.response?.status === HttpStatusCode.BadRequest
+          ? 'Dữ liệu không hợp lệ!'
+          : error.response?.status === HttpStatusCode.NotFound
+            ? 'Thẻ dịch vụ không tồn tại!'
+            : `Lỗi khi cập nhật thẻ dịch vụ: ${error.message}`
+      message.error(errorMsg)
+    }
+  })
 
   const handleSubmitAction = async () => {
     if (!currentRequestId || !actionType) return
@@ -160,17 +206,19 @@ const AdminRequestsPage: React.FC = () => {
         requestId: currentRequestId
       }
 
+      const requestReject = {
+        requestId: currentRequestId,
+        payload: payload
+      }
+
       if (actionType === 'approve') {
-        await quantityRequestAPI.approveRequest(payload)
-        messageApi.success('Yêu cầu đã được phê duyệt thành công')
+        approveRequestMutation.mutate(payload)
       } else {
-        await quantityRequestAPI.rejectRequest(currentRequestId, payload)
+        rejectRequestMutation.mutate(requestReject)
         messageApi.success('Yêu cầu đã bị từ chối')
       }
 
       setNoteModalVisible(false)
-      fetchRequests()
-      fetchStats()
     } catch (err) {
       console.error(`Failed to ${actionType} request:`, err)
       const action = actionType === 'approve' ? 'phê duyệt' : 'từ chối'
@@ -180,7 +228,7 @@ const AdminRequestsPage: React.FC = () => {
     }
   }
 
-  const handleConfirmAction = (request: IQuantityRequestWithDetails, action: 'approve' | 'reject') => {
+  const handleConfirmAction = (request: AllRequestAdmin, action: 'approve' | 'reject') => {
     confirm({
       title: action === 'approve' ? 'Phê duyệt yêu cầu này?' : 'Từ chối yêu cầu này?',
       icon: <ExclamationCircleOutlined />,
@@ -196,8 +244,7 @@ const AdminRequestsPage: React.FC = () => {
 
   const handleRefresh = () => {
     messageApi.loading('Đang tải lại dữ liệu...')
-    fetchRequests()
-    fetchStats()
+    queryClient.invalidateQueries({ queryKey: ['requestsAdmin'] })
     setTimeout(() => {
       messageApi.success('Dữ liệu đã được làm mới')
     }, 1000)
@@ -207,12 +254,12 @@ const AdminRequestsPage: React.FC = () => {
     setStatusFilter(value as QuantityRequestStatus | 'all')
   }
 
-  const columns = [
+  const columns: TableColumnType<ColumnsAllRequestAdminType>[] = [
     {
       title: 'Người dùng',
       dataIndex: ['user', 'name'],
       key: 'userName',
-      render: (text: string, record: IQuantityRequestWithDetails) => (
+      render: (_, record) => (
         <Space>
           <Avatar
             style={{
@@ -220,11 +267,11 @@ const AdminRequestsPage: React.FC = () => {
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
             }}
           >
-            {record.user?.name?.[0]?.toUpperCase() || <UserOutlined />}
+            {record.user[0]?.name.toUpperCase() || <UserOutlined />}
           </Avatar>
           <div>
-            <div style={{ fontWeight: 500 }}>{record.user?.name || `ID: ${record.userId}`}</div>
-            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{record.user?.email || 'Chưa có email'}</div>
+            <div style={{ fontWeight: 500 }}>{record.user[0]?.name}</div>
+            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{record.user[0]?.email || 'Chưa có email'}</div>
           </div>
         </Space>
       )
@@ -233,7 +280,7 @@ const AdminRequestsPage: React.FC = () => {
       title: 'Dịch vụ',
       dataIndex: ['service', 'name'],
       key: 'serviceName',
-      render: (text: string, record: IQuantityRequestWithDetails) => (
+      render: (_, record) => (
         <Space>
           <Avatar
             size='small'
@@ -247,16 +294,15 @@ const AdminRequestsPage: React.FC = () => {
           >
             <AppstoreOutlined style={{ fontSize: '12px' }} />
           </Avatar>
-          <span style={{ fontWeight: 500 }}>{record.service?.name || `ID: ${record.serviceId}`}</span>
+          <span style={{ fontWeight: 500 }}>{`ID: ${record.serviceId}`}</span>
         </Space>
       )
     },
     {
       title: 'Số lượng',
       key: 'quantity',
-      render: (text: string, record: IQuantityRequestWithDetails) => {
+      render: (_, record) => {
         const increase = record.requestedQuantity - record.currentQuantity
-        const percent = Math.round((record.currentQuantity / record.requestedQuantity) * 100)
 
         return (
           <Space direction='vertical' size={0} style={{ width: '100%' }}>
@@ -270,16 +316,6 @@ const AdminRequestsPage: React.FC = () => {
                 </Tag>
               </Tooltip>
             </div>
-            {/* <Progress
-              percent={percent}
-              size='small'
-              status='active'
-              strokeColor={{
-                '0%': '#108ee9',
-                '100%': '#87d068'
-              }}
-              style={{ marginBottom: 0 }}
-            /> */}
           </Space>
         )
       }
@@ -297,8 +333,7 @@ const AdminRequestsPage: React.FC = () => {
           <div style={{ marginLeft: '16px', color: '#8c8c8c', fontSize: '12px' }}>{dayjs(date).format('HH:mm')}</div>
         </div>
       ),
-      sorter: (a: IQuantityRequestWithDetails, b: IQuantityRequestWithDetails) =>
-        dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix()
+      sorter: (a: AllRequestAdmin, b: AllRequestAdmin) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix()
     },
     {
       title: 'Trạng thái',
@@ -323,7 +358,7 @@ const AdminRequestsPage: React.FC = () => {
     {
       title: 'Hành động',
       key: 'action',
-      render: (_, record: IQuantityRequestWithDetails) => (
+      render: (_, record) => (
         <Space size='small'>
           <Button
             type='primary'
@@ -530,36 +565,19 @@ const AdminRequestsPage: React.FC = () => {
         }}
         bodyStyle={{ padding: '0' }}
       >
-        {error && <Alert message={error} type='error' style={{ margin: '16px' }} />}
-
-        <Spin spinning={loading}>
-          {requests?.length > 0 ? (
-            <Table
-              dataSource={requests}
-              columns={columns}
-              rowKey='_id'
-              pagination={{
-                pageSize: 10,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '50']
-              }}
-              style={{ borderRadius: '12px' }}
-            />
-          ) : (
-            <Empty
-              style={{ padding: '80px 0' }}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={
-                <span>
-                  {statusFilter === 'all'
-                    ? 'Không có yêu cầu tăng số lần dịch vụ nào'
-                    : `Không có yêu cầu nào ở trạng thái ${statusLabels[statusFilter as QuantityRequestStatus]}`}
-                </span>
-              }
-            />
-          )}
-        </Spin>
+        <Table
+          loading={loadingAllRequest || loadingStats}
+          dataSource={allRequestAdminData}
+          columns={columns}
+          rowKey='_id'
+          pagination={{
+            pageSize: 10,
+            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50']
+          }}
+          style={{ borderRadius: '12px' }}
+        />
       </Card>
 
       {/* Modal phê duyệt/từ chối yêu cầu */}
@@ -590,7 +608,8 @@ const AdminRequestsPage: React.FC = () => {
           </Button>,
           <Button
             key='submit'
-            type={actionType === 'approve' ? 'primary' : 'danger'}
+            type='primary'
+            danger={actionType !== 'approve'}
             loading={submitting}
             onClick={handleSubmitAction}
             icon={actionType === 'approve' ? <CheckOutlined /> : <CloseOutlined />}
@@ -616,11 +635,11 @@ const AdminRequestsPage: React.FC = () => {
             <List size='small' split={false}>
               <List.Item style={{ padding: '4px 0' }}>
                 <Text type='secondary'>Người dùng:</Text>
-                <Text strong>{currentRequest.user?.name || `ID: ${currentRequest.userId}`}</Text>
+                <Text strong>{currentRequest.user[0]?.name || `ID: ${currentRequest.userId}`}</Text>
               </List.Item>
               <List.Item style={{ padding: '4px 0' }}>
                 <Text type='secondary'>Dịch vụ:</Text>
-                <Text strong>{currentRequest.service?.name || `ID: ${currentRequest.serviceId}`}</Text>
+                <Text strong>{`ID: ${currentRequest.serviceId}`}</Text>
               </List.Item>
               <List.Item style={{ padding: '4px 0' }}>
                 <Text type='secondary'>Số lượng:</Text>
@@ -752,15 +771,15 @@ const AdminRequestsPage: React.FC = () => {
                             boxShadow: '0 4px 16px rgba(24, 144, 255, 0.2)'
                           }}
                         >
-                          {currentRequest.user?.name?.[0]?.toUpperCase() || <UserOutlined />}
+                          {currentRequest.user[0]?.name?.[0]?.toUpperCase() || <UserOutlined />}
                         </Avatar>
                         <div>
                           <Text strong style={{ fontSize: '16px', display: 'block' }}>
-                            {currentRequest.user?.name || `ID: ${currentRequest.userId}`}
+                            {currentRequest.user[0]?.name || `ID: ${currentRequest.userId}`}
                           </Text>
-                          {currentRequest.user?.email && (
+                          {currentRequest.user[0]?.email && (
                             <Text type='secondary' style={{ fontSize: '14px' }}>
-                              {currentRequest.user.email}
+                              {currentRequest.user[0].email}
                             </Text>
                           )}
                         </div>
@@ -781,7 +800,7 @@ const AdminRequestsPage: React.FC = () => {
                               >
                                 <AppstoreOutlined style={{ fontSize: '12px' }} />
                               </Avatar>
-                              <Text strong>{currentRequest.service?.name || `ID: ${currentRequest.serviceId}`}</Text>
+                              <Text strong>{`ID: ${currentRequest.serviceId}`}</Text>
                             </Space>
                           </Space>
                         </List.Item>
@@ -1023,4 +1042,4 @@ const AdminRequestsPage: React.FC = () => {
   )
 }
 
-export default AdminRequestsPage
+export default AdminRequest

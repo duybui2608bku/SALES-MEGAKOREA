@@ -54,7 +54,6 @@ const UserRequest = () => {
 
   useEffect(() => {
     if (requestsDataFetch) {
-      // const result = requestsDataFetch
       setRequestsData(requestsDataFetch.data.result.requests)
       setPagination({
         page: requestsDataFetch.data.result.page || PAGE,

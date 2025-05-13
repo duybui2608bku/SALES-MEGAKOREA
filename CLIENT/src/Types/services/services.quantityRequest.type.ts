@@ -1,4 +1,4 @@
-import { IQuantityRequest } from 'src/Interfaces/services/quantity-request.interfaces'
+import { AllRequestAdmin, IQuantityRequest } from 'src/Interfaces/services/quantity-request.interfaces'
 import { SuccessResponse } from '../util.type'
 
 export type GetAllUserRequestResponse = SuccessResponse<{
@@ -8,9 +8,15 @@ export type GetAllUserRequestResponse = SuccessResponse<{
   total: number
 }>
 
-export type GetAllRequestStats = SuccessResponse<{
+export type GetAllRequestStatsResponse = SuccessResponse<{
   total: number
   pending: number
   approved: number
   rejected: number
 }>
+
+export type GetAllRequestAdminResponse = SuccessResponse<AllRequestAdmin[]>
+
+export type ApproveRequestAdminResponse = SuccessResponse<void>
+
+export type RejectRequestAdminResponse = SuccessResponse<void>

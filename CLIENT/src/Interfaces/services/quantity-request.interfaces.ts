@@ -1,4 +1,4 @@
-import { QuantityRequestStatus, TypeCommision } from 'src/Constants/enum'
+import { QuantityRequestStatus, RoleUser, TypeCommision, UserStatus } from 'src/Constants/enum'
 import { UserGeneralInterface } from '../user/user.interface'
 import { ServicesType } from './services.interfaces'
 
@@ -43,10 +43,42 @@ export interface IQuantityRequest {
   serviceCardSold: serviceCardSoldInIQuantityRequest[]
 }
 
-// export interface IQuantityRequestWithDetails extends IQuantityRequest {
-//   user?: UserGeneralInterface
-//   service?: ServicesType
-// }
+export interface userInAllRequestAdmin {
+  _id: string
+  name: string
+  email: string
+  password: string
+  created_at: Date
+  updated_at: Date
+  forgot_password_token: string
+  avatar: string
+  role: RoleUser
+  status: UserStatus
+  branch: string
+  coefficient: number
+}
+
+export interface AllRequestAdmin {
+  _id: string
+  userId: string
+  serviceId: string
+  currentQuantity: number
+  requestedQuantity: number
+  reason: string
+  media: string[]
+  servicesCardSoldId: string
+  status: QuantityRequestStatus
+  adminNote: string
+  createdAt: Date
+  updatedAt: Date
+  branch: string
+  user: userInAllRequestAdmin[]
+}
+
+export interface IQuantityRequestWithDetails extends IQuantityRequest {
+  user?: UserGeneralInterface
+  detailedService?: ServicesType
+}
 
 export interface IQuantityRequestHistory {
   _id: string

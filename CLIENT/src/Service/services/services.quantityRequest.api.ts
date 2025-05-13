@@ -1,6 +1,13 @@
 import { pathServices } from 'src/Constants/path'
 import axiosInstanceMain from '../axious.api'
-import { GetAllRequestStats, GetAllUserRequestResponse } from 'src/Types/services/services.quantityRequest.type'
+import {
+  ApproveRequestAdminResponse,
+  GetAllRequestAdminResponse,
+  GetAllRequestStatsResponse,
+  GetAllUserRequestResponse,
+  RejectRequestAdminResponse
+} from 'src/Types/services/services.quantityRequest.type'
+import { IUpdateQuantityRequestStatusPayload } from 'src/Interfaces/services/quantity-request.interfaces'
 
 const quantityRequestApi = {
   // User endpoints
@@ -9,11 +16,17 @@ const quantityRequestApi = {
   },
 
   // Admin endpoints
-  async getRequestStats() {
-    return axiosInstanceMain.get<GetAllRequestStats>(pathServices.getRequestStats)
+  async getRequestStatsAdmin() {
+    return axiosInstanceMain.get<GetAllRequestStatsResponse>(pathServices.getRequestStats)
   },
-  async getAllRequest() {
-    return axiosInstanceMain.post(pathServices.getAdminRequests)
+  async getAllRequestAdmin(query?: any) {
+    return axiosInstanceMain.post<GetAllRequestAdminResponse>(pathServices.getAdminRequests, query)
+  },
+  async approveRequestAdmin(payload: IUpdateQuantityRequestStatusPayload) {
+    return axiosInstanceMain.put<ApproveRequestAdminResponse>(pathServices.approveRequest, payload)
+  },
+  async rejectRequestAdmin(requestId: string, payload: IUpdateQuantityRequestStatusPayload) {
+    return axiosInstanceMain.put<RejectRequestAdminResponse>(`${pathServices.rejectRequest}/${requestId}`, payload)
   }
 }
 

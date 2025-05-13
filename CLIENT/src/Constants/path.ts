@@ -98,8 +98,8 @@ const pathServices = {
   getRequestHistory: '/api/service-quantity/request/:requestId/history',
   getAdminRequests: 'services-quantity/admin/requests',
   getRequestStats: 'services-quantity/admin/stats',
-  approveRequest: '/api/service-quantity/admin/approve/:requestId',
-  rejectRequest: '/api/service-quantity/admin/reject/:requestId'
+  approveRequest: 'services-quantity/admin/approve/:requestId',
+  rejectRequest: 'services-quantity/admin/reject/:requestId'
 }
 
 const pathRoutesCustomers = {

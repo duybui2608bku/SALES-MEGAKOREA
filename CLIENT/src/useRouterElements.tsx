@@ -28,8 +28,8 @@ import StepService from './Pages/Services/Step.service'
 import UserCommisionSale from './Pages/User/UserCommisionSale'
 import UserCommisionTechnican from './Pages/User/UserommisionTechnican'
 import NotFoundPage from './Pages/404/404'
-import AdminRequestsPage from './Pages/Services/QuantityRequests/AdminRequestsPage'
 import UserRequest from './Pages/Services/QuantityRequests/UserRequests'
+import AdminRequest from './Pages/Services/QuantityRequests/AdminRequests'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -174,7 +174,11 @@ const useRouterElements = () => {
       children: [
         {
           path: pathRoutersService.adminQuantityRequests,
-          element: <MainLayout>{/* <AdminRequestsPage /> */}</MainLayout>
+          element: (
+            <MainLayout>
+              <AdminRequest />
+            </MainLayout>
+          )
         }
       ]
     },
