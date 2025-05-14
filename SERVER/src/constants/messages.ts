@@ -160,7 +160,15 @@ export const servicesMessages = {
   CARD_SERVICES_SOLD_ID_MUST_BE_STRING: 'Card services sold id must be a string !',
   EMPLOYEE_Commision_ID_MUST_BE_ARRAY: 'Employee commision id must be a array !',
   DELETE_SERVICES_CARD_SUCCESS: 'Delete services card success !',
-  CARD_SERVICES_SOLD_ID_MUST_ARRAY_STRING: 'Card services sold id must be a array string !'
+  CARD_SERVICES_SOLD_ID_MUST_ARRAY_STRING: 'Card services sold id must be a array string !',
+  REFUND_REQUEST_NOT_FOUND: 'Refund request not found',
+  CREATE_REFUND_REQUEST_SUCCESS: 'Refund request created successfully',
+  GET_USER_REFUND_REQUESTS_SUCCESS: 'Get user refund requests successfully',
+  GET_ALL_REFUND_REQUESTS_ADMIN_SUCCESS: 'Get all refund requests successfully',
+  APPROVE_REFUND_REQUEST_SUCCESS: 'Approve refund request successfully',
+  REJECT_REFUND_REQUEST_SUCCESS: 'Reject refund request successfully',
+  GET_REFUND_REQUEST_HISTORY_SUCCESS: 'Get refund request history successfully',
+  GET_REFUND_REQUEST_STATS_SUCCESS: 'Get refund request stats successfully'
 }
 
 export const productMessages = {
