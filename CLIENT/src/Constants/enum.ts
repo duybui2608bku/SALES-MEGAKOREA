@@ -39,3 +39,9 @@ export enum RefundEnum {
   PARTIAL_HALF_REATMENT = 2,
   FULL = 3
 }
+
+export enum QuantityRequestStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected'
+}

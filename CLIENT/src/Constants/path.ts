@@ -93,13 +93,13 @@ const pathServices = {
   updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update',
   updateUsedOfServices: '/services-card/sold/update-used',
   updateQuantityOfServices: '/services-card/sold/update-quantity',
-  createQuantityRequest: '/api/service-quantity/request',
-  getUserQuantityRequests: '/api/service-quantity/user-requests',
+  createQuantityRequest: 'services-quantity/request',
+  getUserQuantityRequests: 'services-quantity/user-requests',
   getRequestHistory: '/api/service-quantity/request/:requestId/history',
-  getAdminRequests: '/api/service-quantity/admin/requests',
-  getRequestStats: '/api/service-quantity/admin/stats',
-  approveRequest: '/api/service-quantity/admin/approve/:requestId',
-  rejectRequest: '/api/service-quantity/admin/reject/:requestId'
+  getAdminRequests: 'services-quantity/admin/requests',
+  getRequestStats: 'services-quantity/admin/stats',
+  approveRequest: 'services-quantity/admin/approve/:requestId',
+  rejectRequest: 'services-quantity/admin/reject/:requestId'
 }
 
 const pathRoutesCustomers = {

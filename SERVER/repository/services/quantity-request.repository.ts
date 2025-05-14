@@ -115,7 +115,7 @@ export class QuantityRequestRepository {
       'branch'
     ])
 
-    const projectionUser = createProjectionField('user', ['name', 'email', 'role', 'forgot_password_token'])
+    const projectionUser = createProjectionField('user', ['email', 'role', 'forgot_password_token'])
 
     const requests = await databaseServiceSale.quantityRequests
       .aggregate([

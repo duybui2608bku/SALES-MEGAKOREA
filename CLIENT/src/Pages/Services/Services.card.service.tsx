@@ -1,5 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
-import { Badge, Button, Col, Flex, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
+import {
+  Badge,
+  Button,
+  Card,
+  Col,
+  Flex,
+  message,
+  Popconfirm,
+  Row,
+  Space,
+  Switch,
+  Table,
+  TableColumnType,
+  Typography
+} from 'antd'
 import { useEffect, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
 import { RiMoneyDollarCircleLine, RiServiceLine } from 'react-icons/ri'
@@ -23,11 +37,15 @@ import { IoMdTrash } from 'react-icons/io'
 import { IoPencil } from 'react-icons/io5'
 import ModalViewEmployeeCommision from 'src/Modal/services/ModalViewEmployeeCommision'
 import { GiPayMoney } from 'react-icons/gi'
-import { TbPigMoney } from 'react-icons/tb'
+import { TbCardsFilled, TbPigMoney } from 'react-icons/tb'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
-import Title from 'src/Components/Title'
-const { Paragraph, Text } = Typography
+// import Title from 'src/Components/Title'
+import HiddenColumns from 'src/Components/HiddenColumns'
+const { Paragraph, Text, Title } = Typography
+import { CalendarOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons'
+import dayjs from 'dayjs'
+import { queryClient } from 'src/main'
 
 enum ModalType {
   NONE = 0,
@@ -71,50 +89,13 @@ const ServicesCard = () => {
   const [servicesCard, setServicesCard] = useState<ServicesOfCardType[]>([])
   const [servicesToView, setServicesToView] = useState<ServicesOfCard[] | null>(null)
   const [servicesCardSelected, setServicesCardSelected] = useState<ServicesOfCardType>()
-  const [pagination, setPagination] = useState({
-    page: PAGE,
-    limit: LIMIT,
-    total: 0
-  })
-
-  const [requestBody, setRequestBody] = useState<GetServicesCardRequestBody>({
-    limit: pagination.limit,
-    page: pagination.page,
-    search: searchValue,
-    branch: [],
-    code: searchValue,
-    is_active: true,
-    name: searchValue
-  })
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['getAllServicesCard', requestBody],
-    queryFn: () => servicesApi.getServicesCard(requestBody),
-    staleTime: STALETIME
-  })
-
-  useEffect(() => {
-    if (data) {
-      const response = data?.data?.result
-      const servicesCard = response?.servicesCard || []
-      const total = response?.total || 0
-      const page = response?.page || PAGE
-      const limit = response?.limit || LIMIT
-      setServicesCard(servicesCard)
-      setPagination({
-        page: page,
-        limit: limit,
-        total: total
-      })
-    }
-  }, [data])
 
   const columns: TableColumnType<ColumnsServicesCardType>[] = [
     {
       title: 'Mã thẻ',
       dataIndex: 'code',
       key: 'code',
-      width: 100,
+      width: 120,
       align: 'center'
     },
     {
@@ -133,14 +114,25 @@ const ServicesCard = () => {
     {
       title: 'Tên thẻ',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      width: 200
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (created_at: string) => new Date(created_at).toLocaleDateString('vi-VN'),
-      width: 130,
+      render: (created_at: Date) => (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CalendarOutlined style={{ color: '#8c8c8c', marginRight: '4px' }} />
+            <span>{dayjs(created_at).format('DD/MM/YYYY')}</span>
+            <div style={{ marginLeft: '16px', color: '#8c8c8c', fontSize: '12px' }}>
+              {dayjs(created_at).format('HH:mm')}
+            </div>
+          </div>
+        </div>
+      ),
+      width: 200,
       align: 'center'
     },
     {
@@ -155,7 +147,7 @@ const ServicesCard = () => {
       ),
       sorter: (a: ColumnsServicesCardType, b: ColumnsServicesCardType) => a.price - b.price,
       sortDirections: ['descend', 'ascend'],
-      width: 150
+      width: 180
     },
     // {
     //   title: 'Đã thanh toán',
@@ -197,7 +189,7 @@ const ServicesCard = () => {
       title: 'Chi nhánh',
       dataIndex: 'branch',
       key: 'branch',
-      minWidth: 130,
+      width: 180,
       align: 'center',
       render: (branch: BranchType[]) => (
         <Paragraph
@@ -221,6 +213,7 @@ const ServicesCard = () => {
       title: 'Mô tả',
       dataIndex: 'descriptions',
       key: 'descriptions',
+      width: 200,
       render: (text: string) => (
         <Paragraph
           ellipsis={{
@@ -236,7 +229,7 @@ const ServicesCard = () => {
       title: 'Dịch vụ',
       dataIndex: 'services_of_card',
       key: 'services_of_card',
-      width: 100,
+      width: 130,
       align: 'center',
       render: (services_of_card: ServicesOfCard[]) => {
         return (
@@ -285,7 +278,7 @@ const ServicesCard = () => {
       key: 'action',
       render: (_: unknown, record: ColumnsServicesCardType) => {
         return (
-          <Flex gap={10}>
+          <Flex gap={10} justify='center'>
             <Button
               title='Sửa'
               onClick={() => {
@@ -308,11 +301,50 @@ const ServicesCard = () => {
           </Flex>
         )
       },
-      width: 120,
+      width: 150,
       align: 'center',
       fixed: 'right'
     }
   ]
+  const [pagination, setPagination] = useState({
+    page: PAGE,
+    limit: LIMIT,
+    total: 0
+  })
+
+  const [requestBody, setRequestBody] = useState<GetServicesCardRequestBody>({
+    limit: pagination.limit,
+    page: pagination.page,
+    search: searchValue,
+    branch: [],
+    code: searchValue,
+    is_active: true,
+    name: searchValue
+  })
+
+  const [newColumns, setNewColumns] = useState([])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['getAllServicesCard', requestBody],
+    queryFn: () => servicesApi.getServicesCard(requestBody),
+    staleTime: STALETIME
+  })
+
+  useEffect(() => {
+    if (data) {
+      const response = data?.data?.result
+      const servicesCard = response?.servicesCard || []
+      const total = response?.total || 0
+      const page = response?.page || PAGE
+      const limit = response?.limit || LIMIT
+      setServicesCard(servicesCard)
+      setPagination({
+        page: page,
+        limit: limit,
+        total: total
+      })
+    }
+  }, [data])
 
   const handleFilterBranch = (value: string[]) => {
     setRequestBody((prev) => ({
@@ -328,48 +360,105 @@ const ServicesCard = () => {
     }))
   }
 
+  const handleReloadPage = () => {
+    message.loading('Đang tải dữ liệu...')
+    queryClient.invalidateQueries({ queryKey: ['getAllServicesCard'] })
+    setTimeout(() => {
+      message.success('Dữ liệu đã được làm mới!')
+    }, 3000)
+  }
+
   return (
     <Fragment>
-      {/* Title Services Card Service */}
-      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
-        <Col xs={24}>{Title({ title: 'Danh sách thẻ dịch vụ', level: 2 })}</Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <Button
-            onClick={() => {
-              setModalType(ModalType.MODAL_CREATE_SERVICE_CARD)
-            }}
-            type='primary'
-            style={{ width: '100%' }}
-            icon={<GoPlus size={20} />}
-            title='Thêm dịch vụ'
-          >
-            Thêm thẻ dịch vụ
-          </Button>
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <DebouncedSearch
-            placeholder='Tìm thẻ kiếm dich vụ'
-            onSearch={(value) => {
-              handleSearch({
-                value,
-                typeSearch: SearchType.NAME
-              })
-            }}
-            debounceTime={1000}
-          />
-        </Col>
-      </Row>
+      <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+        <Card
+          style={{
+            marginBottom: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '20px 24px' }}
+        >
+          <Row align='middle' justify='space-between'>
+            <Col>
+              <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                <TbCardsFilled style={{ marginRight: '12px', color: '#1890ff' }} />
+                Quản lý danh sách thẻ dịch vụ
+              </Title>
+            </Col>
+            <Col>
+              <Button
+                type='primary'
+                icon={<ReloadOutlined />}
+                onClick={handleReloadPage}
+                style={{
+                  fontSize: '12px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
+                }}
+              >
+                Làm mới dữ liệu
+              </Button>
+            </Col>
+          </Row>
+        </Card>
 
-      {/* Table Services Card Service */}
-      <Row gutter={16} style={{ padding: '20px' }}>
-        <Col span={24}>
+        <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <Button
+              onClick={() => {
+                setModalType(ModalType.MODAL_CREATE_SERVICE_CARD)
+              }}
+              type='primary'
+              style={{ width: '100%' }}
+              icon={<GoPlus size={20} />}
+              title='Thêm dịch vụ'
+            >
+              Thêm thẻ dịch vụ
+            </Button>
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <OptionsBranch mode='multiple' search onchange={handleFilterBranch} />
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <DebouncedSearch
+              placeholder='Tìm thẻ kiếm dich vụ'
+              onSearch={(value) => {
+                handleSearch({
+                  value,
+                  typeSearch: SearchType.NAME
+                })
+              }}
+              debounceTime={1000}
+            />
+          </Col>
+          <HiddenColumns
+            STORAGE_KEY='serviceCard_table_columns'
+            tableColumns={columns}
+            style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+            onNewColums={(value) => setNewColumns(value)}
+          />
+        </Row>
+
+        <Card
+          title={
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FilterOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+              <span>Danh sách thẻ dịch vụ</span>
+            </div>
+          }
+          style={{
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '0' }}
+        >
           <Table
-            columns={columns}
-            bordered
-            scroll={{ x: 'max-content' }}
+            style={{ width: '100%', borderRadius: '12px' }}
+            columns={newColumns}
+            scroll={{ x: '1300px' }}
             dataSource={servicesCard}
             rowKey={(record: ColumnsServicesCardType) => record._id || ''}
             loading={isLoading}
@@ -380,8 +469,9 @@ const ServicesCard = () => {
               position: ['bottomCenter']
             }}
           />
-        </Col>
-      </Row>
+        </Card>
+      </div>
+
       <ModalCreateServiceCard
         visible={modalType === ModalType.MODAL_CREATE_SERVICE_CARD}
         onClose={() => {
