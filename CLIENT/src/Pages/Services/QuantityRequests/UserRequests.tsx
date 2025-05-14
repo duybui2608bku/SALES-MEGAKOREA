@@ -322,46 +322,6 @@ const UserRequest = () => {
           />
         </Card>
       </div>
-
-      {/* Title Quantity User */}
-      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
-        {/* <Col xs={24}>{Title({ title: 'Yêu cầu tăng số lần dịch vụ của tôi', level: 2 })}</Col> */}
-      </Row>
-
-      <Row style={{ justifyContent: 'flex-end', padding: '0 20px' }}>
-        <Space>
-          <Select
-            defaultValue='all'
-            style={{ width: 150 }}
-            onChange={(value) => setStatusFilter(value as QuantityRequestStatus | 'all')}
-          >
-            <Select.Option value='all'>Tất cả</Select.Option>
-            <Select.Option value={QuantityRequestStatus.PENDING}>Đang chờ</Select.Option>
-            <Select.Option value={QuantityRequestStatus.APPROVED}>Đã phê duyệt</Select.Option>
-            <Select.Option value={QuantityRequestStatus.REJECTED}>Từ chối</Select.Option>
-          </Select>
-        </Space>
-      </Row>
-
-      <Row gutter={16} style={{ padding: '20px' }}>
-        <Col span={24}>
-          <Table
-            scroll={{ x: '1200px' }}
-            loading={isLoading}
-            sticky
-            style={{ width: '100%' }}
-            bordered
-            dataSource={requestsData}
-            columns={columns}
-            pagination={{
-              current: pagination.page,
-              pageSize: pagination.limit,
-              total: pagination.total,
-              position: ['bottomCenter']
-            }}
-          />
-        </Col>
-      </Row>
     </Fragment>
   )
 }

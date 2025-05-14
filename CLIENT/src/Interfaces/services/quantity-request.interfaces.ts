@@ -58,6 +58,18 @@ export interface userInAllRequestAdmin {
   coefficient: number
 }
 
+export interface servicesInAllRequestAdmin {
+  _id: string
+  code: string
+  is_active: boolean
+  name: string
+  description: string
+  price: number
+  type_price: TypeCommision
+  created_at: Date
+  updated_at: Date
+}
+
 export interface AllRequestAdmin {
   _id: string
   userId: string
@@ -73,6 +85,7 @@ export interface AllRequestAdmin {
   updatedAt: Date
   branch: string
   user: userInAllRequestAdmin[]
+  services: servicesInAllRequestAdmin[]
 }
 
 export interface IQuantityRequestWithDetails extends IQuantityRequest {

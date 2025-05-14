@@ -20,7 +20,7 @@ const serviceQuantityRouters = Router()
 // Routes cho người dùng
 serviceQuantityRouters.post('/request', accessTokenValidator, wrapRequestHandler(createRequestController))
 
-serviceQuantityRouters.get('/user-requests', accessTokenValidator, wrapRequestHandler(getUserRequestsController))
+serviceQuantityRouters.post('/user-requests', accessTokenValidator, wrapRequestHandler(getUserRequestsController))
 
 serviceQuantityRouters.get(
   '/request/:requestId/history',

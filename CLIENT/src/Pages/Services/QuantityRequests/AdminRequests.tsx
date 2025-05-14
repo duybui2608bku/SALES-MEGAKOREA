@@ -296,7 +296,7 @@ const AdminRequest = () => {
           >
             <AppstoreOutlined style={{ fontSize: '12px' }} />
           </Avatar>
-          <span style={{ fontWeight: 500 }}>{`ID: ${record.serviceId}`}</span>
+          <span style={{ fontWeight: 500 }}>{record.services.map((sv) => sv.name)}</span>
         </Space>
       )
     },
