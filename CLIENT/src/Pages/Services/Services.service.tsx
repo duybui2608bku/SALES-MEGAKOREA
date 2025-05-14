@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Col, Flex, message, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
+import { Button, Card, Col, Flex, message, Popconfirm, Row, Switch, Table, TableColumnType, Typography } from 'antd'
 import { Fragment, useEffect, useState, useCallback, useContext } from 'react'
 import { IoMdTrash } from 'react-icons/io'
 import { optionsBranch } from 'src/Constants/option'
@@ -21,12 +21,16 @@ import { GoPlus } from 'react-icons/go'
 import ModalCreateService from 'src/Modal/services/ModalCreateService'
 import { FcCancel } from 'react-icons/fc'
 import { queryClient } from 'src/main'
-import Title from 'src/Components/Title'
+// import Title from 'src/Components/Title'
 import ExpandableParagraph from 'src/Components/ExpandableParagraph'
-const { Paragraph, Text } = Typography
+const { Paragraph, Text, Title } = Typography
 import { FaAnglesDown, FaAnglesUp } from 'react-icons/fa6'
+import { FilterOutlined, ReloadOutlined } from '@ant-design/icons'
 import { AppContext } from 'src/Context/AppContext'
 import { RoleUser } from 'src/Constants/enum'
+import { RiServiceFill } from 'react-icons/ri'
+import HiddenColumns from 'src/Components/HiddenColumns'
+import { handleRefresh } from 'src/Utils/util.utils'
 
 const LIMIT = 9
 const PAGE = 1
@@ -68,38 +72,6 @@ const Service = () => {
     limit: LIMIT,
     total: 0
   })
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['getAllServices', pagination, filterBranch],
-    queryFn: () => {
-      const query =
-        filterBranch.length > 0
-          ? {
-              page: pagination.page,
-              limit: LIMIT,
-              branch: filterBranch.join(',')
-            }
-          : {
-              page: pagination.page,
-              limit: LIMIT
-            }
-      return servicesApi.getAllServices(query)
-    },
-    staleTime: STALETIME
-  })
-
-  useEffect(() => {
-    if (data) {
-      const services = data.data.result.services
-      const total = data.data.result.total
-      setServices(services)
-      setPagination({
-        ...pagination,
-        total: total
-      })
-    }
-  }, [data])
-
   const columns: TableColumnType<ColumnsServicesType>[] = [
     {
       title: 'Mã sản phẩm',
@@ -280,6 +252,38 @@ const Service = () => {
       width: 130
     }
   ]
+  const [newColumns, setNewColumns] = useState([])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['getAllServices', pagination, filterBranch],
+    queryFn: () => {
+      const query =
+        filterBranch.length > 0
+          ? {
+              page: pagination.page,
+              limit: LIMIT,
+              branch: filterBranch.join(',')
+            }
+          : {
+              page: pagination.page,
+              limit: LIMIT
+            }
+      return servicesApi.getAllServices(query)
+    },
+    staleTime: STALETIME
+  })
+
+  useEffect(() => {
+    if (data) {
+      const services = data.data.result.services
+      const total = data.data.result.total
+      setServices(services)
+      setPagination({
+        ...pagination,
+        total: total
+      })
+    }
+  }, [data])
 
   const { mutate: deleteServices, isPending } = useMutation({
     mutationFn: servicesApi.deleteServices,
@@ -363,46 +367,96 @@ const Service = () => {
 
   return (
     <Fragment>
-      {/* Title List Service */}
-      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
-        <Col xs={24}>{Title({ title: 'Danh sách dịch vụ', level: 2 })}</Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <Button
-            onClick={() => {
-              setModalType(ModalType.MODAL_CREATE_SERVICE)
-            }}
-            type='primary'
-            style={{ width: '100%' }}
-            icon={<GoPlus size={20} />}
-            title='Thêm dịch vụ'
-          >
-            Thêm dịch vụ
-          </Button>
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch
-            mode='multiple'
-            placeholder='Lọc theo chi nhánh'
-            search
-            onchange={isAdmin ? handleFilterBranch : undefined}
-            value={filterBranch}
-            disabled={!isAdmin}
-          />
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <DebouncedSearch placeholder='Tìm kiếm dich vụ' onSearch={handleSearch} debounceTime={1000} />
-        </Col>
-      </Row>
+      <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+        <Card
+          style={{
+            marginBottom: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '20px 24px' }}
+        >
+          <Row align='middle' justify='space-between'>
+            <Col>
+              <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                <RiServiceFill style={{ marginRight: '12px', color: '#1890ff' }} />
+                Quản lý danh sách dịch vụ
+              </Title>
+            </Col>
+            <Col>
+              <Button
+                type='primary'
+                icon={<ReloadOutlined />}
+                onClick={() => handleRefresh('getAllServices')}
+                style={{
+                  fontSize: '12px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
+                }}
+              >
+                Làm mới dữ liệu
+              </Button>
+            </Col>
+          </Row>
+        </Card>
 
-      {/* Table List Service */}
-      <Row gutter={16} style={{ padding: '20px' }}>
-        <Col span={24}>
+        <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <Button
+              onClick={() => {
+                setModalType(ModalType.MODAL_CREATE_SERVICE)
+              }}
+              type='primary'
+              style={{ width: '100%' }}
+              icon={<GoPlus size={20} />}
+              title='Thêm dịch vụ'
+            >
+              Thêm dịch vụ
+            </Button>
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <OptionsBranch
+              mode='multiple'
+              placeholder='Lọc theo chi nhánh'
+              search
+              onchange={isAdmin ? handleFilterBranch : undefined}
+              value={filterBranch}
+              disabled={!isAdmin}
+            />
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <DebouncedSearch placeholder='Tìm kiếm dich vụ' onSearch={handleSearch} debounceTime={1000} />
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <HiddenColumns
+              STORAGE_KEY='service_table_columns'
+              tableColumns={columns}
+              style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifySelf: 'flex-end' }}
+              onNewColums={(value) => setNewColumns(value)}
+            />
+          </Col>
+        </Row>
+
+        <Card
+          title={
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FilterOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+              <span>Danh sách dịch vụ</span>
+            </div>
+          }
+          style={{
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '0' }}
+        >
           <Table
             sticky
-            style={{ width: '100%' }}
+            style={{ width: '100%', borderRadius: '12px' }}
             scroll={{ x: '1200px' }}
-            bordered
-            columns={columns as any}
+            columns={newColumns as any}
             dataSource={services}
             rowKey='_id'
             pagination={{
@@ -414,8 +468,76 @@ const Service = () => {
             }}
             loading={isLoading}
           />
-        </Col>
-      </Row>
+        </Card>
+        <style>{`
+        .stat-card {
+          border-radius: 12px;
+          transition: all 0.3s;
+          overflow: hidden;
+        }
+        .stat-card:hover {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+          transform: translateY(-4px);
+        }
+        .ant-table {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ant-table-thead > tr > th {
+          background-color: #fafafa;
+        }
+        .ant-table-tbody > tr > td {
+          padding: 12px 16px;
+        }
+        .ant-table-row:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .ant-progress-text {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.65);
+        }
+        .ant-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .ant-modal-content {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ant-list-item {
+          padding: 10px 0;
+          display: flex;
+          justify-content: space-between;
+        }
+        .ant-segmented {
+          background-color: #f5f5f5;
+          padding: 2px;
+          border-radius: 8px;
+        }
+        .ant-segmented-item-selected {
+          background-color: white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .ant-segmented-item {
+          border-radius: 6px !important;
+          transition: all 0.3s;
+        }
+        .ant-card-head {
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .ant-card-head-title {
+          padding: 16px 0;
+        }
+        .ant-card-extra {
+          padding: 16px 0;
+        }
+        .ant-table-pagination {
+          margin: 16px;
+        }
+      `}</style>
+      </div>
+
       <ServiceStepsModal
         visible={modalType === ModalType.MODAL_STEP_SERVICES}
         onClose={handleCloseModal}

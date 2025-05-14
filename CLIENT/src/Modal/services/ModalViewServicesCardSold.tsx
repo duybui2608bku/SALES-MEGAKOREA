@@ -5,6 +5,7 @@ import {
   Divider,
   Flex,
   Form,
+  Input,
   InputNumber,
   message,
   Modal,
@@ -20,8 +21,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import {
   GetServicesCardSoldOfCustomer,
   UpdateUsedServicesData,
-  UpdateUsedServicesRequestBody,
-  UpdateQuantityServicesRequestBody
+  UpdateUsedServicesRequestBody
 } from 'src/Interfaces/services/services.interfaces'
 const { Title, Text } = Typography
 import {
@@ -46,6 +46,8 @@ import { AppContext } from 'src/Context/AppContext'
 import { axiosUploadAvatar } from 'src/Service/axious.api'
 
 import { servicesApi } from 'src/Service/services/services.api'
+import { ICreateQuantityRequestPayload } from 'src/Interfaces/services/quantity-request.interfaces'
+import quantityRequestApi from 'src/Service/services/services.quantityRequest.api'
 
 interface ModalViewServicesCardProps {
   open: boolean
@@ -95,6 +97,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const [increasingService, setIncreasingService] = useState<IncreasingService | null>(null)
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [increasingQuantity, setIncreasingQuantity] = useState(1)
+  const [descriptionRequestQuantity, setDescriptionRequestQuantity] = useState<string>('')
   const [uploading, setUploading] = useState(false)
   const [form] = Form.useForm()
 
@@ -265,6 +268,53 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     updateUsedOfServices(dataUpdateUsedOfServices)
   }
 
+  const { mutate: quantityRequest, isPending: isQuantityRequest } = useMutation({
+    mutationFn: (payload: ICreateQuantityRequestPayload) => quantityRequestApi.createRequest(payload),
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
+    },
+    onSuccess: () => {
+      message.success('Yêu cầu tăng số lượng được gửi thành công!')
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+    },
+    onError: (error: any, _, context) => {
+      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
+      const errorMsg =
+        error.response?.status === HttpStatusCode.BadRequest
+          ? 'Dữ liệu không hợp lệ!'
+          : error.response?.status === HttpStatusCode.NotFound
+            ? 'Thẻ dịch vụ không tồn tại!'
+            : `Lỗi khi cập nhật thẻ dịch vụ: ${error.message}`
+      message.error(errorMsg)
+    }
+  })
+
+  const handleRequestQuantity = async () => {
+    if (!increasingService) return
+
+    try {
+      const payload = {
+        serviceId: increasingService.serviceId,
+        requestedQuantity: increasingQuantity,
+        reason: descriptionRequestQuantity,
+        media: uploadedImages,
+        branch: servicesCardSoldOfCustomerData?.branch ? servicesCardSoldOfCustomerData.branch[0]._id : '',
+        currentQuantity: increasingService.quantity,
+        servicesCardSoldId: servicesCardSoldOfCustomerData?._id ? servicesCardSoldOfCustomerData?._id : ''
+      }
+      quantityRequest(payload)
+
+      // Reset form state
+      setUploadedImages([])
+      setIncreasingQuantity(1)
+
+      // Close modal
+      setIncreasingModalVisible(false)
+    } catch (error) {
+      message.error('Yêu cầu tăng số lượng gửi thất bại!')
+    }
+  }
+
   // Function to show increase quantity modal
   const showIncreaseQuantityModal = (service: {
     cardId: string
@@ -304,74 +354,74 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   }
 
   // Function to handle increasing quantity submission
-  const handleIncreaseQuantitySubmit = async () => {
-    if (!increasingService) return
-    if (uploadedImages.length === 0) {
-      message.error('Vui lòng tải lên ít nhất một hình ảnh!')
-      return
-    }
+  // const handleIncreaseQuantitySubmit = async () => {
+  //   if (!increasingService) return
+  //   if (uploadedImages.length === 0) {
+  //     message.error('Vui lòng tải lên ít nhất một hình ảnh!')
+  //     return
+  //   }
 
-    updatingServiceRef.current = {
-      cardId: increasingService.cardId,
-      serviceId: increasingService.serviceId,
-      action: 'increase'
-    }
+  //   updatingServiceRef.current = {
+  //     cardId: increasingService.cardId,
+  //     serviceId: increasingService.serviceId,
+  //     action: 'increase'
+  //   }
 
-    if (!servicesCardSoldOfCustomerData) return
+  //   if (!servicesCardSoldOfCustomerData) return
 
-    try {
-      // Prepare data for API call - without commission
-      const dataUpdateQuantityOfServices: UpdateQuantityServicesRequestBody = {
-        id: servicesCardSoldOfCustomerData._id,
-        commision_of_technician_id: '', // Empty as we don't need commission
-        services_card_sold_id: increasingService.cardId,
-        services_id: increasingService.serviceId,
-        media: uploadedImages,
-        history_increase_quantity: {
-          name_service: increasingService.serviceName,
-          user_name: profile?.name || 'Người dùng',
-          count: increasingQuantity,
-          date: new Date().toISOString(),
-          descriptions: `Tăng ${increasingQuantity} số lượng dịch vụ ${increasingService.serviceName} của thẻ dịch vụ ${increasingService.cardName} vào lúc ${dayjs().format('DD/MM/YYYY HH:mm')}`
-        }
-      }
+  //   try {
+  //     // Prepare data for API call - without commission
+  //     const dataUpdateQuantityOfServices: UpdateQuantityServicesRequestBody = {
+  //       id: servicesCardSoldOfCustomerData._id,
+  //       commision_of_technician_id: '', // Empty as we don't need commission
+  //       services_card_sold_id: increasingService.cardId,
+  //       services_id: increasingService.serviceId,
+  //       media: uploadedImages,
+  //       history_increase_quantity: {
+  //         name_service: increasingService.serviceName,
+  //         user_name: profile?.name || 'Người dùng',
+  //         count: increasingQuantity,
+  //         date: new Date().toISOString(),
+  //         descriptions: `Tăng ${increasingQuantity} số lượng dịch vụ ${increasingService.serviceName} của thẻ dịch vụ ${increasingService.cardName} vào lúc ${dayjs().format('DD/MM/YYYY HH:mm')}`
+  //       }
+  //     }
 
-      // Optimistically update UI
-      setListServicesCard((prevCards) => {
-        return prevCards.map((card) => {
-          if (card._id === increasingService.cardId) {
-            return {
-              ...card,
-              services_of_card: card.services_of_card.map((service) => {
-                if (service._id === increasingService.serviceId) {
-                  return {
-                    ...service,
-                    quantity: service.quantity + increasingQuantity
-                  }
-                }
-                return service
-              })
-            }
-          }
-          return card
-        })
-      })
+  //     // Optimistically update UI
+  //     setListServicesCard((prevCards) => {
+  //       return prevCards.map((card) => {
+  //         if (card._id === increasingService.cardId) {
+  //           return {
+  //             ...card,
+  //             services_of_card: card.services_of_card.map((service) => {
+  //               if (service._id === increasingService.serviceId) {
+  //                 return {
+  //                   ...service,
+  //                   quantity: service.quantity + increasingQuantity
+  //                 }
+  //               }
+  //               return service
+  //             })
+  //           }
+  //         }
+  //         return card
+  //       })
+  //     })
 
-      // Call API
-      await updateQuantityOfServices(dataUpdateQuantityOfServices)
+  //     // Call API
+  //     await updateQuantityOfServices(dataUpdateQuantityOfServices)
 
-      // Reset form state
-      setUploadedImages([])
-      setIncreasingQuantity(1)
+  //     // Reset form state
+  //     setUploadedImages([])
+  //     setIncreasingQuantity(1)
 
-      // Close modal
-      setIncreasingModalVisible(false)
-      message.success(`Đã tăng thêm ${increasingQuantity} cho dịch vụ ${increasingService.serviceName}`)
-    } catch (error) {
-      console.error('Failed to increase quantity:', error)
-      message.error('Có lỗi xảy ra khi tăng số lượng dịch vụ!')
-    }
-  }
+  //     // Close modal
+  //     setIncreasingModalVisible(false)
+  //     message.success(`Đã tăng thêm ${increasingQuantity} cho dịch vụ ${increasingService.serviceName}`)
+  //   } catch (error) {
+  //     console.error('Failed to increase quantity:', error)
+  //     message.error('Có lỗi xảy ra khi tăng số lượng dịch vụ!')
+  //   }
+  // }
 
   const { mutate: updateUsedOfServices, isPending: isUpdateUsedOfServices } = useMutation({
     mutationFn: (data: UpdateUsedServicesRequestBody) => servicesApi.UpdateUsedOfServices(data),
@@ -428,60 +478,60 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     retry: 2
   })
 
-  const { mutate: updateQuantityOfServices, isPending: isUpdateQuantityOfServices } = useMutation({
-    mutationFn: (data: UpdateQuantityServicesRequestBody) => servicesApi.UpdateQuantityOfServices(data),
-    onMutate: async () => {
-      return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
-    },
-    onSuccess: () => {
-      message.success('Tăng số lượng dịch vụ thành công!')
+  // const { mutate: updateQuantityOfServices, isPending: isUpdateQuantityOfServices } = useMutation({
+  //   mutationFn: (data: UpdateQuantityServicesRequestBody) => servicesApi.UpdateQuantityOfServices(data),
+  //   onMutate: async () => {
+  //     return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
+  //   },
+  //   onSuccess: () => {
+  //     message.success('Tăng số lượng dịch vụ thành công!')
 
-      // Only invalidate to update accurate data - UI was already updated
-      queryClient.invalidateQueries({ queryKey: queryKey })
+  //     // Only invalidate to update accurate data - UI was already updated
+  //     queryClient.invalidateQueries({ queryKey: queryKey })
 
-      // Still call refetch to ensure data displayed in parent component is updated
-      refetchData()
+  //     // Still call refetch to ensure data displayed in parent component is updated
+  //     refetchData()
 
-      // Reset ref
-      updatingServiceRef.current = null
-    },
-    onError: (error: Error, variables, context) => {
-      message.error(`Lỗi khi tăng số lượng dịch vụ: ${error.message}`)
+  //     // Reset ref
+  //     updatingServiceRef.current = null
+  //   },
+  //   onError: (error: Error, variables, context) => {
+  //     message.error(`Lỗi khi tăng số lượng dịch vụ: ${error.message}`)
 
-      // Restore cache data if error
-      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
+  //     // Restore cache data if error
+  //     queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
 
-      // Restore UI to state before update
-      if (updatingServiceRef.current && updatingServiceRef.current.action === 'increase') {
-        const { cardId, serviceId } = updatingServiceRef.current
+  //     // Restore UI to state before update
+  //     if (updatingServiceRef.current && updatingServiceRef.current.action === 'increase') {
+  //       const { cardId, serviceId } = updatingServiceRef.current
 
-        setListServicesCard((prevCards) => {
-          return prevCards.map((card) => {
-            if (card._id === cardId) {
-              return {
-                ...card,
-                services_of_card: card.services_of_card.map((service) => {
-                  if (service._id === serviceId) {
-                    // Decrease quantity value increased earlier
-                    return {
-                      ...service,
-                      quantity: service.quantity - increasingQuantity
-                    }
-                  }
-                  return service
-                })
-              }
-            }
-            return card
-          })
-        })
-      }
+  //       setListServicesCard((prevCards) => {
+  //         return prevCards.map((card) => {
+  //           if (card._id === cardId) {
+  //             return {
+  //               ...card,
+  //               services_of_card: card.services_of_card.map((service) => {
+  //                 if (service._id === serviceId) {
+  //                   // Decrease quantity value increased earlier
+  //                   return {
+  //                     ...service,
+  //                     quantity: service.quantity - increasingQuantity
+  //                   }
+  //                 }
+  //                 return service
+  //               })
+  //             }
+  //           }
+  //           return card
+  //         })
+  //       })
+  //     }
 
-      // Reset ref
-      updatingServiceRef.current = null
-    },
-    retry: 2
-  })
+  //     // Reset ref
+  //     updatingServiceRef.current = null
+  //   },
+  //   retry: 2
+  // })
 
   return (
     <>
@@ -532,7 +582,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
               style={{
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
@@ -589,7 +639,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                           key={service._id}
                           style={{
                             background: '#ffffff',
-                            boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                            boxShadow: 'rgba(50, 50, 93, 0.01) 0px 6px 12px -2px, rgba(0, 0, 0, 0.2) 0px 3px 7px -3px',
                             borderRadius: '8px',
                             padding: '10px',
                             transition: 'all 0.3s ease'
@@ -715,7 +765,7 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                                     cardName: card.name
                                   })
                                 }
-                                disabled={isUpdateQuantityOfServices}
+                                disabled={isQuantityRequest}
                                 style={{
                                   padding: '4px',
                                   color: '#1890ff',
@@ -788,8 +838,8 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
           <Button
             key='submit'
             type='primary'
-            loading={isUpdateQuantityOfServices || uploading}
-            onClick={handleIncreaseQuantitySubmit}
+            loading={isQuantityRequest || uploading}
+            onClick={handleRequestQuantity}
             disabled={uploadedImages.length === 0}
           >
             Xác nhận
@@ -819,6 +869,18 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
               size='large'
               addonAfter='dịch vụ'
             />
+          </Form.Item>
+
+          <Form.Item
+            name='description'
+            label={
+              <Text strong style={{ fontSize: '15px' }}>
+                Ghi chú
+              </Text>
+            }
+            rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}
+          >
+            <Input style={{ width: '100%' }} onChange={(event) => setDescriptionRequestQuantity(event.target.value)} />
           </Form.Item>
 
           <Form.Item

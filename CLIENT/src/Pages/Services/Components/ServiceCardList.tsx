@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Row, Col } from 'antd'
 import { ServicesOfCardType } from 'src/Interfaces/services/services.interfaces'
-import ServiceCard from 'src/Components/ServiceCard'
+import ServiceCard from 'src/Pages/Services/Components/ServiceCard'
 
 // Interface cho props
 interface ServiceCardListProps {

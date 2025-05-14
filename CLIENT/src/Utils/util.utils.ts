@@ -1,5 +1,7 @@
+import { message } from 'antd'
 import _ from 'lodash'
 import { RoleUser, TypeCommision } from 'src/Constants/enum'
+import { queryClient } from 'src/main'
 
 export const generateCode = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -106,6 +108,14 @@ export const getChangedFields = (original: any, updated: any): Partial<any> => {
   return _.pickBy(updated, (value, key) => {
     return !_.isEqual(value, original[key as keyof any])
   }) as Partial<any>
+}
+
+export const handleRefresh = (queryKey: string) => {
+  message.loading('Đang tải lại dữ liệu...')
+  queryClient.invalidateQueries({ queryKey: [`${queryKey}`] })
+  setTimeout(() => {
+    message.success('Dữ liệu đã được làm mới!')
+  }, 3000)
 }
 
 export const dataTestOutstandingStaff = [

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Badge,
   Button,
+  Card,
   Col,
   Flex,
   message,
@@ -18,6 +19,7 @@ import {
 import {
   DollarOutlined,
   DownOutlined,
+  FilterOutlined,
   PlusOutlined,
   ReloadOutlined,
   SyncOutlined,
@@ -31,7 +33,7 @@ import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import DebouncedSearch from 'src/Components/DebouncedSearch'
 import OptionsBranch from 'src/Components/OptionsBranch'
-import Title from 'src/Components/Title'
+const { Title } = Typography
 import { GetServicesCardSoldOfCustomer, HistoryUsed } from 'src/Interfaces/services/services.interfaces'
 import { servicesApi } from 'src/Service/services/services.api'
 import { useNavigate } from 'react-router'
@@ -40,7 +42,7 @@ import ModalViewServicesCardSold from 'src/Modal/services/ModalViewServicesCardS
 import ModalUpdateServicesCardSold from 'src/Modal/services/ModalUpdateServicesCardSold'
 import { GiReceiveMoney, GiTakeMyMoney } from 'react-icons/gi'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
-import { TbCreditCardRefund, TbMoneybag } from 'react-icons/tb'
+import { TbCreditCardRefund, TbMoneybag, TbCardsFilled } from 'react-icons/tb'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
 import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
 import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
@@ -51,8 +53,8 @@ import { HiUserPlus } from 'react-icons/hi2'
 import ModalCommissionDistribution from 'src/Modal/services/ModalCommissionDistribution'
 import ModalRefund from 'src/Modal/services/ModalRefund'
 import { BsCardText } from 'react-icons/bs'
-import StatisticCard from 'src/Components/StatisticCard'
 import HiddenColumns from 'src/Components/HiddenColumns'
+import StatCard from 'src/Components/StatsCard'
 
 const { Text, Paragraph } = Typography
 
@@ -514,59 +516,55 @@ const SoldServicesCard = () => {
 
   return (
     <Fragment>
-      {/* Title Service Card */}
-      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
-        <Col xs={24}>{Title({ title: 'Thẻ dịch vụ đã bán', level: 2 })}</Col>
-        <Col md={1} lg={1}>
-          <Button onClick={handleReloadPage} icon={<ReloadOutlined />} />
-        </Col>
-        <Col xs={24} sm={12} md={5} lg={5}>
-          <Button
-            onClick={() => navigate(pathRoutersService.sellCardService)}
-            block
-            icon={<PlusOutlined />}
-            type='primary'
-          >
-            Bán thẻ
-          </Button>
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => handleSearch(value)} />
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <DatePickerComponent isRange disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
-        </Col>
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <OptionsBranch onchange={(value) => setBranchQuery(value)} mode='multiple' />
-        </Col>
+      <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+        <Card
+          style={{
+            marginBottom: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '20px 24px' }}
+        >
+          <Row align='middle' justify='space-between'>
+            <Col>
+              <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                <TbCardsFilled style={{ marginRight: '12px', color: '#1890ff' }} />
+                Quản lý danh sách thẻ dịch vụ đã bán
+              </Title>
+            </Col>
+            <Col>
+              <Button
+                type='primary'
+                icon={<ReloadOutlined />}
+                onClick={handleReloadPage}
+                style={{
+                  fontSize: '12px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
+                }}
+              >
+                Làm mới dữ liệu
+              </Button>
+            </Col>
+          </Row>
+        </Card>
 
-        {/* Thống kê Cards */}
-        <Col style={{ marginTop: '8px' }} xs={24}>
-          <Row gutter={16}>
-            {/* Card 1: Tổng thẻ */}
-            <StatisticCard
-              color={0}
-              loading={isLoading}
-              title='Tổng thẻ'
-              value={statistical.total}
-              icon={<BsCardText />}
-              colSpan={6}
-            />
-
-            {/* Card 2: Tổng khách hàng*/}
-            <StatisticCard
-              color={1}
-              loading={isLoading}
-              title='Tổng khách hàng'
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard title='Tổng số thẻ' value={statistical.total} icon={<BsCardText />} color='#1890ff' />
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
+              title='Tổng số khách hàng'
               value={statistical.customersCount}
               icon={<TeamOutlined />}
-              colSpan={6}
+              color='#faad14'
             />
-
-            {/* Card 3: Doanh thu */}
-            <StatisticCard
-              color={2}
-              loading={isLoading}
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
               title='Doanh thu'
               value={statistical.revenue
                 .toLocaleString('vi-VN', {
@@ -577,13 +575,11 @@ const SoldServicesCard = () => {
                 })
                 .replace('₫', 'đ')}
               icon={<DollarOutlined />}
-              colSpan={6}
+              color='#52c41a'
             />
-
-            {/* Card 4: Công nợ*/}
-            <StatisticCard
-              color={3}
-              loading={isLoading}
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
               title='Công nợ'
               value={statistical.debt
                 .toLocaleString('vi-VN', {
@@ -594,32 +590,60 @@ const SoldServicesCard = () => {
                 })
                 .replace('₫', 'đ')}
               icon={<GiTakeMyMoney />}
-              colSpan={6}
+              color='#ff4d4f'
             />
-          </Row>
-        </Col>
-      </Row>
+          </Col>
+        </Row>
 
-      <Row style={{ padding: '0 20px', width: '100%', justifyContent: 'flex-end' }}>
-        <HiddenColumns
-          colSpan={12}
-          STORAGE_KEY='soldService_table_columns'
-          tableColumns={columns}
-          style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
-          onNewColums={(value) => setNewColumns(value)}
-        />
-      </Row>
+        <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+          <Col xs={24} sm={12} md={6} lg={4}>
+            <Button
+              onClick={() => navigate(pathRoutersService.sellCardService)}
+              block
+              icon={<PlusOutlined />}
+              type='primary'
+            >
+              Bán thẻ
+            </Button>
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={4}>
+            <DebouncedSearch placeholder='Tìm kiếm thẻ dịch vụ' onSearch={(value) => handleSearch(value)} />
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={4}>
+            <DatePickerComponent isRange disableDate={true} onChange={(value) => setDatePickerQuery(value)} />
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={4}>
+            <OptionsBranch onchange={(value) => setBranchQuery(value)} mode='multiple' />
+          </Col>
+          <Col xs={24} sm={12} md={6} lg={6}>
+            <HiddenColumns
+              STORAGE_KEY='soldServiceCard_table_columns'
+              tableColumns={columns}
+              style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifySelf: 'flex-end' }}
+              onNewColums={(value) => setNewColumns(value)}
+            />
+          </Col>
+        </Row>
 
-      {/* Talbe Service Card */}
-      <Row gutter={16} style={{ padding: '10px 20px' }}>
-        <Col span={24}>
+        <Card
+          title={
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FilterOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+              <span>Danh sách thẻ dịch vụ đã bán</span>
+            </div>
+          }
+          style={{
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '0' }}
+        >
           <Table
             sticky
-            style={{ width: '100%' }}
+            style={{ width: '100%', borderRadius: '12px' }}
             scroll={{ x: '2000px' }}
             loading={isLoading}
             dataSource={servicesCardSoldOfCustomer}
-            bordered
             columns={newColumns}
             pagination={{
               current: pagination.page,
@@ -629,8 +653,76 @@ const SoldServicesCard = () => {
               position: ['bottomCenter']
             }}
           />
-        </Col>
-      </Row>
+        </Card>
+        <style>{`
+        .stat-card {
+          border-radius: 12px;
+          transition: all 0.3s;
+          overflow: hidden;
+        }
+        .stat-card:hover {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+          transform: translateY(-4px);
+        }
+        .ant-table {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ant-table-thead > tr > th {
+          background-color: #fafafa;
+        }
+        .ant-table-tbody > tr > td {
+          padding: 12px 16px;
+        }
+        .ant-table-row:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .ant-progress-text {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.65);
+        }
+        .ant-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .ant-modal-content {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ant-list-item {
+          padding: 10px 0;
+          display: flex;
+          justify-content: space-between;
+        }
+        .ant-segmented {
+          background-color: #f5f5f5;
+          padding: 2px;
+          border-radius: 8px;
+        }
+        .ant-segmented-item-selected {
+          background-color: white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .ant-segmented-item {
+          border-radius: 6px !important;
+          transition: all 0.3s;
+        }
+        .ant-card-head {
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .ant-card-head-title {
+          padding: 16px 0;
+        }
+        .ant-card-extra {
+          padding: 16px 0;
+        }
+        .ant-table-pagination {
+          margin: 16px;
+        }
+      `}</style>
+      </div>
+
       <ModalViewServicesCardSold
         open={openModalServicesCardSold === StatusOpenModalServicesCard.VIEW}
         close={() => setOpenModalServicesCardSold(StatusOpenModalServicesCard.NONE)}

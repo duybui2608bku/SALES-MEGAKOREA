@@ -93,7 +93,7 @@ const pathServices = {
   updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update',
   updateUsedOfServices: '/services-card/sold/update-used',
   updateQuantityOfServices: '/services-card/sold/update-quantity',
-  createQuantityRequest: '/api/service-quantity/request',
+  createQuantityRequest: 'services-quantity/request',
   getUserQuantityRequests: 'services-quantity/user-requests',
   getRequestHistory: '/api/service-quantity/request/:requestId/history',
   getAdminRequests: 'services-quantity/admin/requests',

@@ -104,8 +104,6 @@ export interface DeleteStepServiceRequestParams {
 }
 
 export interface CreateQuantityRequestBody {
-  page: number
-  limit: number
   serviceId: string
   branch?: string
   requestedQuantity: number

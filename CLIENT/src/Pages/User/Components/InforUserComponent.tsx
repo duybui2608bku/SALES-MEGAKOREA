@@ -17,8 +17,12 @@ const InforUserComponent = ({ avatar, name, status }: InforUserProps) => {
         <Row align={'middle'} gutter={[16, 16]}>
           <Col xs={24} xl={7}>
             <Avatar
-              style={{ backgroundColor: 'transparent', border: '1px solid rgba(0,0,0,10%)' }}
-              size={50}
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid rgba(0,0,0,10%)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+              }}
+              size={45}
               icon={<FcPortraitMode />}
             />
           </Col>
@@ -31,8 +35,12 @@ const InforUserComponent = ({ avatar, name, status }: InforUserProps) => {
         <Row align={'middle'} gutter={[16, 16]}>
           <Col xs={24} xl={7}>
             <Avatar
-              // style={{ backgroundColor: 'transparent', border: '1px solid rgba(0,0,0,10%)' }}
-              size={50}
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid rgba(0,0,0,10%)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+              }}
+              size={45}
               src={avatar}
             />
           </Col>
@@ -45,8 +53,12 @@ const InforUserComponent = ({ avatar, name, status }: InforUserProps) => {
         <Row align={'middle'} gutter={[16, 16]}>
           <Col xs={24} xl={7}>
             <Avatar
-              style={{ border: '2px solid red', backgroundColor: 'rgba(0,0,0,8%)' }}
-              size={50}
+              style={{
+                border: '2px solid red',
+                backgroundColor: 'rgba(0,0,0,8%)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+              }}
+              size={45}
               icon={<FcCancel />}
             />
           </Col>

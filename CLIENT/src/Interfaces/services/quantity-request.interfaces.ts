@@ -91,8 +91,12 @@ export interface IQuantityRequestHistory {
 
 export interface ICreateQuantityRequestPayload {
   serviceId: string
+  branch: string
   requestedQuantity: number
-  reason: string
+  reason?: string
+  currentQuantity: number
+  servicesCardSoldId: string
+  media: string[]
 }
 
 export interface IUpdateQuantityRequestStatusPayload {

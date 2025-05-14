@@ -33,7 +33,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
       style={{
         borderRadius: '12px',
         overflow: 'hidden',
-        boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -122,7 +122,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
                   key={`first-${index}`}
                   style={{
                     background: '#ffffff',
-                    boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                    boxShadow: 'rgba(50, 50, 93, 0.01) 0px 6px 12px -2px, rgba(0, 0, 0, 0.2) 0px 3px 7px -3px',
                     borderRadius: '8px',
                     padding: '10px',
                     transition: 'all 0.3s ease',
@@ -190,7 +190,7 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
                         key={`extra-${index}`}
                         style={{
                           background: '#ffffff',
-                          boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                          boxShadow: 'rgba(50, 50, 93, 0.01) 0px 6px 12px -2px, rgba(0, 0, 0, 0.2) 0px 3px 7px -3px',
                           borderRadius: '8px',
                           padding: '10px',
                           transition: 'all 0.3s ease'

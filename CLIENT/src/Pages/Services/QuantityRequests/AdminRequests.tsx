@@ -54,6 +54,8 @@ import { queryClient } from 'src/main'
 import TextArea from 'antd/es/input/TextArea'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import HttpStatusCode from 'src/Constants/httpCode'
+import StatCard from 'src/Components/StatsCard'
+import { handleRefresh } from 'src/Utils/util.utils'
 
 const STALETIME = 5 * 60 * 1000
 type ColumnsAllRequestAdminType = AllRequestAdmin
@@ -248,14 +250,6 @@ const AdminRequest = () => {
     })
   }
 
-  const handleRefresh = () => {
-    messageApi.loading('Đang tải lại dữ liệu...')
-    queryClient.invalidateQueries({ queryKey: ['requestsAdmin'] })
-    setTimeout(() => {
-      messageApi.success('Dữ liệu đã được làm mới')
-    }, 1000)
-  }
-
   const handleStatusFilterChange = (value: string | number) => {
     setStatusFilter(value as QuantityRequestStatus | 'all')
   }
@@ -287,6 +281,7 @@ const AdminRequest = () => {
       title: 'Dịch vụ',
       dataIndex: ['service', 'name'],
       key: 'serviceName',
+      width: 300,
       render: (_, record) => (
         <Space>
           <Avatar
@@ -308,12 +303,14 @@ const AdminRequest = () => {
     {
       title: 'Số lượng',
       key: 'quantity',
+      width: 160,
+      align: 'center',
       render: (_, record) => {
         const increase = record.requestedQuantity - record.currentQuantity
 
         return (
-          <Space direction='vertical' size={0} style={{ width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+          <Space direction='vertical' size={0} style={{ width: '100%', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px', justifyContent: 'center' }}>
               <Text style={{ fontSize: '13px' }}>{record.currentQuantity}</Text>
               <ArrowRightOutlined style={{ margin: '0 4px', color: '#1890ff', fontSize: '12px' }} />
               <Text style={{ fontSize: '13px', fontWeight: 'bold', color: '#1890ff' }}>{record.requestedQuantity}</Text>
@@ -331,13 +328,15 @@ const AdminRequest = () => {
       title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      width: 200,
+      align: 'center',
       render: (date: Date) => (
         <div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CalendarOutlined style={{ color: '#8c8c8c', marginRight: '4px' }} />
             <span>{dayjs(date).format('DD/MM/YYYY')}</span>
+            <div style={{ marginLeft: '16px', color: '#8c8c8c', fontSize: '12px' }}>{dayjs(date).format('HH:mm')}</div>
           </div>
-          <div style={{ marginLeft: '16px', color: '#8c8c8c', fontSize: '12px' }}>{dayjs(date).format('HH:mm')}</div>
         </div>
       ),
       sorter: (a: AllRequestAdmin, b: AllRequestAdmin) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix()
@@ -371,7 +370,7 @@ const AdminRequest = () => {
       fixed: 'right',
       width: 350,
       render: (_, record) => (
-        <Space size='small' style={{ width: '100%', justifyContent: 'center' }}>
+        <Space size='small' style={{ width: '100%', justifyContent: 'flex-start' }}>
           <Button
             type='primary'
             ghost
@@ -435,36 +434,6 @@ const AdminRequest = () => {
     }
   ]
 
-  const renderStatCard = (title: string, value: number, icon: React.ReactNode, color: string, subTitle?: string) => (
-    <Card hoverable className='stat-card' bodyStyle={{ padding: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <div style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '14px', marginBottom: '8px' }}>{title}</div>
-          <div style={{ fontSize: '30px', fontWeight: 'bold' }}>{value}</div>
-          {subTitle && (
-            <div style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '12px', marginTop: '4px' }}>{subTitle}</div>
-          )}
-        </div>
-        <div
-          style={{
-            backgroundColor: `${color}20`,
-            color: color,
-            borderRadius: '12px',
-            width: '60px',
-            height: '60px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '28px',
-            boxShadow: `0 4px 12px ${color}30`
-          }}
-        >
-          {icon}
-        </div>
-      </div>
-    </Card>
-  )
-
   return (
     <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
       {contextHolder}
@@ -479,7 +448,7 @@ const AdminRequest = () => {
       >
         <Row align='middle' justify='space-between'>
           <Col>
-            <Title level={3} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+            <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
               <DashboardOutlined style={{ marginRight: '12px', color: '#1890ff' }} />
               Quản lý yêu cầu tăng số lần dịch vụ
             </Title>
@@ -488,8 +457,9 @@ const AdminRequest = () => {
             <Button
               type='primary'
               icon={<ReloadOutlined />}
-              onClick={handleRefresh}
+              onClick={() => handleRefresh('requestsAdmin')}
               style={{
+                fontSize: '12px',
                 borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
@@ -504,16 +474,16 @@ const AdminRequest = () => {
 
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={12} lg={6}>
-          {renderStatCard('Tổng số yêu cầu', stats.total, <PieChartOutlined />, '#1890ff')}
+          <StatCard title='Tổng số yêu cầu' value={stats.total} icon={<PieChartOutlined />} color='#1890ff' />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          {renderStatCard('Đang chờ xử lý', stats.pending, <ClockCircleOutlined />, '#faad14')}
+          <StatCard title='Đang chờ xử lý' value={stats.pending} icon={<ClockCircleOutlined />} color='#faad14' />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          {renderStatCard('Đã phê duyệt', stats.approved, <CheckCircleOutlined />, '#52c41a')}
+          <StatCard title='Đã phê duyệt' value={stats.approved} icon={<CheckCircleOutlined />} color='#52c41a' />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          {renderStatCard('Đã từ chối', stats.rejected, <CloseCircleOutlined />, '#ff4d4f')}
+          <StatCard title='Đã từ chối' value={stats.rejected} icon={<CloseCircleOutlined />} color='#ff4d4f' />
         </Col>
       </Row>
 
@@ -758,7 +728,7 @@ const AdminRequest = () => {
         centered
         styles={{
           header: { paddingBottom: 0, borderBottom: 'none' },
-          body: { maxHeight: '80vh', overflowY: 'auto' }
+          body: { overflowY: 'auto' }
         }}
       >
         {currentRequest && (

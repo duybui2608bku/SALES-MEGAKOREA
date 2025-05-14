@@ -20,3 +20,5 @@ export type GetAllRequestAdminResponse = SuccessResponse<AllRequestAdmin[]>
 export type ApproveRequestAdminResponse = SuccessResponse<void>
 
 export type RejectRequestAdminResponse = SuccessResponse<void>
+
+export type CreateQuantityRequestResponse = SuccessResponse<void>

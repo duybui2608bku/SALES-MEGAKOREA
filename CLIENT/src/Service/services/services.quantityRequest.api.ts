@@ -2,17 +2,24 @@ import { pathServices } from 'src/Constants/path'
 import axiosInstanceMain from '../axious.api'
 import {
   ApproveRequestAdminResponse,
+  CreateQuantityRequestResponse,
   GetAllRequestAdminResponse,
   GetAllRequestStatsResponse,
   GetAllUserRequestResponse,
   RejectRequestAdminResponse
 } from 'src/Types/services/services.quantityRequest.type'
-import { IUpdateQuantityRequestStatusPayload } from 'src/Interfaces/services/quantity-request.interfaces'
+import {
+  ICreateQuantityRequestPayload,
+  IUpdateQuantityRequestStatusPayload
+} from 'src/Interfaces/services/quantity-request.interfaces'
 
 const quantityRequestApi = {
   // User endpoints
   async getAllUserRequest(body?: any) {
     return axiosInstanceMain.post<GetAllUserRequestResponse>(pathServices.getUserQuantityRequests, body)
+  },
+  async createRequest(payload: ICreateQuantityRequestPayload) {
+    return axiosInstanceMain.post<CreateQuantityRequestResponse>(pathServices.createQuantityRequest, payload)
   },
 
   // Admin endpoints

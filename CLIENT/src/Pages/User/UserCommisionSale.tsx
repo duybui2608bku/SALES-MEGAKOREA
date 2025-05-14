@@ -1,17 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
-import { Col, Row, Table, TableColumnType, Typography } from 'antd'
-import { DollarOutlined, TeamOutlined } from '@ant-design/icons'
+import { Button, Card, Col, message, Row, Table, TableColumnType, Typography } from 'antd'
+import { DollarOutlined, FilterOutlined, PercentageOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import DatePickerComponent from 'src/Components/DatePicker'
 import OptionsBranch from 'src/Components/OptionsBranch'
 import OptionsGetUsersWithRole from 'src/Components/OptionsGetUsersWithRole'
-import Title from 'src/Components/Title'
 import { RoleUser } from 'src/Constants/enum'
 import commisionSaleApi from 'src/Service/commision/commision.sale.api'
 import { CommisionSaleUserInterface } from 'src/Interfaces/commision/commisionSale.interface'
-import StatisticCard from 'src/Components/StatisticCard'
-const { Text } = Typography
+const { Text, Title } = Typography
+import { FaUserTie } from 'react-icons/fa6'
+import StatCard from 'src/Components/StatsCard'
+import { queryClient } from 'src/main'
 
 type ColumnsCommisionSaleType = CommisionSaleUserInterface
 
@@ -89,6 +90,14 @@ const UserCommisionSale = () => {
     goToNextPage(page)
   }
 
+  const handleRefresh = () => {
+    message.loading('Đang tải lại dữ liệu...')
+    queryClient.invalidateQueries({ queryKey: ['commisionTechnican'] })
+    setTimeout(() => {
+      message.success('Dữ liệu đã được làm mới!')
+    }, 3000)
+  }
+
   const columns: TableColumnType<ColumnsCommisionSaleType>[] = [
     {
       title: 'Tên nhân viên',
@@ -129,33 +138,60 @@ const UserCommisionSale = () => {
 
   return (
     <Fragment>
-      {/* Title Commision Technican */}
-      <Row style={{ padding: '20px' }} gutter={[16, 16]}>
-        <Col xs={24}>{Title({ title: 'Hoa hồng nhân viên Sale', level: 2 })}</Col>
+      <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+        <Card
+          style={{
+            marginBottom: '24px',
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '20px 24px' }}
+        >
+          <Row align='middle' justify='space-between'>
+            <Col>
+              <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                <FaUserTie style={{ marginRight: '12px', color: '#1890ff' }} />
+                Hoa hồng nhân viên Sale
+              </Title>
+            </Col>
+            <Col>
+              <Button
+                type='primary'
+                icon={<ReloadOutlined />}
+                onClick={handleRefresh}
+                style={{
+                  fontSize: '12px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
+                }}
+              >
+                Làm mới dữ liệu
+              </Button>
+            </Col>
+          </Row>
+        </Card>
 
-        <Row style={{ width: '100%' }} gutter={[16, 16]}>
-          {/* Thống kê Cards */}
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px', width: '100%' }}>
           <Col span={16}>
-            <Row gutter={16}>
-              {/* Card 1: Tổng Hoa Hồng */}
-              <StatisticCard
-                color={0}
-                loading={isLoading}
-                title='Tổng hoa hồng'
-                value={formatCurrency(summary.totalCommision)}
-                icon={<DollarOutlined />}
-                colSpan={12}
-              />
-
-              {/* Card 2: Tổng user */}
-              <StatisticCard
-                color={1}
-                loading={isLoading}
-                title='Tổng nhân viên'
-                value={summary.totalUser}
-                icon={<TeamOutlined />}
-                colSpan={12}
-              />
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12} lg={12}>
+                <StatCard
+                  title='Tổng hoa hồng'
+                  value={formatCurrency(summary.totalCommision)}
+                  icon={<DollarOutlined />}
+                  color='#1890ff'
+                />
+              </Col>
+              <Col xs={24} sm={12} lg={12}>
+                <StatCard
+                  title='Tổng nhân viên Sale'
+                  value={summary.totalUser}
+                  icon={<PercentageOutlined />}
+                  color='#faad14'
+                />
+              </Col>
             </Row>
           </Col>
           <Col span={8}>
@@ -172,17 +208,25 @@ const UserCommisionSale = () => {
             </Row>
           </Col>
         </Row>
-      </Row>
 
-      {/* Table Commision Technican */}
-      <Row gutter={16} style={{ padding: '20px' }}>
-        <Col span={24}>
+        <Card
+          title={
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FilterOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+              <span>Danh sách hoa hồng</span>
+            </div>
+          }
+          style={{
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+          }}
+          bodyStyle={{ padding: '0' }}
+        >
           <Table
             loading={isLoading}
             sticky
-            style={{ width: '100%' }}
+            style={{ width: '100%', borderRadius: '12px' }}
             scroll={{ x: '1200px' }}
-            bordered
             columns={columns}
             dataSource={commisionSale}
             pagination={{
@@ -193,8 +237,76 @@ const UserCommisionSale = () => {
               position: ['bottomCenter']
             }}
           />
-        </Col>
-      </Row>
+        </Card>
+
+        <style>{`
+        .stat-card {
+          border-radius: 12px;
+          transition: all 0.3s;
+          overflow: hidden;
+        }
+        .stat-card:hover {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+          transform: translateY(-4px);
+        }
+        .ant-table {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ant-table-thead > tr > th {
+          background-color: #fafafa;
+        }
+        .ant-table-tbody > tr > td {
+          padding: 12px 16px;
+        }
+        .ant-table-row:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .ant-progress-text {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.65);
+        }
+        .ant-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .ant-modal-content {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .ant-list-item {
+          padding: 10px 0;
+          display: flex;
+          justify-content: space-between;
+        }
+        .ant-segmented {
+          background-color: #f5f5f5;
+          padding: 2px;
+          border-radius: 8px;
+        }
+        .ant-segmented-item-selected {
+          background-color: white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .ant-segmented-item {
+          border-radius: 6px !important;
+          transition: all 0.3s;
+        }
+        .ant-card-head {
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .ant-card-head-title {
+          padding: 16px 0;
+        }
+        .ant-card-extra {
+          padding: 16px 0;
+        }
+        .ant-table-pagination {
+          margin: 16px;
+        }
+      `}</style>
+      </div>
     </Fragment>
   )
 }
