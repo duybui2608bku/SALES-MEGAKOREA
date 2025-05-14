@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { TypeCommision } from '~/constants/enum'
-import { EmployeeOfServices, ProductOfServices, StepServicesType } from '~/interface/services/services.interface'
+import { EmployeeOfServices, ProductOfServices } from '~/interface/services/services.interface'
 import { QuantityRequestStatus } from '../schemas/services/quantity-request.schema'
 
 export interface CreateServicesCategoryRequestBody {

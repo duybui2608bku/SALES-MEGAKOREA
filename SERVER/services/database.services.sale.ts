@@ -16,6 +16,7 @@ import { ServicesStep } from '~/models/schemas/services/stepServices.schema'
 import { CommisionOfSeller } from '~/models/schemas/commision/commisionOfSeller.schema'
 import { CommisionOfTechnican } from '~/models/schemas/commision/commisionOfTechnican.schema'
 import { QuantityRequest, QuantityRequestHistory } from '~/models/schemas/services/quantity-request.schema'
+import { RefundRequest, RefundRequestHistory } from '~/models/schemas/services/refund.schema'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@megakorae-call.rrq1b.mongodb.net/${process.env.DB_NAME_SALE_MEGA}?retryWrites=true&w=majority&appName=MEGAKORAE-CALL&tls=true`
@@ -99,6 +100,14 @@ class DatabaseServiceSale {
 
   get quantityRequestHistories(): Collection<QuantityRequestHistory> {
     return this.db.collection(process.env.QUANTITY_REQUEST_HISTORY_COLLECTION as string)
+  }
+
+  get refundRequests(): Collection<RefundRequest> {
+    return this.db.collection(process.env.REFUND_REQUEST_COLLECTION as string)
+  }
+
+  get refundRequestHistories(): Collection<RefundRequestHistory> {
+    return this.db.collection(process.env.REFUND_REQUEST_HISTORY_COLLECTION as string)
   }
 }
 

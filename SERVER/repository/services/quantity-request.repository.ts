@@ -105,6 +105,18 @@ export class QuantityRequestRepository {
   async getAllRequests(data: GetAllQuantityAdminData) {
     const { page, limit, query } = data
     const skip = (page - 1) * limit
+    const projectionService = createProjectionField('services', [
+      'branch',
+      'user_id',
+      'service_group_id',
+      'step_services',
+      'products',
+      'employee',
+      'branch'
+    ])
+
+    const projectionUser = createProjectionField('user', ['name', 'email', 'role', 'forgot_password_token'])
+
     const requests = await databaseServiceSale.quantityRequests
       .aggregate([
         {
@@ -116,6 +128,20 @@ export class QuantityRequestRepository {
             localField: 'userId',
             foreignField: '_id',
             as: 'user'
+          }
+        },
+        {
+          $lookup: {
+            from: 'services',
+            localField: 'serviceId',
+            foreignField: '_id',
+            as: 'services'
+          }
+        },
+        {
+          $project: {
+            ...projectionService,
+            ...projectionUser
           }
         }
       ])
