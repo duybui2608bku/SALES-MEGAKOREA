@@ -26,6 +26,7 @@ class RefundServices {
       reason: data.reason || '',
       status: RefundRequestStatus.PENDING
     }
+
     const request = await refundRepository.createRequest(dataConvert)
     await refundRepository.createRequestHistory({
       request_id: request._id?.toString() as string,

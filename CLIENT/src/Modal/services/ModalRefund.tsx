@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Modal, Typography, Radio, Form, InputNumber, Alert, Button, Space, Input, message, Card } from 'antd'
-import { GetServicesCardSoldOfCustomer, RefundType } from 'src/Interfaces/services/services.interfaces'
+import { GetServicesCardSoldOfCustomer } from 'src/Interfaces/services/services.interfaces'
 import { RefundEnum } from 'src/Constants/enum'
-import { servicesApi } from 'src/Service/services/services.api'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { GiTakeMyMoney, GiPayMoney } from 'react-icons/gi'
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { motion } from 'framer-motion'
+import { CreateRefundRequestBodyRequest } from 'src/Interfaces/services/refund-request.interfaces'
+import refundRequestApi from 'src/Service/services/services.refundRequest.api'
+import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
+import HttpStatusCode from 'src/Constants/httpCode'
 
 const { Text, Title } = Typography
 const { TextArea } = Input
@@ -22,7 +25,7 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
   const [refundType, setRefundType] = useState<RefundEnum>(RefundEnum.NONE)
   const [refundAmount, setRefundAmount] = useState<number>(0)
   const [maxRefundAmount, setMaxRefundAmount] = useState<number>(0)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [refundNote, setRefundNote] = useState('')
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -91,32 +94,46 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
     }
   }
 
-  const handleSubmit = async () => {
+  // Sent request refund money
+  const { mutate: refundRequest, isPending: isRefundRequest } = useMutation({
+    mutationFn: (body: CreateRefundRequestBodyRequest) => refundRequestApi.createRequest(body),
+    onMutate: async () => {
+      return createOptimisticUpdateHandler(queryClient, ['services-card-sold-customer'])()
+    },
+    onSuccess: () => {
+      message.success('Yêu cầu hoàn tiền đã được gửi thành công!')
+      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+    },
+    onError: (error: any, _, context) => {
+      queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
+      const errorMsg =
+        error.response?.status === HttpStatusCode.BadRequest
+          ? 'Dữ liệu không hợp lệ!'
+          : error.response?.status === HttpStatusCode.NotFound
+            ? 'Thẻ dịch vụ không tồn tại!'
+            : `Lỗi khi cập nhật thẻ dịch vụ: ${error.message}`
+      message.error(errorMsg)
+    }
+  })
+
+  // Xử lý sự kiện gửi yêu cầu hoàn tiền
+  const handleRefundRequest = async () => {
     if (!servicesCardData) return
 
     try {
-      setLoading(true)
-      await form.validateFields()
-
-      const refundData: RefundType = {
-        type: refundType,
-        price: refundAmount,
-        date: new Date()
+      const body = {
+        services_card_sold_of_customer_id: servicesCardData._id,
+        current_price: servicesCardData.price_paid ? servicesCardData.price_paid : 0,
+        requested_price: refundAmount,
+        refund_type: refundType,
+        branch: servicesCardData.branch[0]._id,
+        reason: refundNote
       }
+      refundRequest(body)
 
-      await servicesApi.updateServicesCardSoldOfCustomer({
-        _id: servicesCardData._id,
-        refund: refundData
-      })
-
-      message.success('Hoàn tiền thành công')
-      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
       onClose()
     } catch (error) {
-      console.error('Error submitting refund:', error)
-      message.error('Có lỗi xảy ra khi hoàn tiền')
-    } finally {
-      setLoading(false)
+      message.error('Yêu cầu hoàn tiền được gửi thất bại!')
     }
   }
 
@@ -253,7 +270,6 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
       }
       centered
       open={open}
-      // open={true}
       onCancel={onClose}
       width={700}
       footer={[
@@ -263,8 +279,8 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
         <Button
           key='submit'
           type='primary'
-          loading={loading}
-          onClick={handleSubmit}
+          loading={isRefundRequest}
+          onClick={handleRefundRequest}
           disabled={refundType === RefundEnum.NONE || refundAmount <= 0}
           size='large'
         >
@@ -339,7 +355,12 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
                 }
                 name='description'
               >
-                <TextArea rows={3} placeholder='Nhập ghi chú về việc hoàn tiền (nếu có)' style={{ borderRadius: 6 }} />
+                <TextArea
+                  onChange={(e) => setRefundNote(e.target.value)}
+                  rows={3}
+                  placeholder='Nhập ghi chú về việc hoàn tiền (nếu có)'
+                  style={{ borderRadius: 6 }}
+                />
               </Form.Item>
             </motion.div>
           )}

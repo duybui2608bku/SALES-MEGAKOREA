@@ -172,7 +172,7 @@ const Customers = () => {
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
-      width: 120
+      width: 180
     },
     {
       title: 'Dịch vụ',
@@ -185,7 +185,7 @@ const Customers = () => {
       title: 'Chi tiết dịch vụ',
       dataIndex: 'service_detail',
       key: 'service_detail',
-      width: 180,
+      width: 220,
       render: (text) => (
         <ExpandableParagraph
           text={text}

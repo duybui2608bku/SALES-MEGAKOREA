@@ -30,7 +30,9 @@ const pathRoutersService = {
   soldCardService: '/card-service-sold',
   stepService: '/step-service',
   userQuantityRequests: '/services/quantity-requests/user',
-  adminQuantityRequests: '/services/quantity-requests/admin'
+  adminQuantityRequests: '/services/quantity-requests/admin',
+  userRefundRequests: '/services/refund-requests/user',
+  adminRefundRequests: '/services/refund-requests/admin'
 }
 
 const pathRoutersUser = {
@@ -93,13 +95,21 @@ const pathServices = {
   updateServiceCardSoldOfCustomer: 'services-card/sold-of-customer/update',
   updateUsedOfServices: '/services-card/sold/update-used',
   updateQuantityOfServices: '/services-card/sold/update-quantity',
+  // Quantity Request
   createQuantityRequest: 'services-quantity/request',
   getUserQuantityRequests: 'services-quantity/user-requests',
   getRequestHistory: '/api/service-quantity/request/:requestId/history',
   getAdminRequests: 'services-quantity/admin/requests',
   getRequestStats: 'services-quantity/admin/stats',
-  approveRequest: 'services-quantity/admin/approve/:requestId',
-  rejectRequest: 'services-quantity/admin/reject/:requestId'
+  approveRequest: 'services-quantity/admin/approve',
+  rejectRequest: 'services-quantity/admin/reject',
+  // Refund Request
+  getUserRefundRequests: 'refund/user-requests',
+  createRefundRequest: 'refund/request',
+  getAdminRefundRequests: 'refund/admin/requests',
+  getRequestRefundStats: 'refund/admin/stats',
+  approveRefundRequest: 'refund/admin/approve',
+  rejectRefundRequest: 'refund/admin/reject'
 }
 
 const pathRoutesCustomers = {

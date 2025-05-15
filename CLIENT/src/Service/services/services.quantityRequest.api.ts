@@ -32,8 +32,8 @@ const quantityRequestApi = {
   async approveRequestAdmin(payload: IUpdateQuantityRequestStatusPayload) {
     return axiosInstanceMain.put<ApproveRequestAdminResponse>(pathServices.approveRequest, payload)
   },
-  async rejectRequestAdmin(requestId: string, payload: IUpdateQuantityRequestStatusPayload) {
-    return axiosInstanceMain.put<RejectRequestAdminResponse>(`${pathServices.rejectRequest}/${requestId}`, payload)
+  async rejectRequestAdmin(payload: IUpdateQuantityRequestStatusPayload) {
+    return axiosInstanceMain.put<RejectRequestAdminResponse>(pathServices.rejectRequest, payload)
   }
 }
 

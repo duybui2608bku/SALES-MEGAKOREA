@@ -1,109 +1,119 @@
-import { useQuery } from '@tanstack/react-query'
+import { Avatar, Button, Card, Col, Row, Segmented, Space, Table, TableColumnType, Typography } from 'antd'
+import { Fragment } from 'react/jsx-runtime'
 import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ClockCircleOutlined,
-  DashboardOutlined,
-  ReloadOutlined,
   AppstoreOutlined,
+  CalendarOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
   FilterOutlined,
-  CalendarOutlined
+  ReloadOutlined,
+  UserOutlined
 } from '@ant-design/icons'
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Image,
-  Row,
-  Segmented,
-  Select,
-  Space,
-  Table,
-  TableColumnType,
-  Tag,
-  Tooltip,
-  Typography
-} from 'antd'
-import dayjs from 'dayjs'
-import { Fragment, useEffect, useState } from 'react'
-// import Title from 'src/Components/Title'
-import { QuantityRequestStatus } from 'src/Constants/enum'
-import { IQuantityRequest } from 'src/Interfaces/services/quantity-request.interfaces'
-import quantityRequestApi from 'src/Service/services/services.quantityRequest.api'
 import { handleRefresh } from 'src/Utils/util.utils'
-const { Text, Title } = Typography
+import { GiTakeMyMoney } from 'react-icons/gi'
+import { RefundEnum, RequestStatus } from 'src/Constants/enum'
+import { useEffect, useState } from 'react'
+import { RefundRequest } from 'src/Interfaces/services/refund-request.interfaces'
+import { useQuery } from '@tanstack/react-query'
+import refundRequestApi from 'src/Service/services/services.refundRequest.api'
+import ExpandableParagraph from 'src/Components/ExpandableParagraph'
+import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowUp } from 'react-icons/md'
+import dayjs from 'dayjs'
+import { renderRefundTag, renderStatusTag } from 'src/Utils/statusConfig'
 
-type ColumnsQuantityRequestType = IQuantityRequest
+const { Title, Text } = Typography
+type ColumnsRefundRequestType = RefundRequest
 
 const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
-
-const statusColors = {
-  [QuantityRequestStatus.PENDING]: 'gold',
-  [QuantityRequestStatus.APPROVED]: 'green',
-  [QuantityRequestStatus.REJECTED]: 'red'
-}
-
-const statusIcons = {
-  [QuantityRequestStatus.PENDING]: <ClockCircleOutlined />,
-  [QuantityRequestStatus.APPROVED]: <CheckCircleOutlined />,
-  [QuantityRequestStatus.REJECTED]: <CloseCircleOutlined />
-}
-
-const statusLabels = {
-  [QuantityRequestStatus.PENDING]: 'Đang chờ',
-  [QuantityRequestStatus.APPROVED]: 'Đã phê duyệt',
-  [QuantityRequestStatus.REJECTED]: 'Từ chối'
-}
-
-const UserRequest = () => {
-  const [requestsData, setRequestsData] = useState<IQuantityRequest[]>([])
+const UserRefundRequest = () => {
+  const [refundRequestData, setRefundRequestData] = useState<RefundRequest[]>([])
   const [pagination, setPagination] = useState({
     page: PAGE,
     limit: LIMIT,
     total: 0
   })
-  const [statusFilter, setStatusFilter] = useState<QuantityRequestStatus | 'all'>('all')
+  const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('all')
 
   // Fetch data from API
-  const { data: requestsDataFetch, isLoading } = useQuery({
-    queryKey: ['requestsUser', pagination.page, statusFilter],
+  const { data: refundRequestDataFetch, isLoading } = useQuery({
+    queryKey: ['refundRequestUser', pagination.page, statusFilter],
     queryFn: async () => {
       const query =
         statusFilter !== 'all'
           ? {
+              page: pagination.page,
+              limit: pagination.limit,
               status: statusFilter
             }
           : {
-              status: ''
+              status: '',
+              page: pagination.page,
+              limit: pagination.limit
             }
-      const response = await quantityRequestApi.getAllUserRequest(query)
+      const response = await refundRequestApi.getAllUserRequest(query)
       return response
     },
     staleTime: STALETIME
   })
 
   useEffect(() => {
-    if (requestsDataFetch) {
-      setRequestsData(requestsDataFetch.data.result.requests)
+    if (refundRequestDataFetch) {
+      setRefundRequestData(refundRequestDataFetch.data.result.requests)
       setPagination({
-        page: requestsDataFetch.data.result.page || PAGE,
-        limit: requestsDataFetch.data.result.limit,
-        total: requestsDataFetch.data.result.total
+        page: refundRequestDataFetch.data.result.page,
+        limit: refundRequestDataFetch.data.result.limit,
+        total: refundRequestDataFetch.data.result.total
       })
     }
-  }, [requestsDataFetch, pagination])
-  const columns: TableColumnType<ColumnsQuantityRequestType>[] = [
+  }, [refundRequestDataFetch, pagination])
+
+  const goToNextPage = (page: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page
+    }))
+  }
+
+  const handleTableChange = async (page: number) => {
+    goToNextPage(page)
+  }
+
+  const columns: TableColumnType<ColumnsRefundRequestType>[] = [
     {
-      title: 'Dịch vụ',
-      dataIndex: 'service-name',
-      key: 'service-name',
+      title: 'Người dùng',
+      dataIndex: ['user', 'name'],
+      key: 'userName',
+      width: 250,
       fixed: 'left',
-      width: 200,
       render: (_, record) => (
         <Space>
+          <Avatar
+            style={{
+              background: `linear-gradient(120deg, #1677ff, #0958d9)`,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+            }}
+          >
+            {record.user?.name.toUpperCase() || <UserOutlined />}
+          </Avatar>
+          <div>
+            <div style={{ fontWeight: 500 }}>{record.user?.name}</div>
+            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+              {record.branch ? `Chi nhánh: ${record.branch.name}` : 'Chi nhánh: Không có'}
+            </div>
+          </div>
+        </Space>
+      )
+    },
+    {
+      title: 'Dịch vụ',
+      dataIndex: ['service', 'name'],
+      key: 'serviceName',
+      width: 320,
+      render: (_, record) => (
+        <Space style={{ gap: '20px' }}>
           <Avatar
             size='small'
             style={{
@@ -116,47 +126,73 @@ const UserRequest = () => {
           >
             <AppstoreOutlined style={{ fontSize: '12px' }} />
           </Avatar>
-          <span style={{ fontWeight: 500 }}>{record.service.map((sv) => sv.name)}</span>
+          <span style={{ fontWeight: 500 }}>{`ID: ${record.services_card_sold_of_customer_id}`}</span>
         </Space>
       )
     },
     {
-      title: 'Số lượng hiện tại',
+      title: 'Tiền khách thanh toán',
+      key: 'current_price',
+      dataIndex: 'current_price',
+      width: 220,
       align: 'center',
-      dataIndex: 'currentQuantity',
-      key: 'currentQuantity',
-      width: 180
+      render: (current_price: number) => {
+        return (
+          <Text style={{ color: '#ff4d4f', fontSize: '15px' }} strong>
+            {current_price.toLocaleString('vi-VN')} đ
+          </Text>
+        )
+      }
     },
     {
-      title: 'Số lượng yêu cầu',
+      title: 'Yêu cầu hoàn tiền',
+      key: 'requested_price',
+      dataIndex: 'requested_price',
+      width: 200,
       align: 'center',
-      dataIndex: 'requestedQuantity',
-      key: 'requestedQuantity',
-      width: 180
+      render: (requested_price: number) => {
+        return (
+          <Text style={{ color: '#FF9900', fontSize: '15px' }} strong>
+            {requested_price.toLocaleString('vi-VN')} đ
+          </Text>
+        )
+      }
     },
     {
-      title: 'Lý do',
+      title: 'Phương thức hoàn tiền',
+      key: 'refund_type',
+      dataIndex: 'refund_type',
+      align: 'center',
+      width: 250,
+      render: (refundType: RefundEnum) => renderRefundTag(refundType)
+    },
+    {
+      title: 'Lý do yêu cầu',
       dataIndex: 'reason',
       key: 'reason',
-      width: 200,
-      render: (note: string | undefined) => (
-        <Tooltip title={note}>
-          <Text>{note || 'Không có'}</Text>
-        </Tooltip>
-      ),
-      ellipsis: true
+      width: 220,
+      render: (reason: string) => (
+        <ExpandableParagraph
+          text={reason}
+          rows={2}
+          lessText={<MdOutlineKeyboardDoubleArrowUp />}
+          moreText={<MdOutlineKeyboardDoubleArrowDown />}
+        />
+      )
     },
     {
       title: 'Ghi chú Admin',
-      dataIndex: 'adminNote',
-      key: 'adminNote',
+      dataIndex: 'admin_note',
+      key: 'admin_note',
       width: 200,
-      render: (note: string | undefined) => (
-        <Tooltip title={note}>
-          <Text>{note || 'Không có'}</Text>
-        </Tooltip>
-      ),
-      ellipsis: true
+      render: (note: string) => (
+        <ExpandableParagraph
+          text={note ? note : ''}
+          rows={2}
+          lessText={<MdOutlineKeyboardDoubleArrowUp />}
+          moreText={<MdOutlineKeyboardDoubleArrowDown />}
+        />
+      )
     },
     {
       title: 'Ngày tạo',
@@ -173,23 +209,7 @@ const UserRequest = () => {
           </div>
         </div>
       ),
-      sorter: (a: IQuantityRequest, b: IQuantityRequest) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix()
-    },
-    {
-      title: 'Hình ảnh',
-      dataIndex: 'media',
-      key: 'media',
-      width: 200,
-      align: 'center',
-      render: (media) => (
-        <Image
-          preview={{ src: media }}
-          style={{ objectFit: 'cover', borderRadius: '8px' }}
-          width={'60px'}
-          height={'60px'}
-          src={media}
-        />
-      )
+      sorter: (a: RefundRequest, b: RefundRequest) => dayjs(a.created_at).unix() - dayjs(b.created_at).unix()
     },
     {
       title: 'Trạng thái',
@@ -198,16 +218,12 @@ const UserRequest = () => {
       key: 'status',
       fixed: 'right',
       width: 200,
-      render: (status: QuantityRequestStatus) => (
-        <Tag color={statusColors[status]} icon={statusIcons[status]}>
-          {statusLabels[status]}
-        </Tag>
-      )
+      render: (status: RequestStatus) => renderStatusTag(status)
     }
   ]
 
   const handleStatusFilterChange = (value: string | number) => {
-    setStatusFilter(value as QuantityRequestStatus | 'all')
+    setStatusFilter(value as RequestStatus | 'all')
   }
 
   return (
@@ -223,15 +239,15 @@ const UserRequest = () => {
           <Row align='middle' justify='space-between'>
             <Col>
               <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
-                <DashboardOutlined style={{ marginRight: '12px', color: '#1890ff' }} />
-                Yêu cầu tăng số lần dịch vụ của tôi
+                <GiTakeMyMoney style={{ marginRight: '12px', color: '#1890ff' }} />
+                Yêu cầu hoàn tiền dịch vụ của tôi
               </Title>
             </Col>
             <Col>
               <Button
                 type='primary'
                 icon={<ReloadOutlined />}
-                onClick={() => handleRefresh('requestsAdmin')}
+                onClick={() => handleRefresh('refundRequestUser')}
                 style={{
                   fontSize: '12px',
                   borderRadius: '8px',
@@ -274,7 +290,7 @@ const UserRequest = () => {
                       </div>
                     </div>
                   ),
-                  value: QuantityRequestStatus.PENDING
+                  value: RequestStatus.PENDING
                 },
                 {
                   label: (
@@ -284,7 +300,7 @@ const UserRequest = () => {
                       </div>
                     </div>
                   ),
-                  value: QuantityRequestStatus.APPROVED
+                  value: RequestStatus.APPROVED
                 },
                 {
                   label: (
@@ -294,7 +310,7 @@ const UserRequest = () => {
                       </div>
                     </div>
                   ),
-                  value: QuantityRequestStatus.REJECTED
+                  value: RequestStatus.REJECTED
                 }
               ]}
               value={statusFilter}
@@ -310,11 +326,14 @@ const UserRequest = () => {
           <Table
             sticky
             loading={isLoading}
-            dataSource={requestsData}
+            dataSource={refundRequestData}
             columns={columns}
             rowKey='_id'
             pagination={{
-              pageSize: 10,
+              current: pagination.page,
+              pageSize: pagination.limit,
+              total: pagination.total,
+              onChange: handleTableChange,
               position: ['bottomCenter']
             }}
             style={{ borderRadius: '12px', width: '100%' }}
@@ -326,4 +345,4 @@ const UserRequest = () => {
   )
 }
 
-export default UserRequest
+export default UserRefundRequest
