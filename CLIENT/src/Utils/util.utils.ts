@@ -118,6 +118,12 @@ export const handleRefresh = (queryKey: string) => {
   }, 3000)
 }
 
+export const validateQuery = (query: string[]) => {
+  query.forEach((item) => {
+    queryClient.invalidateQueries({ queryKey: [item] })
+  })
+}
+
 export const dataTestOutstandingStaff = [
   {
     user: {

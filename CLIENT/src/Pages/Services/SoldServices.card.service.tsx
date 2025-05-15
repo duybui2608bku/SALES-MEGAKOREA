@@ -44,7 +44,7 @@ import { GiReceiveMoney, GiTakeMyMoney } from 'react-icons/gi'
 import ModalUpdatePaidOfServicesCard from 'src/Modal/services/ModalUpdatePaidOfServicesCard'
 import { TbCreditCardRefund, TbMoneybag, TbCardsFilled } from 'react-icons/tb'
 import ModalViewHistoryPaid from 'src/Modal/services/ModalViewHistoryPaid'
-import { GetServicesCardSoldOfCustomerSearchType } from 'src/Constants/enum'
+import { GetServicesCardSoldOfCustomerSearchType, RefundEnum } from 'src/Constants/enum'
 import ModalViewHistoryUsed from 'src/Modal/services/ModalViewHistoryUsed'
 import { RiRefund2Fill } from 'react-icons/ri'
 import DatePickerComponent from 'src/Components/DatePicker'
@@ -104,13 +104,21 @@ const SoldServicesCard = () => {
       render: (_, record) => {
         return (
           <Fragment>
-            {record.refund && record.refund.type !== 0 ? (
+            {record.refund &&
+            record.refund !== RefundEnum.PENDING &&
+            typeof record.refund === 'object' &&
+            'type' in record.refund &&
+            record.refund.type !== RefundEnum.NONE ? (
               <Tooltip title='Đã hoàn tiền'>
                 <TbCreditCardRefund cursor='pointer' style={{ color: '#FF9900', fontSize: '18px' }} />
               </Tooltip>
-            ) : (record.price ?? 0) - (record.price_paid ?? 0) !== 0 ? (
+            ) : (record.price ?? 0) - (record.price_paid ?? 0) !== 0 && record.refund !== RefundEnum.PENDING ? (
               <Tooltip title='Đang thanh toán'>
                 <SyncOutlined spin style={{ color: '#1677ff', fontSize: '18px', cursor: 'pointer' }} />
+              </Tooltip>
+            ) : record.refund === RefundEnum.PENDING ? (
+              <Tooltip title='Đang chờ duyệt hoàn tiền'>
+                <SyncOutlined spin style={{ fontSize: '18px', cursor: 'pointer', color: '#FF9900' }} />
               </Tooltip>
             ) : (
               <Tooltip title='Đã thanh toán hoàn tất!'>
@@ -337,7 +345,11 @@ const SoldServicesCard = () => {
               ></Button>
             </Badge>
 
-            {record.refund && record.refund.type !== 0 ? (
+            {record.refund &&
+            record.refund !== RefundEnum.PENDING &&
+            typeof record.refund === 'object' &&
+            'type' in record.refund &&
+            record.refund.type !== RefundEnum.NONE ? (
               <Popover
                 trigger='hover'
                 content={
@@ -359,6 +371,26 @@ const SoldServicesCard = () => {
                 }
               >
                 <Button title='Đã hoàn tiền' icon={<TbCreditCardRefund style={{ color: '#FF9900' }} />} />
+              </Popover>
+            ) : record.refund === RefundEnum.PENDING ? (
+              <Popover
+                trigger='hover'
+                content={
+                  <div style={{ padding: '8px', display: 'flex', flexDirection: 'column' }}>
+                    <Text strong>Chờ xét duyệt:</Text>
+                    <Text type='warning'>
+                      Yêu cầu hoàn tiền của bạn
+                      <div> đang được chờ xét duyệt!</div>
+                    </Text>
+                  </div>
+                }
+              >
+                <Button
+                  disabled={true}
+                  onClick={() => record && handleRefundMoney(record)}
+                  title='Hoàn tiền'
+                  icon={<RiRefund2Fill color='#FF9900' />}
+                />
               </Popover>
             ) : (
               <Button

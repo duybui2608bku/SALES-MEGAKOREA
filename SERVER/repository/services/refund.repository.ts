@@ -82,10 +82,16 @@ export class RefundRepository {
           }
         },
         {
-          $unwind: '$user'
+          $unwind: {
+            path: '$user',
+            preserveNullAndEmptyArrays: true
+          }
         },
         {
-          $unwind: '$branch'
+          $unwind: {
+            path: '$branch',
+            preserveNullAndEmptyArrays: true
+          }
         },
         {
           $project: projectionUser
@@ -99,34 +105,36 @@ export class RefundRepository {
   async getAllRequests(data: GetAllRefundAdminData) {
     const { page, limit, query } = data
     const skip = (page - 1) * limit
-    const requests = await databaseServiceSale.refundRequests.aggregate([
-      {
-        $match: query
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: limit
-      },
-      {
-        $sort: { created_at: -1 }
-      },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'user_id',
-          foreignField: '_id',
-          as: 'user'
+    const requests = await databaseServiceSale.refundRequests
+      .aggregate([
+        {
+          $match: query
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: limit
+        },
+        {
+          $sort: { created_at: -1 }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $project: projectionUser
         }
-      },
-      {
-        $unwind: '$user'
-      },
-      {
-        $project: projectionUser
-      }
-    ])
+      ])
+      .toArray()
     const total = await databaseServiceSale.refundRequests.countDocuments(query)
     return { requests, total, page, limit }
   }

@@ -59,35 +59,12 @@ import StatCard from 'src/Components/StatsCard'
 import { handleRefresh } from 'src/Utils/util.utils'
 import ExpandableParagraph from 'src/Components/ExpandableParagraph'
 import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowUp } from 'react-icons/md'
+import { renderStatusTag } from 'src/Utils/statusConfig'
 
 const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 type ColumnsAllRequestAdminType = AllRequestAdmin
-
-const statusColors = {
-  [RequestStatus.PENDING]: '#faad14',
-  [RequestStatus.APPROVED]: '#52c41a',
-  [RequestStatus.REJECTED]: '#ff4d4f'
-}
-
-const statusBgColors = {
-  [RequestStatus.PENDING]: 'rgba(250, 173, 20, 0.1)',
-  [RequestStatus.APPROVED]: 'rgba(82, 196, 26, 0.1)',
-  [RequestStatus.REJECTED]: 'rgba(255, 77, 79, 0.1)'
-}
-
-const statusIcons = {
-  [RequestStatus.PENDING]: <ClockCircleOutlined />,
-  [RequestStatus.APPROVED]: <CheckCircleOutlined />,
-  [RequestStatus.REJECTED]: <CloseCircleOutlined />
-}
-
-const statusLabels = {
-  [RequestStatus.PENDING]: 'Đang chờ',
-  [RequestStatus.APPROVED]: 'Đã phê duyệt',
-  [RequestStatus.REJECTED]: 'Từ chối'
-}
 
 const AdminQuantityRequest = () => {
   const [allRequestAdminData, setAllRequestAdminData] = useState<AllRequestAdmin[]>([])
@@ -417,21 +394,7 @@ const AdminQuantityRequest = () => {
       key: 'status',
       align: 'center',
       width: 180,
-      render: (status: RequestStatus) => (
-        <Tag
-          icon={statusIcons[status]}
-          style={{
-            color: statusColors[status],
-            backgroundColor: statusBgColors[status],
-            border: 'none',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontWeight: 500
-          }}
-        >
-          {statusLabels[status]}
-        </Tag>
-      )
+      render: (status: RequestStatus) => renderStatusTag(status)
     },
     {
       title: 'Hành động',
@@ -850,21 +813,7 @@ const AdminQuantityRequest = () => {
                         <List.Item>
                           <Space align='baseline' style={{ width: '100%', justifyContent: 'space-between' }}>
                             <Text type='secondary'>Trạng thái:</Text>
-                            <Tag
-                              color={statusColors[currentRequest.status]}
-                              icon={statusIcons[currentRequest.status]}
-                              style={{
-                                backgroundColor: statusBgColors[currentRequest.status],
-                                color: statusColors[currentRequest.status],
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontWeight: 500,
-                                marginRight: 0
-                              }}
-                            >
-                              {statusLabels[currentRequest.status]}
-                            </Tag>
+                            {renderStatusTag(currentRequest.status)}
                           </Space>
                         </List.Item>
                       </List>

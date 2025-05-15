@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Modal, Typography, Radio, Form, InputNumber, Alert, Button, Space, Input, message, Card } from 'antd'
-import { GetServicesCardSoldOfCustomer, RefundType } from 'src/Interfaces/services/services.interfaces'
+import { GetServicesCardSoldOfCustomer } from 'src/Interfaces/services/services.interfaces'
 import { RefundEnum } from 'src/Constants/enum'
-import { servicesApi } from 'src/Service/services/services.api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { GiTakeMyMoney, GiPayMoney } from 'react-icons/gi'
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
@@ -27,7 +26,6 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
   const [refundAmount, setRefundAmount] = useState<number>(0)
   const [maxRefundAmount, setMaxRefundAmount] = useState<number>(0)
   const [refundNote, setRefundNote] = useState('')
-  const [loading, setLoading] = useState<boolean>(false)
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -125,9 +123,7 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
     try {
       const body = {
         services_card_sold_of_customer_id: servicesCardData._id,
-        current_price:
-          (servicesCardData.price ? servicesCardData.price : 0) -
-          (servicesCardData.price_paid ? servicesCardData.price_paid : 0),
+        current_price: servicesCardData.price_paid ? servicesCardData.price_paid : 0,
         requested_price: refundAmount,
         refund_type: refundType,
         branch: servicesCardData.branch[0]._id,
@@ -140,35 +136,6 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
       message.error('Yêu cầu hoàn tiền được gửi thất bại!')
     }
   }
-
-  // const handleSubmit = async () => {
-  //   if (!servicesCardData) return
-
-  //   try {
-  //     setLoading(true)
-  //     await form.validateFields()
-
-  //     const refundData: RefundType = {
-  //       type: refundType,
-  //       price: refundAmount,
-  //       date: new Date()
-  //     }
-
-  //     await servicesApi.updateServicesCardSoldOfCustomer({
-  //       _id: servicesCardData._id,
-  //       refund: refundData
-  //     })
-
-  //     message.success('Hoàn tiền thành công')
-  //     queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
-  //     onClose()
-  //   } catch (error) {
-  //     console.error('Error submitting refund:', error)
-  //     message.error('Có lỗi xảy ra khi hoàn tiền')
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
 
   const renderRefundOptions = () => {
     if (!servicesCardData) return null
@@ -303,7 +270,6 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
       }
       centered
       open={open}
-      // open={true}
       onCancel={onClose}
       width={700}
       footer={[

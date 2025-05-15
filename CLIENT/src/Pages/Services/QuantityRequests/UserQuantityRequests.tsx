@@ -9,16 +9,16 @@ import {
   FilterOutlined,
   CalendarOutlined
 } from '@ant-design/icons'
-import { Avatar, Button, Card, Col, Image, Row, Segmented, Space, Table, TableColumnType, Tag, Typography } from 'antd'
+import { Avatar, Button, Card, Col, Image, Row, Segmented, Space, Table, TableColumnType, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { Fragment, useEffect, useState } from 'react'
-// import Title from 'src/Components/Title'
 import { RequestStatus } from 'src/Constants/enum'
 import { IQuantityRequest } from 'src/Interfaces/services/quantity-request.interfaces'
 import quantityRequestApi from 'src/Service/services/services.quantityRequest.api'
 import { handleRefresh } from 'src/Utils/util.utils'
 import ExpandableParagraph from 'src/Components/ExpandableParagraph'
 import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowUp } from 'react-icons/md'
+import { renderStatusTag } from 'src/Utils/statusConfig'
 const { Text, Title } = Typography
 
 type ColumnsQuantityRequestType = IQuantityRequest
@@ -26,30 +26,6 @@ type ColumnsQuantityRequestType = IQuantityRequest
 const LIMIT = 8
 const PAGE = 1
 const STALETIME = 5 * 60 * 1000
-
-const statusColors = {
-  [RequestStatus.PENDING]: '#faad14',
-  [RequestStatus.APPROVED]: '#52c41a',
-  [RequestStatus.REJECTED]: '#ff4d4f'
-}
-
-const statusIcons = {
-  [RequestStatus.PENDING]: <ClockCircleOutlined />,
-  [RequestStatus.APPROVED]: <CheckCircleOutlined />,
-  [RequestStatus.REJECTED]: <CloseCircleOutlined />
-}
-
-const statusBgColors = {
-  [RequestStatus.PENDING]: 'rgba(250, 173, 20, 0.1)',
-  [RequestStatus.APPROVED]: 'rgba(82, 196, 26, 0.1)',
-  [RequestStatus.REJECTED]: 'rgba(255, 77, 79, 0.1)'
-}
-
-const statusLabels = {
-  [RequestStatus.PENDING]: 'Đang chờ',
-  [RequestStatus.APPROVED]: 'Đã phê duyệt',
-  [RequestStatus.REJECTED]: 'Từ chối'
-}
 
 const UserQuantityRequest = () => {
   const [requestsData, setRequestsData] = useState<IQuantityRequest[]>([])
@@ -67,10 +43,14 @@ const UserQuantityRequest = () => {
       const query =
         statusFilter !== 'all'
           ? {
+              page: pagination.page,
+              limit: pagination.limit,
               status: statusFilter
             }
           : {
-              status: ''
+              status: '',
+              page: pagination.page,
+              limit: pagination.limit
             }
       const response = await quantityRequestApi.getAllUserRequest(query)
       return response
@@ -88,6 +68,18 @@ const UserQuantityRequest = () => {
       })
     }
   }, [requestsDataFetch, pagination])
+
+  const goToNextPage = (page: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page
+    }))
+  }
+
+  const handleTableChange = async (page: number) => {
+    goToNextPage(page)
+  }
+
   const columns: TableColumnType<ColumnsQuantityRequestType>[] = [
     {
       title: 'Dịch vụ',
@@ -211,21 +203,7 @@ const UserQuantityRequest = () => {
       key: 'status',
       fixed: 'right',
       width: 200,
-      render: (status: RequestStatus) => (
-        <Tag
-          icon={statusIcons[status]}
-          style={{
-            color: statusColors[status],
-            backgroundColor: statusBgColors[status],
-            border: 'none',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontWeight: 500
-          }}
-        >
-          {statusLabels[status]}
-        </Tag>
-      )
+      render: (status: RequestStatus) => renderStatusTag(status)
     }
   ]
 
@@ -337,7 +315,10 @@ const UserQuantityRequest = () => {
             columns={columns}
             rowKey='_id'
             pagination={{
-              pageSize: 10,
+              current: pagination.page,
+              pageSize: pagination.limit,
+              total: pagination.total,
+              onChange: handleTableChange,
               position: ['bottomCenter']
             }}
             style={{ borderRadius: '12px', width: '100%' }}

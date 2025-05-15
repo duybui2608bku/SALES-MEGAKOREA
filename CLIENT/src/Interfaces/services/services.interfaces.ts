@@ -256,7 +256,7 @@ export interface GetServicesCardSoldOfCustomer {
   customers: Customer
   userInfo: UserGeneralInterface
   created_at: string
-  refund?: RefundType | null
+  refund?: RefundType | null | RefundEnum.PENDING
   cards: {
     _id: string
     price: number | null

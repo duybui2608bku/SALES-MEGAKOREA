@@ -104,7 +104,7 @@ const pathServices = {
   approveRequest: 'services-quantity/admin/approve',
   rejectRequest: 'services-quantity/admin/reject',
   // Refund Request
-  getUserRefundRequests: 'refund/user/reuests',
+  getUserRefundRequests: 'refund/user-requests',
   createRefundRequest: 'refund/request',
   getAdminRefundRequests: 'refund/admin/requests',
   getRequestRefundStats: 'refund/admin/stats',
