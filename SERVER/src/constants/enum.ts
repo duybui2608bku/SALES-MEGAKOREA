@@ -117,5 +117,6 @@ export enum RefundEnum {
   NONE = 0,
   PARTIAL_FULL_TREATMENT = 1,
   PARTIAL_HALF_TREATMENT = 2,
-  FULL = 3
+  FULL = 3,
+  PENDING = 4
 }

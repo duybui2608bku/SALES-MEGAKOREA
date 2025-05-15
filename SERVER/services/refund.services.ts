@@ -37,20 +37,20 @@ class RefundServices {
 
   async getUserRequests(data: GetAllRefundRequestBody) {
     const { page, limit, branch, status, date, user_id } = data
+
     const query = {
       branch: branch ? toObjectId(branch) : null,
       status: status ? status : null,
-      date: date ? new Date(date) : null
+      date: date ? new Date(date) : null,
+      user_id: toObjectId(user_id)
     }
+
     const cleanedQuery = removeNullOutOfObject(query)
-    return await refundRepository.getUserRequests(
-      {
-        page: Number(page) || 1,
-        limit: Number(limit) || 10,
-        query: cleanedQuery
-      },
-      user_id
-    )
+    return await refundRepository.getUserRequests({
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+      query: cleanedQuery
+    })
   }
 
   async getRequestHistory(requestId: string, userId: string, userRole: number) {

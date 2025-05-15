@@ -272,7 +272,7 @@ export interface CardServicesSoldOfCustomerType {
   history_paid?: ObjectId[]
   history_used?: HistoryUsed[]
   history_increase_quantity?: HistoryIncreaseQuantity[]
-  refund?: RefundType | null
+  refund?: RefundType | null | RefundEnum.PENDING
   user_id: ObjectId
   employee_commision?: ObjectId[]
   seller_commision?: ObjectId[]

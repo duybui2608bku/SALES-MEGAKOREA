@@ -13,9 +13,24 @@ import {
   GetAllRefundAdminData
 } from '../../src/interface/services/refund.interface'
 
+import { projectionUser } from '~/utils/projection'
+import { RefundEnum } from '~/constants/enum'
+
 export class RefundRepository {
   async createRequest(data: IRefundRequestData): Promise<RefundRequest> {
     const request = new RefundRequest(data)
+
+    const servicesCardSold = await databaseServiceSale.services_card_sold_of_customer.findOne({
+      _id: new ObjectId(data.services_card_sold_of_customer_id)
+    })
+
+    if (servicesCardSold) {
+      await databaseServiceSale.services_card_sold_of_customer.updateOne(
+        { _id: new ObjectId(data.services_card_sold_of_customer_id) },
+        { $set: { refund: RefundEnum.PENDING } }
+      )
+    }
+
     await databaseServiceSale.refundRequests.insertOne(request)
     return request
   }
@@ -32,29 +47,86 @@ export class RefundRepository {
     return history
   }
 
-  async getUserRequests(data: GetAllRefundData, userId: string) {
+  async getUserRequests(data: GetAllRefundData) {
     const { page, limit, query } = data
     const skip = (page - 1) * limit
-    const filter = { ...query, user_id: new ObjectId(userId) }
+
     const requests = await databaseServiceSale.refundRequests
-      .find(filter)
-      .skip(skip)
-      .limit(limit)
-      .sort({ created_at: -1 })
+      .aggregate([
+        {
+          $match: query
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: limit
+        },
+        {
+          $sort: { created_at: -1 }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $lookup: {
+            from: 'branch',
+            localField: 'branch',
+            foreignField: '_id',
+            as: 'branch'
+          }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $unwind: '$branch'
+        },
+        {
+          $project: projectionUser
+        }
+      ])
       .toArray()
-    const total = await databaseServiceSale.refundRequests.countDocuments(filter)
+    const total = await databaseServiceSale.refundRequests.countDocuments(query)
     return { requests, total, page, limit }
   }
 
   async getAllRequests(data: GetAllRefundAdminData) {
     const { page, limit, query } = data
     const skip = (page - 1) * limit
-    const requests = await databaseServiceSale.refundRequests
-      .find(query)
-      .skip(skip)
-      .limit(limit)
-      .sort({ created_at: -1 })
-      .toArray()
+    const requests = await databaseServiceSale.refundRequests.aggregate([
+      {
+        $match: query
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },
+      {
+        $sort: { created_at: -1 }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user_id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $project: projectionUser
+      }
+    ])
     const total = await databaseServiceSale.refundRequests.countDocuments(query)
     return { requests, total, page, limit }
   }

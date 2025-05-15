@@ -19,11 +19,12 @@ refundRouters.use(accessTokenValidator)
 
 // Public refund request routes
 refundRouters.post('/request', wrapRequestHandler(createRefundRequestController))
-refundRouters.get('/user-requests', wrapRequestHandler(getUserRefundRequestsController))
+refundRouters.post('/user-requests', wrapRequestHandler(getUserRefundRequestsController))
 refundRouters.get('/request/:requestId/history', wrapRequestHandler(getRefundRequestHistoryController))
 
 // Admin refund request routes
 const adminRoles = [UserRole.ADMIN, UserRole.MANAGER]
+
 refundRouters.post('/admin/requests', checkRole(adminRoles), wrapRequestHandler(getAllRefundRequestsController))
 refundRouters.get('/admin/stats', checkRole(adminRoles), wrapRequestHandler(getRefundRequestStatsController))
 refundRouters.put('/admin/approve', checkRole(adminRoles), wrapRequestHandler(approveRefundRequestController))
