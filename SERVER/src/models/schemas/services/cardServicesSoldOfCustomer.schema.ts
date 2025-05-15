@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { RefundEnum } from '~/constants/enum'
 import {
   CardServicesSoldOfCustomerType,
   HistoryIncreaseQuantity,
@@ -22,7 +23,7 @@ export class CardServicesSoldOfCustomer {
   user_id: ObjectId
   employee_commision?: ObjectId[]
   seller_commision?: ObjectId[]
-  refund: RefundType | null
+  refund: RefundType | null | RefundEnum.PENDING
   created_at?: Date
   updated_at?: Date
   constructor(cardServices: CardServicesSoldOfCustomerType) {
