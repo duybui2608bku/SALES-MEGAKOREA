@@ -85,10 +85,16 @@ const MainLayout = ({ children }: Props) => {
       newOpenKeys = ['users']
     } else if (isExactPath(path, pathRoutersService.adminQuantityRequests)) {
       newSelectedKey = ['request-quantity-service-admin']
-      newOpenKeys = ['request-quantity-service']
+      newOpenKeys = ['request']
     } else if (isExactPath(path, pathRoutersService.userQuantityRequests)) {
       newSelectedKey = ['request-quantity-service-user']
-      newOpenKeys = ['request-quantity-service']
+      newOpenKeys = ['request']
+    } else if (isExactPath(path, pathRoutersService.adminRefundRequests)) {
+      newSelectedKey = ['request-refund-money-admin']
+      newOpenKeys = ['request']
+    } else if (isExactPath(path, pathRoutersService.userRefundRequests)) {
+      newSelectedKey = ['request-refund-money-user']
+      newOpenKeys = ['request']
     }
 
     setSelectedKey(newSelectedKey)
@@ -137,19 +143,43 @@ const MainLayout = ({ children }: Props) => {
       ]
     },
     {
-      key: 'request-quantity-service',
+      key: 'request',
       label: 'Yêu cầu',
       icon: <FcFlowChart size={20} />,
       children: [
         {
-          key: 'request-quantity-service-admin',
-          label: 'Xét duyệt',
-          onClick: () => navigate(pathRoutersService.adminQuantityRequests)
+          key: 'request-quantity-service',
+          label: 'Tăng số lượng dịch vụ',
+          type: 'group',
+          children: [
+            {
+              key: 'request-quantity-service-admin',
+              label: 'Xét duyệt',
+              onClick: () => navigate(pathRoutersService.adminQuantityRequests)
+            },
+            {
+              key: 'request-quantity-service-user',
+              label: 'Lịch sử yêu cầu',
+              onClick: () => navigate(pathRoutersService.userQuantityRequests)
+            }
+          ]
         },
         {
-          key: 'request-quantity-service-user',
-          label: 'Lịch sử yêu cầu',
-          onClick: () => navigate(pathRoutersService.userQuantityRequests)
+          key: 'request-refund-money',
+          label: 'Hoàn tiền',
+          type: 'group',
+          children: [
+            {
+              key: 'request-refund-money-admin',
+              label: 'Xét duyệt',
+              onClick: () => navigate(pathRoutersService.adminRefundRequests)
+            },
+            {
+              key: 'request-refund-money-user',
+              label: 'Lịch sử yêu cầu',
+              onClick: () => navigate(pathRoutersService.userRefundRequests)
+            }
+          ]
         }
       ]
     },

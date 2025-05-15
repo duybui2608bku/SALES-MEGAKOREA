@@ -150,7 +150,13 @@ export class QuantityRequestRepository {
       .limit(limit)
       .toArray()
 
-    return requests
+    const total = await databaseServiceSale.quantityRequests.countDocuments(query)
+    return {
+      requests,
+      page,
+      limit,
+      total
+    }
   }
 
   /**

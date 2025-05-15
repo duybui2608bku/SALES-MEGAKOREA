@@ -15,7 +15,12 @@ export type GetAllRequestStatsResponse = SuccessResponse<{
   rejected: number
 }>
 
-export type GetAllRequestAdminResponse = SuccessResponse<AllRequestAdmin[]>
+export type GetAllRequestAdminResponse = SuccessResponse<{
+  requests: AllRequestAdmin[]
+  limit: number
+  page: number
+  total: number
+}>
 
 export type ApproveRequestAdminResponse = SuccessResponse<void>
 

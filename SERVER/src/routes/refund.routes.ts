@@ -19,7 +19,7 @@ refundRouters.use(accessTokenValidator)
 
 // Public refund request routes
 refundRouters.post('/request', wrapRequestHandler(createRefundRequestController))
-refundRouters.get('/user-requests', wrapRequestHandler(getUserRefundRequestsController))
+refundRouters.post('/user-requests', wrapRequestHandler(getUserRefundRequestsController))
 refundRouters.get('/request/:requestId/history', wrapRequestHandler(getRefundRequestHistoryController))
 
 // Admin refund request routes

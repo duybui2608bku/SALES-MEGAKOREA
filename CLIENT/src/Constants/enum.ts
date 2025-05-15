@@ -40,7 +40,7 @@ export enum RefundEnum {
   FULL = 3
 }
 
-export enum QuantityRequestStatus {
+export enum RequestStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
   REJECTED = 'rejected'

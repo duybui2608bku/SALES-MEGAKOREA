@@ -1,4 +1,4 @@
-import { QuantityRequestStatus, RoleUser, TypeCommision, UserStatus } from 'src/Constants/enum'
+import { RequestStatus, RoleUser, TypeCommision, UserStatus } from 'src/Constants/enum'
 import { UserGeneralInterface } from '../user/user.interface'
 import { ServicesType } from './services.interfaces'
 
@@ -34,7 +34,7 @@ export interface IQuantityRequest {
   reason?: string
   media?: string[]
   servicesCardSoldId: string
-  status: QuantityRequestStatus
+  status: RequestStatus
   adminNote?: string
   createdAt: Date
   updatedAt: Date
@@ -79,7 +79,7 @@ export interface AllRequestAdmin {
   reason: string
   media: string[]
   servicesCardSoldId: string
-  status: QuantityRequestStatus
+  status: RequestStatus
   adminNote: string
   createdAt: Date
   updatedAt: Date
@@ -118,7 +118,7 @@ export interface IUpdateQuantityRequestStatusPayload {
 }
 
 export interface IQuantityRequestsQueryParams {
-  status?: QuantityRequestStatus
+  status?: RequestStatus
   limit?: number
   skip?: number
 }

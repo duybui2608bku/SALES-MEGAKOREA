@@ -9,29 +9,16 @@ import {
   FilterOutlined,
   CalendarOutlined
 } from '@ant-design/icons'
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Image,
-  Row,
-  Segmented,
-  Select,
-  Space,
-  Table,
-  TableColumnType,
-  Tag,
-  Tooltip,
-  Typography
-} from 'antd'
+import { Avatar, Button, Card, Col, Image, Row, Segmented, Space, Table, TableColumnType, Tag, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { Fragment, useEffect, useState } from 'react'
 // import Title from 'src/Components/Title'
-import { QuantityRequestStatus } from 'src/Constants/enum'
+import { RequestStatus } from 'src/Constants/enum'
 import { IQuantityRequest } from 'src/Interfaces/services/quantity-request.interfaces'
 import quantityRequestApi from 'src/Service/services/services.quantityRequest.api'
 import { handleRefresh } from 'src/Utils/util.utils'
+import ExpandableParagraph from 'src/Components/ExpandableParagraph'
+import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowUp } from 'react-icons/md'
 const { Text, Title } = Typography
 
 type ColumnsQuantityRequestType = IQuantityRequest
@@ -41,31 +28,37 @@ const PAGE = 1
 const STALETIME = 5 * 60 * 1000
 
 const statusColors = {
-  [QuantityRequestStatus.PENDING]: 'gold',
-  [QuantityRequestStatus.APPROVED]: 'green',
-  [QuantityRequestStatus.REJECTED]: 'red'
+  [RequestStatus.PENDING]: '#faad14',
+  [RequestStatus.APPROVED]: '#52c41a',
+  [RequestStatus.REJECTED]: '#ff4d4f'
 }
 
 const statusIcons = {
-  [QuantityRequestStatus.PENDING]: <ClockCircleOutlined />,
-  [QuantityRequestStatus.APPROVED]: <CheckCircleOutlined />,
-  [QuantityRequestStatus.REJECTED]: <CloseCircleOutlined />
+  [RequestStatus.PENDING]: <ClockCircleOutlined />,
+  [RequestStatus.APPROVED]: <CheckCircleOutlined />,
+  [RequestStatus.REJECTED]: <CloseCircleOutlined />
+}
+
+const statusBgColors = {
+  [RequestStatus.PENDING]: 'rgba(250, 173, 20, 0.1)',
+  [RequestStatus.APPROVED]: 'rgba(82, 196, 26, 0.1)',
+  [RequestStatus.REJECTED]: 'rgba(255, 77, 79, 0.1)'
 }
 
 const statusLabels = {
-  [QuantityRequestStatus.PENDING]: 'Đang chờ',
-  [QuantityRequestStatus.APPROVED]: 'Đã phê duyệt',
-  [QuantityRequestStatus.REJECTED]: 'Từ chối'
+  [RequestStatus.PENDING]: 'Đang chờ',
+  [RequestStatus.APPROVED]: 'Đã phê duyệt',
+  [RequestStatus.REJECTED]: 'Từ chối'
 }
 
-const UserRequest = () => {
+const UserQuantityRequest = () => {
   const [requestsData, setRequestsData] = useState<IQuantityRequest[]>([])
   const [pagination, setPagination] = useState({
     page: PAGE,
     limit: LIMIT,
     total: 0
   })
-  const [statusFilter, setStatusFilter] = useState<QuantityRequestStatus | 'all'>('all')
+  const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('all')
 
   // Fetch data from API
   const { data: requestsDataFetch, isLoading } = useQuery({
@@ -103,7 +96,7 @@ const UserRequest = () => {
       fixed: 'left',
       width: 200,
       render: (_, record) => (
-        <Space>
+        <Space style={{ gap: '20px' }}>
           <Avatar
             size='small'
             style={{
@@ -121,42 +114,78 @@ const UserRequest = () => {
       )
     },
     {
-      title: 'Số lượng hiện tại',
+      title: 'Số lượng',
+      key: 'quantity',
+      width: 250,
       align: 'center',
-      dataIndex: 'currentQuantity',
-      key: 'currentQuantity',
-      width: 180
+      render: (_, record) => {
+        return (
+          <Space
+            direction='vertical'
+            size={0}
+            style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'start',
+                justifyContent: 'flex-start',
+                flexDirection: 'column'
+              }}
+            >
+              <Text style={{ fontSize: '13px' }}>Số lượng ban đầu: {record.currentQuantity}</Text>
+
+              <Text style={{ fontSize: '13px', fontWeight: 'bold', color: '#1890ff' }}>
+                Số lượng yêu cầu: {record.requestedQuantity}
+              </Text>
+            </div>
+          </Space>
+        )
+      }
     },
     {
-      title: 'Số lượng yêu cầu',
-      align: 'center',
-      dataIndex: 'requestedQuantity',
-      key: 'requestedQuantity',
-      width: 180
-    },
-    {
-      title: 'Lý do',
+      title: 'Lý do yêu cầu',
       dataIndex: 'reason',
       key: 'reason',
-      width: 200,
-      render: (note: string | undefined) => (
-        <Tooltip title={note}>
-          <Text>{note || 'Không có'}</Text>
-        </Tooltip>
-      ),
-      ellipsis: true
+      width: 220,
+      render: (reason: string) => (
+        <ExpandableParagraph
+          text={reason}
+          rows={1}
+          lessText={<MdOutlineKeyboardDoubleArrowUp />}
+          moreText={<MdOutlineKeyboardDoubleArrowDown />}
+        />
+      )
     },
     {
       title: 'Ghi chú Admin',
       dataIndex: 'adminNote',
       key: 'adminNote',
       width: 200,
-      render: (note: string | undefined) => (
-        <Tooltip title={note}>
-          <Text>{note || 'Không có'}</Text>
-        </Tooltip>
-      ),
-      ellipsis: true
+      render: (note: string) => (
+        <ExpandableParagraph
+          text={note ? note : 'Không có'}
+          rows={1}
+          lessText={<MdOutlineKeyboardDoubleArrowUp />}
+          moreText={<MdOutlineKeyboardDoubleArrowDown />}
+        />
+      )
+    },
+    {
+      title: 'Hình ảnh chứng minh',
+      dataIndex: 'media',
+      key: 'media',
+      width: 200,
+      align: 'center',
+      render: (media) => (
+        <Image
+          preview={{ src: media }}
+          style={{ objectFit: 'cover', borderRadius: '8px' }}
+          width={'40px'}
+          height={'40px'}
+          src={media}
+        />
+      )
     },
     {
       title: 'Ngày tạo',
@@ -176,30 +205,24 @@ const UserRequest = () => {
       sorter: (a: IQuantityRequest, b: IQuantityRequest) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix()
     },
     {
-      title: 'Hình ảnh',
-      dataIndex: 'media',
-      key: 'media',
-      width: 200,
-      align: 'center',
-      render: (media) => (
-        <Image
-          preview={{ src: media }}
-          style={{ objectFit: 'cover', borderRadius: '8px' }}
-          width={'60px'}
-          height={'60px'}
-          src={media}
-        />
-      )
-    },
-    {
       title: 'Trạng thái',
       dataIndex: 'status',
       align: 'center',
       key: 'status',
       fixed: 'right',
       width: 200,
-      render: (status: QuantityRequestStatus) => (
-        <Tag color={statusColors[status]} icon={statusIcons[status]}>
+      render: (status: RequestStatus) => (
+        <Tag
+          icon={statusIcons[status]}
+          style={{
+            color: statusColors[status],
+            backgroundColor: statusBgColors[status],
+            border: 'none',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontWeight: 500
+          }}
+        >
           {statusLabels[status]}
         </Tag>
       )
@@ -207,7 +230,7 @@ const UserRequest = () => {
   ]
 
   const handleStatusFilterChange = (value: string | number) => {
-    setStatusFilter(value as QuantityRequestStatus | 'all')
+    setStatusFilter(value as RequestStatus | 'all')
   }
 
   return (
@@ -274,7 +297,7 @@ const UserRequest = () => {
                       </div>
                     </div>
                   ),
-                  value: QuantityRequestStatus.PENDING
+                  value: RequestStatus.PENDING
                 },
                 {
                   label: (
@@ -284,7 +307,7 @@ const UserRequest = () => {
                       </div>
                     </div>
                   ),
-                  value: QuantityRequestStatus.APPROVED
+                  value: RequestStatus.APPROVED
                 },
                 {
                   label: (
@@ -294,7 +317,7 @@ const UserRequest = () => {
                       </div>
                     </div>
                   ),
-                  value: QuantityRequestStatus.REJECTED
+                  value: RequestStatus.REJECTED
                 }
               ]}
               value={statusFilter}
@@ -326,4 +349,4 @@ const UserRequest = () => {
   )
 }
 
-export default UserRequest
+export default UserQuantityRequest

@@ -28,8 +28,10 @@ import StepService from './Pages/Services/Step.service'
 import UserCommisionSale from './Pages/User/UserCommisionSale'
 import UserCommisionTechnican from './Pages/User/UserommisionTechnican'
 import NotFoundPage from './Pages/404/404'
-import UserRequest from './Pages/Services/QuantityRequests/UserRequests'
-import AdminRequest from './Pages/Services/QuantityRequests/AdminRequests'
+import UserQuantityRequest from './Pages/Services/QuantityRequests/UserQuantityRequests'
+import AdminQuantityRequest from './Pages/Services/QuantityRequests/AdminQuantityRequests'
+import AdminRefundRequest from './Pages/Services/RefundRequests/AdminRefundRequests'
+import UserRefundRequest from './Pages/Services/RefundRequests/UserRefundRequests'
 
 const useRouterElements = () => {
   const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: number[] }) => {
@@ -162,7 +164,15 @@ const useRouterElements = () => {
           path: pathRoutersService.userQuantityRequests,
           element: (
             <MainLayout>
-              <UserRequest />
+              <UserQuantityRequest />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.userRefundRequests,
+          element: (
+            <MainLayout>
+              <UserRefundRequest />
             </MainLayout>
           )
         }
@@ -176,7 +186,15 @@ const useRouterElements = () => {
           path: pathRoutersService.adminQuantityRequests,
           element: (
             <MainLayout>
-              <AdminRequest />
+              <AdminQuantityRequest />
+            </MainLayout>
+          )
+        },
+        {
+          path: pathRoutersService.adminRefundRequests,
+          element: (
+            <MainLayout>
+              <AdminRefundRequest />
             </MainLayout>
           )
         }
