@@ -70,7 +70,16 @@ const StatisticCard = (props: StatisticCardProps) => {
 
   return (
     <Col xs={24} sm={colSpan}>
-      <Card loading={loading} style={cardStyle} hoverable bodyStyle={{ padding: '10px 24px' }}>
+      <Card
+        loading={loading}
+        style={cardStyle}
+        hoverable
+        styles={{
+          body: {
+            padding: '10px 24px'
+          }
+        }}
+      >
         <Text
           style={{
             color: 'rgba(255, 255, 255, 0.8)',

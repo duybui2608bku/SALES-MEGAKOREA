@@ -41,8 +41,10 @@ const CustomerSingleCard: React.FC<CustomerSingleCardProps> = ({ data }) => {
         background: 'linear-gradient(145deg, #f6f9fc 0%, #ffffff 100%)',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease'
       }}
-      bodyStyle={{
-        padding: '30px'
+      styles={{
+        body: {
+          padding: '30px'
+        }
       }}
     >
       <Space direction='vertical' size='large' style={{ width: '100%' }}>

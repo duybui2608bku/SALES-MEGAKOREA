@@ -145,7 +145,11 @@ const UserCommisionSale = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '20px 24px' }}
+          styles={{
+            body: {
+              padding: '20px 24px'
+            }
+          }}
         >
           <Row align='middle' justify='space-between'>
             <Col>
@@ -220,7 +224,11 @@ const UserCommisionSale = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '0' }}
+          styles={{
+            body: {
+              padding: '0'
+            }
+          }}
         >
           <Table
             loading={isLoading}

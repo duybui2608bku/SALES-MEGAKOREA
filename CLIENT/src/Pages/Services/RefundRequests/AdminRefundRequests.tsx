@@ -6,7 +6,6 @@ import {
   Col,
   Dropdown,
   List,
-  Menu,
   message,
   Modal,
   Row,
@@ -39,7 +38,7 @@ import {
 } from '@ant-design/icons'
 import { Fragment } from 'react/jsx-runtime'
 import { RefundEnum, RequestStatus } from 'src/Constants/enum'
-import { handleRefresh } from 'src/Utils/util.utils'
+import { handleRefresh, validateQuery } from 'src/Utils/util.utils'
 import { GiTakeMyMoney } from 'react-icons/gi'
 import StatCard from 'src/Components/StatsCard'
 import { useEffect, useState } from 'react'
@@ -88,7 +87,6 @@ const AdminRefundRequest = () => {
   const [adminNote, setAdminNote] = useState<string>('')
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [showDetail, setShowDetail] = useState<boolean>(false)
-  const [messageApi, contextHolder] = message.useMessage()
 
   // Fetch data allRefundRequest API
   const { data: allRefundRequestAdminDataFetch, isLoading: loadingAllRefundRequest } = useQuery({
@@ -177,7 +175,8 @@ const AdminRefundRequest = () => {
     },
     onSuccess: () => {
       message.success('Yêu cầu đã được phê duyệt thành công!')
-      queryClient.invalidateQueries({ queryKey: ['refundRequestsAdmin'] })
+      // queryClient.invalidateQueries({ queryKey: ['refundRequestsAdmin'] })
+      validateQuery(['services-card-sold-customer', 'refundRequestsAdmin', 'refundRequestUser'])
     },
     onError: (error: any, _, context) => {
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
@@ -227,14 +226,14 @@ const AdminRefundRequest = () => {
         approveRequestMutation.mutate(payload)
       } else {
         rejectRequestMutation.mutate(payload)
-        messageApi.success('Yêu cầu đã bị từ chối')
+        message.success('Yêu cầu đã bị từ chối')
       }
 
       setNoteModalVisible(false)
     } catch (err) {
       console.error(`Failed to ${actionType} request:`, err)
       const action = actionType === 'approve' ? 'phê duyệt' : 'từ chối'
-      messageApi.error(`Đã xảy ra lỗi khi ${action} yêu cầu. Vui lòng thử lại sau.`)
+      message.error(`Đã xảy ra lỗi khi ${action} yêu cầu. Vui lòng thử lại sau.`)
     } finally {
       setSubmitting(false)
     }
@@ -264,7 +263,6 @@ const AdminRefundRequest = () => {
       dataIndex: ['user', 'name'],
       key: 'userName',
       width: 300,
-      fixed: 'left',
       render: (_, record) => (
         <Space>
           <Avatar
@@ -339,7 +337,6 @@ const AdminRefundRequest = () => {
       title: 'Phương thức hoàn tiền',
       key: 'refund_type',
       dataIndex: 'refund_type',
-      align: 'center',
       width: 250,
       render: (refundType: RefundEnum) => renderRefundTag(refundType)
     },
@@ -394,7 +391,7 @@ const AdminRefundRequest = () => {
       align: 'center',
       key: 'status',
       fixed: 'right',
-      width: 200,
+      width: 180,
       render: (status: RequestStatus) => renderStatusTag(status)
     },
     {
@@ -402,39 +399,37 @@ const AdminRefundRequest = () => {
       key: 'action',
       align: 'center',
       fixed: 'right',
-      width: 200,
+      width: 180,
       render: (_, record) => {
-        const menu = (
-          <Menu>
-            <Menu.Item
-              key='detail'
-              icon={<FileSearchOutlined style={{ color: '#1677ff' }} />}
-              onClick={() => handleShowDetail(record)}
-            >
-              Chi tiết
-            </Menu.Item>
+        const menuItems = [
+          {
+            key: 'detail',
+            icon: <FileSearchOutlined style={{ color: '#1677ff' }} />,
+            label: 'Chi tiết',
+            onClick: () => handleShowDetail(record)
+          }
+        ]
 
-            {record.status === RequestStatus.PENDING && [
-              <Menu.Item
-                key='approve'
-                icon={<CheckOutlined style={{ color: '#52c41a' }} />}
-                onClick={() => handleConfirmAction(record, 'approve')}
-              >
-                Phê duyệt
-              </Menu.Item>,
-              <Menu.Item
-                key='reject'
-                icon={<CloseOutlined style={{ color: '#ff4d4f' }} />}
-                onClick={() => handleConfirmAction(record, 'reject')}
-              >
-                Từ chối
-              </Menu.Item>
-            ]}
-          </Menu>
-        )
+        // Thêm các mục menu phụ thuộc vào điều kiện
+        if (record.status === RequestStatus.PENDING) {
+          menuItems.push(
+            {
+              key: 'approve',
+              icon: <CheckOutlined style={{ color: '#52c41a' }} />,
+              label: 'Phê duyệt',
+              onClick: () => handleConfirmAction(record, 'approve')
+            },
+            {
+              key: 'reject',
+              icon: <CloseOutlined style={{ color: '#ff4d4f' }} />,
+              label: 'Từ chối',
+              onClick: () => handleConfirmAction(record, 'reject')
+            }
+          )
+        }
 
         return (
-          <Dropdown overlay={menu} trigger={['click']}>
+          <Dropdown menu={{ items: menuItems }} trigger={['click']}>
             <Button style={{ borderRadius: '6px', fontSize: '11px', height: '28px' }}>
               Hành động <DownOutlined style={{ fontSize: '10px' }} />
             </Button>
@@ -451,14 +446,17 @@ const AdminRefundRequest = () => {
   return (
     <Fragment>
       <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-        {contextHolder}
         <Card
           style={{
             marginBottom: '24px',
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '20px 24px' }}
+          styles={{
+            body: {
+              padding: '20px 24px'
+            }
+          }}
         >
           <Row align='middle' justify='space-between'>
             <Col>
@@ -560,7 +558,11 @@ const AdminRefundRequest = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '0' }}
+          styles={{
+            body: {
+              padding: '0'
+            }
+          }}
         >
           <Table
             sticky
@@ -618,9 +620,13 @@ const AdminRefundRequest = () => {
               {actionType === 'approve' ? 'Phê duyệt' : 'Từ chối'}
             </Button>
           ]}
-          bodyStyle={{ padding: '20px' }}
           centered
-          styles={{ header: { paddingBottom: 0, borderBottom: 'none' } }}
+          styles={{
+            header: { paddingBottom: 0, borderBottom: 'none' },
+            body: {
+              padding: '20px'
+            }
+          }}
         >
           {currentRequest && (
             <div
@@ -760,7 +766,11 @@ const AdminRefundRequest = () => {
                       borderRadius: '12px',
                       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                     }}
-                    bodyStyle={{ padding: '20px' }}
+                    styles={{
+                      body: {
+                        padding: '20px'
+                      }
+                    }}
                   >
                     <Row gutter={16} align='middle'>
                       <Col xs={24} sm={8}>
@@ -823,11 +833,15 @@ const AdminRefundRequest = () => {
                       borderRadius: '12px',
                       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                     }}
-                    bodyStyle={{ padding: '20px' }}
+                    styles={{
+                      body: {
+                        padding: '20px'
+                      }
+                    }}
                   >
                     <Row gutter={[16, 16]}>
                       <Col xs={24} md={12}>
-                        <Card bordered={false} style={{ backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+                        <Card style={{ backgroundColor: '#f9f9f9', borderRadius: '8px', border: 'none' }}>
                           <Statistic
                             title={<Text type='secondary'>Tiền khách thanh toán</Text>}
                             value={currentRequest.current_price.toLocaleString('vi-VN')}
@@ -838,8 +852,7 @@ const AdminRefundRequest = () => {
                       </Col>
                       <Col xs={24} md={12}>
                         <Card
-                          bordered={false}
-                          style={{ backgroundColor: 'rgba(24, 144, 255, 0.05)', borderRadius: '8px' }}
+                          style={{ backgroundColor: 'rgba(24, 144, 255, 0.05)', borderRadius: '8px', border: 'none' }}
                         >
                           <Statistic
                             title={<Text type='secondary'>Số tiền cần hoàn</Text>}
@@ -865,7 +878,11 @@ const AdminRefundRequest = () => {
                       borderRadius: '12px',
                       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                     }}
-                    bodyStyle={{ padding: '20px' }}
+                    styles={{
+                      body: {
+                        padding: '20px'
+                      }
+                    }}
                   >
                     <Paragraph style={{ backgroundColor: '#f9f9f9', padding: '16px', borderRadius: '8px', margin: 0 }}>
                       {currentRequest.reason || 'Không có lý do cụ thể.'}
@@ -886,7 +903,11 @@ const AdminRefundRequest = () => {
                         borderRadius: '12px',
                         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                       }}
-                      bodyStyle={{ padding: '20px' }}
+                      styles={{
+                        body: {
+                          padding: '20px'
+                        }
+                      }}
                       extra={
                         <Tag color={currentRequest.status === RequestStatus.APPROVED ? 'success' : 'error'}>
                           {currentRequest.status === RequestStatus.APPROVED ? 'Đã phê duyệt' : 'Đã từ chối'}

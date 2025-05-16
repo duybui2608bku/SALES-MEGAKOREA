@@ -61,7 +61,12 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
       }
       width={900}
       centered
-      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
+      styles={{
+        body: {
+          maxHeight: '70vh',
+          overflowY: 'auto'
+        }
+      }}
     >
       <Space direction='vertical' style={{ width: '100%' }} size='middle'>
         {sortedData.map((history, index) => (
@@ -74,7 +79,12 @@ const ModalViewHistoryPaid: React.FC<ModalViewHistoryPaidProps> = ({ open, onCan
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
               background: '#fafafa'
             }}
-            headStyle={{ background: '#e6f7ff', borderBottom: 'none' }}
+            styles={{
+              header: {
+                background: '#e6f7ff',
+                borderBottom: 'none'
+              }
+            }}
           >
             <Descriptions column={2} bordered size='small' labelStyle={{ width: '30%' }}>
               <Descriptions.Item label='Số tiền thanh toán'>

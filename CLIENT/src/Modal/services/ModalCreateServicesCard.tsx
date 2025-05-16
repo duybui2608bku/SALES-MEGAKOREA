@@ -292,11 +292,10 @@ const ModalCreateServiceCard = (props: ModalCreateServiceCardProps) => {
                       <Typography.Title level={5}>Dịch vụ</Typography.Title>
                       {fields.map(({ key, name, ...restField }) => (
                         <Card
-                          style={{ marginBottom: 16 }}
+                          style={{ marginBottom: 16, border: 'none' }}
                           title={`Dịch vụ ${name + 1}`}
                           size='small'
                           extra={<MinusCircleOutlined onClick={() => remove(name)} />}
-                          bordered
                           hoverable
                           key={key}
                         >

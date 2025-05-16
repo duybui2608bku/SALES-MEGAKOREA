@@ -162,8 +162,7 @@ const UserRefundRequest = () => {
       title: 'Phương thức hoàn tiền',
       key: 'refund_type',
       dataIndex: 'refund_type',
-      align: 'center',
-      width: 250,
+      width: 230,
       render: (refundType: RefundEnum) => renderRefundTag(refundType)
     },
     {
@@ -217,7 +216,7 @@ const UserRefundRequest = () => {
       align: 'center',
       key: 'status',
       fixed: 'right',
-      width: 200,
+      width: 180,
       render: (status: RequestStatus) => renderStatusTag(status)
     }
   ]
@@ -321,7 +320,11 @@ const UserRefundRequest = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '0' }}
+          styles={{
+            body: {
+              padding: '0'
+            }
+          }}
         >
           <Table
             sticky

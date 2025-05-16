@@ -389,7 +389,14 @@ const ModalUpdateServicesCardSold = (props: ModalUpdateServicesCardSoldProps) =>
                       padding: '8px 5px',
                       border: 'none'
                     }}
-                    bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
+                    styles={{
+                      body: {
+                        padding: '16px',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }
+                    }}
                   >
                     <div style={{ flexGrow: 1 }}>
                       <Flex

@@ -555,7 +555,9 @@ const SoldServicesCard = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '20px 24px' }}
+          styles={{
+            body: { padding: '20px 24px' } // Thay thế bodyStyle bằng styles.body
+          }}
         >
           <Row align='middle' justify='space-between'>
             <Col>
@@ -668,7 +670,11 @@ const SoldServicesCard = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '0' }}
+          styles={{
+            body: {
+              padding: '0'
+            }
+          }}
         >
           <Table
             sticky

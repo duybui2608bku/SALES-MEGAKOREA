@@ -37,7 +37,7 @@ const ServiceCard = (props: ServiceCardProps) => {
         padding: '8px 5px',
         border: isHandleSelect ? (selected ? '2px solid #1890ff' : '2px solid transparent') : 'none'
       }}
-      bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
+      styles={{ body: { padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' } }}
       onClick={() => isHandleSelect && onCardClick && onCardClick(card._id)}
     >
       <div style={{ flexGrow: 1 }}>

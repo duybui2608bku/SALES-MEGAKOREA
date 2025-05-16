@@ -172,112 +172,138 @@ const UserCommisionTechnican = () => {
 
   return (
     <Fragment>
-      <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-        <Card
-          style={{
-            marginBottom: '24px',
-            borderRadius: '12px',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
-          }}
-          bodyStyle={{ padding: '20px 24px' }}
-        >
-          <Row align='middle' justify='space-between'>
-            <Col>
-              <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
-                <FaUserDoctor style={{ marginRight: '12px', color: '#1890ff' }} />
-                Hoa hồng kỹ thuật viên
-              </Title>
+      <div
+        style={{
+          padding: '24px',
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #e6f0ff, #bad6ff, #90c1ff)',
+          backgroundSize: '400% 400%',
+          animation: 'gradientBG 15s ease infinite',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+        className='bg-container'
+      >
+        <div className='color-orb1'></div>
+        <div className='color-orb2'></div>
+        <div className='color-orb3'></div>
+        <div className='color-orb4'></div>
+        <div className='color-orb5'></div>
+        <div className='glassMorphism' style={{ padding: '30px', margin: '20px', borderRadius: '15px' }}>
+          <Card
+            style={{
+              marginBottom: '24px',
+              borderRadius: '12px',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+            }}
+            styles={{
+              body: {
+                padding: '20px 24px'
+              }
+            }}
+          >
+            <Row align='middle' justify='space-between'>
+              <Col>
+                <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                  <FaUserDoctor style={{ marginRight: '12px', color: '#1890ff' }} />
+                  Hoa hồng kỹ thuật viên
+                </Title>
+              </Col>
+              <Col>
+                <Button
+                  type='primary'
+                  icon={<ReloadOutlined />}
+                  onClick={() => handleRefresh('commisionTechnican')}
+                  style={{
+                    fontSize: '12px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
+                  }}
+                >
+                  Làm mới dữ liệu
+                </Button>
+              </Col>
+            </Row>
+          </Card>
+
+          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+            <Col xs={24} sm={12} lg={6}>
+              <StatCard
+                title='Tổng hoa hồng'
+                value={formatCurrency(summary.totalCommision)}
+                icon={<DollarOutlined />}
+                color='#1890ff'
+              />
             </Col>
-            <Col>
-              <Button
-                type='primary'
-                icon={<ReloadOutlined />}
-                onClick={() => handleRefresh('commisionTechnican')}
-                style={{
-                  fontSize: '12px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
-                }}
-              >
-                Làm mới dữ liệu
-              </Button>
+            <Col xs={24} sm={12} lg={6}>
+              <StatCard
+                title='Hoa hồng %'
+                value={formatCurrency(summary.totalPercentCommision)}
+                icon={<PercentageOutlined />}
+                color='#faad14'
+              />
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <StatCard
+                title='Hoa hồng cố định'
+                value={formatCurrency(summary.totalFixedCommision)}
+                icon={<DollarOutlined />}
+                color='#52c41a'
+              />
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <StatCard title='Tổng kỹ thuật viên' value={summary.totalUser} icon={<TeamOutlined />} color='#ff4d4f' />
             </Col>
           </Row>
-        </Card>
 
-        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-          <Col xs={24} sm={12} lg={6}>
-            <StatCard
-              title='Tổng hoa hồng'
-              value={formatCurrency(summary.totalCommision)}
-              icon={<DollarOutlined />}
-              color='#1890ff'
-            />
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <StatCard
-              title='Hoa hồng %'
-              value={formatCurrency(summary.totalPercentCommision)}
-              icon={<PercentageOutlined />}
-              color='#faad14'
-            />
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <StatCard
-              title='Hoa hồng cố định'
-              value={formatCurrency(summary.totalFixedCommision)}
-              icon={<DollarOutlined />}
-              color='#52c41a'
-            />
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <StatCard title='Tổng kỹ thuật viên' value={summary.totalUser} icon={<TeamOutlined />} color='#ff4d4f' />
-          </Col>
-        </Row>
+          <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+            <Col xs={24} sm={12} md={4} lg={4}>
+              <OptionsBranch onchange={(value) => console.log(value)} />
+            </Col>
+            <Col xs={24} sm={12} md={4} lg={4}>
+              <OptionsGetUsersWithRole role={RoleUser.TECHNICIAN} search onchange={(value) => setSearchQuery(value)} />
+            </Col>
+            <Col xs={24} sm={12} md={4} lg={4}>
+              <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDateQuery(value)} />
+            </Col>
+          </Row>
 
-        <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
-          <Col xs={24} sm={12} md={4} lg={4}>
-            <OptionsBranch onchange={(value) => console.log(value)} />
-          </Col>
-          <Col xs={24} sm={12} md={4} lg={4}>
-            <OptionsGetUsersWithRole role={RoleUser.TECHNICIAN} search onchange={(value) => setSearchQuery(value)} />
-          </Col>
-          <Col xs={24} sm={12} md={4} lg={4}>
-            <DatePickerComponent isRange={false} disableDate={true} onChange={(value) => setDateQuery(value)} />
-          </Col>
-        </Row>
-
-        <Card
-          title={
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FilterOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-              <span>Danh sách hoa hồng</span>
-            </div>
-          }
-          style={{
-            borderRadius: '12px',
-            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
-          }}
-          bodyStyle={{ padding: '0' }}
-        >
-          <Table
-            loading={isLoading}
-            sticky
-            style={{ width: '100%', borderRadius: '12px' }}
-            scroll={{ x: '1400px' }}
-            columns={columns}
-            dataSource={commisionTechnican}
-            pagination={{
-              current: pagination.page,
-              pageSize: pagination.limit,
-              total: pagination.total,
-              onChange: handleTableChange,
-              position: ['bottomCenter']
+          <Card
+            title={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <FilterOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                <span>Danh sách hoa hồng</span>
+              </div>
+            }
+            style={{
+              borderRadius: '12px',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
             }}
-          />
-        </Card>
+            styles={{
+              body: {
+                padding: '0'
+              }
+            }}
+          >
+            <Table
+              loading={isLoading}
+              sticky
+              style={{ width: '100%', borderRadius: '12px' }}
+              scroll={{ x: '1400px' }}
+              columns={columns}
+              dataSource={commisionTechnican}
+              pagination={{
+                current: pagination.page,
+                pageSize: pagination.limit,
+                total: pagination.total,
+                onChange: handleTableChange,
+                position: ['bottomCenter']
+              }}
+            />
+          </Card>
+        </div>
 
         <style>{`
         .stat-card {
