@@ -176,7 +176,6 @@ const UserCommisionTechnican = () => {
         style={{
           padding: '24px',
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #e6f0ff, #bad6ff, #90c1ff)',
           backgroundSize: '400% 400%',
           animation: 'gradientBG 15s ease infinite',
           position: 'relative',
@@ -184,12 +183,15 @@ const UserCommisionTechnican = () => {
         }}
         className='bg-container'
       >
-        <div className='color-orb1'></div>
-        <div className='color-orb2'></div>
-        <div className='color-orb3'></div>
-        <div className='color-orb4'></div>
-        <div className='color-orb5'></div>
-        <div className='glassMorphism' style={{ padding: '30px', margin: '20px', borderRadius: '15px' }}>
+        <div className='blue-orb1'></div>
+        <div className='blue-orb2'></div>
+        <div className='blue-orb3'></div>
+        <div className='blue-orb4'></div>
+        <div className='blue-orb5'></div>
+        <div className='blue-orb6'></div>
+        <div className='blue-orb7'></div>
+        <div className='blue-orb8'></div>
+        <div className='glassMorphism'>
           <Card
             style={{
               marginBottom: '24px',

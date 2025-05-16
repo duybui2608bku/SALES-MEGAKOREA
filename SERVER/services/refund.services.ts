@@ -139,6 +139,21 @@ class RefundServices {
       })
     }
 
+    const serviceCardSoldOfCustomer = await databaseServiceSale.services_card_sold_of_customer.findOne({
+      _id: request.services_card_sold_of_customer_id
+    })
+
+    if (serviceCardSoldOfCustomer) {
+      await databaseServiceSale.services_card_sold_of_customer.updateOne(
+        { _id: request.services_card_sold_of_customer_id },
+        {
+          $set: {
+            refund: null
+          }
+        }
+      )
+    }
+
     const updatedRequest = await refundRepository.updateRequestStatus(request_id, RefundRequestStatus.REJECTED, note)
 
     await refundRepository.createRequestHistory({

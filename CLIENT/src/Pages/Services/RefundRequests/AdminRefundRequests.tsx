@@ -197,7 +197,8 @@ const AdminRefundRequest = () => {
     },
     onSuccess: () => {
       message.success('Yêu cầu đã bị từ chối!')
-      queryClient.invalidateQueries({ queryKey: ['refundRequestsAdmin'] })
+      // queryClient.invalidateQueries({ queryKey: ['refundRequestsAdmin'] })
+      validateQuery(['services-card-sold-customer', 'refundRequestsAdmin', 'refundRequestUser'])
     },
     onError: (error: any, _, context) => {
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
