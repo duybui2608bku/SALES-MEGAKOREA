@@ -306,7 +306,11 @@ const UserQuantityRequest = () => {
             borderRadius: '12px',
             boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
           }}
-          bodyStyle={{ padding: '0' }}
+          styles={{
+            body: {
+              padding: '0'
+            }
+          }}
         >
           <Table
             sticky

@@ -205,7 +205,7 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
         />
       </div>
 
-      <Card bordered={false} className='invoice-card'>
+      <Card style={{ border: 'none' }} className='invoice-card'>
         {/* Header */}
         <Row align='middle' justify='space-between' style={{ marginBottom: '20px', flexDirection: 'column' }}>
           <Col style={{ marginBottom: '20px', marginTop: 0 }}>
@@ -433,7 +433,11 @@ const InvoicePrintPreview = (props: InvoicePrintPreviewProps) => {
           onCancel={onCancel}
           width={600}
           footer={null}
-          bodyStyle={{ padding: 0 }}
+          styles={{
+            body: {
+              padding: 0
+            }
+          }}
           centered
           className='no-print'
         >

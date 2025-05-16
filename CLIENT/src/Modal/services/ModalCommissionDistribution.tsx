@@ -203,16 +203,18 @@ const ModalCommissionDistribution = ({ open, onClose, serviceCardData }: ModalCo
       footer={null}
       destroyOnClose
       centered
-      bodyStyle={{
-        padding: '24px',
-        backgroundColor: '#f7fafc'
+      styles={{
+        body: {
+          padding: '24px',
+          backgroundColor: '#f7fafc'
+        }
       }}
     >
       {serviceCardData && (
         <div style={{ maxHeight: '80vh', overflowY: 'scroll' }}>
           <Card
-            bordered={false}
             style={{
+              border: 'none',
               marginBottom: 24,
               boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
               borderRadius: '8px',
@@ -271,8 +273,8 @@ const ModalCommissionDistribution = ({ open, onClose, serviceCardData }: ModalCo
                 <UserAddOutlined /> Thêm Nhân Viên
               </Text>
             }
-            bordered={false}
             style={{
+              border: 'none',
               marginBottom: 24,
               borderRadius: '8px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.09)'
@@ -334,8 +336,8 @@ const ModalCommissionDistribution = ({ open, onClose, serviceCardData }: ModalCo
                 <TeamOutlined /> Danh Sách Chia Hoa Hồng
               </Text>
             }
-            bordered={false}
             style={{
+              border: 'none',
               marginBottom: 24,
               borderRadius: '8px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.09)'

@@ -40,7 +40,12 @@ const ModalViewHistoryUsed = (props: ModalViewHistoryUsedProps) => {
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
               background: '#fafafa'
             }}
-            headStyle={{ background: '#e6f7ff', borderBottom: 'none' }}
+            styles={{
+              header: {
+                background: '#e6f7ff',
+                borderBottom: 'none'
+              }
+            }}
           >
             <Space direction='vertical' style={{ width: '100%' }}>
               <Descriptions column={2} bordered size='small'>

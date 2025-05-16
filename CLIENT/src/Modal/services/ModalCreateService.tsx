@@ -488,11 +488,10 @@ const ModalCreateService = (props: ModalCreateServiceProps) => {
                         const stepService = form.getFieldValue(['step_services', name]) || {}
                         return (
                           <Card
-                            style={{ marginBottom: 16 }}
+                            style={{ marginBottom: 16, border: 'none' }}
                             title={`Bước ${name + 1}` || 'Bước 1'}
                             size='small'
                             extra={<MinusCircleOutlined onClick={() => remove(name)} />}
-                            bordered
                             className='card-step'
                             hoverable
                             key={key}

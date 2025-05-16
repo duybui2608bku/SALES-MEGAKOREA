@@ -42,7 +42,14 @@ const PreviewServiceCardCreated = (props: PreviewServiceCardCreatedProp) => {
         padding: '8px 5px',
         border: 'none'
       }}
-      bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
+      styles={{
+        body: {
+          padding: '16px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }}
     >
       <div style={{ flexGrow: 1 }}>
         <Flex justify='space-between' align='center' style={{ marginBottom: '12px', flexDirection: 'row' }}>

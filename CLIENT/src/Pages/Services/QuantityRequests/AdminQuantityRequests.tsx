@@ -8,7 +8,6 @@ import {
   Dropdown,
   Image,
   List,
-  Menu,
   message,
   Modal,
   Row,
@@ -56,7 +55,7 @@ import TextArea from 'antd/es/input/TextArea'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import HttpStatusCode from 'src/Constants/httpCode'
 import StatCard from 'src/Components/StatsCard'
-import { handleRefresh } from 'src/Utils/util.utils'
+import { handleRefresh, validateQuery } from 'src/Utils/util.utils'
 import ExpandableParagraph from 'src/Components/ExpandableParagraph'
 import { MdOutlineKeyboardDoubleArrowDown, MdOutlineKeyboardDoubleArrowUp } from 'react-icons/md'
 import { renderStatusTag } from 'src/Utils/statusConfig'
@@ -82,7 +81,6 @@ const AdminQuantityRequest = () => {
   const [adminNote, setAdminNote] = useState<string>('')
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [showDetail, setShowDetail] = useState<boolean>(false)
-  const [messageApi, contextHolder] = message.useMessage()
   const [pagination, setPagination] = useState({
     page: PAGE,
     limit: LIMIT,
@@ -170,11 +168,17 @@ const AdminQuantityRequest = () => {
   const approveRequestMutation = useMutation({
     mutationFn: (payload: IUpdateQuantityRequestStatusPayload) => quantityRequestApi.approveRequestAdmin(payload),
     onMutate: async () => {
-      return createOptimisticUpdateHandler(queryClient, ['requestsAdmin'])()
+      return createOptimisticUpdateHandler(queryClient, [
+        'services-card-sold-customer',
+        'requestsAdmin',
+        'requestsUser'
+      ])()
     },
     onSuccess: () => {
+      validateQuery(['services-card-sold-customer', 'requestsAdmin', 'requestsUser'])
       message.success('Yêu cầu đã được phê duyệt thành công!')
-      queryClient.invalidateQueries({ queryKey: ['requestsAdmin'] })
+      // queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+      console.log('1')
     },
     onError: (error: any, _, context) => {
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
@@ -220,23 +224,18 @@ const AdminQuantityRequest = () => {
         requestId: currentRequestId
       }
 
-      const requestReject = {
-        requestId: currentRequestId,
-        payload: payload
-      }
-
       if (actionType === 'approve') {
         approveRequestMutation.mutate(payload)
       } else {
-        rejectRequestMutation.mutate(requestReject)
-        messageApi.success('Yêu cầu đã bị từ chối')
+        rejectRequestMutation.mutate(payload)
+        message.success('Yêu cầu đã bị từ chối')
       }
 
       setNoteModalVisible(false)
     } catch (err) {
       console.error(`Failed to ${actionType} request:`, err)
       const action = actionType === 'approve' ? 'phê duyệt' : 'từ chối'
-      messageApi.error(`Đã xảy ra lỗi khi ${action} yêu cầu. Vui lòng thử lại sau.`)
+      message.error(`Đã xảy ra lỗi khi ${action} yêu cầu. Vui lòng thử lại sau.`)
     } finally {
       setSubmitting(false)
     }
@@ -403,37 +402,35 @@ const AdminQuantityRequest = () => {
       fixed: 'right',
       width: 200,
       render: (_, record) => {
-        const menu = (
-          <Menu>
-            <Menu.Item
-              key='detail'
-              icon={<FileSearchOutlined style={{ color: '#1677ff' }} />}
-              onClick={() => handleShowDetail(record)}
-            >
-              Chi tiết
-            </Menu.Item>
+        const menuItems = [
+          {
+            key: 'detail',
+            icon: <FileSearchOutlined style={{ color: '#1677ff' }} />,
+            label: 'Chi tiết',
+            onClick: () => handleShowDetail(record)
+          }
+        ]
 
-            {record.status === RequestStatus.PENDING && [
-              <Menu.Item
-                key='approve'
-                icon={<CheckOutlined style={{ color: '#52c41a' }} />}
-                onClick={() => handleConfirmAction(record, 'approve')}
-              >
-                Phê duyệt
-              </Menu.Item>,
-              <Menu.Item
-                key='reject'
-                icon={<CloseOutlined style={{ color: '#ff4d4f' }} />}
-                onClick={() => handleConfirmAction(record, 'reject')}
-              >
-                Từ chối
-              </Menu.Item>
-            ]}
-          </Menu>
-        )
+        // Thêm các mục menu phụ thuộc vào điều kiện
+        if (record.status === RequestStatus.PENDING) {
+          menuItems.push(
+            {
+              key: 'approve',
+              icon: <CheckOutlined style={{ color: '#52c41a' }} />,
+              label: 'Phê duyệt',
+              onClick: () => handleConfirmAction(record, 'approve')
+            },
+            {
+              key: 'reject',
+              icon: <CloseOutlined style={{ color: '#ff4d4f' }} />,
+              label: 'Từ chối',
+              onClick: () => handleConfirmAction(record, 'reject')
+            }
+          )
+        }
 
         return (
-          <Dropdown overlay={menu} trigger={['click']}>
+          <Dropdown menu={{ items: menuItems }} trigger={['click']}>
             <Button style={{ borderRadius: '6px', fontSize: '11px', height: '28px' }}>
               Hành động <DownOutlined style={{ fontSize: '10px' }} />
             </Button>
@@ -445,15 +442,15 @@ const AdminQuantityRequest = () => {
 
   return (
     <div style={{ padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
-      {contextHolder}
-
       <Card
         style={{
           marginBottom: '24px',
           borderRadius: '12px',
           boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
         }}
-        bodyStyle={{ padding: '20px 24px' }}
+        styles={{
+          body: { padding: '20px 24px' } // Thay thế bodyStyle bằng styles.body
+        }}
       >
         <Row align='middle' justify='space-between'>
           <Col>
@@ -555,7 +552,11 @@ const AdminQuantityRequest = () => {
           borderRadius: '12px',
           boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
         }}
-        bodyStyle={{ padding: '0' }}
+        styles={{
+          body: {
+            padding: '0'
+          }
+        }}
       >
         <Table
           sticky
@@ -613,9 +614,13 @@ const AdminQuantityRequest = () => {
             {actionType === 'approve' ? 'Phê duyệt' : 'Từ chối'}
           </Button>
         ]}
-        bodyStyle={{ padding: '20px' }}
         centered
-        styles={{ header: { paddingBottom: 0, borderBottom: 'none' } }}
+        styles={{
+          header: { paddingBottom: 0, borderBottom: 'none' },
+          body: {
+            padding: '20px'
+          }
+        }}
       >
         {currentRequest && (
           <div
@@ -757,7 +762,11 @@ const AdminQuantityRequest = () => {
                     borderRadius: '12px',
                     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                   }}
-                  bodyStyle={{ padding: '20px' }}
+                  styles={{
+                    body: {
+                      padding: '20px'
+                    }
+                  }}
                 >
                   <Row gutter={16} align='middle'>
                     <Col xs={24} sm={8}>
@@ -834,7 +843,11 @@ const AdminQuantityRequest = () => {
                     borderRadius: '12px',
                     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                   }}
-                  bodyStyle={{ padding: '20px' }}
+                  styles={{
+                    body: {
+                      padding: '20px'
+                    }
+                  }}
                 >
                   <Row gutter={[16, 16]}>
                     <Col xs={24} md={12}>
@@ -849,8 +862,7 @@ const AdminQuantityRequest = () => {
                     </Col>
                     <Col xs={24} md={12}>
                       <Card
-                        bordered={false}
-                        style={{ backgroundColor: 'rgba(24, 144, 255, 0.05)', borderRadius: '8px' }}
+                        style={{ backgroundColor: 'rgba(24, 144, 255, 0.05)', borderRadius: '8px', border: 'none' }}
                       >
                         <Statistic
                           title={<Text type='secondary'>Số lượng yêu cầu</Text>}
@@ -876,7 +888,11 @@ const AdminQuantityRequest = () => {
                     borderRadius: '12px',
                     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                   }}
-                  bodyStyle={{ padding: '20px' }}
+                  styles={{
+                    body: {
+                      padding: '20px'
+                    }
+                  }}
                 >
                   <Paragraph style={{ backgroundColor: '#f9f9f9', padding: '16px', borderRadius: '8px', margin: 0 }}>
                     {currentRequest.reason || 'Không có lý do cụ thể.'}
@@ -897,7 +913,11 @@ const AdminQuantityRequest = () => {
                       borderRadius: '12px',
                       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
                     }}
-                    bodyStyle={{ padding: '20px' }}
+                    styles={{
+                      body: {
+                        padding: '20px'
+                      }
+                    }}
                     extra={
                       <Tag color={currentRequest.status === RequestStatus.APPROVED ? 'success' : 'error'}>
                         {currentRequest.status === RequestStatus.APPROVED ? 'Đã phê duyệt' : 'Đã từ chối'}

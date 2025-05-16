@@ -12,7 +12,16 @@ const StatCard = (props: StatCardProps) => {
   const { title, value, icon, color, subTitle } = props
 
   return (
-    <Card hoverable className='stat-card' bodyStyle={{ padding: '24px', borderBottom: `4px solid ${color}` }}>
+    <Card
+      hoverable
+      className='stat-card'
+      styles={{
+        body: {
+          padding: '24px',
+          borderBottom: `4px solid ${color}`
+        }
+      }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
         <div>
           <div style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '13px', marginBottom: '8px' }}>{title}</div>

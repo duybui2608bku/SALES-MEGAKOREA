@@ -10,6 +10,7 @@ import { CreateRefundRequestBodyRequest } from 'src/Interfaces/services/refund-r
 import refundRequestApi from 'src/Service/services/services.refundRequest.api'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
 import HttpStatusCode from 'src/Constants/httpCode'
+import { validateQuery } from 'src/Utils/util.utils'
 
 const { Text, Title } = Typography
 const { TextArea } = Input
@@ -102,7 +103,8 @@ const ModalRefund = ({ open, onClose, servicesCardData }: ModalRefundProps) => {
     },
     onSuccess: () => {
       message.success('Yêu cầu hoàn tiền đã được gửi thành công!')
-      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+      // queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+      validateQuery(['services-card-sold-customer', 'refundRequestsAdmin', 'refundRequestUser'])
     },
     onError: (error: any, _, context) => {
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)

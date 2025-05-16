@@ -11,7 +11,6 @@ interface ModalViewServicesOfCardProps {
 
 const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
   const { open, onCancel, data } = props
-  console.log('data', data)
   return (
     <Modal
       title={
@@ -37,7 +36,12 @@ const ModalViewServicesOfCard = (props: ModalViewServicesOfCardProps) => {
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
               background: '#fafafa'
             }}
-            headStyle={{ background: '#e6f7ff', borderBottom: 'none' }}
+            styles={{
+              header: {
+                background: '#e6f7ff',
+                borderBottom: 'none'
+              }
+            }}
           >
             <Space direction='vertical' style={{ width: '100%' }}>
               {/* Thông tin cơ bản */}

@@ -40,7 +40,7 @@ import { RoleUser, TypeCommision } from 'src/Constants/enum'
 import { queryClient } from 'src/main'
 import { HttpStatusCode } from 'axios'
 import createOptimisticUpdateHandler from 'src/Function/product/createOptimisticUpdateHandler'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import commisionTechnicanApi from 'src/Service/commision/commision.technican.api'
 import { AppContext } from 'src/Context/AppContext'
 import { axiosUploadAvatar } from 'src/Service/axious.api'
@@ -48,6 +48,7 @@ import { axiosUploadAvatar } from 'src/Service/axious.api'
 import { servicesApi } from 'src/Service/services/services.api'
 import { ICreateQuantityRequestPayload } from 'src/Interfaces/services/quantity-request.interfaces'
 import quantityRequestApi from 'src/Service/services/services.quantityRequest.api'
+import { validateQuery } from 'src/Utils/util.utils'
 
 interface ModalViewServicesCardProps {
   open: boolean
@@ -90,7 +91,6 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   const { profile } = useContext(AppContext)
   const [listServicesCard, setListServicesCard] = useState<CardOfServicesCardSoldOfCustomer[]>([])
   const [userId, setUserId] = useState<string>('')
-  const queryClientHook = useQueryClient()
 
   // New states for the increasing quantity modal
   const [increasingModalVisible, setIncreasingModalVisible] = useState(false)
@@ -120,43 +120,43 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
   }, [servicesCardSoldOfCustomerData])
 
   // Watch for updates from query cache
-  useEffect(() => {
-    if (!open || !servicesCardSoldOfCustomerData) return
+  // useEffect(() => {
+  //   if (!open || !servicesCardSoldOfCustomerData) return
 
-    // Register listener to track when query succeeds
-    const unsubscribe = queryClientHook.getQueryCache().subscribe((event) => {
-      // Only process success events
-      if (event.type === 'updated') {
-        const queryKey = event.query.queryKey
+  //   // Register listener to track when query succeeds
+  //   const unsubscribe = queryClientHook.getQueryCache().subscribe((event) => {
+  //     // Only process success events
+  //     if (event.type === 'updated') {
+  //       const queryKey = event.query.queryKey
 
-        // Check if this is the main query
-        if (Array.isArray(queryKey) && queryKey[0] === 'services-card-sold-customer') {
-          // Find new data in cache
-          const newData = event.query.state.data?.data?.result?.servicesCardSold
+  //       // Check if this is the main query
+  //       if (Array.isArray(queryKey) && queryKey[0] === 'services-card-sold-customer') {
+  //         // Find new data in cache
+  //         const newData = event.query.state.data?.data?.result?.servicesCardSold
 
-          if (Array.isArray(newData)) {
-            // Find card currently displayed in modal
-            const updatedServiceCard = newData.find((card) => card._id === servicesCardSoldOfCustomerData._id)
+  //         if (Array.isArray(newData)) {
+  //           // Find card currently displayed in modal
+  //           const updatedServiceCard = newData.find((card) => card._id === servicesCardSoldOfCustomerData._id)
 
-            if (updatedServiceCard) {
-              // Update service list in modal
-              const cardsWithParentId = updatedServiceCard.cards.map((card: any) => ({
-                ...card,
-                parentId: updatedServiceCard._id
-              }))
+  //           if (updatedServiceCard) {
+  //             // Update service list in modal
+  //             const cardsWithParentId = updatedServiceCard.cards.map((card: any) => ({
+  //               ...card,
+  //               parentId: updatedServiceCard._id
+  //             }))
 
-              setListServicesCard(cardsWithParentId)
-            }
-          }
-        }
-      }
-    })
+  //             setListServicesCard(cardsWithParentId)
+  //           }
+  //         }
+  //       }
+  //     }
+  //   })
 
-    // Cleanup when component unmounts or modal closes
-    return () => {
-      unsubscribe()
-    }
-  }, [open, servicesCardSoldOfCustomerData, queryClientHook])
+  //   // Cleanup when component unmounts or modal closes
+  //   return () => {
+  //     unsubscribe()
+  //   }
+  // }, [open, servicesCardSoldOfCustomerData, queryClientHook])
 
   // Function to close view Modal
   const handleCancelModal = () => {
@@ -275,7 +275,8 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     },
     onSuccess: () => {
       message.success('Yêu cầu tăng số lượng được gửi thành công!')
-      queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+      // queryClient.invalidateQueries({ queryKey: ['services-card-sold-customer'] })
+      validateQuery(['services-card-sold-customer', 'requestsAdmin', 'requestsUser'])
     },
     onError: (error: any, _, context) => {
       queryClient.setQueryData(['services-card-sold-customer'], context?.previousData)
@@ -289,6 +290,10 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     }
   })
 
+  useEffect(() => {
+    console.log('increasingService: ', increasingService)
+  }, [increasingService])
+
   const handleRequestQuantity = async () => {
     if (!increasingService) return
 
@@ -300,8 +305,11 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
         media: uploadedImages,
         branch: servicesCardSoldOfCustomerData?.branch ? servicesCardSoldOfCustomerData.branch[0]._id : '',
         currentQuantity: increasingService.quantity,
-        servicesCardSoldId: servicesCardSoldOfCustomerData?._id ? servicesCardSoldOfCustomerData?._id : ''
+        servicesCardSoldId: increasingService.cardId
       }
+
+      console.log('payloadRequestQuantity: ', payload)
+
       quantityRequest(payload)
 
       // Reset form state
@@ -321,11 +329,9 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
     serviceId: string
     serviceName: string
     cardName: string
+    quantity: number
   }) => {
-    setIncreasingService({
-      ...service,
-      quantity: 1
-    })
+    setIncreasingService(service)
     setIncreasingQuantity(1)
     setUploadedImages([])
     setIncreasingModalVisible(true)
@@ -547,7 +553,11 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
         className='service-card-modal'
         width={listServicesCard.length <= 3 ? `${Math.min(listServicesCard.length * 320 + 80, 1000)}px` : '90%'}
         style={{ maxWidth: listServicesCard.length <= 3 ? 'none' : '1200px' }}
-        bodyStyle={{ padding: '24px' }}
+        styles={{
+          body: {
+            padding: '24px'
+          }
+        }}
       >
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <Title level={3} style={{ margin: 0, fontWeight: 600 }}>
@@ -590,7 +600,14 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                 backgroundColor: 'rgb(247, 250, 252)',
                 padding: '8px 5px'
               }}
-              bodyStyle={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}
+              styles={{
+                body: {
+                  padding: '16px',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }
+              }}
             >
               <div style={{ flexGrow: 1 }}>
                 <Flex justify='space-between' align='center' style={{ marginBottom: '12px', flexDirection: 'row' }}>
@@ -762,7 +779,8 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
                                     cardId: card._id,
                                     serviceId: service._id,
                                     serviceName: service.name,
-                                    cardName: card.name
+                                    cardName: card.name,
+                                    quantity: service.quantity
                                   })
                                 }
                                 disabled={isQuantityRequest}
@@ -847,7 +865,11 @@ const ModalViewServicesCardSold = (props: ModalViewServicesCardProps) => {
         ]}
         width={520}
         centered
-        bodyStyle={{ padding: '24px 24px 12px' }}
+        styles={{
+          body: {
+            padding: '24px 24px 12px'
+          }
+        }}
       >
         <Form form={form} layout='vertical' style={{ maxWidth: 600 }}>
           <Form.Item
